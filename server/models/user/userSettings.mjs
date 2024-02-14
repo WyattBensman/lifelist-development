@@ -1,8 +1,43 @@
-import { Schema, model } from "mongoose";
+import { Schema } from "mongoose";
 
-const userSettingsSchema = new new Schema({})();
+const privacyGroupSchema = new Schema({
+  groupName: {
+    type: String,
+    required: true,
+  },
+  users: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+});
 
-// Create Model
-const UserSettings = model("UserSettings", userSettingsSchema);
+const userSettingsSchema = new Schema({
+  privacy: {
+    type: String,
+    enum: ["public", "private", "friendsOnly"],
+    default: "public",
+  },
+  darkMode: {
+    type: Boolean,
+    default: false,
+  },
+  language: {
+    type: String,
+    default: "en",
+  },
+  notifications: {
+    type: Boolean,
+    default: true,
+  },
+  blocked: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+  privacyGroups: [privacyGroupSchema],
+});
 
-export default UserSettings;
+export default userSettingsSchema;
