@@ -105,7 +105,6 @@ const userSchema = new new Schema({
       ref: "User",
     },
   ],
-
   following: [
     {
       type: Schema.Types.ObjectId,
