@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
+import userSettingsSchema from "./userSettings.mjs";
 
 const validatePassword = (value) => {
   return /^(?=.*\d)(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*$/.test(value);
@@ -134,6 +135,12 @@ const userSchema = new new Schema({
         type: String,
         enum: ["experienced", "wishListed"],
       },
+      associatedCollages: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "Collage",
+        },
+      ],
     },
   ],
   collages: [
