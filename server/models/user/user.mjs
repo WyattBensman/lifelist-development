@@ -127,9 +127,9 @@ const userSchema = new new Schema({
   ],
   lifeList: [
     {
-      lifeListItem: {
+      experience: {
         type: Schema.Types.ObjectId,
-        ref: "LifeListItem",
+        ref: "Experience",
       },
       list: {
         type: String,

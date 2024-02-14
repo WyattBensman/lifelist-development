@@ -45,10 +45,10 @@ const collageSchema = new Schema({
   summary: {
     type: String,
   },
-  lifeListItems: [
+  experiences: [
     {
       type: Schema.Types.ObjectId,
-      ref: "LifeListItem",
+      ref: "Experience",
     },
   ],
   tagged: [
