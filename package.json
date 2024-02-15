@@ -1,0 +1,22 @@
+{
+  "name": "lifelist-development",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server/server.mjs",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "start": "node server/server.mjs",
+    "develop": "concurrently \"cd server && npm run start\" \"cd client && npm run dev\"",
+    "install": "cd server && npm i && cd ../client && npm i",
+    "build": "cd client && npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "dotenv": "^16.4.4",
+    "mongodb": "^6.3.0"
+  }
+}

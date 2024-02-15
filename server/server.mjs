@@ -4,7 +4,15 @@ import graphqlUploadExpress from "graphql-upload/graphqlUploadExpress.mjs";
 import path from "path";
 import { authMiddleware } from "./utils/auth.mjs";
 import typeDefs from "./schemas/typeDefs.mjs";
-import resolvers from "./schemas/resolvers.mjs";
+/* import resolvers from "./schemas/resolvers.mjs"; */
+// Resolvers
+import {
+  userQueries,
+  cameraQueries,
+  collageQueries,
+  experienceQueries,
+} from "./resolvers/queries/index.mjs";
+
 import db from "./config/connection.mjs";
 import dotenv from "dotenv";
 
