@@ -202,7 +202,7 @@ const userSchema = new Schema({
     type: userSettingsSchema,
     default: userSettingsSchema,
   },
-})();
+});
 
 // Hashes Password
 userSchema.pre("save", async function (next) {

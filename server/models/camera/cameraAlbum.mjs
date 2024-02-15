@@ -21,7 +21,7 @@ const cameraAlbumSchema = new Schema({
       ref: "CameraShot",
     },
   ],
-})();
+});
 
 const CameraAlbum = model("CameraAlbum", cameraAlbumSchema);
 
