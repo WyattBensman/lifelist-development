@@ -14,6 +14,10 @@ const validatePhoneNumber = (value) => {
   return /^\d{10}$/.test(value);
 };
 
+const generateVerificationCode = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
 const userSchema = new Schema({
   fName: {
     type: String,
@@ -46,6 +50,24 @@ const userSchema = new Schema({
       message: "Invalid phone number format.",
     },
   },
+  verified: {
+    type: Boolean,
+    default: false,
+  },
+  emailVerification: {
+    code: String,
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  phoneVerification: {
+    code: String,
+    verified: {
+      type: Boolean,
+      default: false,
+    },
+  },
   password: {
     type: String,
     required: true,
@@ -68,24 +90,6 @@ const userSchema = new Schema({
   bio: {
     type: String,
     maxlength: 150,
-  },
-  verified: {
-    type: Boolean,
-    default: false,
-  },
-  emailVerification: {
-    code: String,
-    verified: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  phoneVerification: {
-    code: String,
-    verified: {
-      type: Boolean,
-      default: false,
-    },
   },
   gender: {
     type: String,
@@ -196,7 +200,7 @@ const userSchema = new Schema({
   ],
   settings: {
     type: userSettingsSchema,
-    default: {},
+    default: userSettingsSchema,
   },
 })();
 
@@ -216,6 +220,16 @@ userSchema.pre("save", async function (next) {
 // Checks if Password is Correct
 userSchema.methods.isCorrectPassword = async function (password) {
   return bcrypt.compare(password, this.password);
+};
+
+// Generate and set verification code for email
+userSchema.methods.generateEmailVerificationCode = function () {
+  this.emailVerificationCode = generateVerificationCode();
+};
+
+// Generate and set verification code for phone
+userSchema.methods.generatePhoneVerificationCode = function () {
+  this.phoneVerificationCode = generateVerificationCode();
 };
 
 // Create User Model
