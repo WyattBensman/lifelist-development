@@ -1,9 +1,14 @@
 export const completeRegristration = async (
   _,
-  { userId, fName, lName, password, gender }
+  { userId, firstName, lastName, username, password }
 ) => {
-  if (!fName || !lName) {
+  // Input validation
+  if (!firstName || !lastName) {
     throw new Error("Both first name and last name are required.");
+  }
+
+  if (!username) {
+    throw new Error("Setting a password is required.");
   }
 
   if (!password) {
@@ -11,23 +16,35 @@ export const completeRegristration = async (
   }
 
   try {
-    const user = await User.findByIdAndUpdate(
+    // Check if the username is already taken
+    const existingUser = await User.findOne({
+      username: username.toLowerCase(),
+    });
+
+    if (existingUser) {
+      throw new Error(
+        "Username is already taken. Please choose a different one."
+      );
+    }
+
+    // Update user information
+    const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
-        fName,
-        lName,
+        firstName,
+        lastName,
+        username,
         password,
-        gender,
       },
       { new: true, runValidators: true }
     );
 
     // Generate JWT token
-    const token = generateToken(user);
+    const token = generateToken(updatedUser);
 
-    return { token, user };
+    return { token, user: updatedUser };
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during regristration.");
+    throw new Error("An error occurred during registration.");
   }
 };

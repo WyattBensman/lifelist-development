@@ -7,7 +7,7 @@ import {
 
 export const initialRegristration = async (
   _,
-  { email, phoneNumber, username, birthday }
+  { email, phoneNumber, birthday }
 ) => {
   try {
     // Check for valid input
@@ -16,14 +16,13 @@ export const initialRegristration = async (
         "Provide either an email or phone number for registration."
       );
     }
+    if (!birthday) {
+      throw new Error("Birthday is required for registration.");
+    }
 
-    // Check availability for Email, Phone & Username
+    // Check availability for Email or Phone
     const existingUser = await User.findOne({
-      $or: [
-        { email: email },
-        { phoneNumber: phoneNumber },
-        { username: username },
-      ],
+      $or: [{ email: email }, { phoneNumber: phoneNumber }],
     });
 
     if (existingUser) {
@@ -40,6 +39,15 @@ export const initialRegristration = async (
       errorMessage += " is already in use.";
 
       throw new Error(errorMessage);
+    }
+
+    // Check if the user is 18 years or older
+    const currentDate = new Date();
+    const userBirthday = new Date(birthday);
+    const age = currentDate.getFullYear() - userBirthday.getFullYear();
+
+    if (age < 18) {
+      throw new Error("You must be at least 18 years old to register.");
     }
 
     // Generate Verification Code
