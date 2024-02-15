@@ -198,6 +198,12 @@ const userSchema = new Schema({
       ref: "Collage",
     },
   ],
+  archivedCollages: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Collage",
+    },
+  ],
   settings: {
     type: userSettingsSchema,
     default: userSettingsSchema,
