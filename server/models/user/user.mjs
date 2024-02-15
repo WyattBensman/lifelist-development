@@ -14,20 +14,18 @@ const validatePhoneNumber = (value) => {
   return /^\d{10}$/.test(value);
 };
 
-const generateVerificationCode = () => {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-};
-
 const userSchema = new Schema({
   fName: {
     type: String,
     required: true,
     trim: true,
+    default: "DefaultFirstName",
   },
   lName: {
     type: String,
     required: true,
     trim: true,
+    default: "DefaultLastName",
   },
   email: {
     type: String,
@@ -71,6 +69,7 @@ const userSchema = new Schema({
     type: String,
     required: true,
     minlength: 8,
+    default: "DefaultPassword1!",
     validate: {
       validator: validatePassword,
       message:
@@ -225,16 +224,6 @@ userSchema.pre("save", async function (next) {
 // Checks if Password is Correct
 userSchema.methods.isCorrectPassword = async function (password) {
   return bcrypt.compare(password, this.password);
-};
-
-// Generate and set verification code for email
-userSchema.methods.generateEmailVerificationCode = function () {
-  this.emailVerificationCode = generateVerificationCode();
-};
-
-// Generate and set verification code for phone
-userSchema.methods.generatePhoneVerificationCode = function () {
-  this.phoneVerificationCode = generateVerificationCode();
 };
 
 // Create User Model

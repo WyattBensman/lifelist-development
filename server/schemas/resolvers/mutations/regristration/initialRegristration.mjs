@@ -10,6 +10,13 @@ export const initialRegristration = async (
   { email, phoneNumber, username, birthday }
 ) => {
   try {
+    // Check for valid input
+    if (!email && !phoneNumber) {
+      throw new Error(
+        "Provide either an email or phone number for registration."
+      );
+    }
+
     // Check availability for Email, Phone & Username
     const existingUser = await User.findOne({
       $or: [
@@ -39,20 +46,23 @@ export const initialRegristration = async (
     const verificationCode = generateVerificationCode();
 
     // Create User with Verification Code & False Status
-    const newUser = await User.create({
-      email,
-      phoneNumber,
-      username,
-      birthday,
-      emailVerification: {
-        code: verificationCode,
-        verified: false,
+    const newUser = await User.create(
+      {
+        email,
+        phoneNumber,
+        username,
+        birthday,
+        emailVerification: {
+          code: verificationCode,
+          verified: false,
+        },
+        phoneVerification: {
+          code: verificationCode,
+          verified: false,
+        },
       },
-      phoneVerification: {
-        code: verificationCode,
-        verified: false,
-      },
-    });
+      { runValidators: true }
+    );
 
     // Send verification code to user's email or phone
     if (email) {

@@ -1,36 +1,33 @@
-// Step 3: Complete Profile
-router.post("/complete-profile", async (req, res) => {
+export const completeRegristration = async (
+  _,
+  { userId, fName, lName, password, gender }
+) => {
+  if (!fName || !lName) {
+    throw new Error("Both first name and last name are required.");
+  }
+
+  if (!password) {
+    throw new Error("Setting a password is required.");
+  }
+
   try {
-    const { userId, fName, lName, password, gender } = req.body;
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        fName,
+        lName,
+        password,
+        gender,
+      },
+      { new: true, runValidators: true }
+    );
 
-    // Find the user by ID
-    const user = await User.findById(userId);
+    // Generate JWT token
+    const token = generateToken(user);
 
-    if (!user) {
-      return res.status(404).json({ error: "User not found." });
-    }
-
-    // Set additional profile information
-    user.fName = fName;
-    user.lName = lName;
-    user.password = password; // You may want to hash the password here
-    user.gender = gender;
-
-    // Save the completed profile
-    await user.save();
-
-    return res.status(200).json({ message: "Profile completed successfully." });
+    return { token, user };
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    return res
-      .status(500)
-      .json({ error: "An error occurred while completing the profile." });
+    throw new Error("An error occurred during regristration.");
   }
-});
-
-// Function to generate verification code
-function generateVerificationCode() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
-
-export default router;
+};
