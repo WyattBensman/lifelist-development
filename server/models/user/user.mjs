@@ -14,7 +14,7 @@ const validatePhoneNumber = (value) => {
   return /^\d{10}$/.test(value);
 };
 
-const userSchema = new new Schema({
+const userSchema = new Schema({
   fName: {
     type: String,
     required: true,
@@ -148,6 +148,22 @@ const userSchema = new new Schema({
       ref: "Collage",
     },
   ],
+  dailyCameraShots: {
+    count: {
+      type: Number,
+      default: 0,
+      validate: {
+        validator: function (value) {
+          return value <= 10; // Maximum of 10 snapshots
+        },
+        message: "Maximum of 10 snapshots allowed per day.",
+      },
+    },
+    lastReset: {
+      type: Date,
+      default: Date.now,
+    },
+  },
   cameraShots: [
     {
       type: Schema.Types.ObjectId,

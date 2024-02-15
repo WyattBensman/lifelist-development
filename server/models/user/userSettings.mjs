@@ -16,7 +16,7 @@ const privacyGroupSchema = new Schema({
 const userSettingsSchema = new Schema({
   privacy: {
     type: String,
-    enum: ["public", "private", "friendsOnly"],
+    enum: ["public", "private"],
     default: "public",
   },
   darkMode: {
