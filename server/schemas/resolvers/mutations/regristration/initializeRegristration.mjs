@@ -5,7 +5,7 @@ import {
   generateVerificationCode,
 } from "../../../../utils/verification.mjs";
 
-export const initialRegristration = async (
+export const initializeRegristration = async (
   _,
   { email, phoneNumber, birthday }
 ) => {
@@ -32,8 +32,6 @@ export const initialRegristration = async (
         errorMessage += "this email";
       } else if (existingUser.phoneNumber === phoneNumber) {
         errorMessage += "this phone number";
-      } else if (existingUser.username === username) {
-        errorMessage += "this username";
       }
 
       errorMessage += " is already in use.";
