@@ -27,6 +27,8 @@
     "graphql-upload": "^16.0.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.2",
+    "nodemailer": "^6.9.9",
+    "twilio": "^4.22.0",
     "uuid": "^9.0.1"
   }
 }
