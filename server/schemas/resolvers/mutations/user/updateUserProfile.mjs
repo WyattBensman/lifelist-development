@@ -1,4 +1,4 @@
-export const updateUserProfile = async (
+export const updateUserProfileInformation = async (
   _,
   { profilePicture, fName, lName, username, bio },
   { user }

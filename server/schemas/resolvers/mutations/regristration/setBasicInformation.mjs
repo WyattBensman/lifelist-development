@@ -1,4 +1,4 @@
-export const completeRegistration = async (
+export const setBasicInformation = async (
   _,
   { userId, fName, lName, gender }
 ) => {
