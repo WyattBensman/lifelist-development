@@ -3,7 +3,7 @@ import {
   sendVerificationCodeEmail,
   sendVerificationCodeSMS,
   generateVerificationCode,
-} from "../../../../utils/verification.mjs";
+} from "../../../../utils/sendVerification.mjs";
 
 export const initializeRegristration = async (
   _,
