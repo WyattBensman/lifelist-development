@@ -1,5 +1,5 @@
 import { User } from "../../../../models/index.mjs";
-import { AuthenticationError } from "../../../../utils/auth.mjs";
+import { isCurrentUser } from "../../../../utils/auth.mjs";
 import { uploadSingleImage } from "../../../../utils/uploadImages.mjs";
 
 export const updateUserProfileInformation = async (
