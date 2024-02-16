@@ -48,6 +48,13 @@ export const generateToken = (userId, secret, expiration) => {
   return token;
 };
 
+// Check to see if a current user
+export const isUser = (user) => {
+  if (!user) {
+    throw new AuthenticationError("User not authenticated");
+  }
+};
+
 // Check to see if the user is authenticated & is the Curent User
 export const isCurrentUser = (user, userId) => {
   if (!user) {
