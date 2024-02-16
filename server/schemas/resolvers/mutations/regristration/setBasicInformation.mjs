@@ -3,7 +3,7 @@ export const setBasicInformation = async (
   { userId, fName, lName, gender }
 ) => {
   // Input validation
-  if (!firstName || !lastName) {
+  if (!fName || !lName) {
     throw new Error("Both first name and last name are required.");
   }
 
@@ -26,7 +26,7 @@ export const setBasicInformation = async (
     // Generate JWT token
     const token = generateToken(updatedUser);
 
-    return { token, user: updatedUser };
+    return { success: true, token, user: updatedUser };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during registration.");

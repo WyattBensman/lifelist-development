@@ -35,11 +35,12 @@ export const verification = async (_, { userId, verificationCode }) => {
     await user.save();
 
     return {
+      success: true,
       message: "Contact information verified. Complete your profile.",
       user,
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during user creation.");
+    console.error("Error:", error);
+    throw new Error("An error occurred during verification.");
   }
 };

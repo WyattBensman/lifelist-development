@@ -21,16 +21,21 @@ export const initializeRegristration = async (
     }
 
     // Check availability for Email or Phone
-    const existingUser = await User.findOne({
+    const existingVerifiedUser = await User.findOne({
       $or: [{ email: email }, { phoneNumber: phoneNumber }],
     });
 
-    if (existingUser) {
+    if (existingVerifiedUser) {
+      // Check if existing user is verified
+      if (existingVerifiedUser.verified) {
+        throw new Error("Account is already verified.");
+      }
+
       let errorMessage = "An account with ";
 
-      if (existingUser.email === email) {
+      if (existingVerifiedUser.email === email) {
         errorMessage += "this email";
-      } else if (existingUser.phoneNumber === phoneNumber) {
+      } else if (existingVerifiedUser.phoneNumber === phoneNumber) {
         errorMessage += "this phone number";
       }
 
@@ -56,7 +61,6 @@ export const initializeRegristration = async (
       {
         email,
         phoneNumber,
-        username,
         birthday,
         emailVerification: {
           code: verificationCode,

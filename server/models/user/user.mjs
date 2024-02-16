@@ -17,15 +17,13 @@ const validatePhoneNumber = (value) => {
 const userSchema = new Schema({
   fName: {
     type: String,
-    required: true,
     trim: true,
-    default: "DefaultFirstName",
+    match: /^[a-zA-Z]+$/,
   },
   lName: {
     type: String,
-    required: true,
     trim: true,
-    default: "DefaultLastName",
+    match: /^[a-zA-Z]+$/,
   },
   email: {
     type: String,
@@ -67,7 +65,6 @@ const userSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
     minlength: 8,
     default: "DefaultPassword1!",
     validate: {
@@ -79,7 +76,6 @@ const userSchema = new Schema({
   profilePicture: { type: String, default: "default-avatar.jpg" },
   username: {
     type: String,
-    required: true,
     minlength: 5,
     maxlength: 24,
     lowercase: true,
