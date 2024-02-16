@@ -7,17 +7,8 @@ export const updateUserContact = async (
   { user }
 ) => {
   try {
-    // Check if the user is authenticated
-    if (!user) {
-      throw new AuthenticationError("User not authenticated");
-    }
-
-    // Check if the currentUser is updating their own contact information
-    if (user.id !== userId) {
-      throw new AuthenticationError(
-        "Not authorized to update this contact information"
-      );
-    }
+    // Check if the user is authenticated & is the current user
+    isCurrentUser(user, userId);
 
     // Check if the verified email is being modified
     if (user.emailVerified && email !== user.email) {

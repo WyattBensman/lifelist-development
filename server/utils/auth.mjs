@@ -47,3 +47,27 @@ export const generateToken = (userId, secret, expiration) => {
   });
   return token;
 };
+
+// Check to see if the user is authenticated & is the Curent User
+export const isCurrentUser = (user, userId) => {
+  if (!user) {
+    throw new AuthenticationError("User not authenticated");
+  }
+
+  // Check if the user is the current user
+  if (user.id !== userId) {
+    throw new AuthenticationError("Not authorized to perform this action");
+  }
+};
+
+// Check to see if the user is authenticated & is the Author
+export const isCurrentAuthor = (user, authorId) => {
+  if (!user) {
+    throw new AuthenticationError("User not authenticated");
+  }
+
+  // Check if the current user is the author
+  if (user.id !== authorId) {
+    throw new AuthenticationError("Not authorized to perform this action");
+  }
+};

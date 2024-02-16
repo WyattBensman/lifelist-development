@@ -8,15 +8,8 @@ export const updateUserProfileInformation = async (
   { user }
 ) => {
   try {
-    // Check if the user is authenticated
-    if (!user) {
-      throw new AuthenticationError("User not authenticated");
-    }
-
-    // Check if the currentUser is updating their own profile
-    if (user.id !== userId) {
-      throw new AuthenticationError("Not authorized to update this profile");
-    }
+    // Check if the user is authenticated & is the current user
+    isCurrentUser(user, userId);
 
     // Validate fName & lName
     if (!fName || !lName) {

@@ -1,19 +1,12 @@
 import { User } from "../../../../models/index.mjs";
-import { AuthenticationError } from "../../../../utils/auth.mjs";
+import { isCurrentUser } from "../../../../utils/auth.mjs";
 
 export const deleteUser = async (_, { userId }, { user }) => {
   try {
-    if (!user) {
-      throw new AuthenticationError({ message: "User not authenticated" });
-    }
+    // Authenticate
+    isCurrentUser(user, userId);
 
-    if (user.id !== userId) {
-      throw new AuthenticationError({
-        message: "Not authorized to delete this user",
-      });
-    }
-
-    // Find the
+    // Find the user to delete
     const userToDelete = await User.findById(userId);
 
     // Check if the user exists
