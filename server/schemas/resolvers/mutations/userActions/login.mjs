@@ -19,10 +19,12 @@ export const login = async (_, { usernameOrEmailOrPhone, password }) => {
 
       return { token, user };
     } else {
-      throw new Error("Invalid username, email, phone number, or password");
+      throw new AuthenticationError(
+        "Invalid username, email, phone number, or password"
+      );
     }
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during login.");
+    console.error(`Error during login: ${error.message}`);
+    throw new AuthenticationError("An error occurred during login");
   }
 };

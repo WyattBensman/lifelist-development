@@ -1,6 +1,5 @@
-import fs from "fs";
-import { v4 as uuidv4 } from "uuid";
 import { User } from "../../../../models/index.mjs";
+import { uploadSingleImage } from "../../../../utils/uploadImages.mjs";
 
 export const setProfilePictureAndBio = async (
   _,
@@ -10,25 +9,13 @@ export const setProfilePictureAndBio = async (
     let fileUrl = null;
 
     if (profilePicture) {
-      // Handle file upload
-      const { createReadStream, filename } = await profilePicture.file;
-
-      // Create a unique filename using uuid
-      const uniqueFilename = `${uuidv4()}-${filename}`;
-
-      // Create the uploads directory if it doesn't exist
+      // Use uploadSingleImage Util to handle file upload
       const uploadDir = "./uploads";
+      const filePath = await uploadSingleImage(profilePicture.file, uploadDir);
 
-      // Stream the file to the uploads directory
-      const stream = createReadStream();
-      const filePath = `${uploadDir}/${uniqueFilename}`;
-      const writeStream = fs.createWriteStream(filePath);
-      await stream.pipe(writeStream);
-
-      // Store the URL or identifier of the uploaded file in the database
-      // Dynamically construct the base URL based on the environment
+      // Construct the file URL
       const baseUrl = process.env.PORT ? "" : "http://localhost:3001";
-      fileUrl = `${baseUrl}/uploads/${uniqueFilename}`;
+      fileUrl = `${baseUrl}/uploads/${filePath.split("/").pop()}`;
     }
 
     // Update the user's profile picture and bio

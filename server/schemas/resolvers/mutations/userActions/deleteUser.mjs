@@ -1,15 +1,18 @@
 import { User } from "../../../../models/index.mjs";
+import { AuthenticationError } from "../../../../utils/auth.mjs";
 
 export const deleteUser = async (_, { userId }, { user }) => {
-  if (!user) {
-    throw new AuthenticationError();
-  }
-
-  if (user.id !== userId) {
-    throw new AuthenticationError();
-  }
-
   try {
+    if (!user) {
+      throw new AuthenticationError({ message: "User not authenticated" });
+    }
+
+    if (user.id !== userId) {
+      throw new AuthenticationError({
+        message: "Not authorized to delete this user",
+      });
+    }
+
     // Find the
     const userToDelete = await User.findById(userId);
 
@@ -25,7 +28,7 @@ export const deleteUser = async (_, { userId }, { user }) => {
       message: "User deleted successfully.",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error(`Error during user deletion: ${error.message}`);
     throw new Error("An error occurred during user deletion.");
   }
 };
