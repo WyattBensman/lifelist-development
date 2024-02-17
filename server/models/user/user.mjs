@@ -198,6 +198,13 @@ const userSchema = new Schema({
       ref: "Collage",
     },
   ],
+  conversations: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Conversation",
+    },
+  ],
+
   settings: {
     type: userSettingsSchema,
     default: userSettingsSchema,

@@ -1,4 +1,5 @@
 import Notification from "../../../../models/Notification.mjs";
+import { UserInputError } from "apollo-server";
 
 export const deleteNotification = async (notificationId) => {
   try {
