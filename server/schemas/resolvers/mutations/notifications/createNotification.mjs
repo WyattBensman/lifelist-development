@@ -1,4 +1,4 @@
-import Notification from "../../../../models/Notification.mjs";
+import { Notification } from "../../../../models/index.mjs";
 
 export const createNotification = async ({
   recipientId,
