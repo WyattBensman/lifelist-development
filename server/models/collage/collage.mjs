@@ -91,6 +91,18 @@ const collageSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  reports: [
+    {
+      user: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+      reason: {
+        type: String,
+        required: true,
+      },
+    },
+  ],
 });
 
 const Collage = model("Collage", collageSchema);

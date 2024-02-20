@@ -1,5 +1,17 @@
 import { Schema } from "mongoose";
 
+const reportSchema = new Schema({
+  reporter: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  reason: {
+    type: String,
+    required: true,
+  },
+});
+
 const commentSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
@@ -15,6 +27,7 @@ const commentSchema = new Schema({
     default: Date.now,
   },
   comments: [this],
+  reports: [reportSchema],
 });
 
 export default commentSchema;

@@ -3,9 +3,9 @@
 import { Collage, User } from "../models/index.mjs";
 import { isUser } from "../utils/auth.mjs";
 
-export const editComment = async (
+export const reportComment = async (
   _,
-  { collageId, commentId, newText },
+  { collageId, commentId, reason },
   { user }
 ) => {
   try {
@@ -24,21 +24,19 @@ export const editComment = async (
       throw new Error("Comment not found.");
     }
 
-    // Check if the current user is the author of the comment
-    if (comment.user.toString() !== user.id) {
-      throw new Error("Not authorized to edit this comment.");
-    }
+    // Report the comment (you can customize this part based on your reporting logic)
+    comment.reports.push({
+      reporter: user.id,
+      reason,
+    });
 
-    // Update the comment text
-    comment.text = newText;
     await collage.save();
 
     return {
-      message: "Comment edited successfully.",
-      comment: comment.toObject(),
+      message: "Comment reported successfully.",
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during comment editing.");
+    throw new Error("An error occurred during comment reporting.");
   }
 };
