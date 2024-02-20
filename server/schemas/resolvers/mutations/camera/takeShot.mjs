@@ -2,11 +2,7 @@ import { CameraShot, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 import { apply35mmFilter } from "../../../../utils/cameraUtils.mjs";
 
-export const takeCameraShot = async (
-  _,
-  { filter, shotOrientation },
-  { user }
-) => {
+export const takeShot = async (_, { filter, shotOrientation }, { user }) => {
   try {
     isUser(user);
 
