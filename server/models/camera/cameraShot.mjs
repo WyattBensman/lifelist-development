@@ -6,11 +6,6 @@ const cameraShotSchema = new Schema({
     ref: "User",
     required: true,
   },
-  camera: {
-    type: Schema.Types.ObjectId,
-    ref: "Camera",
-    required: true,
-  },
   image: {
     type: String,
     required: true,
@@ -22,6 +17,11 @@ const cameraShotSchema = new Schema({
   filtered: {
     type: Boolean,
     default: false,
+  },
+  shotOrientation: {
+    type: String,
+    enum: ["vertical", "horizontal"],
+    default: "vertical",
   },
 });
 

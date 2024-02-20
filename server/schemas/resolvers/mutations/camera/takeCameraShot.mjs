@@ -1,8 +1,12 @@
-// resolvers/cameraResolvers.mjs
-import { CameraShot, User } from "../models";
-import { isUser, apply35mmFilter } from "../utils";
+import { CameraShot, User } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
+import { apply35mmFilter } from "../../../../utils/cameraUtils.mjs";
 
-export const takeCameraShot = async (_, { filter }, { user }) => {
+export const takeCameraShot = async (
+  _,
+  { filter, shotOrientation },
+  { user }
+) => {
   try {
     isUser(user);
 
@@ -16,16 +20,18 @@ export const takeCameraShot = async (_, { filter }, { user }) => {
 
     // Apply 35mm filter if needed
     if (filter) {
-      capturedImageUri = await apply35mmFilter(capturedImageUri);
+      const filteredImagePath = "path/to/filtered/image.jpg";
+      await apply35mmFilter(capturedImageUri, filteredImagePath);
+      capturedImageUri = filteredImagePath;
     }
 
     // Create a new CameraShot instance
     const newCameraShot = await CameraShot.create({
       author: user.id,
-      camera: user.id,
       image: capturedImageUri,
       capturedAt: new Date(),
       filtered: !!filter,
+      shotOrientation: shotOrientation,
     });
 
     // Update user's dailyCameraShots count

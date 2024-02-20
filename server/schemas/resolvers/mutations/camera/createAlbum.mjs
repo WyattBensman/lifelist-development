@@ -1,11 +1,7 @@
 import { CameraAlbum } from "../../../../models/index.mjs";
 import { isUser } from "../utils";
 
-export const createCameraAlbum = async (
-  _,
-  { title, description },
-  { user }
-) => {
+export const createAlbum = async (_, { title, description }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);

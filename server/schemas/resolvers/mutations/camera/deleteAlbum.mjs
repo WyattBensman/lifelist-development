@@ -1,11 +1,7 @@
 import { CameraAlbum } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../utils";
 
-export const editCameraAlbum = async (
-  _,
-  { albumId, title, description },
-  { user }
-) => {
+export const deleteAlbum = async (_, { albumId }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -21,19 +17,21 @@ export const editCameraAlbum = async (
     // Check if the current user is the author of the album
     isCurrentAuthor(user, album.author);
 
-    // Update the album with new data
-    album.title = title || album.title;
-    album.description = description || album.description;
+    // Remove the album from the user's cameraAlbums array
+    user.cameraAlbums.pull(albumId);
 
-    // Save the updated album
-    await album.save();
+    // Save the user with the updated cameraAlbums array
+    await user.save();
+
+    // Delete the camera album
+    await album.remove();
 
     return {
-      message: "Camera album updated successfully.",
+      message: "Camera album deleted successfully.",
       cameraAlbum: album,
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred while updating the camera album.");
+    throw new Error("An error occurred while deleting the camera album.");
   }
 };
