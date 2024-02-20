@@ -51,6 +51,24 @@ const collageSchema = new Schema({
       ref: "Experience",
     },
   ],
+  locations: [
+    {
+      name: {
+        type: String,
+        required: true,
+      },
+      coordinates: {
+        latitude: {
+          type: Number,
+          required: true,
+        },
+        longitude: {
+          type: Number,
+          required: true,
+        },
+      },
+    },
+  ],
   tagged: [
     {
       type: Schema.Types.ObjectId,
@@ -64,13 +82,14 @@ const collageSchema = new Schema({
       ref: "User",
     },
   ],
-  isInLogbook: {
-    type: Boolean,
-    default: false,
-  },
   // Need to further understand usage
   audience: {
     type: Schema.Types.Mixed,
+  },
+
+  posted: {
+    type: Boolean,
+    default: false,
   },
 });
 
