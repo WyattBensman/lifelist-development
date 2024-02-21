@@ -2,7 +2,7 @@ import { User } from "../../../../models/index.mjs";
 import { isCurrentUser } from "../../../../utils/auth.mjs";
 import { uploadSingleImage } from "../../../../utils/uploadImages.mjs";
 
-export const updateUserProfileInformation = async (
+const updateUserProfile = async (
   _,
   { userId, profilePicture, fName, lName, username, bio },
   { user }
@@ -50,3 +50,5 @@ export const updateUserProfileInformation = async (
     throw new Error("An error occurred during profile update.");
   }
 };
+
+export default updateUserProfile;

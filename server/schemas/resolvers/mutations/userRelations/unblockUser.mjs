@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const unblockUser = async (_, { userIdToUnblock }, { user }) => {
+const unblockUser = async (_, { userIdToUnblock }, { user }) => {
   try {
     // Ensure the user is authenticated
     isUser(user);
@@ -19,3 +19,5 @@ export const unblockUser = async (_, { userIdToUnblock }, { user }) => {
     throw new Error("An error occurred during user unblocking.");
   }
 };
+
+export default unblockUser;

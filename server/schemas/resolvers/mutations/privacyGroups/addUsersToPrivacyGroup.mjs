@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isCurrentUser } from "../../../../utils/auth.mjs";
 
-export const addUserToPrivacyGroup = async (
+const addUsersToPrivacyGroup = async (
   _,
   { userId, groupId, userToAddId },
   { user }
@@ -33,3 +33,5 @@ export const addUserToPrivacyGroup = async (
     throw new Error("An error occurred during user addition to privacy group.");
   }
 };
+
+export default addUsersToPrivacyGroup;

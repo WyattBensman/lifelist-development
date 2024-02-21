@@ -1,11 +1,7 @@
 import { Collage } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-export const addExperiences = async (
-  _,
-  { collageId, experienceIds },
-  { user }
-) => {
+const addExperiences = async (_, { collageId, experienceIds }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -27,3 +23,5 @@ export const addExperiences = async (
     throw new Error("An error occurred during adding experiences.");
   }
 };
+
+export default addExperiences;

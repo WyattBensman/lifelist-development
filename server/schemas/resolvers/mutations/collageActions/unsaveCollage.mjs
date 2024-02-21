@@ -1,7 +1,7 @@
 import { Collage, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const unsaveCollage = async (_, { collageId }, { user }) => {
+const unsaveCollage = async (_, { collageId }, { user }) => {
   try {
     isUser(user);
 
@@ -30,3 +30,5 @@ export const unsaveCollage = async (_, { collageId }, { user }) => {
     throw new Error("An error occurred during unsaving the collage.");
   }
 };
+
+export default unsaveCollage;

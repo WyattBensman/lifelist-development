@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isCurrentUser } from "../../../../utils/auth.mjs";
 
-export const editPrivacyGroup = async (
+const editPrivacyGroup = async (
   _,
   { userId, groupId, newGroupName },
   { user }
@@ -31,3 +31,5 @@ export const editPrivacyGroup = async (
     throw new Error("An error occurred during privacy group editing.");
   }
 };
+
+export default editPrivacyGroup;

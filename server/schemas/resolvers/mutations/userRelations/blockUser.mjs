@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const blockUser = async (_, { userIdToBlock }, { user }) => {
+const blockUser = async (_, { userIdToBlock }, { user }) => {
   try {
     // Ensure the user is authenticated
     isUser(user);
@@ -19,3 +19,5 @@ export const blockUser = async (_, { userIdToBlock }, { user }) => {
     throw new Error("An error occurred during user blocking.");
   }
 };
+
+export default blockUser;

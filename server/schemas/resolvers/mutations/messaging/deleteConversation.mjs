@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const deleteConversation = async (_, { conversationId }, { user }) => {
+const deleteConversation = async (_, { conversationId }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -17,3 +17,5 @@ export const deleteConversation = async (_, { conversationId }, { user }) => {
     throw new Error("An error occurred during conversation removal.");
   }
 };
+
+export default deleteConversation;

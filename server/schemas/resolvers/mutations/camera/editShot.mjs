@@ -1,11 +1,7 @@
 import { CameraShot, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const editShot = async (
-  _,
-  { shotId, orientation, filter },
-  { user }
-) => {
+const editShot = async (_, { shotId, orientation, filter }, { user }) => {
   try {
     isUser(user);
 
@@ -36,3 +32,5 @@ export const editShot = async (
     throw new Error("An error occurred while editing the shot.");
   }
 };
+
+export default editShot;

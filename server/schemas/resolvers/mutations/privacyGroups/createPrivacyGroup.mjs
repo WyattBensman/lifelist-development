@@ -1,11 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isCurrentUser } from "../../../../utils/auth.mjs";
 
-export const createPrivacyGroup = async (
-  _,
-  { userId, groupName },
-  { user }
-) => {
+const createPrivacyGroup = async (_, { userId, groupName }, { user }) => {
   try {
     // Ensure the user is authenticated and is the current user
     isCurrentUser(user, userId);
@@ -31,3 +27,5 @@ export const createPrivacyGroup = async (
     throw new Error("An error occurred during privacy group creation.");
   }
 };
+
+export default createPrivacyGroup;

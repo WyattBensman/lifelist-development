@@ -1,7 +1,7 @@
 import { Experience, Collage, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const addExperienceToLifeList = async (
+const addExperienceToLifeList = async (
   _,
   { experienceId, list, collageIds },
   { user }
@@ -38,3 +38,5 @@ export const addExperienceToLifeList = async (
     throw new Error("An error occurred during adding experience to life list.");
   }
 };
+
+export default addExperienceToLifeList;

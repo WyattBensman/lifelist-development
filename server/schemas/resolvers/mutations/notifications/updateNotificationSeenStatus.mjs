@@ -1,7 +1,6 @@
 import { Notification } from "../../../../models/index.mjs";
-import { UserInputError } from "apollo-server";
 
-export const updateNotificationSeenStatus = async (notificationId, seen) => {
+const updateNotificationSeenStatus = async (notificationId, seen) => {
   try {
     const updatedNotification = await Notification.findByIdAndUpdate(
       notificationId,
@@ -10,7 +9,7 @@ export const updateNotificationSeenStatus = async (notificationId, seen) => {
     );
 
     if (!updatedNotification) {
-      throw new UserInputError("Notification not found");
+      throw new Error("Notification not found");
     }
 
     return updatedNotification;
@@ -19,3 +18,5 @@ export const updateNotificationSeenStatus = async (notificationId, seen) => {
     throw new Error("An error occurred during notification update.");
   }
 };
+
+export default updateNotificationSeenStatus;

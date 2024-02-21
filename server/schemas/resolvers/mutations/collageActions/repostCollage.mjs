@@ -1,7 +1,7 @@
 import { Collage, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const repostCollage = async (_, { collageId }, { user }) => {
+const repostCollage = async (_, { collageId }, { user }) => {
   try {
     isUser(user);
 
@@ -34,3 +34,5 @@ export const repostCollage = async (_, { collageId }, { user }) => {
     throw new Error("An error occurred during reposting the collage.");
   }
 };
+
+export default repostCollage;

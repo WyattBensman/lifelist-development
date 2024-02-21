@@ -5,7 +5,7 @@ import {
   generateVerificationCode,
 } from "../../../../utils/sendVerification.mjs";
 
-export const resendVerificationCode = async (_, { userId }) => {
+const resendVerificationCode = async (_, { userId }) => {
   try {
     const user = await User.findById(userId);
 
@@ -36,3 +36,5 @@ export const resendVerificationCode = async (_, { userId }) => {
     throw new Error("An error occurred during resend verification.");
   }
 };
+
+export default resendVerificationCode;

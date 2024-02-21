@@ -1,11 +1,7 @@
 import { Conversation, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const createConversation = async (
-  _,
-  { recipientId, message },
-  { user }
-) => {
+const createConversation = async (_, { recipientId, message }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -35,3 +31,5 @@ export const createConversation = async (
     throw new Error("An error occurred during conversation creation.");
   }
 };
+
+export default createConversation;

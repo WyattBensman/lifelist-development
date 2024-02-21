@@ -1,14 +1,13 @@
 import { Notification } from "../../../../models/index.mjs";
-import { UserInputError } from "apollo-server";
 
-export const deleteNotification = async (notificationId) => {
+const deleteNotification = async (notificationId) => {
   try {
     const deletedNotification = await Notification.findByIdAndDelete(
       notificationId
     );
 
     if (!deletedNotification) {
-      throw new UserInputError("Notification not found");
+      throw new Error("Notification not found");
     }
 
     return {
@@ -19,3 +18,5 @@ export const deleteNotification = async (notificationId) => {
     throw new Error("An error occurred during notification deletion.");
   }
 };
+
+export default deleteNotification;

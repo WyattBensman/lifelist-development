@@ -1,4 +1,6 @@
-export const verification = async (_, { userId, verificationCode }) => {
+import { User } from "../../../../models/index.mjs";
+
+const verification = async (_, { userId, verificationCode }) => {
   try {
     // Find the user by ID
     const user = await User.findById(userId);
@@ -40,3 +42,5 @@ export const verification = async (_, { userId, verificationCode }) => {
     throw new Error("An error occurred during verification.");
   }
 };
+
+export default verification;

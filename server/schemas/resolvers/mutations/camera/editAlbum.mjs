@@ -1,11 +1,7 @@
 import { CameraAlbum } from "../../../../models/index.mjs";
-import { isUser, isCurrentAuthor } from "../utils";
+import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-export const editAlbum = async (
-  _,
-  { albumId, title, description },
-  { user }
-) => {
+const editAlbum = async (_, { albumId, title, description }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -34,3 +30,5 @@ export const editAlbum = async (
     throw new Error("An error occurred while updating the camera album.");
   }
 };
+
+export default editAlbum;

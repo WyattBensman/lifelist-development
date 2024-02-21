@@ -1,11 +1,7 @@
 import { CameraAlbum } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const removeShotsFromAlbum = async (
-  _,
-  { albumId, shotIds },
-  { user }
-) => {
+const removeShotsFromAlbum = async (_, { albumId, shotIds }, { user }) => {
   try {
     isUser(user);
 
@@ -31,3 +27,5 @@ export const removeShotsFromAlbum = async (
     );
   }
 };
+
+export default removeShotsFromAlbum;

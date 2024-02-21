@@ -1,7 +1,7 @@
-import { Collage } from "../models/index.mjs";
-import { isUser } from "../utils/auth.mjs";
+import { Collage } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
-export const deleteComment = async (_, { collageId, commentId }, { user }) => {
+const deleteComment = async (_, { collageId, commentId }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -35,3 +35,5 @@ export const deleteComment = async (_, { collageId, commentId }, { user }) => {
     throw new Error("An error occurred during comment deletion.");
   }
 };
+
+export default deleteComment;

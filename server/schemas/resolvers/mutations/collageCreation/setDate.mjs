@@ -1,7 +1,7 @@
 import { Collage } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-export const setDate = async (_, { collageId, date }, { user }) => {
+const setDate = async (_, { collageId, date }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -23,3 +23,5 @@ export const setDate = async (_, { collageId, date }, { user }) => {
     throw new Error("An error occurred while setting the date.");
   }
 };
+
+export default setDate;

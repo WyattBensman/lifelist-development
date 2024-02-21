@@ -1,7 +1,7 @@
 import { Collage } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-export const setLocation = async (_, { collageId, locations }, { user }) => {
+const setLocation = async (_, { collageId, locations }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -23,3 +23,5 @@ export const setLocation = async (_, { collageId, locations }, { user }) => {
     throw new Error("An error occurred while setting the locations.");
   }
 };
+
+export default setLocation;

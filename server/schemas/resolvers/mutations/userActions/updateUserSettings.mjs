@@ -1,6 +1,6 @@
 import { isCurrentUser } from "../../../../utils/auth.mjs";
 
-export const updateUserSettings = async (
+const updateUserSettings = async (
   _,
   { userId, privacy, darkMode, language, notifications },
   { user }
@@ -29,3 +29,5 @@ export const updateUserSettings = async (
     throw new Error("An error occurred during user settings update.");
   }
 };
+
+export default updateUserSettings;

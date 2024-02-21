@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isCurrentUser } from "../../../../utils/auth.mjs";
 
-export const removeUserFromPrivacyGroup = async (
+const removeUsersFromPrivacyGroup = async (
   _,
   { userId, groupId, userToRemoveId },
   { user }
@@ -27,3 +27,5 @@ export const removeUserFromPrivacyGroup = async (
     );
   }
 };
+
+export default removeUsersFromPrivacyGroup;

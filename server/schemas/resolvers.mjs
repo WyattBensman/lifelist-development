@@ -26,6 +26,7 @@ import {
   getAllCameraShots,
   getCameraShot,
 } from "./resolvers/queries/index.mjs";
+import mutations from "./resolvers/mutations/index.mjs";
 
 const resolvers = {
   Query: {
@@ -66,6 +67,9 @@ const resolvers = {
     getCameraAlbum,
     getAllCameraShots,
     getCameraShot,
+  },
+  Mutation: {
+    ...mutations,
   },
 };
 

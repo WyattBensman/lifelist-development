@@ -1,7 +1,7 @@
 import { CameraAlbum } from "../../../../models/index.mjs";
-import { isUser, isCurrentAuthor } from "../utils";
+import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-export const deleteAlbum = async (_, { albumId }, { user }) => {
+const deleteAlbum = async (_, { albumId }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -34,3 +34,5 @@ export const deleteAlbum = async (_, { albumId }, { user }) => {
     throw new Error("An error occurred while deleting the camera album.");
   }
 };
+
+export default deleteAlbum;

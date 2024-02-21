@@ -26,8 +26,16 @@ const commentSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  comments: [this],
-  reports: [reportSchema],
+  comments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Comment",
+    },
+  ],
+  reports: {
+    type: [reportSchema],
+    default: [],
+  },
 });
 
 export default commentSchema;

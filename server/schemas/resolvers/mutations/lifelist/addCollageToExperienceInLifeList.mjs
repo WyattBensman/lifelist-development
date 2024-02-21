@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const addCollageToExperienceInLifeList = async (
+const addCollageToExperienceInLifeList = async (
   _,
   { experienceId, collageId },
   { user }
@@ -23,3 +23,5 @@ export const addCollageToExperienceInLifeList = async (
     );
   }
 };
+
+export default addCollageToExperienceInLifeList;

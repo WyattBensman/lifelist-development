@@ -1,7 +1,7 @@
 import { Collage, User } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-export const postCollage = async (_, { collageId }, { user }) => {
+const postCollage = async (_, { collageId }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -23,3 +23,5 @@ export const postCollage = async (_, { collageId }, { user }) => {
     throw new Error("An error occurred while posting the collage.");
   }
 };
+
+export default postCollage;

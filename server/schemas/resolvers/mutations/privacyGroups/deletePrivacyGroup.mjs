@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isCurrentUser } from "../../../../utils/auth.mjs";
 
-export const deletePrivacyGroup = async (_, { userId, groupId }, { user }) => {
+const deletePrivacyGroup = async (_, { userId, groupId }, { user }) => {
   try {
     // Ensure the user is authenticated and is the current user
     isCurrentUser(user, userId);
@@ -21,3 +21,5 @@ export const deletePrivacyGroup = async (_, { userId, groupId }, { user }) => {
     throw new Error("An error occurred during privacy group deletion.");
   }
 };
+
+export default deletePrivacyGroup;

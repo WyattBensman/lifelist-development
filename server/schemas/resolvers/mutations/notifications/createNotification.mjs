@@ -1,6 +1,6 @@
 import { Notification } from "../../../../models/index.mjs";
 
-export const createNotification = async ({
+const createNotification = async ({
   recipientId,
   senderId,
   type,
@@ -22,3 +22,5 @@ export const createNotification = async ({
     throw new Error("An error occurred during notification creation.");
   }
 };
+
+export default createNotification;

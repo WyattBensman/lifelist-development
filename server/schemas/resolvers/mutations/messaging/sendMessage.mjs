@@ -1,7 +1,7 @@
 import { Conversation } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const sendMessage = async (
+const sendMessage = async (
   _,
   { conversationId, senderId, content },
   { user }
@@ -32,3 +32,5 @@ export const sendMessage = async (
     throw new Error("An error occurred during message sending.");
   }
 };
+
+export default sendMessage;

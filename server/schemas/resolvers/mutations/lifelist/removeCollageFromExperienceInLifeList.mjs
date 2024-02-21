@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const removeCollageFromExperienceInLifeList = async (
+const removeCollageFromExperienceInLifeList = async (
   _,
   { experienceId, collageId },
   { user }
@@ -23,3 +23,5 @@ export const removeCollageFromExperienceInLifeList = async (
     );
   }
 };
+
+export default removeCollageFromExperienceInLifeList;

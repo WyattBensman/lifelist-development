@@ -1,7 +1,7 @@
 import { Collage } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-export const setAudience = async (_, { collageId, audience }, { user }) => {
+const setAudience = async (_, { collageId, audience }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -13,7 +13,11 @@ export const setAudience = async (_, { collageId, audience }, { user }) => {
     // Update audience for the collage
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $set: { audience } },
+      {
+        $set: {
+          audience: audience.map(({ privacyGroupId }) => privacyGroupId),
+        },
+      },
       { new: true, runValidators: true }
     );
 
@@ -23,3 +27,5 @@ export const setAudience = async (_, { collageId, audience }, { user }) => {
     throw new Error("An error occurred while setting the audience.");
   }
 };
+
+export default setAudience;

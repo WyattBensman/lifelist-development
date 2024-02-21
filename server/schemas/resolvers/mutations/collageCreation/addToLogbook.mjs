@@ -1,7 +1,7 @@
 import { Collage, User } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-export const addToLogbook = async (_, { collageId }, { user }) => {
+const addToLogbook = async (_, { collageId }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -23,3 +23,5 @@ export const addToLogbook = async (_, { collageId }, { user }) => {
     throw new Error("An error occurred while updating the logbook status.");
   }
 };
+
+export default addToLogbook;

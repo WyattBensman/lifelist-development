@@ -1,11 +1,7 @@
 import { Conversation } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const markConversationAsRead = async (
-  _,
-  { conversationId },
-  { user }
-) => {
+const markConversationAsRead = async (_, { conversationId }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -23,3 +19,5 @@ export const markConversationAsRead = async (
     throw new Error("An error occurred during marking conversation as read.");
   }
 };
+
+export default markConversationAsRead;

@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isCurrentUser } from "../../../../utils/auth.mjs";
 
-export const updateUserContact = async (
+const updateUserContact = async (
   _,
   { userId, email, phoneNumber, gender },
   { user }
@@ -37,3 +37,5 @@ export const updateUserContact = async (
     throw new Error("An error occurred during contact information update");
   }
 };
+
+export default updateUserContact;

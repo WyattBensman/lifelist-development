@@ -1,10 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { uploadSingleImage } from "../../../../utils/uploadImages.mjs";
 
-export const setProfilePictureAndBio = async (
-  _,
-  { userId, profilePicture, bio }
-) => {
+const setProfilePictureAndBio = async (_, { userId, profilePicture, bio }) => {
   try {
     let fileUrl = null;
 
@@ -34,3 +31,5 @@ export const setProfilePictureAndBio = async (
     throw new Error("An error occurred during profile update.");
   }
 };
+
+export default setProfilePictureAndBio;

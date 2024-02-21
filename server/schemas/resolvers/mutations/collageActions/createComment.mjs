@@ -1,7 +1,7 @@
-import { Collage } from "../models/index.mjs";
-import { isUser } from "../utils/auth.mjs";
+import { Collage } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
-export const createComment = async (_, { collageId, text }, { user }) => {
+const createComment = async (_, { collageId, text }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -29,3 +29,5 @@ export const createComment = async (_, { collageId, text }, { user }) => {
     throw new Error("An error occurred during comment creation.");
   }
 };
+
+export default createComment;

@@ -1,6 +1,6 @@
 import { Notification } from "../../../../models/index.mjs";
 
-export const markAllNotificationsAsSeen = async (userId) => {
+const markAllNotificationsAsSeen = async (userId) => {
   try {
     const updatedNotifications = await Notification.updateMany(
       { recipient: userId },
@@ -14,3 +14,5 @@ export const markAllNotificationsAsSeen = async (userId) => {
     throw new Error("An error occurred during marking notifications as seen.");
   }
 };
+
+export default markAllNotificationsAsSeen;

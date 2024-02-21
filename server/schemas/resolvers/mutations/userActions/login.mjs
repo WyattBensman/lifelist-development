@@ -2,7 +2,7 @@ import { User } from "../../../../models/index.mjs";
 import { AuthenticationError } from "../../../../utils/auth.mjs";
 import { generateToken } from "../../../../utils/auth.mjs";
 
-export const login = async (_, { usernameOrEmailOrPhone, password }) => {
+const login = async (_, { usernameOrEmailOrPhone, password }) => {
   try {
     // Find user by username, email, or phone number
     const user = await User.findOne({
@@ -29,3 +29,5 @@ export const login = async (_, { usernameOrEmailOrPhone, password }) => {
     throw new AuthenticationError("An error occurred during login");
   }
 };
+
+export default login;

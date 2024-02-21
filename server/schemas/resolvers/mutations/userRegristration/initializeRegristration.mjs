@@ -5,10 +5,7 @@ import {
   generateVerificationCode,
 } from "../../../../utils/sendVerification.mjs";
 
-export const initializeRegristration = async (
-  _,
-  { email, phoneNumber, birthday }
-) => {
+const initializeRegristration = async (_, { email, phoneNumber, birthday }) => {
   try {
     // Check for valid input
     if (!email && !phoneNumber) {
@@ -87,3 +84,5 @@ export const initializeRegristration = async (
     throw new Error("An error occurred during user creation.");
   }
 };
+
+export default initializeRegristration;

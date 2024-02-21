@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const updateExperienceStatusInLifeList = async (
+const updateExperienceStatusInLifeList = async (
   _,
   { experienceId, newList },
   { user }
@@ -23,3 +23,5 @@ export const updateExperienceStatusInLifeList = async (
     );
   }
 };
+
+export default updateExperienceStatusInLifeList;

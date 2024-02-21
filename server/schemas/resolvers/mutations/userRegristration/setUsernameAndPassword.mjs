@@ -1,7 +1,6 @@
-export const setUsernameAndPassword = async (
-  _,
-  { userId, username, password }
-) => {
+import { User } from "../../../../models/index.mjs";
+
+const setUsernameAndPassword = async (_, { userId, username, password }) => {
   // Input validation
   if (!username) {
     throw new Error("Username is required.");
@@ -39,3 +38,5 @@ export const setUsernameAndPassword = async (
     throw new Error("An error occurred during registration.");
   }
 };
+
+export default setUsernameAndPassword;

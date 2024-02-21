@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const unfollowUser = async (_, { userIdToUnfollow }, { user }) => {
+const unfollowUser = async (_, { userIdToUnfollow }, { user }) => {
   try {
     isUser(user);
 
@@ -25,3 +25,5 @@ export const unfollowUser = async (_, { userIdToUnfollow }, { user }) => {
     throw new Error("An error occurred during unfollow action.");
   }
 };
+
+export default unfollowUser;

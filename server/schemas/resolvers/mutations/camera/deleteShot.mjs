@@ -1,7 +1,7 @@
 import { CameraShot, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const deleteShot = async (_, { shotId }, { user }) => {
+const deleteShot = async (_, { shotId }, { user }) => {
   try {
     isUser(user);
 
@@ -33,3 +33,5 @@ export const deleteShot = async (_, { shotId }, { user }) => {
     throw new Error("An error occurred while deleting the shot.");
   }
 };
+
+export default deleteShot;

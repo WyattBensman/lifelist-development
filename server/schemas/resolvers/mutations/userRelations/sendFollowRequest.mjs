@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
+const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
   try {
     isUser(user);
 
@@ -25,3 +25,5 @@ export const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
     throw new Error("An error occurred during sending follow request.");
   }
 };
+
+export default sendFollowRequest;

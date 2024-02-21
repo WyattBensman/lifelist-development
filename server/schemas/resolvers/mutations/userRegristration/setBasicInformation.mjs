@@ -1,7 +1,6 @@
-export const setBasicInformation = async (
-  _,
-  { userId, fName, lName, gender }
-) => {
+import { User } from "../../../../models/index.mjs";
+
+const setBasicInformation = async (_, { userId, fName, lName, gender }) => {
   // Input validation
   if (!fName || !lName) {
     throw new Error("Both first name and last name are required.");
@@ -32,3 +31,5 @@ export const setBasicInformation = async (
     throw new Error("An error occurred during registration.");
   }
 };
+
+export default setBasicInformation;

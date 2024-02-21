@@ -70,8 +70,13 @@ type User {
 
   type LifeListItem {
     experience: Experience
-    list: LifeListType
+    list: LifeListTypeEnum
     associatedCollages: [Collage]
+  }
+  
+  enum LifeListTypeEnum {
+    experienced
+    wishListed
   }
 
   type DailyCameraShots {
@@ -216,8 +221,22 @@ type User {
     HORIZONTAL
   }
 
+  input PrivacyGroupInput {
+    groupId: ID!
+  }
+  
+  input LocationInput {
+    name: String!
+    coordinates: CoordinatesInput!
+  }
+  
+  input CoordinatesInput {
+    latitude: Int!
+    longitude: Int!
+  }
+
   # User Queries
-  extend type Query {
+  type Query {
     getUserById(userId: ID!): User
     searchUsers(query: String!): [User]
     getUserFollowers(userId: ID!): [User]
@@ -232,16 +251,16 @@ type User {
   }
   
   # Collage Queries
-  extend type Query {
+  type Query {
     getCollageById(collageId: ID!): Collage
     getCollageMedia(collageId: ID!): [String]
-    getCollageSummary(collageId: ID!): CollageSummary
+    getCollageSummary(collageId: ID!): String
     getCollageComments(collageId: ID!): [Comment]
     getCollageTaggedUsers(collageId: ID!): [User]
   }
 
   # Camera Queries
-  extend type Query {
+  type Query {
     getAllCameraAlbums: [CameraAlbum]
     getCameraAlbum(albumId: ID!): CameraAlbum
     getAllCameraShots: [CameraShot]
@@ -249,45 +268,56 @@ type User {
   }
   
   # Messaging Queries
-  extend type Query {
+  type Query {
     getUserConversations: [Conversation]
     getConversationMessages(conversationId: ID!): [Message]
     getUnreadMessagesCount: Int
   }
 
   # Notification Queries
-  extend type Query {
+  type Query {
     getUserNotifications: [Notification]
     getUserFollowRequest: [FollowerRequest]
   }
 
   # Experience Queries
-  extend type Query {
+  type Query {
     getExperience(experienceId: ID!): Experience
   }
 
   # User Regristration Mutations
-  extend type Mutation {
-    initializeRegistration(email: String, phoneNumber: String, birthday: Date): User
+  type Mutation {
+    initializeRegristration(email: String, phoneNumber: String, birthday: Date): User
     verification(userId: ID!, verificationCode: String!): User
     resendVerificationCode(userId: ID!): User
     setUsernameAndPassword(userId: ID!, username: String!, password: String!): User
     setBasicInformation(userId: ID!, fName: String!, lName: String!, gender: String!): Auth
-    setProfilePictureAndBio(userId: ID!, profilePicture: UploadInput, bio: String): User
+    setProfilePictureAndBio(userId: ID!, profilePicture: Upload, bio: String): User
+    createUser(
+      fName: String
+      lName: String
+      email: String
+      phoneNumber: String
+      password: String
+      username: String
+      gender: String
+      birthday: Date
+    ): User
   } 
 
   # User Actions Mutations
-  extend type Mutation {
+  type Mutation {
     deleteUser(userId: ID!): String
     login(usernameOrEmailOrPhone: String!, password: String!): Auth
     updateUserContact(userId: ID!, email: String, phoneNumber: String, gender: String): User
     updateUserPassword(userId: ID!, currentPassword: String!, newPassword: String!): User
-    updateUserProfileInformation(userId: ID!, profilePicture: UploadInput, fName: String!, lName: String!, username: String!, bio: String): User
+    updateUserProfile(userId: ID!, profilePicture: Upload, fName: String!, lName: String!, username: String!, bio: String): User
     updateUserSettings(userId: ID!, privacy: String, darkMode: Boolean, language: String, notifications: Boolean): User
   }
 
   # User Relations Mutations
-  extend type Mutation {
+  type Mutation {
+    sendFollowRequest(userIdToFollow: ID!): User
     acceptFollowRequest(userIdToAccept: ID!): User
     denyFollowRequest(userIdToDeny: ID!): User
     followUser(userIdToFollow: ID!): User
@@ -297,16 +327,16 @@ type User {
   }
 
   # Privacy Group Mutations
-  extend type Mutation {
-    addUserToPrivacyGroup(userId: ID!, groupId: ID!, userToAddId: ID!): PrivacyGroup
+  type Mutation {
+    addUsersToPrivacyGroup(userId: ID!, groupId: ID!, userToAddId: ID!): PrivacyGroup
     createPrivacyGroup(userId: ID!, groupName: String!): PrivacyGroup
     deletePrivacyGroup(userId: ID!, groupId: ID!): String
     editPrivacyGroup(userId: ID!, groupId: ID!, newGroupName: String!): PrivacyGroup
-    removeUserFromPrivacyGroup(userId: ID!, groupId: ID!, userToRemoveId: ID!): PrivacyGroup
+    removeUsersFromPrivacyGroup(userId: ID!, groupId: ID!, userToRemoveId: ID!): PrivacyGroup
   }
 
   # Notification Mutations
-  extend type Mutation {
+  type Mutation {
     createNotification(
       recipientId: ID!
       senderId: ID!
@@ -317,9 +347,10 @@ type User {
     deleteNotification(notificationId: ID!): String
     markAllNotificationsAsSeen(userId: ID!): [Notification]
     updateNotificationSeenStatus(notificationId: ID!, seen: Boolean!): Notification
+    }
 
     # Messaging Mutations
-    extend type Mutation {
+    type Mutation {
       createConversation(recipientId: ID!, message: String): Conversation
       deleteConversation(conversationId: ID!): String
       deleteMessage(conversationId: ID!, messageId: ID!): Conversation
@@ -328,7 +359,7 @@ type User {
     }
 
     # LifeList Mutations
-    extend type Mutation {
+    type Mutation {
       addCollageToExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeListItem]
       addExperienceToLifeList(experienceId: ID!, list: String, collageIds: [ID]): [LifeListItem]
       removeCollageFromExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeListItem]
@@ -337,21 +368,21 @@ type User {
     }
 
     # Collage Creation Mutations
-    extend type Mutation {
+    type Mutation {
       startCollageCreation(images: [Upload]): Collage
       addDescription(collageId: ID!, title: String, caption: String): Collage
       addExperiences(collageId: ID!, experienceIds: [ID]): Collage
       addSummary(collageId: ID!, summary: String): Collage
       addToLogbook(collageId: ID!): Collage
       setAudience(collageId: ID!, audience: [PrivacyGroupInput]): Collage
-      setDate(collageId: ID!, date: Date): Collage
       setLocation(collageId: ID!, locations: [LocationInput]): Collage
+      setDate(collageId: ID!, date: Date): Collage
       tagUsers(collageId: ID!, taggedUserIds: [ID]): Collage
       postCollage(collageId: ID!): Collage
     }
 
     # Collage Actions Mutations
-    extend type Mutation {
+    type Mutation {
       createComment(collageId: ID!, text: String!): Comment
       deleteComment(collageId: ID!, commentId: ID!): String
       editComment(collageId: ID!, commentId: ID!, newText: String!): Comment
@@ -364,7 +395,7 @@ type User {
     }
 
     # Camera Mutations
-    extend type Mutation {
+    type Mutation {
       addShotsToAlbum(albumId: ID!, shotIds: [ID!]!): CameraAlbum
       createAlbum(title: String!, description: String): CameraAlbum
       deleteAlbum(albumId: ID!): String
@@ -373,6 +404,7 @@ type User {
       editShot(shotId: ID!, orientation: String, filter: Boolean): CameraShot
       removeShotsFromAlbum(albumId: ID!, shotIds: [ID!]!): CameraAlbum
       takeShot(filter: Boolean, shotOrientation: String): CameraShot
-    }`;
+    }
+    `;
 
 export default typeDefs;

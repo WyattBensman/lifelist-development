@@ -1,7 +1,7 @@
 import { Collage, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const unrepostCollage = async (_, { collageId }, { user }) => {
+const unrepostCollage = async (_, { collageId }, { user }) => {
   try {
     isUser(user);
 
@@ -34,3 +34,5 @@ export const unrepostCollage = async (_, { collageId }, { user }) => {
     throw new Error("An error occurred during un-reposting the collage.");
   }
 };
+
+export default unrepostCollage;

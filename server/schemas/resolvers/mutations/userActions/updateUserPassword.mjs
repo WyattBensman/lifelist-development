@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { AuthenticationError, isCurrentUser } from "../../../../utils/auth.mjs";
 
-export const updateUserPassword = async (
+const updateUserPassword = async (
   _,
   { userId, currentPassword, newPassword },
   { user }
@@ -32,3 +32,5 @@ export const updateUserPassword = async (
     throw new Error("An error occurred during password update");
   }
 };
+
+export default updateUserPassword;

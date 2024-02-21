@@ -216,7 +216,14 @@ const userSchema = new Schema({
   },
   settings: {
     type: userSettingsSchema,
-    default: userSettingsSchema,
+    default: {
+      privacy: "public",
+      darkMode: false,
+      language: "en",
+      notifications: true,
+      blocked: [],
+      privacyGroups: [],
+    },
   },
 });
 

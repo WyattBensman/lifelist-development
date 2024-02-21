@@ -1,11 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const removeExperienceFromLifeList = async (
-  _,
-  { experienceId },
-  { user }
-) => {
+const removeExperienceFromLifeList = async (_, { experienceId }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -28,3 +24,5 @@ export const removeExperienceFromLifeList = async (
     );
   }
 };
+
+export default removeExperienceFromLifeList;

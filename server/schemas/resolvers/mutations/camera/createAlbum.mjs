@@ -1,7 +1,7 @@
 import { CameraAlbum } from "../../../../models/index.mjs";
-import { isUser } from "../utils";
+import { isUser } from "../../../../utils/auth.mjs";
 
-export const createAlbum = async (_, { title, description }, { user }) => {
+const createAlbum = async (_, { title, description }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -25,3 +25,5 @@ export const createAlbum = async (_, { title, description }, { user }) => {
     throw new Error("An error occurred while creating the camera album.");
   }
 };
+
+export default createAlbum;

@@ -1,7 +1,6 @@
-// createUser.mjs
 import { User } from "../../../../models/index.mjs";
 
-export const createUser = async (
+const createUser = async (
   _,
   { fName, lName, email, phoneNumber, password, username, gender, birthday }
 ) => {
@@ -45,3 +44,5 @@ export const createUser = async (
     throw new Error(`Error creating user: ${error.message}`);
   }
 };
+
+export default createUser;

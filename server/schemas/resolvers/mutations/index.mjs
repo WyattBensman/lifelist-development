@@ -1,25 +1,27 @@
-import * as cameraMutations from "./camera";
-import * as collageActionsMutations from "./collageActions";
-import * as collageCreationMutations from "./collageCreation";
-import * as lifeListMutations from "./lifeList";
-import * as messagingMutations from "./messaging";
-import * as mockCreateUserMutations from "./mockCreateUser";
-import * as notificationsMutations from "./notifications";
-import * as privacyGroupsMutations from "./privacyGroups";
-import * as userActionsMutations from "./userActions";
-import * as userRelationsMutations from "./userRelations";
-import * as userMutations from "./user";
+import * as userActionsMutations from "./userActions/index.mjs";
+import * as userRegristrationMutations from "./userRegristration/index.mjs";
+import * as userRelationsMutations from "./userRelations/index.mjs";
+import * as cameraMutations from "./camera/index.mjs";
+import * as collageActionsMutations from "./collageActions/index.mjs";
+import * as collageCreationMutations from "./collageCreation/index.mjs";
+import * as lifeListMutations from "./lifeList/index.mjs";
+import * as messagingMutations from "./messaging/index.mjs";
+import * as notificationsMutations from "./notifications/index.mjs";
+import * as privacyGroupsMutations from "./privacyGroups/index.mjs";
+import * as mockMutations from "./mock/index.mjs";
 
-export {
-  cameraMutations,
-  collageActionsMutations,
-  collageCreationMutations,
-  lifeListMutations,
-  messagingMutations,
-  mockCreateUserMutations,
-  notificationsMutations,
-  privacyGroupsMutations,
-  userActionsMutations,
-  userRelationsMutations,
-  userMutations,
+const mutations = {
+  ...userActionsMutations,
+  ...userRegristrationMutations,
+  ...userRelationsMutations,
+  ...cameraMutations,
+  ...collageActionsMutations,
+  ...collageCreationMutations,
+  ...lifeListMutations,
+  ...messagingMutations,
+  ...notificationsMutations,
+  ...privacyGroupsMutations,
+  ...mockMutations,
 };
+
+export default mutations;

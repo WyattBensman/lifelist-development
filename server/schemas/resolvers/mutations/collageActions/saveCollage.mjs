@@ -1,7 +1,7 @@
 import { Collage, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const saveCollage = async (_, { collageId }, { user }) => {
+const saveCollage = async (_, { collageId }, { user }) => {
   try {
     isUser(user);
 
@@ -30,3 +30,5 @@ export const saveCollage = async (_, { collageId }, { user }) => {
     throw new Error("An error occurred during saving the collage.");
   }
 };
+
+export default saveCollage;

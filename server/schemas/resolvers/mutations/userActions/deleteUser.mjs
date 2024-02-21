@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isCurrentUser } from "../../../../utils/auth.mjs";
 
-export const deleteUser = async (_, { userId }, { user }) => {
+const deleteUser = async (_, { userId }, { user }) => {
   try {
     // Authenticate
     isCurrentUser(user, userId);
@@ -25,3 +25,5 @@ export const deleteUser = async (_, { userId }, { user }) => {
     throw new Error("An error occurred during user deletion.");
   }
 };
+
+export default deleteUser;

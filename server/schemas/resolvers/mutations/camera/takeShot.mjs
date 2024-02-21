@@ -2,7 +2,7 @@ import { CameraShot, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 import { apply35mmFilter } from "../../../../utils/cameraUtils.mjs";
 
-export const takeShot = async (_, { filter, shotOrientation }, { user }) => {
+const takeShot = async (_, { filter, shotOrientation }, { user }) => {
   try {
     isUser(user);
 
@@ -46,3 +46,5 @@ export const takeShot = async (_, { filter, shotOrientation }, { user }) => {
     throw new Error("An error occurred during camera shot capture.");
   }
 };
+
+export default takeShot;

@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const denyFollowRequest = async (_, { userIdToDeny }, { user }) => {
+const denyFollowRequest = async (_, { userIdToDeny }, { user }) => {
   try {
     isUser(user);
 
@@ -24,3 +24,5 @@ export const denyFollowRequest = async (_, { userIdToDeny }, { user }) => {
     throw new Error("An error occurred during denying follow request.");
   }
 };
+
+export default denyFollowRequest;

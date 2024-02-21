@@ -1,11 +1,7 @@
-import { Collage } from "../models/index.mjs";
-import { isUser } from "../utils/auth.mjs";
+import { Collage } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
-export const reportComment = async (
-  _,
-  { collageId, commentId, reason },
-  { user }
-) => {
+const reportComment = async (_, { collageId, commentId, reason }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -38,3 +34,5 @@ export const reportComment = async (
     throw new Error("An error occurred during comment reporting.");
   }
 };
+
+export default reportComment;

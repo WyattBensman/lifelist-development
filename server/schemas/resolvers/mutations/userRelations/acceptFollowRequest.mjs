@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const acceptFollowRequest = async (_, { userIdToAccept }, { user }) => {
+const acceptFollowRequest = async (_, { userIdToAccept }, { user }) => {
   try {
     isUser(user);
 
@@ -28,3 +28,5 @@ export const acceptFollowRequest = async (_, { userIdToAccept }, { user }) => {
     throw new Error("An error occurred during accepting follow request.");
   }
 };
+
+export default acceptFollowRequest;

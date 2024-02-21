@@ -1,11 +1,7 @@
 import { Collage } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-export const addDescription = async (
-  _,
-  { collageId, title, caption },
-  { user }
-) => {
+const addDescription = async (_, { collageId, title, caption }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -27,3 +23,5 @@ export const addDescription = async (
     throw new Error("An error occurred during adding description.");
   }
 };
+
+export default addDescription;

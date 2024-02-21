@@ -12,10 +12,7 @@ export const apply35mmFilter = async (inputPath, outputPath) => {
         saturation: 0.8, // Adjust saturation
         hue: 20, // Adjust hue
       })
-      .noise({
-        amount: 30, // Add noise for grainy effect
-        type: "gaussian", // Type of noise
-      })
+      .tint("rgba(0, 0, 0, 0.1)")
       .toFile(outputPath);
 
     console.log("Filter applied successfully!");

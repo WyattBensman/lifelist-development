@@ -1,7 +1,7 @@
 import { CameraAlbum, CameraShot } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const addShotsToAlbum = async (_, { albumId, shotIds }, { user }) => {
+const addShotsToAlbum = async (_, { albumId, shotIds }, { user }) => {
   try {
     isUser(user);
 
@@ -37,3 +37,5 @@ export const addShotsToAlbum = async (_, { albumId, shotIds }, { user }) => {
     throw new Error("An error occurred while adding the shots to the album.");
   }
 };
+
+export default addShotsToAlbum;

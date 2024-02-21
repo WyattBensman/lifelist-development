@@ -1,7 +1,7 @@
 import { Collage, User } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-export const tagUsers = async (_, { collageId, taggedUserIds }, { user }) => {
+const tagUsers = async (_, { collageId, taggedUserIds }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -29,3 +29,5 @@ export const tagUsers = async (_, { collageId, taggedUserIds }, { user }) => {
     throw new Error("An error occurred while setting the tagged users.");
   }
 };
+
+export default tagUsers;
