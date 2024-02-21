@@ -33,7 +33,7 @@ export const setUsernameAndPassword = async (
       { new: true, runValidators: true }
     );
 
-    return { user: updatedUser };
+    return updatedUser;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during registration.");

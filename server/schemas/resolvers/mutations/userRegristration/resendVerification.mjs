@@ -30,9 +30,7 @@ export const resendVerificationCode = async (_, { userId }) => {
       sendVerificationCodeSMS(user.phoneNumber, newVerificationCode);
     }
 
-    return {
-      message: "New verification code sent. Verify your contact information.",
-    };
+    return user;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during resend verification.");

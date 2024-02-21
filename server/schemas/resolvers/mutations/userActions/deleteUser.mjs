@@ -18,7 +18,7 @@ export const deleteUser = async (_, { userId }, { user }) => {
     await userToDelete.remove();
 
     return {
-      message: "User deleted successfully.",
+      message: `User ${userToDelete.id} deleted successfully.`,
     };
   } catch (error) {
     console.error(`Error during user deletion: ${error.message}`);

@@ -81,9 +81,7 @@ export const initializeRegristration = async (
       sendVerificationCodeSMS(phoneNumber, verificationCode);
     }
 
-    return {
-      message: "Verification code sent. Verify your contact information.",
-    };
+    return newUser;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during user creation.");

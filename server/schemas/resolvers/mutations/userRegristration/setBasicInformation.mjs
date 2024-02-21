@@ -26,7 +26,7 @@ export const setBasicInformation = async (
     // Generate JWT token
     const token = generateToken(updatedUser);
 
-    return { success: true, token, user: updatedUser };
+    return { token, updatedUser };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during registration.");

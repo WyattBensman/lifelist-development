@@ -28,7 +28,7 @@ export const setProfilePictureAndBio = async (
       { new: true, runValidators: true }
     );
 
-    return { success: true, user: updatedUser };
+    return updatedUser;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during profile update.");
