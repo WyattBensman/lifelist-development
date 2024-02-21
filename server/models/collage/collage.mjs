@@ -86,7 +86,6 @@ const collageSchema = new Schema({
   audience: {
     type: Schema.Types.Mixed,
   },
-
   posted: {
     type: Boolean,
     default: false,

@@ -20,7 +20,7 @@ export const searchUsers = async (_, { query }) => {
         { username: { $regex: query, $options: "i" } }, // Case-insensitive username match
         { fullName: { $regex: query, $options: "i" } }, // Case-insensitive full name match
       ],
-    }).select("fName lName username profilePicture");
+    }).select("username fullName profilePicture");
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while fetching the user by username.");
@@ -93,6 +93,20 @@ export const getUserReposts = async (_, { userId }) => {
   }
 };
 
+export const getUserSavedCollages = async (_, { userId }) => {
+  try {
+    const user = await User.findById(userId).populate("savedCollages");
+
+    if (!user) {
+      throw new Error("User not found for the provided ID.");
+    }
+
+    return user.savedCollages;
+  } catch (error) {
+    throw new Error(`Error fetching user's saved collages: ${error.message}`);
+  }
+};
+
 export const getUserTaggedCollages = async (_, { userId }) => {
   try {
     const user = await User.findById(userId).populate("taggedCollages");
@@ -153,35 +167,5 @@ export const getUserArchives = async (_, __, { user }) => {
     throw new Error(
       `Error fetching user's archived collages: ${error.message}`
     );
-  }
-};
-
-export const getUserCameraShots = async (_, __, { user }) => {
-  // Check if the user is authenticated
-  isUser(user);
-
-  try {
-    const user = await User.findById(user.id).populate("cameraShots");
-    if (!user) {
-      throw new Error("User not found for the provided ID.");
-    }
-    return user.cameraShots;
-  } catch (error) {
-    throw new Error(`Error fetching user's camera shots: ${error.message}`);
-  }
-};
-
-export const getUserCameraAlbums = async (_, __, { user }) => {
-  // Check if the user is authenticated
-  isUser(user);
-
-  try {
-    const user = await User.findById(user.id).populate("cameraAlbums");
-    if (!user) {
-      throw new Error("User not found for the provided ID.");
-    }
-    return user.cameraAlbums;
-  } catch (error) {
-    throw new Error(`Error fetching user's camera albums: ${error.message}`);
   }
 };

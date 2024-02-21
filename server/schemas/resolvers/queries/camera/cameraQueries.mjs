@@ -1,15 +1,17 @@
-import { CameraShot } from "../../../../models/index.mjs";
-import { User } from "../../../../models/index.mjs";
+import { User, CameraShot, CameraAlbum } from "../../../../models/index.mjs";
 
-export const getCameraAlbums = async (_, { userId }) => {
+export const getAllCameraAlbums = async (_, __, { user }) => {
+  // Check if the user is authenticated
+  isUser(user);
+
   try {
-    const user = await User.findById(userId).populate("cameraAlbums");
+    const currentUser = await User.findById(user.id).populate("cameraAlbums");
 
-    if (!user) {
+    if (!currentUser) {
       throw new Error("User not found.");
     }
 
-    return user.cameraAlbums || [];
+    return currentUser.cameraAlbums;
   } catch (error) {
     throw new Error(`Error fetching camera albums: ${error.message}`);
   }
@@ -29,15 +31,18 @@ export const getCameraAlbum = async (_, { albumId }) => {
   }
 };
 
-export const getCameraShots = async (_, { userId }) => {
-  try {
-    const user = await User.findById(userId).populate("cameraShots");
+export const getAllCameraShots = async (_, __, { user }) => {
+  // Check if the user is authenticated
+  isUser(user);
 
-    if (!user) {
+  try {
+    const currentUser = await User.findById(user.id).populate("cameraShots");
+
+    if (!currentUser) {
       throw new Error("User not found.");
     }
 
-    return user.cameraShots || [];
+    return currentUser.cameraShots;
   } catch (error) {
     throw new Error(`Error fetching camera shots: ${error.message}`);
   }

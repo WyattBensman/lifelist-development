@@ -27,6 +27,9 @@ const conversationSchema = new Schema({
     },
   ],
   messages: [messageSchema],
+  lastMessage: {
+    type: messageSchema,
+  },
 });
 
 const Conversation = model("Conversation", conversationSchema);

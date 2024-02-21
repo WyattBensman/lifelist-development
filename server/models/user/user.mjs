@@ -210,6 +210,10 @@ const userSchema = new Schema({
       ref: "Conversation",
     },
   ],
+  unreadMessagesCount: {
+    type: Number,
+    default: 0,
+  },
   settings: {
     type: userSettingsSchema,
     default: userSettingsSchema,

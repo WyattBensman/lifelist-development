@@ -13,6 +13,39 @@ export const getCollageById = async (_, { collageId }) => {
   }
 };
 
+export const getCollageMedia = async (_, { collageId }) => {
+  try {
+    const collage = await Collage.findById(collageId).select("images");
+
+    if (!collage) {
+      throw new Error("Collage not found.");
+    }
+
+    return collage.images || [];
+  } catch (error) {
+    throw new Error(`Error fetching media for the collage: ${error.message}`);
+  }
+};
+
+export const getCollageSummary = async (_, { collageId }) => {
+  try {
+    const collage = await Collage.findById(collageId).select(
+      "summary experiences"
+    );
+
+    if (!collage) {
+      throw new Error("Collage not found.");
+    }
+
+    return {
+      summary: collage.summary,
+      experiences: collage.experiences || [],
+    };
+  } catch (error) {
+    throw new Error(`Error fetching summary for the collage: ${error.message}`);
+  }
+};
+
 export const getCollageComments = async (_, { collageId }) => {
   try {
     const collage = await Collage.findById(collageId).populate({
