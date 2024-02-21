@@ -73,7 +73,6 @@ const userSchema = new Schema({
   password: {
     type: String,
     minlength: 8,
-    default: "DefaultPassword1!",
     validate: {
       validator: validatePassword,
       message:

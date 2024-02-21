@@ -29,10 +29,11 @@ export const searchUsers = async (_, { query }) => {
 
 export const getUserFollowers = async (_, { userId }) => {
   try {
-    const user = await User.findById(userId).populate(
-      "followers",
-      "username fName lName profilePicture"
-    );
+    const user = await User.findById(userId).populate({
+      path: "followers",
+      select: "username fullName profilePicture",
+    });
+
     if (!user) {
       throw new Error("User not found.");
     }
@@ -46,10 +47,11 @@ export const getUserFollowers = async (_, { userId }) => {
 
 export const getUserFollowing = async (_, { userId }) => {
   try {
-    const user = await User.findById(userId).populate(
-      "following",
-      "username fName lName profilePicture"
-    );
+    const user = await User.findById(userId).populate({
+      path: "following",
+      select: "username fullName profilePicture",
+    });
+
     if (!user) {
       throw new Error("User not found.");
     }
@@ -64,6 +66,7 @@ export const getUserFollowing = async (_, { userId }) => {
 export const getUserCollages = async (_, { userId }) => {
   try {
     const user = await User.findById(userId).populate("collages");
+
     if (!user) {
       throw new Error("User not found for the provided ID.");
     }
@@ -77,6 +80,7 @@ export const getUserCollages = async (_, { userId }) => {
 export const getUserReposts = async (_, { userId }) => {
   try {
     const user = await User.findById(userId).populate("repostedCollages");
+
     if (!user) {
       throw new Error("User not found for the provided ID.");
     }
@@ -92,6 +96,7 @@ export const getUserReposts = async (_, { userId }) => {
 export const getUserTaggedCollages = async (_, { userId }) => {
   try {
     const user = await User.findById(userId).populate("taggedCollages");
+
     if (!user) {
       throw new Error("User not found for the provided ID.");
     }
@@ -105,6 +110,7 @@ export const getUserTaggedCollages = async (_, { userId }) => {
 export const getUserLifeList = async (_, { userId }) => {
   try {
     const user = await User.findById(userId).populate("lifeList");
+
     if (!user) {
       throw new Error("User not found for the provided ID.");
     }
@@ -121,6 +127,7 @@ export const getUserLogbook = async (_, __, { user }) => {
 
   try {
     const user = await User.findById(user.id).populate("logbook");
+
     if (!user) {
       throw new Error("User not found for the provided ID.");
     }
@@ -137,6 +144,7 @@ export const getUserArchives = async (_, __, { user }) => {
 
   try {
     const user = await User.findById(user.id).populate("archivedCollages");
+
     if (!user) {
       throw new Error("User not found for the provided ID.");
     }
