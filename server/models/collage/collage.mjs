@@ -82,10 +82,12 @@ const collageSchema = new Schema({
       ref: "User",
     },
   ],
-  // Need to further understand usage
-  audience: {
-    type: Schema.Types.Mixed,
-  },
+  audience: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "PrivacyGroup",
+    },
+  ],
   posted: {
     type: Boolean,
     default: false,
