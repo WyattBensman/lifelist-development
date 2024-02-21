@@ -10,14 +10,12 @@ export const updateExperienceStatusInLifeList = async (
     // Check if the user is authenticated
     isUser(user);
 
-    await User.updateOne(
+    const updatedUser = await User.updateOne(
       { _id: user.id, "lifeList.experience": experienceId },
       { $set: { "lifeList.$.list": newList } }
     );
 
-    return {
-      message: "Experience status updated successfully.",
-    };
+    return updatedUser.lifeList;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error(

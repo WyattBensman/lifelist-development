@@ -17,9 +17,7 @@ export const markConversationAsRead = async (
       { new: true, runValidators: true }
     );
 
-    return {
-      message: "Conversation marked as read.",
-    };
+    return updatedConversation;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during marking conversation as read.");

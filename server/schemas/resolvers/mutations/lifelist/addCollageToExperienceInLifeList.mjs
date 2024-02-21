@@ -10,14 +10,12 @@ export const addCollageToExperienceInLifeList = async (
     // Check if the user is authenticated
     isUser(user);
 
-    await User.updateOne(
+    const updatedUser = await User.updateOne(
       { _id: user.id, "lifeList.experience": experienceId },
       { $push: { "lifeList.$.associatedCollages": { collage: collageId } } }
     );
 
-    return {
-      message: "Collage added to experience in life list successfully.",
-    };
+    return updatedUser.lifeList;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error(

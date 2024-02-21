@@ -13,9 +13,7 @@ export const blockUser = async (_, { userIdToBlock }, { user }) => {
       { new: true, runValidators: true }
     );
 
-    return {
-      message: "User blocked successfully.",
-    };
+    return updatedUser;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during user blocking.");

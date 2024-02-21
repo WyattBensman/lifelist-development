@@ -286,7 +286,49 @@ type User {
     updateUserSettings(userId: ID!, privacy: String, darkMode: Boolean, language: String, notifications: Boolean): User
   }
 
+  # User Relations Mutations
+  extend type Mutation {
+    acceptFollowRequest(userIdToAccept: ID!): User
+    denyFollowRequest(userIdToDeny: ID!): User
+    followUser(userIdToFollow: ID!): User
+    unfollowUser(userIdToUnfollow: ID!): User
+    blockUser(userIdToBlock: ID!): User
+    unblockUser(userIdToUnblock: ID!): User
+  }
 
+  # Privacy Group Mutations
+  extend type Mutation {
+    addUserToPrivacyGroup(userId: ID!, groupId: ID!, userToAddId: ID!): PrivacyGroup
+    createPrivacyGroup(userId: ID!, groupName: String!): PrivacyGroup
+    deletePrivacyGroup(userId: ID!, groupId: ID!): String
+    editPrivacyGroup(userId: ID!, groupId: ID!, newGroupName: String!): PrivacyGroup
+    removeUserFromPrivacyGroup(userId: ID!, groupId: ID!, userToRemoveId: ID!): PrivacyGroup
+  }
+
+  # Notification Mutations
+  extend type Mutation {
+    createNotification(
+      recipientId: ID!
+      senderId: ID!
+      type: String!
+      collageId: ID
+      message: String
+    ): Notification
+    deleteNotification(notificationId: ID!): String
+    markAllNotificationsAsSeen(userId: ID!): [Notification]
+    updateNotificationSeenStatus(notificationId: ID!, seen: Boolean!): Notification
+
+    # Messaging Mutations
+    extend type Mutation {
+      createConversation(recipientId: ID!, message: String): Conversation
+      deleteConversation(conversationId: ID!): String
+      deleteMessage(conversationId: ID!, messageId: ID!): Conversation
+      markConversationAsRead(conversationId: ID!): Conversation
+      sendMessage(conversationId: ID!, senderId: ID!, content: String!): Message
+    }
+    
+
+  
 `;
 
 export default typeDefs;

@@ -17,9 +17,7 @@ export const deleteMessage = async (
       { new: true, runValidators: true }
     );
 
-    return {
-      message: "Message deleted successfully.",
-    };
+    return updatedConversation;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during message deletion.");

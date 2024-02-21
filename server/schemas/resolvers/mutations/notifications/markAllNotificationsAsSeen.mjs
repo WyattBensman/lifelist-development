@@ -8,9 +8,7 @@ export const markAllNotificationsAsSeen = async (userId) => {
       { new: true }
     );
 
-    return {
-      message: "All notifications marked as seen.",
-    };
+    return updatedNotifications;
   } catch (error) {
     console.error(`Error marking all notifications as seen: ${error.message}`);
     throw new Error("An error occurred during marking notifications as seen.");

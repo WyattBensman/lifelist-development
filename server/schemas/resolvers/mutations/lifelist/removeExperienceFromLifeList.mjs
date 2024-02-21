@@ -10,7 +10,7 @@ export const removeExperienceFromLifeList = async (
     // Check if the user is authenticated
     isUser(user);
 
-    await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       user.id,
       {
         $pull: {
@@ -20,9 +20,7 @@ export const removeExperienceFromLifeList = async (
       { new: true }
     );
 
-    return {
-      message: "Experience removed from life list successfully.",
-    };
+    return updatedUser.lifeList;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error(

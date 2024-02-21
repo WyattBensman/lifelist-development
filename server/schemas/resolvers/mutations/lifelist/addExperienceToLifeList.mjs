@@ -16,7 +16,7 @@ export const addExperienceToLifeList = async (
       throw new Error("Experience not found.");
     }
 
-    await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       user.id,
       {
         $push: {
@@ -32,9 +32,7 @@ export const addExperienceToLifeList = async (
       { new: true }
     );
 
-    return {
-      message: "Experience added to life list successfully.",
-    };
+    return updatedUser.lifeList;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during adding experience to life list.");
