@@ -1,6 +1,4 @@
-// mutations/collageMutations.mjs
-
-import { Collage, User } from "../models/index.mjs";
+import { Collage } from "../models/index.mjs";
 import { isUser } from "../utils/auth.mjs";
 
 export const reportComment = async (

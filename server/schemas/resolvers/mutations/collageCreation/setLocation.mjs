@@ -17,10 +17,7 @@ export const setLocation = async (_, { collageId, locations }, { user }) => {
       { new: true, runValidators: true }
     );
 
-    return {
-      message: "Locations set successfully.",
-      updatedCollage,
-    };
+    return updatedCollage;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while setting the locations.");

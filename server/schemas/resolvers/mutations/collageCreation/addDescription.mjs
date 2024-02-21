@@ -21,10 +21,7 @@ export const addDescription = async (
       { new: true }
     );
 
-    return {
-      message: "Description added successfully.",
-      collage: updatedCollage,
-    };
+    return updatedCollage;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during adding description.");

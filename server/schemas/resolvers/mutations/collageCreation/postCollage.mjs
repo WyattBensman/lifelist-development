@@ -17,10 +17,7 @@ export const postCollage = async (_, { collageId }, { user }) => {
       { new: true, runValidators: true }
     );
 
-    return {
-      message: "Collage posted successfully.",
-      updatedCollage,
-    };
+    return updatedCollage;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while posting the collage.");

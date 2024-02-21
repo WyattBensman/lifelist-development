@@ -21,10 +21,7 @@ export const addExperiences = async (
       { new: true }
     );
 
-    return {
-      message: "Experiences added successfully.",
-      collage: updatedCollage,
-    };
+    return updatedCollage;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during adding experiences.");

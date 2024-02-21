@@ -17,12 +17,7 @@ export const addToLogbook = async (_, { collageId }, { user }) => {
       { new: true, runValidators: true }
     );
 
-    return {
-      message: `Collage ${
-        updatedCollage.isInLogbook ? "added to" : "removed from"
-      } logbook successfully.`,
-      updatedCollage,
-    };
+    return updatedCollage;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while updating the logbook status.");

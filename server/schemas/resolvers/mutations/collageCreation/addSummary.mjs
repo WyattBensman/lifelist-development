@@ -17,10 +17,7 @@ export const addSummary = async (_, { collageId, summary }, { user }) => {
       { new: true }
     );
 
-    return {
-      message: "Summary added successfully.",
-      collage: updatedCollage,
-    };
+    return updatedCollage;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during adding summary.");

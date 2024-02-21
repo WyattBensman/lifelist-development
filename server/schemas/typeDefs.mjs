@@ -326,7 +326,43 @@ type User {
       markConversationAsRead(conversationId: ID!): Conversation
       sendMessage(conversationId: ID!, senderId: ID!, content: String!): Message
     }
+
+    # LifeList Mutations
+    extend type Mutation {
+      addCollageToExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeList]
+      addExperienceToLifeList(experienceId: ID!, list: String, collageIds: [ID]): [LifeList]
+      removeCollageFromExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeList]
+      removeExperienceFromLifeList(experienceId: ID!): [LifeList]
+      updateExperienceStatusInLifeList(experienceId: ID!, newList: String): [LifeList]
+    }
+
+    # Collage Creation Mutations
+    extend type Mutation {
+      startCollageCreation(images: [Upload]): Collage
+      addDescription(collageId: ID!, title: String, caption: String): Collage
+      addExperiences(collageId: ID!, experienceIds: [ID]): Collage
+      addSummary(collageId: ID!, summary: String): Collage
+      addToLogbook(collageId: ID!): Collage
+      setAudience(collageId: ID!, audience: [PrivacyGroupInput]): Collage
+      setDate(collageId: ID!, date: Date): Collage
+      setLocation(collageId: ID!, locations: [LocationInput]): Collage
+      tagUsers(collageId: ID!, taggedUserIds: [ID]): Collage
+      postCollage(collageId: ID!): Collage
+    }
+
+    type Mutation {
+      createComment(collageId: ID!, text: String!): Comment
+      deleteComment(collageId: ID!, commentId: ID!): String
+      editComment(collageId: ID!, commentId: ID!, newText: String!): Comment
+      reportCollage(collageId: ID!, reason: String!): String
+      reportComment(collageId: ID!, commentId: ID!, reason: String!): String
+      repostCollage(collageId: ID!): String
+      saveCollage(collageId: ID!): String
+      unrepostCollage(collageId: ID!): String
+      unsaveCollage(collageId: ID!): String
+    }
     
+
 
   
 `;

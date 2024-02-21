@@ -1,4 +1,4 @@
-import { Collage } from "../../../../../models/index.mjs";
+import { Collage } from "../../../../models/index.mjs";
 import { isUser, uploadMultipleImages } from "../../../../utils/auth.mjs";
 
 export const startCollageCreation = async (_, { images }, { user }) => {
@@ -18,15 +18,12 @@ export const startCollageCreation = async (_, { images }, { user }) => {
     // Upload multiple images and get their paths
     const imagePaths = await uploadMultipleImages(images, "your-upload-dir");
 
-    const collage = await Collage.create({
+    const newCollage = await Collage.create({
       author: user.id,
       images: imagePaths,
     });
 
-    return {
-      message: "Collage creation started successfully.",
-      collageId: collage.id,
-    };
+    return newCollage;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during collage creation start.");

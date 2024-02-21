@@ -1,6 +1,4 @@
-// mutations/collageMutations.mjs
-
-import { Collage, User } from "../models/index.mjs";
+import { Collage } from "../models/index.mjs";
 import { isUser } from "../utils/auth.mjs";
 
 export const editComment = async (
@@ -33,10 +31,9 @@ export const editComment = async (
     comment.text = newText;
     await collage.save();
 
-    return {
-      message: "Comment edited successfully.",
-      comment: comment.toObject(),
-    };
+    const updatedComment = collage.comments.id(commentId).toObject();
+
+    return updatedComment;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during comment editing.");

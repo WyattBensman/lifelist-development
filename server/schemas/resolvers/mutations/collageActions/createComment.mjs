@@ -23,10 +23,7 @@ export const createComment = async (_, { collageId, text }, { user }) => {
     collage.comments.push(newComment);
     await collage.save();
 
-    return {
-      message: "Comment created successfully.",
-      comment: newComment,
-    };
+    return newComment;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during comment creation.");
