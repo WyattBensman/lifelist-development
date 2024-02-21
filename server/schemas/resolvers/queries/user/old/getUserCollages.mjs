@@ -1,4 +1,4 @@
-import { User } from "../../../../models/index.mjs";
+import { User } from "../../../../../models/index.mjs";
 
 export const getUserCollages = async (_, { userId }) => {
   try {

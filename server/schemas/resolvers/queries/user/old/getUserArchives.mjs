@@ -1,4 +1,4 @@
-import { User } from "../../../../models/index.mjs";
+import { User } from "../../../../../models/index.mjs";
 
 export const getUserArchives = async (_, { userId }) => {
   try {

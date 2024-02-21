@@ -25,6 +25,13 @@ const userSchema = new Schema({
     trim: true,
     match: /^[a-zA-Z]+$/,
   },
+  fullName: {
+    type: String,
+    virtual: true,
+    get: function () {
+      return this.fName + " " + this.lName;
+    },
+  },
   email: {
     type: String,
     unique: true,
@@ -204,7 +211,6 @@ const userSchema = new Schema({
       ref: "Conversation",
     },
   ],
-
   settings: {
     type: userSettingsSchema,
     default: userSettingsSchema,
