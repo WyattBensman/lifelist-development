@@ -1,15 +1,70 @@
-import * as cameraQueries from "./camera";
-import * as collageQueries from "./collage";
-import * as experienceQueries from "./experience";
-import * as userQueries from "./user";
-import * as messagingQueries from "./messaging";
-import * as notificationsQueries from "./notifications";
+import {
+  getUserById,
+  searchUsers,
+  getUserFollowers,
+  getUserFollowing,
+  getUserCollages,
+  getUserReposts,
+  getUserSavedCollages,
+  getUserTaggedCollages,
+  getUserLifeList,
+  getUserLogbook,
+  getUserArchives,
+} from "./user/userQueries.mjs";
+
+import {
+  getUserNotifications,
+  getUserFollowRequest,
+} from "./notifications/notificationQueries.mjs";
+
+import {
+  getUserConversations,
+  getConversationMessages,
+  getUnreadMessagesCount,
+} from "./messaging/messagingQueries.mjs";
+
+import { getExperience } from "./experience/experienceQueries.mjs";
+
+import {
+  getCollageById,
+  getCollageMedia,
+  getCollageSummary,
+  getCollageComments,
+  getCollageTaggedUsers,
+} from "./collage/collageMutations.mjs";
+
+import {
+  getAllCameraAlbums,
+  getCameraAlbum,
+  getAllCameraShots,
+  getCameraShot,
+} from "./camera/cameraQueries.mjs";
 
 export {
-  cameraQueries,
-  collageQueries,
-  experienceQueries,
-  userQueries,
-  messagingQueries,
-  notificationsQueries,
+  getUserById,
+  searchUsers,
+  getUserFollowers,
+  getUserFollowing,
+  getUserCollages,
+  getUserReposts,
+  getUserSavedCollages,
+  getUserTaggedCollages,
+  getUserLifeList,
+  getUserLogbook,
+  getUserArchives,
+  getUserNotifications,
+  getUserFollowRequest,
+  getUserConversations,
+  getConversationMessages,
+  getUnreadMessagesCount,
+  getExperience,
+  getCollageById,
+  getCollageMedia,
+  getCollageSummary,
+  getCollageComments,
+  getCollageTaggedUsers,
+  getAllCameraAlbums,
+  getCameraAlbum,
+  getAllCameraShots,
+  getCameraShot,
 };

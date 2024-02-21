@@ -23,10 +23,7 @@ export const removeShotsFromAlbum = async (
     album.shots = album.shots.filter((id) => !shotIds.includes(id.toString()));
     await album.save();
 
-    return {
-      message: "Shots removed from the album successfully.",
-      album,
-    };
+    return album;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error(

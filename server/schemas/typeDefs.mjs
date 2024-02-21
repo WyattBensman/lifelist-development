@@ -329,11 +329,11 @@ type User {
 
     # LifeList Mutations
     extend type Mutation {
-      addCollageToExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeList]
-      addExperienceToLifeList(experienceId: ID!, list: String, collageIds: [ID]): [LifeList]
-      removeCollageFromExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeList]
-      removeExperienceFromLifeList(experienceId: ID!): [LifeList]
-      updateExperienceStatusInLifeList(experienceId: ID!, newList: String): [LifeList]
+      addCollageToExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeListItem]
+      addExperienceToLifeList(experienceId: ID!, list: String, collageIds: [ID]): [LifeListItem]
+      removeCollageFromExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeListItem]
+      removeExperienceFromLifeList(experienceId: ID!): [LifeListItem]
+      updateExperienceStatusInLifeList(experienceId: ID!, newList: String): [LifeListItem]
     }
 
     # Collage Creation Mutations
@@ -350,7 +350,8 @@ type User {
       postCollage(collageId: ID!): Collage
     }
 
-    type Mutation {
+    # Collage Actions Mutations
+    extend type Mutation {
       createComment(collageId: ID!, text: String!): Comment
       deleteComment(collageId: ID!, commentId: ID!): String
       editComment(collageId: ID!, commentId: ID!, newText: String!): Comment
@@ -361,10 +362,17 @@ type User {
       unrepostCollage(collageId: ID!): String
       unsaveCollage(collageId: ID!): String
     }
-    
 
-
-  
-`;
+    # Camera Mutations
+    extend type Mutation {
+      addShotsToAlbum(albumId: ID!, shotIds: [ID!]!): CameraAlbum
+      createAlbum(title: String!, description: String): CameraAlbum
+      deleteAlbum(albumId: ID!): String
+      deleteShot(shotId: ID!): String
+      editAlbum(albumId: ID!, title: String, description: String): CameraAlbum
+      editShot(shotId: ID!, orientation: String, filter: Boolean): CameraShot
+      removeShotsFromAlbum(albumId: ID!, shotIds: [ID!]!): CameraAlbum
+      takeShot(filter: Boolean, shotOrientation: String): CameraShot
+    }`;
 
 export default typeDefs;

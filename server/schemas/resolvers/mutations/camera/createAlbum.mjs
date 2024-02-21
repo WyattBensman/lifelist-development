@@ -19,10 +19,7 @@ export const createAlbum = async (_, { title, description }, { user }) => {
     // Save the user with the updated cameraAlbums array
     await user.save();
 
-    return {
-      message: "Camera album created successfully.",
-      cameraAlbum: newAlbum,
-    };
+    return newAlbum;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while creating the camera album.");

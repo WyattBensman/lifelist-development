@@ -27,7 +27,6 @@ export const deleteShot = async (_, { shotId }, { user }) => {
 
     return {
       message: "Shot deleted successfully.",
-      shot,
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

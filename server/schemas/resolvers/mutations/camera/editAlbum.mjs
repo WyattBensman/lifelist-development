@@ -28,10 +28,7 @@ export const editAlbum = async (
     // Save the updated album
     await album.save();
 
-    return {
-      message: "Camera album updated successfully.",
-      cameraAlbum: album,
-    };
+    return album;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while updating the camera album.");

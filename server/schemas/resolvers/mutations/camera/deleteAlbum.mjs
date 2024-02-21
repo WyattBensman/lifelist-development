@@ -28,7 +28,6 @@ export const deleteAlbum = async (_, { albumId }, { user }) => {
 
     return {
       message: "Camera album deleted successfully.",
-      cameraAlbum: album,
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

@@ -31,10 +31,7 @@ export const addShotsToAlbum = async (_, { albumId, shotIds }, { user }) => {
     album.shots = [...new Set([...album.shots, ...shotIds])];
     await album.save();
 
-    return {
-      message: "Shots added to the album successfully.",
-      album,
-    };
+    return album;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while adding the shots to the album.");

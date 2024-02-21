@@ -30,10 +30,7 @@ export const editShot = async (
 
     await shot.save();
 
-    return {
-      message: "Shot edited successfully.",
-      shot,
-    };
+    return shot;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while editing the shot.");

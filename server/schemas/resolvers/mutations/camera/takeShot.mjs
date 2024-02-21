@@ -40,10 +40,7 @@ export const takeShot = async (_, { filter, shotOrientation }, { user }) => {
       { new: true }
     );
 
-    return {
-      message: "Camera shot captured successfully.",
-      cameraShot: newCameraShot,
-    };
+    return newCameraShot;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during camera shot capture.");
