@@ -1,16 +1,16 @@
-import sharp from "sharp";
+/* import sharp from "sharp";
 
 export const apply35mmFilter = async (inputPath, outputPath) => {
-  try {
-    // Read the input image
-    const image = sharp(inputPath);
+  try { */
+// Read the input image
+/*     const image = sharp(inputPath); */
 
-    // Apply the filter
-    await image
+// Apply the filter
+/*     await image
       .modulate({
-        brightness: 1.2, // Adjust brightness
-        saturation: 0.8, // Adjust saturation
-        hue: 20, // Adjust hue
+        brightness: 1.2,
+        saturation: 0.8,
+        hue: 20,
       })
       .tint("rgba(0, 0, 0, 0.1)")
       .toFile(outputPath);
@@ -20,10 +20,10 @@ export const apply35mmFilter = async (inputPath, outputPath) => {
     console.error("Error applying filter:", error);
     throw new Error("An error occurred during image filtering.");
   }
-};
+}; */
 
 // Example usage
-const inputPath = "path/to/your/input/image.jpg";
+/* const inputPath = "path/to/your/input/image.jpg";
 const outputPath = "path/to/your/output/image_filtered.jpg";
 
-apply35mmFilter(inputPath, outputPath);
+apply35mmFilter(inputPath, outputPath); */

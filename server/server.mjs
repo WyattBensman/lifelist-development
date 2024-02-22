@@ -20,8 +20,7 @@ const app = express();
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  /* uploads: false,
-  context: authMiddleware, */
+  /* uploads: false, */
 });
 
 // Apply the middleware to handle file uploads

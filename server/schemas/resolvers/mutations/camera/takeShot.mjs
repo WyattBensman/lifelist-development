@@ -1,6 +1,6 @@
 import { CameraShot, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
-import { apply35mmFilter } from "../../../../utils/cameraUtils.mjs";
+/* import { apply35mmFilter } from "../../../../utils/cameraUtils.mjs"; */
 
 const takeShot = async (_, { filter, shotOrientation }, { user }) => {
   try {
@@ -15,11 +15,11 @@ const takeShot = async (_, { filter, shotOrientation }, { user }) => {
     let capturedImageUri = "path/to/captured/image.jpg";
 
     // Apply 35mm filter if needed
-    if (filter) {
+    /* if (filter) {
       const filteredImagePath = "path/to/filtered/image.jpg";
       await apply35mmFilter(capturedImageUri, filteredImagePath);
       capturedImageUri = filteredImagePath;
-    }
+    } */
 
     // Create a new CameraShot instance
     const newCameraShot = await CameraShot.create({
