@@ -22,7 +22,7 @@ const updateUserContact = async (
 
     // Update the user's contact information only if new values are provided
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
+      user._id,
       {
         email,
         phoneNumber,

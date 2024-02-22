@@ -85,7 +85,7 @@ const userSchema = new Schema({
     minlength: 5,
     maxlength: 24,
     lowercase: true,
-    match: /^[a-zA-Z]{5}[a-zA-Z0-9._-]*$/,
+    match: /^[a-zA-Z]{2}[a-zA-Z0-9._-]*$/,
   },
   bio: {
     type: String,
@@ -97,11 +97,6 @@ const userSchema = new Schema({
   },
   birthday: {
     type: Date,
-    required: true,
-    validate: {
-      validator: (date) => !isNaN(date.getTime()),
-      message: "Invalid date format.",
-    },
   },
   followers: [
     {

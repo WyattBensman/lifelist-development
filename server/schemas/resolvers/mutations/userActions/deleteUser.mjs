@@ -7,15 +7,12 @@ const deleteUser = async (_, { userId }, { user }) => {
     isCurrentUser(user, userId);
 
     // Find the user to delete
-    const userToDelete = await User.findById(userId);
+    const userToDelete = await User.findByIdAndDelete(userId);
 
     // Check if the user exists
     if (!userToDelete) {
       throw new Error("User not found.");
     }
-
-    // Delete the user
-    await userToDelete.remove();
 
     return {
       message: `User ${userToDelete.id} deleted successfully.`,

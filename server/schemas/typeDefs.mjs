@@ -235,6 +235,10 @@ type User {
     longitude: Int!
   }
 
+  type MutationResult {
+    message: String
+  }
+
   # User Queries
   type Query {
     getUserById(userId: ID!): User
@@ -301,13 +305,13 @@ type User {
       password: String
       username: String
       gender: String
-      birthday: Date
+      birthday: String
     ): User
   } 
 
   # User Actions Mutations
   type Mutation {
-    deleteUser(userId: ID!): String
+    deleteUser(userId: ID!): MutationResult
     login(usernameOrEmailOrPhone: String!, password: String!): Auth
     updateUserContact(userId: ID!, email: String, phoneNumber: String, gender: String): User
     updateUserPassword(userId: ID!, currentPassword: String!, newPassword: String!): User
@@ -405,6 +409,9 @@ type User {
       removeShotsFromAlbum(albumId: ID!, shotIds: [ID!]!): CameraAlbum
       takeShot(filter: Boolean, shotOrientation: String): CameraShot
     }
+
+
+
     `;
 
 export default typeDefs;

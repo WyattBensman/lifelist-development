@@ -11,7 +11,7 @@ const updateUserPassword = async (
     isCurrentUser(user, userId);
 
     // Fetch the current user data
-    const currentUser = await User.findById(userId);
+    const currentUser = await User.findById(user._id);
 
     // Verify the current password
     const isCurrentPasswordValid = await currentUser.isCorrectPassword(

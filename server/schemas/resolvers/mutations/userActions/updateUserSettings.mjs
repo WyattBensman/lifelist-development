@@ -1,4 +1,5 @@
 import { isCurrentUser } from "../../../../utils/auth.mjs";
+import { User } from "../../../../models/index.mjs";
 
 const updateUserSettings = async (
   _,
@@ -11,7 +12,7 @@ const updateUserSettings = async (
 
     // Update the user's settings
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
+      user._id,
       {
         settings: {
           privacy,

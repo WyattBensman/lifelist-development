@@ -4,8 +4,8 @@ import { GraphQLError } from "graphql";
 import dotenv from "dotenv";
 dotenv.config();
 
-const expiration = "12M";
-const secret = process.env.JWT_SECRET || "defaultSecret";
+const expiration = "365d";
+const secret = process.env.JWT_SECRET || "mysecretssshhhhhhh";
 
 // Custom error for authentication failures
 export const AuthenticationError = new GraphQLError(
@@ -41,7 +41,7 @@ export const authMiddleware = async function ({ req }) {
 };
 
 // Function to generate JWT token
-export const generateToken = (userId, secret, expiration) => {
+export const generateToken = (userId) => {
   const token = jwt.sign({ id: userId }, secret, {
     expiresIn: expiration,
   });

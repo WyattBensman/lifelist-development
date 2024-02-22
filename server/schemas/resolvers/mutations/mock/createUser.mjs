@@ -5,15 +5,6 @@ const createUser = async (
   { fName, lName, email, phoneNumber, password, username, gender, birthday }
 ) => {
   try {
-    if (!email && !phoneNumber) {
-      throw new Error(
-        "Provide either an email or phone number for registration."
-      );
-    }
-    if (!birthday) {
-      throw new Error("Birthday is required for registration.");
-    }
-
     // Check if the email or username is already taken
     const existingUser = await User.findOne({
       $or: [{ email }, { username }],
@@ -23,21 +14,18 @@ const createUser = async (
       throw new Error("Email or username already exists.");
     }
 
-    // Create User
-    const newUser = await User.create(
-      {
-        fName,
-        lName,
-        email,
-        phoneNumber,
-        password,
-        username,
-        gender,
-        birthday,
-        verified: true,
-      },
-      { runValidators: true }
-    );
+    // Create the user
+    const newUser = await User.create({
+      fName,
+      lName,
+      username,
+      email,
+      phoneNumber,
+      password,
+      gender,
+      birthday: new Date(birthday),
+      verified: true,
+    });
 
     return newUser;
   } catch (error) {

@@ -1,6 +1,5 @@
 import { User } from "../../../../models/index.mjs";
-import { AuthenticationError } from "../../../../utils/auth.mjs";
-import { generateToken } from "../../../../utils/auth.mjs";
+import { AuthenticationError, generateToken } from "../../../../utils/auth.mjs";
 
 const login = async (_, { usernameOrEmailOrPhone, password }) => {
   try {
