@@ -10,19 +10,17 @@ const unrepostCollage = async (_, { collageId }, { user }) => {
       throw new Error("Collage not found.");
     }
 
-    // Check if the user has reposted the collage
-    if (!collage.reposts.includes(user.id)) {
-      throw new Error("Collage not reposted by the user.");
-    }
-
-    // Remove the user from the reposts array
-    collage.reposts = collage.reposts.filter((userId) => userId !== user.id);
-    await collage.save();
-
     // Remove the collage from the user's repostedCollages
     await User.findByIdAndUpdate(
-      user.id,
-      { $pull: { repostedCollages: collage.id } },
+      user._id,
+      { $pull: { repostedCollages: collageId } },
+      { new: true }
+    );
+
+    // Remove the user from the collage's reposts
+    await Collage.findByIdAndUpdate(
+      collageId,
+      { $pull: { reposts: user._id } },
       { new: true }
     );
 

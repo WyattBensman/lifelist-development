@@ -11,14 +11,14 @@ const saveCollage = async (_, { collageId }, { user }) => {
     }
 
     // Check if the user has already saved the collage
-    if (user.savedCollages.includes(collage.id)) {
+    if (user.savedCollages.includes(collageId)) {
       throw new Error("Collage already saved by the user.");
     }
 
     // Add the collage to the user's savedCollages
     await User.findByIdAndUpdate(
-      user.id,
-      { $push: { savedCollages: collage.id } },
+      user._id,
+      { $push: { savedCollages: collageId } },
       { new: true }
     );
 

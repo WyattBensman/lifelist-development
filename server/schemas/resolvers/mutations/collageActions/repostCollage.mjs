@@ -11,20 +11,28 @@ const repostCollage = async (_, { collageId }, { user }) => {
     }
 
     // Check if the user has already reposted the collage
-    if (collage.reposts.includes(user.id)) {
+    const isAlreadyReposted = user.repostedCollages.includes(collageId);
+    if (isAlreadyReposted) {
       throw new Error("Collage already reposted by the user.");
     }
 
-    // Add the user to the reposts array
-    collage.reposts.push(user.id);
-    await collage.save();
-
     // Add the collage to the user's repostedCollages
     await User.findByIdAndUpdate(
-      user.id,
-      { $push: { repostedCollages: collage.id } },
+      user._id,
+      { $push: { repostedCollages: collageId } },
       { new: true }
     );
+
+    // Add the user to the collage's reposts
+    await Collage.findByIdAndUpdate(
+      collageId,
+      { $push: { reposts: user._id } },
+      { new: true }
+    );
+
+    return {
+      message: "Collage reposted successfully.",
+    };
 
     return {
       message: "Collage reposted successfully.",

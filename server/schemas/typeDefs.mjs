@@ -409,10 +409,10 @@ type User {
       editComment(collageId: ID!, commentId: ID!, newText: String!): Comment
       reportCollage(collageId: ID!, reason: String!): String
       reportComment(collageId: ID!, commentId: ID!, reason: String!): String
-      repostCollage(collageId: ID!): String
-      saveCollage(collageId: ID!): String
-      unrepostCollage(collageId: ID!): String
-      unsaveCollage(collageId: ID!): String
+      repostCollage(collageId: ID!): MutationResult
+      saveCollage(collageId: ID!): MutationResult
+      unrepostCollage(collageId: ID!): MutationResult
+      unsaveCollage(collageId: ID!): MutationResult
       deleteCollage(collageId: ID!): String
       archiveCollage(collageId: ID!): Collage
       unarchiveCollage(collageId: ID!): Collage

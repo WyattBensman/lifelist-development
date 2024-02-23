@@ -11,14 +11,14 @@ const unsaveCollage = async (_, { collageId }, { user }) => {
     }
 
     // Check if the user has saved the collage
-    if (!user.savedCollages.includes(collage.id)) {
+    if (!user.savedCollages.includes(collageId)) {
       throw new Error("Collage not saved by the user.");
     }
 
     // Remove the collage from the user's savedCollages
     await User.findByIdAndUpdate(
-      user.id,
-      { $pull: { savedCollages: collage.id } },
+      user._id,
+      { $pull: { savedCollages: collageId } },
       { new: true }
     );
 
