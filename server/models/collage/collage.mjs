@@ -36,7 +36,6 @@ const collageSchema = new Schema({
   title: {
     type: String,
     maxlength: 40,
-    required: true,
   },
   caption: {
     type: String,
@@ -55,16 +54,13 @@ const collageSchema = new Schema({
     {
       name: {
         type: String,
-        required: true,
       },
       coordinates: {
         latitude: {
           type: Number,
-          required: true,
         },
         longitude: {
           type: Number,
-          required: true,
         },
       },
     },

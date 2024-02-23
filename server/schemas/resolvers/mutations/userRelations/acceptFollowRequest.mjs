@@ -7,18 +7,20 @@ const acceptFollowRequest = async (_, { userIdToAccept }, { user }) => {
 
     // Update the user's following list and the follower's followers list
     const updatedUser = await User.findByIdAndUpdate(
-      user.id,
+      userIdToAccept,
       {
-        $addToSet: { following: userIdToAccept },
-        $pull: { followerRequests: { userId: userIdToAccept } },
+        $addToSet: { following: user._id },
       },
       { new: true }
     );
 
     // Update the follower's followers list
     await User.findByIdAndUpdate(
-      userIdToAccept,
-      { $addToSet: { followers: user.id } },
+      user._id,
+      {
+        $addToSet: { followers: userIdToAccept },
+        $pull: { followerRequests: { userId: userIdToAccept } },
+      },
       { new: true }
     );
 

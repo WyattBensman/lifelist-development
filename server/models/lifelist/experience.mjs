@@ -3,30 +3,24 @@ import { Schema, model } from "mongoose";
 const experienceSchema = new Schema({
   title: {
     type: String,
-    required: true,
   },
   image: {
     type: String,
-    required: true,
   },
   location: {
     type: String,
-    required: true,
   },
   coordinates: {
     type: {
       latitude: {
         type: Number,
-        required: true,
       },
       longitude: {
         type: Number,
-        required: true,
       },
     },
-    required: true,
   },
-  types: {
+  category: {
     type: [String],
     enum: [
       "Attractions",
@@ -40,7 +34,6 @@ const experienceSchema = new Schema({
       "Concerts",
       "Artists",
     ],
-    required: true,
   },
   collages: [
     {

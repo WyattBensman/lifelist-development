@@ -8,8 +8,8 @@ const blockUser = async (_, { userIdToBlock }, { user }) => {
 
     // Block the user
     const updatedUser = await User.findByIdAndUpdate(
-      user.id,
-      { $push: { blocked: userIdToBlock } },
+      user._id,
+      { $push: { "settings.blocked": userIdToBlock } },
       { new: true, runValidators: true }
     );
 

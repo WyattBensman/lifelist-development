@@ -1,7 +1,7 @@
 import { Collage } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-const addExperiences = async (_, { collageId, experienceIds }, { user }) => {
+const removeExperiences = async (_, { collageId, experienceIds }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -10,10 +10,10 @@ const addExperiences = async (_, { collageId, experienceIds }, { user }) => {
     const collage = await Collage.findById(collageId);
     isCurrentAuthor(user, collage.author);
 
-    // Update the collage with the provided experiences
+    // Update the collage and remove the specified experiences
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $addToSet: { experiences: { $each: experienceIds } } },
+      { $pullAll: { experiences: experienceIds } },
       { new: true }
     ).populate({
       path: "experiences",
@@ -23,8 +23,8 @@ const addExperiences = async (_, { collageId, experienceIds }, { user }) => {
     return updatedCollage;
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during adding experiences.");
+    throw new Error("An error occurred during removing experiences.");
   }
 };
 
-export default addExperiences;
+export default removeExperiences;

@@ -1,4 +1,4 @@
-import { Collage } from "../../../../models/index.mjs";
+import { Collage, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 import { uploadMultipleImages } from "../../../../utils/uploadImages.mjs";
 
@@ -16,13 +16,24 @@ const startCollageCreation = async (_, { images }, { user }) => {
       throw new Error("Up to 14 images are allowed per collage.");
     }
 
-    // Upload multiple images and get their paths
-    const imagePaths = await uploadMultipleImages(images, "your-upload-dir");
+    // Use uploadMultipleImages Util to handle file upload
+    const uploadDir = "./uploads";
+    const imagePaths = await uploadMultipleImages(images, uploadDir);
 
     const newCollage = await Collage.create({
-      author: user.id,
+      author: user._id,
       images: imagePaths,
     });
+
+    // Obtain the _id of the newCollage
+    const collageId = newCollage._id;
+
+    // Update the user's collages array
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      { $push: { collages: collageId } },
+      { new: true }
+    );
 
     return newCollage;
   } catch (error) {

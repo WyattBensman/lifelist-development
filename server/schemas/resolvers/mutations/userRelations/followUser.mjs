@@ -7,7 +7,7 @@ const followUser = async (_, { userIdToFollow }, { user }) => {
 
     // Update the user's following list
     const updatedUser = await User.findByIdAndUpdate(
-      user.id,
+      user._id,
       { $addToSet: { following: userIdToFollow } },
       { new: true }
     );
@@ -15,7 +15,7 @@ const followUser = async (_, { userIdToFollow }, { user }) => {
     // Update the followed user's followers list
     await User.findByIdAndUpdate(
       userIdToFollow,
-      { $addToSet: { followers: user.id } },
+      { $addToSet: { followers: user._id } },
       { new: true }
     );
 

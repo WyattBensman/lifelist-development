@@ -7,7 +7,7 @@ const denyFollowRequest = async (_, { userIdToDeny }, { user }) => {
 
     // Remove the denied follow request from the user's followerRequests list
     const updatedUser = await User.findByIdAndUpdate(
-      user.id,
+      user._id,
       {
         $pull: {
           followerRequests: {

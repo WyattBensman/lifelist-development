@@ -63,9 +63,9 @@ type User {
   }
 
   enum FollowerRequestStatus {
-    PENDING
-    ACCEPTED
-    REJECTED
+    pending
+    accepted
+    rejected
   }
 
   type LifeListItem {
@@ -136,25 +136,25 @@ type User {
 
   type Experience {
     _id: ID!
-    title: String!
-    image: String!
-    location: String!
-    coordinates: Coordinates!
-    types: [ExperienceType!]!
+    title: String
+    image: String
+    location: String
+    coordinates: Coordinates
+    category: ExperienceCategory
     collages: [Collage]
   }
   
-  enum ExperienceType {
-    ATTRACTIONS
-    DESTINATIONS
-    EVENTS
-    COURSES
-    VENUES
-    FESTIVALS
-    HIKES_AND_TRAILS
-    RESORTS
-    CONCERTS
-    ARTISTS
+  enum ExperienceCategory {
+    Attractions
+    Destinations
+    Events
+    Courses
+    Venues
+    Festivals
+    Hikes and Trails
+    Resorts
+    Concerts
+    Artists
   }
 
   type Collage {
@@ -231,8 +231,8 @@ type User {
   }
   
   input CoordinatesInput {
-    latitude: Int!
-    longitude: Int!
+    latitude: Int
+    longitude: Int
   }
 
   type MutationResult {
@@ -376,6 +376,7 @@ type User {
       startCollageCreation(images: [Upload]): Collage
       addDescription(collageId: ID!, title: String, caption: String): Collage
       addExperiences(collageId: ID!, experienceIds: [ID]): Collage
+      removeExperiences(collageId: ID!, experienceIds: [ID]!): Collage
       addSummary(collageId: ID!, summary: String): Collage
       addToLogbook(collageId: ID!): Collage
       setAudience(collageId: ID!, audience: [PrivacyGroupInput]): Collage
@@ -409,6 +410,7 @@ type User {
       removeShotsFromAlbum(albumId: ID!, shotIds: [ID!]!): CameraAlbum
       takeShot(filter: Boolean, shotOrientation: String): CameraShot
     }
+    
 
 
 

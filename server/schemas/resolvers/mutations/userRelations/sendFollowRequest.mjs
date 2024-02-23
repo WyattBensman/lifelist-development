@@ -5,13 +5,23 @@ const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
   try {
     isUser(user);
 
+    // Check if any friend request already exists
+    const alreadyHasFriendRequest = await User.findOne({
+      _id: userIdToFollow,
+      "followerRequests.userId": user._id,
+    });
+
+    if (alreadyHasFriendRequest) {
+      throw new Error("A friend request already exists.");
+    }
+
     // Update the user's followerRequests list
     const updatedUser = await User.findByIdAndUpdate(
       userIdToFollow,
       {
         $addToSet: {
           followerRequests: {
-            userId: user.id,
+            userId: user._id,
             status: "pending",
           },
         },

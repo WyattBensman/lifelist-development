@@ -30,17 +30,20 @@ export const uploadSingleImage = async (image, uploadDir) => {
 
 export const uploadMultipleImages = async (images, uploadDir) => {
   try {
-    const imagePaths = [];
+    const imageUrls = [];
 
-    // Iterate over the array of images
     for (const image of images) {
-      const imagePath = await uploadSingleImage(image, uploadDir);
-      imagePaths.push(imagePath);
+      const filePath = await uploadSingleImage(image.file, uploadDir);
+      // Construct the file URL
+      const baseUrl = process.env.PORT ? "" : "http://localhost:3001";
+      const fileUrl = `${baseUrl}/uploads/${filePath.split("/").pop()}`;
+
+      imageUrls.push(fileUrl);
     }
 
-    return imagePaths;
+    return imageUrls;
   } catch (error) {
-    console.error(`Error during multiple image upload: ${error.message}`);
-    throw new Error("Multiple image upload failed");
+    console.error(`Error during multiple images upload: ${error.message}`);
+    throw new Error("Multiple images upload failed");
   }
 };

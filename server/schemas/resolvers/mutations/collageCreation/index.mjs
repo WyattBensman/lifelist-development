@@ -8,6 +8,7 @@ import setDate from "./setDate.mjs";
 import setLocation from "./setLocation.mjs";
 import startCollageCreation from "./startCollageCreation.mjs";
 import tagUsers from "./tagUsers.mjs";
+import removeExperiences from "./removeExperiences.mjs";
 
 export {
   addDescription,
@@ -20,4 +21,5 @@ export {
   setLocation,
   startCollageCreation,
   tagUsers,
+  removeExperiences,
 };
