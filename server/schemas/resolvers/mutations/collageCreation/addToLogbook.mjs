@@ -10,14 +10,18 @@ const addToLogbook = async (_, { collageId }, { user }) => {
     const collage = await Collage.findById(collageId);
     isCurrentAuthor(user, collage.author);
 
-    // Toggle the isInLogbook field
-    const updatedCollage = await Collage.findByIdAndUpdate(
-      collageId,
-      { $set: { isInLogbook: !collage.isInLogbook } },
+    // Add or remove the collage from the user's logbook
+    const updatedUser = await User.findByIdAndUpdate(
+      "65d73c129ef2e9c81aff5e9a",
+      {
+        $addToSet: {
+          logbook: collageId,
+        },
+      },
       { new: true, runValidators: true }
     );
 
-    return updatedCollage;
+    return updatedUser;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while updating the logbook status.");

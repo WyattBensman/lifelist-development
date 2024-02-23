@@ -10,10 +10,27 @@ const postCollage = async (_, { collageId }, { user }) => {
     const collage = await Collage.findById(collageId);
     isCurrentAuthor(user, collage.author);
 
-    // Update the posted field and set the createdAt to the current date
+    // Check if the collage is in the user's logbook
+    const isInLogbook = user.logbook.includes(collageId);
+
+    // Remove the collage from the user's logbook if it's present
+    if (isInLogbook) {
+      await User.findByIdAndUpdate(
+        user._id,
+        { $pull: { logbook: collageId } },
+        { new: true, runValidators: true }
+      );
+    }
+
+    // Update the collage's post status and createdAt
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $set: { posted: true, createdAt: new Date() } },
+      {
+        $set: {
+          posted: true,
+          createdAt: new Date(),
+        },
+      },
       { new: true, runValidators: true }
     );
 

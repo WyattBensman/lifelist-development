@@ -199,6 +199,12 @@ const userSchema = new Schema({
       ref: "Collage",
     },
   ],
+  logbook: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Collage",
+    },
+  ],
   conversations: [
     {
       type: Schema.Types.ObjectId,

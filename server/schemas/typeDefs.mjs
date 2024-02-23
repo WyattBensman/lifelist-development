@@ -31,6 +31,7 @@ type User {
     repostedCollages: [Collage]
     taggedCollages: [Collage]
     savedCollages: [Collage]
+    logbook: [Collage]
     archivedCollages: [Collage]
     conversations: [Conversation]
     unreadMessagesCount: Int
@@ -164,6 +165,9 @@ type User {
     images: [String]!
     title: String
     caption: String
+    startDate: Date
+    finishDate: Date
+    month: Month
     summary: String
     experiences: [Experience]
     locations: [Location]
@@ -174,6 +178,17 @@ type User {
     posted: Boolean
     reports: [Report]
   }
+
+  type Month {
+    name: String
+    year: Int
+  }
+
+  input MonthInput {
+    name: String
+    year: Int
+  }
+  
   
   type Location {
     name: String!
@@ -181,8 +196,8 @@ type User {
   }
   
   type Coordinates {
-    latitude: Int!
-    longitude: Int!
+    latitude: Float!
+    longitude: Float!
   }
   
   type Comment {
@@ -231,8 +246,8 @@ type User {
   }
   
   input CoordinatesInput {
-    latitude: Int
-    longitude: Int
+    latitude: Float
+    longitude: Float
   }
 
   type MutationResult {
@@ -381,8 +396,9 @@ type User {
       addToLogbook(collageId: ID!): Collage
       setAudience(collageId: ID!, audience: [PrivacyGroupInput]): Collage
       setLocation(collageId: ID!, locations: [LocationInput]): Collage
-      setDate(collageId: ID!, date: Date): Collage
+      setDate(collageId: ID!, startDate: Date, finishDate: Date, month: MonthInput): Collage
       tagUsers(collageId: ID!, taggedUserIds: [ID]): Collage
+      untagUsers(collageId: ID!, userIdsToUntag: [ID]): Collage
       postCollage(collageId: ID!): Collage
     }
 
@@ -397,6 +413,9 @@ type User {
       saveCollage(collageId: ID!): String
       unrepostCollage(collageId: ID!): String
       unsaveCollage(collageId: ID!): String
+      deleteCollage(collageId: ID!): String
+      archiveCollage(collageId: ID!): Collage
+      unarchiveCollage(collageId: ID!): Collage
     }
 
     # Camera Mutations

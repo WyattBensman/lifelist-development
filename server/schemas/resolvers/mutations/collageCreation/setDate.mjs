@@ -10,11 +10,22 @@ const setDate = async (_, { collageId, date }, { user }) => {
     /* const collage = await Collage.findById(collageId);
     isCurrentAuthor(user, collage.author); */
 
+    // Validate that either startDate and finishDate go together or month is provided
+    if ((startDate || finishDate) && month) {
+      throw new Error(
+        "Provide either startDate and finishDate or month, not both."
+      );
+    }
+
     // Update date for the collage
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $set: { date } },
-      { new: true, runValidators: true }
+      {
+        startDate,
+        finishDate,
+        month,
+      },
+      { new: true }
     );
 
     return updatedCollage;

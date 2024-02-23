@@ -44,6 +44,20 @@ const collageSchema = new Schema({
   summary: {
     type: String,
   },
+  startDate: {
+    type: Date,
+  },
+  finishDate: {
+    type: Date,
+  },
+  month: {
+    name: {
+      type: String,
+    },
+    year: {
+      type: Number,
+    },
+  },
   experiences: [
     {
       type: Schema.Types.ObjectId,
@@ -85,6 +99,10 @@ const collageSchema = new Schema({
     },
   ],
   posted: {
+    type: Boolean,
+    default: false,
+  },
+  archived: {
     type: Boolean,
     default: false,
   },

@@ -7,6 +7,9 @@ import repostCollage from "./repostCollage.mjs";
 import saveCollage from "./saveCollage.mjs";
 import unrepostCollage from "./unrepostCollage.mjs";
 import unsaveCollage from "./unsaveCollage.mjs";
+import deleteCollage from "./deleteCollage.mjs";
+import archiveCollage from "./archiveCollage.mjs";
+import unarchiveCollage from "./unarchiveCollage.mjs";
 
 export {
   createComment,
@@ -18,4 +21,7 @@ export {
   saveCollage,
   unrepostCollage,
   unsaveCollage,
+  deleteCollage,
+  archiveCollage,
+  unarchiveCollage,
 };
