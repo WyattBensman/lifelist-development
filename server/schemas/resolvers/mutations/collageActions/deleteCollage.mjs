@@ -11,7 +11,9 @@ const deleteCollage = async (_, { collageId }, { user }) => {
     isCurrentAuthor(user, collage.author);
 
     // Remove the collage from the current user's collages
-    await User.findByIdAndUpdate(user._id, { $pull: { collages: collageId } });
+    await User.findByIdAndUpdate(user._id, {
+      $pull: { collages: collageId },
+    });
 
     // Remove the collage from the taggedCollages field of users who were tagged
     await User.updateMany(
