@@ -14,7 +14,7 @@ const createComment = async (_, { collageId, text }, { user }) => {
 
     // Create a new comment instance
     const newComment = await Comment.create({
-      author: "65d762da8d7b7d7105af76b3",
+      author: user._id,
       text,
       createdAt: new Date(),
     });

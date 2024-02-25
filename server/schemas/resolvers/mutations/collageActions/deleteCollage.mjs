@@ -33,6 +33,9 @@ const deleteCollage = async (_, { collageId }, { user }) => {
       { $pull: { savedCollages: collageId } }
     );
 
+    // Delete all comments associated with the collage
+    await Comment.deleteMany({ _id: { $in: collage.comments } });
+
     // Delete the collage
     await Collage.findByIdAndDelete(collageId);
 
