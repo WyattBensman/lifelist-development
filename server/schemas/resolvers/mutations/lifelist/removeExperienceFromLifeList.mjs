@@ -6,6 +6,15 @@ const removeExperienceFromLifeList = async (_, { experienceId }, { user }) => {
     // Check if the user is authenticated
     isUser(user);
 
+    // Check if the experience exists in the user's lifeList
+    const experienceToRemove = user.lifeList.find((item) =>
+      item.experience.equals(experienceId)
+    );
+
+    if (!experienceToRemove) {
+      throw new Error("Experience not found in the user's LifeList.");
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       user.id,
       {

@@ -10,6 +10,15 @@ const updateExperienceStatusInLifeList = async (
     // Check if the user is authenticated
     isUser(user);
 
+    // Check if the experience exists in the user's lifeList
+    const experienceToUpdate = user.lifeList.find((item) =>
+      item.experience.equals(experienceId)
+    );
+
+    if (!experienceToUpdate) {
+      throw new Error("Experience not found in the user's LifeList.");
+    }
+
     const updatedUser = await User.updateOne(
       { _id: user.id, "lifeList.experience": experienceId },
       { $set: { "lifeList.$.list": newList } }

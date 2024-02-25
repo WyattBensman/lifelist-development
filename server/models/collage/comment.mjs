@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import { Schema, model } from "mongoose";
 
 const reportSchema = new Schema({
   reporter: {
@@ -13,7 +13,7 @@ const reportSchema = new Schema({
 });
 
 const commentSchema = new Schema({
-  user: {
+  author: {
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,
@@ -38,4 +38,6 @@ const commentSchema = new Schema({
   },
 });
 
-export default commentSchema;
+const Comment = model("Comment", commentSchema);
+
+export default Comment;

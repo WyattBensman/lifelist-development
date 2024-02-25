@@ -16,6 +16,15 @@ const addExperienceToLifeList = async (
       throw new Error("Experience not found.");
     }
 
+    // Check if the experience is already in the user's lifeList
+    const isAlreadyInLifeList = user.lifeList.some((item) =>
+      item.experience.equals(experienceId)
+    );
+
+    if (isAlreadyInLifeList) {
+      throw new Error("Experience is already in the LifeList.");
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       user.id,
       {

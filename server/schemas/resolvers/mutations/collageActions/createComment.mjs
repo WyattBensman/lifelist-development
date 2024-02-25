@@ -1,4 +1,4 @@
-import { Collage } from "../../../../models/index.mjs";
+import { Collage, Comment } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 const createComment = async (_, { collageId, text }, { user }) => {
@@ -12,16 +12,19 @@ const createComment = async (_, { collageId, text }, { user }) => {
       throw new Error("Collage not found.");
     }
 
-    // Create a new comment
-    const newComment = {
-      user: user.id,
+    // Create a new comment instance
+    const newComment = await Comment.create({
+      author: "65d762da8d7b7d7105af76b3",
       text,
       createdAt: new Date(),
-    };
+    });
 
-    // Add the comment to the collage
-    collage.comments.push(newComment);
-    await collage.save();
+    // Use $addToSet to add the new comment to the comments array without duplicates
+    await Collage.findByIdAndUpdate(
+      collageId,
+      { $addToSet: { comments: newComment } },
+      { new: true }
+    );
 
     return newComment;
   } catch (error) {

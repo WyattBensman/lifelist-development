@@ -85,7 +85,12 @@ const collageSchema = new Schema({
       ref: "User",
     },
   ],
-  comments: [commentSchema],
+  comments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Comment",
+    },
+  ],
   reposts: [
     {
       type: Schema.Types.ObjectId,

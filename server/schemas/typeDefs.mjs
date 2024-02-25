@@ -202,7 +202,7 @@ type User {
   
   type Comment {
     _id: ID!
-    user: User
+    author: User
     text: String
     createdAt: Date
     comments: [Comment]
@@ -405,10 +405,10 @@ type User {
     # Collage Actions Mutations
     type Mutation {
       createComment(collageId: ID!, text: String!): Comment
-      deleteComment(collageId: ID!, commentId: ID!): String
+      deleteComment(collageId: ID!, commentId: ID!): MutationResult
       editComment(collageId: ID!, commentId: ID!, newText: String!): Comment
-      reportCollage(collageId: ID!, reason: String!): String
-      reportComment(collageId: ID!, commentId: ID!, reason: String!): String
+      reportCollage(collageId: ID!, reason: String!): MutationResult
+      reportComment(collageId: ID!, commentId: ID!, reason: String!): MutationResult
       repostCollage(collageId: ID!): MutationResult
       saveCollage(collageId: ID!): MutationResult
       unrepostCollage(collageId: ID!): MutationResult

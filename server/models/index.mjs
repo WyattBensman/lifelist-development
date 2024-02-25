@@ -5,6 +5,7 @@ import Experience from "./lifelist/experience.mjs";
 import Collage from "./collage/collage.mjs";
 import CameraShot from "./camera/cameraShot.mjs";
 import CameraAlbum from "./camera/cameraAlbum.mjs";
+import Comment from "./collage/comment.mjs";
 
 export {
   User,
@@ -14,4 +15,5 @@ export {
   Collage,
   CameraShot,
   CameraAlbum,
+  Comment,
 };
