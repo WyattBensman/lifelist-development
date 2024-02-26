@@ -139,6 +139,7 @@ const userSchema = new Schema({
           ref: "Collage",
         },
       ],
+      default: [],
     },
   ],
   collages: [

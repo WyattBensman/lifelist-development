@@ -16,7 +16,7 @@ const removeExperienceFromLifeList = async (_, { experienceId }, { user }) => {
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      user.id,
+      user._id,
       {
         $pull: {
           lifeList: { experience: experienceId },

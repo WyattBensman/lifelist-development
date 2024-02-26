@@ -10,9 +10,27 @@ const addCollageToExperienceInLifeList = async (
     // Check if the user is authenticated
     isUser(user);
 
-    const updatedUser = await User.updateOne(
-      { _id: user.id, "lifeList.experience": experienceId },
-      { $push: { "lifeList.$.associatedCollages": { collage: collageId } } }
+    // Check if the current user is the creator of the collage
+    const collage = await Collage.findById(collageId);
+    isCurrentAuthor(user, collage.author);
+
+    // Check if the collage is already associated with the experience
+    const isCollageAlreadyAssociated = await Experience.exists({
+      _id: experienceId,
+      "associatedCollages.collage": collageId,
+    });
+
+    if (isCollageAlreadyAssociated) {
+      throw new Error("Collage is already associated with the experience.");
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      {
+        _id: user._id,
+        "lifeList.experience": experienceId,
+      },
+      { $push: { "lifeList.$.associatedCollages": collageId } },
+      { new: true }
     );
 
     return updatedUser.lifeList;

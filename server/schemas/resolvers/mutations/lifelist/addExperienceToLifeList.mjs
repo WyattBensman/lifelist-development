@@ -17,24 +17,26 @@ const addExperienceToLifeList = async (
     }
 
     // Check if the experience is already in the user's lifeList
-    const isAlreadyInLifeList = user.lifeList.some((item) =>
-      item.experience.equals(experienceId)
-    );
+    const isAlreadyInLifeList = await User.findOne({
+      _id: user._id,
+      lifeList: {
+        $elemMatch: { experience: experienceId },
+      },
+    });
 
     if (isAlreadyInLifeList) {
       throw new Error("Experience is already in the LifeList.");
     }
 
+    // Update the user's lifeList with the array of collageIds
     const updatedUser = await User.findByIdAndUpdate(
-      user.id,
+      user._id,
       {
         $push: {
           lifeList: {
             experience: experienceId,
             list,
-            associatedCollages: collageIds.map((collageId) => ({
-              collage: collageId,
-            })),
+            associatedCollages: collageIds,
           },
         },
       },

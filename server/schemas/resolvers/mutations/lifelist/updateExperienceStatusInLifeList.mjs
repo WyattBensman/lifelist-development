@@ -19,10 +19,15 @@ const updateExperienceStatusInLifeList = async (
       throw new Error("Experience not found in the user's LifeList.");
     }
 
-    const updatedUser = await User.updateOne(
-      { _id: user.id, "lifeList.experience": experienceId },
-      { $set: { "lifeList.$.list": newList } }
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: user._id, "lifeList.experience": experienceId },
+      { $set: { "lifeList.$.list": newList } },
+      { new: true }
     );
+
+    if (!updatedUser) {
+      throw new Error("User not found.");
+    }
 
     return updatedUser.lifeList;
   } catch (error) {

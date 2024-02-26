@@ -10,9 +10,10 @@ const removeCollageFromExperienceInLifeList = async (
     // Check if the user is authenticated
     isUser(user);
 
-    const updatedUser = await User.updateOne(
-      { _id: user.id, "lifeList.experience": experienceId },
-      { $pull: { "lifeList.$.associatedCollages": { collage: collageId } } }
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: user._id, "lifeList.experience": experienceId },
+      { $pull: { "lifeList.$.associatedCollages": collageId } },
+      { new: true }
     );
 
     return updatedUser.lifeList;

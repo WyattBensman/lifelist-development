@@ -77,7 +77,7 @@ type User {
   
   enum LifeListTypeEnum {
     experienced
-    wishListed
+    wishlisted
   }
 
   type DailyCameraShots {
@@ -380,7 +380,7 @@ type User {
     # LifeList Mutations
     type Mutation {
       addCollageToExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeListItem]
-      addExperienceToLifeList(experienceId: ID!, list: String, collageIds: [ID]): [LifeListItem]
+      addExperienceToLifeList(experienceId: ID!, list: String!, collageIds: [ID]): [LifeListItem]
       removeCollageFromExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeListItem]
       removeExperienceFromLifeList(experienceId: ID!): [LifeListItem]
       updateExperienceStatusInLifeList(experienceId: ID!, newList: String): [LifeListItem]
