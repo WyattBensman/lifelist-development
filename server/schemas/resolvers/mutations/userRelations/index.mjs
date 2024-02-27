@@ -5,6 +5,7 @@ import followUser from "./followUser.mjs";
 import sendFollowRequest from "./sendFollowRequest.mjs";
 import unblockUser from "./unblockUser.mjs";
 import unfollowUser from "./unfollowUser.mjs";
+import unsendFollowRequest from "./unsendFollowRequest.mjs";
 
 export {
   acceptFollowRequest,
@@ -14,4 +15,5 @@ export {
   sendFollowRequest,
   unblockUser,
   unfollowUser,
+  unsendFollowRequest,
 };

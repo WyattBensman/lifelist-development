@@ -1,5 +1,6 @@
 import { Collage, Comment } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
+import createNotification from "../notifications/createNotification.mjs";
 
 const createComment = async (_, { collageId, text }, { user }) => {
   try {
@@ -25,6 +26,15 @@ const createComment = async (_, { collageId, text }, { user }) => {
       { $addToSet: { comments: newComment } },
       { new: true }
     );
+
+    // Create a notification for the original author of the collage
+    await createNotification({
+      recipientId: collage.author,
+      senderId: user._id,
+      type: "COMMENTED",
+      collageId: collageId,
+      message: `${user.fullName} commented on your collage.`,
+    });
 
     return newComment;
   } catch (error) {

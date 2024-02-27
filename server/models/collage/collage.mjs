@@ -1,5 +1,4 @@
 import { Schema, model } from "mongoose";
-import commentSchema from "./comment.mjs";
 
 const validateImageCount = (value) => value.length > 0;
 const validateMaxImageCount = (value) => value.length <= 14;

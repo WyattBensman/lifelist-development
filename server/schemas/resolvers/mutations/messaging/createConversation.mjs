@@ -1,5 +1,6 @@
 import { Conversation, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
+import createNotification from "../notifications/createNotification.mjs";
 
 const createConversation = async (_, { recipientId, message }, { user }) => {
   try {
@@ -35,6 +36,14 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
         { $addToSet: { conversations: existingConversation._id } }
       );
 
+      // Create a notification for the recipient
+      await createNotification({
+        recipientId,
+        senderId: user._id,
+        type: "MESSAGE",
+        message: `You received a new message from ${user.fullName}`,
+      });
+
       return existingConversation;
     } else {
       // Conversation does not exist, create a new one
@@ -62,6 +71,14 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
         { _id: { $in: [user._id, recipientId] } },
         { $addToSet: { conversations: newConversation._id } }
       );
+
+      // Create a notification for the recipient
+      await createNotification({
+        recipientId,
+        senderId: user._id,
+        type: "MESSAGE",
+        message: `You received a new message from ${user.fullName}`,
+      });
 
       return newConversation;
     }

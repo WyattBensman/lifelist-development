@@ -113,11 +113,11 @@ type User {
 
   enum NotificationType {
     FRIEND_REQUEST
-    FRIEND_ACCEPTED
-    FOLLOW
+    FOLLOWED
     COLLAGE_REPOSTED
     COMMENTED
     TAGGED
+    MESSAGE
   }
 
   type Message {
@@ -336,6 +336,7 @@ type User {
   # User Relations Mutations
   type Mutation {
     sendFollowRequest(userIdToFollow: ID!): User
+    unsendFollowRequest(userIdToUnfollow: ID!): User
     acceptFollowRequest(userIdToAccept: ID!): User
     denyFollowRequest(userIdToDeny: ID!): User
     followUser(userIdToFollow: ID!): User

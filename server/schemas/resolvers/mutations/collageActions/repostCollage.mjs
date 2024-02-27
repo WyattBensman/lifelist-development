@@ -1,5 +1,6 @@
 import { Collage, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
+import createNotification from "../notifications/createNotification.mjs";
 
 const repostCollage = async (_, { collageId }, { user }) => {
   try {
@@ -30,9 +31,14 @@ const repostCollage = async (_, { collageId }, { user }) => {
       { new: true }
     );
 
-    return {
-      message: "Collage reposted successfully.",
-    };
+    // Create a notification for the original author of the collage
+    await createNotification({
+      recipientId: collage.author,
+      senderId: user._id,
+      type: "COLLAGE_REPOSTED",
+      collageId: collageId,
+      message: `${user.fullName} reposted your collage.`,
+    });
 
     return {
       message: "Collage reposted successfully.",

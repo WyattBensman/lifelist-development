@@ -1,5 +1,6 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
+import createNotification from "../notifications/createNotification.mjs";
 
 const followUser = async (_, { userIdToFollow }, { user }) => {
   try {
@@ -18,6 +19,14 @@ const followUser = async (_, { userIdToFollow }, { user }) => {
       { $addToSet: { followers: user._id } },
       { new: true }
     );
+
+    // Create a notification for the user being followed
+    await createNotification({
+      recipientId: userIdToFollow,
+      senderId: user._id,
+      type: "FOLLOW",
+      message: `${user.fullName} started following you.`,
+    });
 
     return updatedUser;
   } catch (error) {

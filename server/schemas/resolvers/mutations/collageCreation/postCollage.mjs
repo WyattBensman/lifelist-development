@@ -1,5 +1,6 @@
 import { Collage, User } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
+import createNotification from "../notifications/createNotification.mjs";
 
 const postCollage = async (_, { collageId }, { user }) => {
   try {
@@ -33,6 +34,20 @@ const postCollage = async (_, { collageId }, { user }) => {
       },
       { new: true, runValidators: true }
     );
+
+    // Send notifications to tagged users
+    const taggedUserIds = updatedCollage.tagged.map(
+      (taggedUser) => taggedUser._id
+    );
+
+    for (const taggedUserId of taggedUserIds) {
+      await createNotification({
+        recipientId: taggedUserId,
+        senderId: user._id,
+        type: "TAGGED",
+        message: `${user.fullName} tagged you in a collage.`,
+      });
+    }
 
     return updatedCollage;
   } catch (error) {

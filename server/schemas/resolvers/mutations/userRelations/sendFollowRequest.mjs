@@ -1,5 +1,6 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
+import createNotification from "../notifications/createNotification.mjs";
 
 const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
   try {
@@ -28,6 +29,14 @@ const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
       },
       { new: true }
     );
+
+    // Create a notification for the user receiving the friend request
+    await createNotification({
+      recipientId: userIdToFollow,
+      senderId: user._id,
+      type: "FRIEND_REQUEST",
+      message: `${user.fullName} sent you a friend request.`,
+    });
 
     return updatedUser;
   } catch (error) {
