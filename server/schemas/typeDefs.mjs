@@ -346,11 +346,11 @@ type User {
 
   # Privacy Group Mutations
   type Mutation {
-    addUsersToPrivacyGroup(userId: ID!, groupId: ID!, userToAddId: ID!): PrivacyGroup
-    createPrivacyGroup(userId: ID!, groupName: String!): PrivacyGroup
-    deletePrivacyGroup(userId: ID!, groupId: ID!): String
-    editPrivacyGroup(userId: ID!, groupId: ID!, newGroupName: String!): PrivacyGroup
-    removeUsersFromPrivacyGroup(userId: ID!, groupId: ID!, userToRemoveId: ID!): PrivacyGroup
+    addUsersToPrivacyGroup(groupId: ID!, userIds: [ID!]!): PrivacyGroup
+    createPrivacyGroup(groupName: String!, userIds: [ID!]): PrivacyGroup    
+    deletePrivacyGroup(groupId: ID!): MutationResult
+    editPrivacyGroup(groupId: ID!, newGroupName: String!): PrivacyGroup
+    removeUsersFromPrivacyGroup(groupId: ID!, userIds: [ID!]!): PrivacyGroup
   }
 
   # Notification Mutations

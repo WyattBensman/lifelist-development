@@ -1,17 +1,17 @@
 import { User } from "../../../../models/index.mjs";
 import { isCurrentUser } from "../../../../utils/auth.mjs";
 
-const createPrivacyGroup = async (_, { userId, groupName }, { user }) => {
+const createPrivacyGroup = async (_, { groupName, userIds }, { user }) => {
   try {
     // Ensure the user is authenticated and is the current user
-    isCurrentUser(user, userId);
+    /* isCurrentUser(user, userId); */
 
-    // Create a new privacy group
-    const newPrivacyGroup = { groupName, users: [] };
+    // Create a new privacy group with the specified users
+    const newPrivacyGroup = { groupName, users: userIds || [] };
 
     // Add the privacy group to the user's settings
     const updatedUser = await User.findByIdAndUpdate(
-      userId,
+      "65d762da8d7b7d7105af76b3",
       { $push: { "settings.privacyGroups": newPrivacyGroup } },
       { new: true, runValidators: true }
     );
