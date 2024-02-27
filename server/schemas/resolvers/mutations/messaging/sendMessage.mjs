@@ -4,7 +4,7 @@ import { isUser } from "../../../../utils/auth.mjs";
 const sendMessage = async (_, { conversationId, content }, { user }) => {
   try {
     // Check if the user is authenticated
-    /* isUser(user); */
+    isUser(user);
 
     // Add the message to the conversation
     const updatedConversation = await Conversation.findByIdAndUpdate(
@@ -12,7 +12,7 @@ const sendMessage = async (_, { conversationId, content }, { user }) => {
       {
         $push: {
           messages: {
-            sender: "65d762da8d7b7d7105af76b3",
+            sender: user._id,
             content,
           },
         },

@@ -4,23 +4,23 @@ import { isUser } from "../../../../utils/auth.mjs";
 const createConversation = async (_, { recipientId, message }, { user }) => {
   try {
     // Check if the user is authenticated
-    /* isUser(user); */
+    isUser(user);
 
     // Check if conversation exists between sender and recipient
     const existingConversation = await Conversation.findOne({
-      participants: { $all: ["65d762da8d7b7d7105af76b3", recipientId] },
+      participants: { $all: [user._id, recipientId] },
     });
 
     if (existingConversation) {
       // Conversation exists, push the message
       existingConversation.messages.push({
-        sender: "65d762da8d7b7d7105af76b3",
+        sender: user._id,
         content: message,
         sentAt: new Date(),
       });
 
       existingConversation.lastMessage = {
-        sender: "65d762da8d7b7d7105af76b3",
+        sender: user._id,
         content: message,
         sentAt: new Date(),
       };
@@ -31,7 +31,7 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
 
       // Update conversations field for both sender and recipient
       await User.updateMany(
-        { _id: { $in: ["65d762da8d7b7d7105af76b3", recipientId] } },
+        { _id: { $in: [user._id, recipientId] } },
         { $addToSet: { conversations: existingConversation._id } }
       );
 
@@ -39,16 +39,16 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
     } else {
       // Conversation does not exist, create a new one
       const newConversation = new Conversation({
-        participants: ["65d762da8d7b7d7105af76b3", recipientId],
+        participants: [user._id, recipientId],
         messages: [
           {
-            sender: "65d762da8d7b7d7105af76b3",
+            sender: user._id,
             content: message,
             sentAt: new Date(),
           },
         ],
         lastMessage: {
-          sender: "65d762da8d7b7d7105af76b3",
+          sender: user._id,
           content: message,
           sentAt: new Date(),
         },
@@ -59,7 +59,7 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
 
       // Update conversations field for both sender and recipient
       await User.updateMany(
-        { _id: { $in: ["65d762da8d7b7d7105af76b3", recipientId] } },
+        { _id: { $in: [user._id, recipientId] } },
         { $addToSet: { conversations: newConversation._id } }
       );
 
