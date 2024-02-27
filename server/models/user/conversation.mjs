@@ -5,10 +5,6 @@ const messageSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "User",
   },
-  recipient: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-  },
   content: {
     type: String,
     required: true,
@@ -29,6 +25,10 @@ const conversationSchema = new Schema({
   messages: [messageSchema],
   lastMessage: {
     type: messageSchema,
+  },
+  isRead: {
+    type: Boolean,
+    default: false,
   },
 });
 

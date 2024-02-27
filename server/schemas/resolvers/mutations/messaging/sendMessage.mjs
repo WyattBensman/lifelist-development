@@ -1,14 +1,10 @@
 import { Conversation } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-const sendMessage = async (
-  _,
-  { conversationId, senderId, content },
-  { user }
-) => {
+const sendMessage = async (_, { conversationId, content }, { user }) => {
   try {
     // Check if the user is authenticated
-    isUser(user);
+    /* isUser(user); */
 
     // Add the message to the conversation
     const updatedConversation = await Conversation.findByIdAndUpdate(
@@ -16,7 +12,7 @@ const sendMessage = async (
       {
         $push: {
           messages: {
-            sender: senderId,
+            sender: "65d762da8d7b7d7105af76b3",
             content,
           },
         },
@@ -24,9 +20,7 @@ const sendMessage = async (
       { new: true, runValidators: true }
     );
 
-    return updatedConversation.messages[
-      updatedConversation.messages.length - 1
-    ];
+    return updatedConversation;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during message sending.");

@@ -123,7 +123,6 @@ type User {
   type Message {
     _id: ID!
     sender: User
-    recipient: User
     content: String!
     sentAt: Date
   }
@@ -371,10 +370,10 @@ type User {
     # Messaging Mutations
     type Mutation {
       createConversation(recipientId: ID!, message: String): Conversation
-      deleteConversation(conversationId: ID!): String
+      deleteConversation(conversationId: ID!): MutationResult
       deleteMessage(conversationId: ID!, messageId: ID!): Conversation
       markConversationAsRead(conversationId: ID!): Conversation
-      sendMessage(conversationId: ID!, senderId: ID!, content: String!): Message
+      sendMessage(conversationId: ID!, content: String!): Conversation
     }
 
     # LifeList Mutations
