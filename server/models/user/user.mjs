@@ -15,12 +15,12 @@ const validatePhoneNumber = (value) => {
 };
 
 const userSchema = new Schema({
-  fName: {
+  fullName: {
     type: String,
     trim: true,
     match: /^[a-zA-Z]+$/,
   },
-  lName: {
+  /*   lName: {
     type: String,
     trim: true,
     match: /^[a-zA-Z]+$/,
@@ -31,7 +31,7 @@ const userSchema = new Schema({
     get: function () {
       return this.fName + " " + this.lName;
     },
-  },
+  }, */
   email: {
     type: String,
     unique: true,
@@ -216,6 +216,27 @@ const userSchema = new Schema({
     type: Number,
     default: 0,
   },
+  flowpageLinks: [
+    {
+      type: {
+        type: String,
+        enum: [
+          "Instagram",
+          "X",
+          "Facebook",
+          "Snapchat",
+          "YouTube",
+          "TikTok",
+          "Apple Music",
+          "Spotify",
+        ],
+      },
+      url: {
+        type: String,
+        trim: true,
+      },
+    },
+  ],
   settings: {
     type: userSettingsSchema,
     default: {

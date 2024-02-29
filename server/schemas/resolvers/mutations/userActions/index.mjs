@@ -4,6 +4,7 @@ import updateUserContact from "./updateUserContact.mjs";
 import updateUserPassword from "./updateUserPassword.mjs";
 import updateUserProfile from "./updateUserProfile.mjs";
 import updateUserSettings from "./updateUserSettings.mjs";
+import updateFlowpageLinks from "./updateFlowpageLinks.mjs";
 
 export {
   deleteUser,
@@ -12,4 +13,5 @@ export {
   updateUserPassword,
   updateUserProfile,
   updateUserSettings,
+  updateFlowpageLinks,
 };

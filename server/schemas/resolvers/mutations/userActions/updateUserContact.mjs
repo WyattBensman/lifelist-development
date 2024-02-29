@@ -3,12 +3,12 @@ import { isCurrentUser } from "../../../../utils/auth.mjs";
 
 const updateUserContact = async (
   _,
-  { userId, email, phoneNumber, gender },
+  { email, phoneNumber, gender },
   { user }
 ) => {
   try {
-    // Check if the user is authenticated & is the current user
-    isCurrentUser(user, userId);
+    // Authenticate
+    isUser(user);
 
     // Check if the verified email is being modified
     if (user.emailVerified && email !== user.email) {

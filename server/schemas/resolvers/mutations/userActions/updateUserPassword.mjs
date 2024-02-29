@@ -3,12 +3,12 @@ import { AuthenticationError, isCurrentUser } from "../../../../utils/auth.mjs";
 
 const updateUserPassword = async (
   _,
-  { userId, currentPassword, newPassword },
+  { currentPassword, newPassword },
   { user }
 ) => {
   try {
-    // Check if the user is authenticated & is the current user
-    isCurrentUser(user, userId);
+    // Authenticate
+    isUser(user);
 
     // Fetch the current user data
     const currentUser = await User.findById(user._id);

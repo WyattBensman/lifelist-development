@@ -1,18 +1,61 @@
-import { User } from "../../../../models/index.mjs";
-import { isCurrentUser } from "../../../../utils/auth.mjs";
+import {
+  User,
+  Conversation,
+  CameraAlbum,
+  Collage,
+  CameraShot,
+} from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
-const deleteUser = async (_, { userId }, { user }) => {
+const deleteUser = async (_, __, { user }) => {
   try {
     // Authenticate
-    isCurrentUser(user, userId);
+    isUser(user);
 
     // Find the user to delete
-    const userToDelete = await User.findByIdAndDelete(userId);
+    const userToDelete = await User.findByIdAndDelete(user._id);
 
     // Check if the user exists
     if (!userToDelete) {
+      console.error("User not found.");
       throw new Error("User not found.");
     }
+
+    // Delete all conversations the user is in
+    await Conversation.deleteMany({ participants: user._id });
+
+    // Delete all collages the user has posted
+    await Collage.deleteMany({ author: user._id });
+
+    // Delete all camera albums the user has created
+    await CameraAlbum.deleteMany({ author: user._id });
+
+    // Delete all camera shots associated with the user
+    await CameraShot.deleteMany({ user: user._id });
+
+    // Remove the user from the followers' following field
+    await User.updateMany(
+      { followers: user._id },
+      { $pull: { following: user._id } }
+    );
+
+    // Remove the user from the following users' followers field
+    await User.updateMany(
+      { following: user._id },
+      { $pull: { followers: user._id } }
+    );
+
+    // Untag the user from all tagged collages
+    await Collage.updateMany(
+      { tagged: user._id },
+      { $pull: { tagged: user._id } }
+    );
+
+    // Delete all comments associated with the user and remove them from collages
+    await Comment.deleteMany({ author: user._id });
+
+    // Remove the user's comments from all collages
+    await Collage.updateMany({}, { $pull: { comments: { author: user._id } } });
 
     return {
       message: `User ${userToDelete.id} deleted successfully.`,

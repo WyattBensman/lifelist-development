@@ -4,12 +4,12 @@ import { uploadSingleImage } from "../../../../utils/uploadImages.mjs";
 
 const updateUserProfile = async (
   _,
-  { userId, profilePicture, fName, lName, username, bio },
+  { profilePicture, fName, lName, username, bio },
   { user }
 ) => {
   try {
-    // Check if the user is authenticated & is the current user
-    isCurrentUser(user, userId);
+    // Authenticate
+    isUser(user);
 
     // Validate fName & lName
     if (!fName || !lName) {

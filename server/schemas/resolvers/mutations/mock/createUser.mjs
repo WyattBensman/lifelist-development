@@ -2,7 +2,7 @@ import { User } from "../../../../models/index.mjs";
 
 const createUser = async (
   _,
-  { fName, lName, email, phoneNumber, password, username, gender, birthday }
+  { fullName, email, phoneNumber, password, username, gender, birthday }
 ) => {
   try {
     // Check if the email or username is already taken

@@ -6,8 +6,6 @@ scalar Upload
 # user schema
 type User {
     _id: ID!
-    fName: String
-    lName: String
     fullName: String
     email: String
     phoneNumber: String
@@ -34,6 +32,7 @@ type User {
     logbook: [Collage]
     archivedCollages: [Collage]
     conversations: [Conversation]
+    flowpageLinks: [FlowpageLink]
     unreadMessagesCount: Int
     settings: UserSettings
   }
@@ -78,6 +77,22 @@ type User {
   enum LifeListTypeEnum {
     experienced
     wishlisted
+  }
+
+  type FlowpageLink {
+    type: FlowpageLinkType
+    url: String
+  }
+
+  enum FlowpageLinkType {
+    Instagram
+    X
+    Facebook
+    Snapchat
+    YouTube
+    TikTok
+    AppleMusic
+    Spotify
   }
 
   type DailyCameraShots {
@@ -249,6 +264,11 @@ type User {
     longitude: Float
   }
 
+  input FlowpageLinkInput {
+    type: String
+    url: String
+  }
+
   type MutationResult {
     message: String
   }
@@ -309,11 +329,10 @@ type User {
     verification(userId: ID!, verificationCode: String!): User
     resendVerificationCode(userId: ID!): User
     setUsernameAndPassword(userId: ID!, username: String!, password: String!): User
-    setBasicInformation(userId: ID!, fName: String!, lName: String!, gender: String!): Auth
+    setBasicInformation(userId: ID!, fullName: String!, gender: String!): Auth
     setProfilePictureAndBio(userId: ID!, profilePicture: Upload, bio: String): User
     createUser(
-      fName: String
-      lName: String
+      fullName: String
       email: String
       phoneNumber: String
       password: String
@@ -329,8 +348,9 @@ type User {
     login(usernameOrEmailOrPhone: String!, password: String!): Auth
     updateUserContact(userId: ID!, email: String, phoneNumber: String, gender: String): User
     updateUserPassword(userId: ID!, currentPassword: String!, newPassword: String!): User
-    updateUserProfile(userId: ID!, profilePicture: Upload, fName: String!, lName: String!, username: String!, bio: String): User
+    updateUserProfile(userId: ID!, profilePicture: Upload, fullName: String!, username: String!, bio: String): User
     updateUserSettings(userId: ID!, privacy: String, darkMode: Boolean, language: String, notifications: Boolean): User
+    updateFlowpageLinks(flowpageLinks: [FlowpageLinkInput]): User
   }
 
   # User Relations Mutations

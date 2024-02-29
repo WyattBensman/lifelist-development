@@ -3,12 +3,12 @@ import { User } from "../../../../models/index.mjs";
 
 const updateUserSettings = async (
   _,
-  { userId, privacy, darkMode, language, notifications },
+  { privacy, darkMode, language, notifications },
   { user }
 ) => {
   try {
-    // Authentication
-    isCurrentUser(user, userId);
+    // Authenticate
+    isUser(user);
 
     // Update the user's settings
     const updatedUser = await User.findByIdAndUpdate(
