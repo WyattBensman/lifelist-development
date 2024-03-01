@@ -6,9 +6,8 @@ const setAudience = async (_, { collageId, audience }, { user }) => {
     // Check if the user is authenticated
     isUser(user);
 
-    // Retrieve the collage and check if the user is the author
-    const collage = await Collage.findById(collageId);
-    isCurrentAuthor(user, collage.author);
+    // Check if the user is the author
+    await isCurrentAuthor(user, collageId);
 
     // Update audience for the collage
     const updatedCollage = await Collage.findByIdAndUpdate(
@@ -21,7 +20,11 @@ const setAudience = async (_, { collageId, audience }, { user }) => {
       { new: true, runValidators: true }
     );
 
-    return updatedCollage;
+    return {
+      success: true,
+      message: "Audience set successfully",
+      collageId: collageId,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while setting the audience.");

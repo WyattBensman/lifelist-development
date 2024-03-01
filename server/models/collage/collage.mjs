@@ -40,8 +40,18 @@ const collageSchema = new Schema({
     type: String,
     maxlength: 75,
   },
-  summary: {
-    type: String,
+  entries: [
+    {
+      title: {
+        type: String,
+      },
+      content: {
+        type: String,
+      },
+    },
+  ],
+  date: {
+    type: Date,
   },
   startDate: {
     type: Date,

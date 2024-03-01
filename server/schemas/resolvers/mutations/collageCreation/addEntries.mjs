@@ -1,27 +1,31 @@
 import { Collage } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-const addSummary = async (_, { collageId, summary }, { user }) => {
+const addEntries = async (_, { collageId, entries }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
 
-    // Retrieve the collage and check if the user is the author
-    const collage = await Collage.findById(collageId);
-    isCurrentAuthor(user, collage.author);
+    // Check if the user is the author
+    await isCurrentAuthor(user, collageId);
 
     // Update the collage with the provided summary
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { summary },
+      { entries },
       { new: true }
     );
 
-    return updatedCollage;
+    return {
+      success: true,
+      message: "Entries added successfully",
+      collageId: collageId,
+      entries: updatedCollage.entries,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during adding summary.");
   }
 };
 
-export default addSummary;
+export default addEntries;

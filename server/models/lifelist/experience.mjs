@@ -21,7 +21,7 @@ const experienceSchema = new Schema({
     },
   },
   category: {
-    type: [String],
+    type: String,
     enum: [
       "Attractions",
       "Destinations",

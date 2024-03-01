@@ -2,7 +2,7 @@ import { Collage, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 import { uploadMultipleImages } from "../../../../utils/uploadImages.mjs";
 
-const startCollageCreation = async (_, { images }, { user }) => {
+const startCollage = async (_, { images }, { user }) => {
   try {
     isUser(user);
 
@@ -35,11 +35,16 @@ const startCollageCreation = async (_, { images }, { user }) => {
       { new: true }
     );
 
-    return newCollage;
+    return {
+      success: true,
+      message: "Images added successfully",
+      collageId: collageId,
+      images: newCollage.images,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during collage creation start.");
   }
 };
 
-export default startCollageCreation;
+export default startCollage;

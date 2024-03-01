@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { promisify } from "util";
 import { GraphQLError } from "graphql";
 import dotenv from "dotenv";
+import { Collage } from "../models/index.mjs";
 dotenv.config();
 
 const expiration = "365d";
@@ -68,13 +69,16 @@ export const isCurrentUser = (user, userId) => {
 };
 
 // Check to see if the user is authenticated & is the Author
-export const isCurrentAuthor = (user, authorId) => {
+export const isCurrentAuthor = async (user, collageId) => {
   if (!user) {
     throw new AuthenticationError("User not authenticated");
   }
 
+  // Fetch the collage based on collageId
+  const collage = await Collage.findById(collageId);
+
   // Check if the current user is the author
-  if (user.id !== authorId) {
+  if (user._id !== collage.author) {
     throw new AuthenticationError("Not authorized to perform this action");
   }
 };

@@ -4,18 +4,20 @@ import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 const untagUsers = async (_, { collageId, userIdsToUntag }, { user }) => {
   try {
     // Check if the user is authenticated
-    isUser(user);
+    /* isUser(user); */
 
-    // Retrieve the collage and check if the user is the author
-    const collage = await Collage.findById(collageId);
-    isCurrentAuthor(user, collage.author);
+    // Check if the user is the author
+    /* await isCurrentAuthor(user, collageId); */
 
     // Update tagged users for the collage
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
       { $pull: { tagged: { $in: userIdsToUntag } } },
       { new: true, runValidators: true }
-    );
+    ).populate({
+      path: "tagged",
+      select: "fullName profilePicture username",
+    });
 
     // Remove the collage from the taggedCollages field for each untagged user
     await User.updateMany(
@@ -23,7 +25,12 @@ const untagUsers = async (_, { collageId, userIdsToUntag }, { user }) => {
       { $pull: { taggedCollages: collageId } }
     );
 
-    return updatedCollage;
+    return {
+      success: true,
+      message: "Users untagged successfully",
+      collageId: collageId,
+      taggedUsers: updatedCollage.tagged,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while untagging users.");

@@ -1,25 +1,27 @@
 import addDescription from "./addDescription.mjs";
 import addExperiences from "./addExperiences.mjs";
-import addSummary from "./addSummary.mjs";
+import addEntries from "./addEntries.mjs";
 import addToLogbook from "./addToLogbook.mjs";
 import postCollage from "./postCollage.mjs";
 import setAudience from "./setAudience.mjs";
 import setDate from "./setDate.mjs";
 import setLocation from "./setLocation.mjs";
-import startCollageCreation from "./startCollageCreation.mjs";
+import startCollage from "./startCollage.mjs";
 import tagUsers from "./tagUsers.mjs";
+import untagUsers from "./untagUsers.mjs";
 import removeExperiences from "./removeExperiences.mjs";
 
 export {
   addDescription,
   addExperiences,
-  addSummary,
+  addEntries,
   addToLogbook,
   postCollage,
   setAudience,
   setDate,
   setLocation,
-  startCollageCreation,
+  startCollage,
   tagUsers,
+  untagUsers,
   removeExperiences,
 };

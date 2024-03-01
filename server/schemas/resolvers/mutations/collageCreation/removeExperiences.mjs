@@ -6,9 +6,8 @@ const removeExperiences = async (_, { collageId, experienceIds }, { user }) => {
     // Check if the user is authenticated
     isUser(user);
 
-    // Retrieve the collage and check if the user is the author
-    const collage = await Collage.findById(collageId);
-    isCurrentAuthor(user, collage.author);
+    // Check if the user is the author
+    await isCurrentAuthor(user, collageId);
 
     // Update the collage and remove the specified experiences
     const updatedCollage = await Collage.findByIdAndUpdate(
@@ -20,7 +19,12 @@ const removeExperiences = async (_, { collageId, experienceIds }, { user }) => {
       select: "title image location category",
     });
 
-    return updatedCollage;
+    return {
+      success: true,
+      message: "Experiences removed successfully",
+      collageId: collageId,
+      experiences: updatedCollage.experiences,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during removing experiences.");

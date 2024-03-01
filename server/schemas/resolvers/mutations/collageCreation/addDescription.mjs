@@ -6,9 +6,8 @@ const addDescription = async (_, { collageId, title, caption }, { user }) => {
     // Check if the user is authenticated
     isUser(user);
 
-    // Retrieve the collage and check if the user is the author
-    const collage = await Collage.findById(collageId);
-    isCurrentAuthor(user, collage.author);
+    // Check if the user is the author
+    await isCurrentAuthor(user, collageId);
 
     // Update the collage with the provided title and caption
     const updatedCollage = await Collage.findByIdAndUpdate(
@@ -17,7 +16,13 @@ const addDescription = async (_, { collageId, title, caption }, { user }) => {
       { new: true }
     );
 
-    return updatedCollage;
+    return {
+      success: true,
+      message: "Description added successfully",
+      collageId: updatedCollage._id,
+      title: updatedCollage.title,
+      caption: updatedCollage.caption,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during adding description.");

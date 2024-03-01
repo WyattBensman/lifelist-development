@@ -6,18 +6,22 @@ const setLocation = async (_, { collageId, locations }, { user }) => {
     // Check if the user is authenticated
     isUser(user);
 
-    // Retrieve the collage and check if the user is the author
-    const collage = await Collage.findById(collageId);
-    isCurrentAuthor(user, collage.author);
+    // Check if the user is the author
+    await isCurrentAuthor(user, collageId);
 
     // Update locations for the collage
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $set: { locations } },
+      { $addToSet: { locations: { $each: locations } } },
       { new: true, runValidators: true }
     );
 
-    return updatedCollage;
+    return {
+      success: true,
+      message: "Location set successfully",
+      collageId: collageId,
+      locations: updatedCollage.locations,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while setting the locations.");

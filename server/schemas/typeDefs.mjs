@@ -128,10 +128,10 @@ type User {
 
   enum NotificationType {
     FRIEND_REQUEST
-    FOLLOWED
-    COLLAGE_REPOSTED
-    COMMENTED
-    TAGGED
+    FOLLOW
+    COLLAGE_REPOST
+    COMMENT
+    TAG
     MESSAGE
   }
 
@@ -179,10 +179,11 @@ type User {
     images: [String]!
     title: String
     caption: String
+    date: Date
     startDate: Date
     finishDate: Date
     month: Month
-    summary: String
+    entries: [Entry]
     experiences: [Experience]
     locations: [Location]
     tagged: [User]
@@ -202,7 +203,16 @@ type User {
     name: String
     year: Int
   }
-  
+
+  type Entry {
+    title: String
+    content: String
+  }
+
+  input EntryInput {
+  title: String
+  content: String
+}
   
   type Location {
     name: String!
@@ -404,17 +414,17 @@ type User {
 
     # Collage Creation Mutations
     type Mutation {
-      startCollageCreation(images: [Upload]): Collage
-      addDescription(collageId: ID!, title: String, caption: String): Collage
-      addExperiences(collageId: ID!, experienceIds: [ID]): Collage
-      removeExperiences(collageId: ID!, experienceIds: [ID]!): Collage
-      addSummary(collageId: ID!, summary: String): Collage
-      addToLogbook(collageId: ID!): Collage
-      setAudience(collageId: ID!, audience: [PrivacyGroupInput]): Collage
-      setLocation(collageId: ID!, locations: [LocationInput]): Collage
-      setDate(collageId: ID!, startDate: Date, finishDate: Date, month: MonthInput): Collage
-      tagUsers(collageId: ID!, taggedUserIds: [ID]): Collage
-      untagUsers(collageId: ID!, userIdsToUntag: [ID]): Collage
+      startCollage(images: [Upload]): StartCollageReponse
+      addDescription(collageId: ID!, title: String, caption: String): AddDescriptionReponse
+      addEntries(collageId: ID!, entries: [EntryInput]): AddEntriesResponse
+      addExperiences(collageId: ID!, experienceIds: [ID]): AddExperiencesResponse
+      setAudience(collageId: ID!, audience: [PrivacyGroupInput]): CollageCreationResponse
+      setLocation(collageId: ID!, locations: [LocationInput]): SetLocationResponse
+      setDate(collageId: ID!, startDate: Date, finishDate: Date, month: MonthInput, date: Date): SetDateResponse
+      tagUsers(collageId: ID!, taggedUserIds: [ID]): TagUsersResponse
+      removeExperiences(collageId: ID!, experienceIds: [ID]!): AddExperiencesResponse
+      untagUsers(collageId: ID!, userIdsToUntag: [ID]): TagUsersResponse
+      addToLogbook(collageId: ID!): AddToLogBookResponse
       postCollage(collageId: ID!): Collage
     }
 
@@ -482,6 +492,93 @@ type User {
       status: FollowRequestStatus
       message: String
       followRequests: [FollowRequest!]
+    }
+
+
+
+    type CollageCreationResponse {
+      success: Boolean
+      message: String
+      collageId: ID
+    }
+
+    type StartCollageReponse {
+      success: Boolean
+      message: String
+      collageId: ID
+      images: [String]
+    }
+
+    type AddDescriptionReponse {
+      success: Boolean
+      message: String
+      collageId: ID
+      title: String
+      caption: String
+    }
+
+    type AddEntriesResponse {
+      success: Boolean
+      message: String
+      collageId: ID
+      entries: [Entry]
+    }
+
+    type AddExperiencesResponse {
+      success: Boolean
+      message: String
+      collageId: ID
+      experiences: [ExperienceType]
+    }
+
+    type ExperienceType {
+      title: String
+      image: String
+      location: String
+      category: String
+    }
+
+    type SetDateResponse {
+      success: Boolean
+      message: String
+      collageId: ID
+      startDate: Date
+      finishDate: Date
+      date: Date
+      month: Month
+    }
+
+    type SetLocationResponse {
+      success: Boolean
+      message: String
+      collageId: ID
+      locations: [Location]
+    }
+
+    type TagUsersResponse {
+      success: Boolean
+      message: String
+      collageId: ID
+      taggedUsers: [User]
+    }
+
+    type AddToLogBookResponse {
+      success: Boolean
+      message: String
+      collageId: ID
+      logbook: [Collage]
+    }
+
+    input DateInput {
+      startDate: Date
+      finishDate: Date
+      month: MonthInput
+      date: Date
+    }
+    
+    input MonthInput {
+      name: String
+      year: Int
     }
     
 

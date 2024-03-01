@@ -6,9 +6,8 @@ const tagUsers = async (_, { collageId, taggedUserIds }, { user }) => {
     // Check if the user is authenticated
     isUser(user);
 
-    // Retrieve the collage and check if the user is the author
-    const collage = await Collage.findById(collageId);
-    isCurrentAuthor(user, collage.author);
+    // Check if the user is the author
+    await isCurrentAuthor(user, collageId);
 
     // Validate that the tagged users exist
     const taggedUsers = await User.find({ _id: { $in: taggedUserIds } });
@@ -19,17 +18,19 @@ const tagUsers = async (_, { collageId, taggedUserIds }, { user }) => {
     // Update tagged users for the collage
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $set: { tagged: taggedUserIds } },
+      { $addToSet: { tagged: { $each: taggedUserIds } } },
       { new: true, runValidators: true }
-    );
+    ).populate({
+      path: "tagged",
+      select: "fullName profilePicture username",
+    });
 
-    // Add the collage to the taggedCollages field for each tagged user
-    await User.updateMany(
-      { _id: { $in: taggedUserIds } },
-      { $addToSet: { taggedCollages: collageId } }
-    );
-
-    return updatedCollage;
+    return {
+      success: true,
+      message: "Users tagged successfully",
+      collageId: collageId,
+      taggedUsers: updatedCollage.tagged,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while setting the tagged users.");

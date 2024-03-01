@@ -7,9 +7,8 @@ const postCollage = async (_, { collageId }, { user }) => {
     // Check if the user is authenticated
     isUser(user);
 
-    // Retrieve the collage and check if the user is the author
-    const collage = await Collage.findById(collageId);
-    isCurrentAuthor(user, collage.author);
+    // Check if the user is the author
+    await isCurrentAuthor(user, collageId);
 
     // Check if the collage is in the user's logbook
     const isInLogbook = user.logbook.includes(collageId);
@@ -40,12 +39,18 @@ const postCollage = async (_, { collageId }, { user }) => {
       (taggedUser) => taggedUser._id
     );
 
+    // Add the collage to the taggedCollages field for each tagged user
+    await User.updateMany(
+      { _id: { $in: taggedUserIds } },
+      { $addToSet: { taggedCollages: collageId } }
+    );
+
     for (const taggedUserId of taggedUserIds) {
       await createNotification({
         recipientId: taggedUserId,
         senderId: user._id,
-        type: "TAGGED",
-        message: `${user.fullName} tagged you in a collage.`,
+        type: "TAG",
+        message: `Cody Maverick tagged you in a collage.`,
       });
     }
 
