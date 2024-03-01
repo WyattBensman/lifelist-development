@@ -18,20 +18,8 @@ const userSchema = new Schema({
   fullName: {
     type: String,
     trim: true,
-    match: /^[a-zA-Z]+$/,
+    match: /^[a-zA-Z\s]+$/,
   },
-  /*   lName: {
-    type: String,
-    trim: true,
-    match: /^[a-zA-Z]+$/,
-  },
-  fullName: {
-    type: String,
-    virtual: true,
-    get: function () {
-      return this.fName + " " + this.lName;
-    },
-  }, */
   email: {
     type: String,
     unique: true,
@@ -110,7 +98,7 @@ const userSchema = new Schema({
       ref: "User",
     },
   ],
-  followerRequests: [
+  followRequests: [
     {
       userId: {
         type: Schema.Types.ObjectId,
@@ -118,8 +106,8 @@ const userSchema = new Schema({
       },
       status: {
         type: String,
-        enum: ["pending", "accepted", "rejected"],
-        default: "pending",
+        enum: ["PENDING", "ACCEPTED", "REJECTED"],
+        default: "PENDING",
       },
     },
   ],
@@ -216,27 +204,44 @@ const userSchema = new Schema({
     type: Number,
     default: 0,
   },
-  flowpageLinks: [
+  notifications: [
     {
-      type: {
-        type: String,
-        enum: [
-          "Instagram",
-          "X",
-          "Facebook",
-          "Snapchat",
-          "YouTube",
-          "TikTok",
-          "Apple Music",
-          "Spotify",
-        ],
-      },
-      url: {
-        type: String,
-        trim: true,
-      },
+      type: Schema.Types.ObjectId,
+      ref: "Notification",
     },
   ],
+  flowpageLinks: {
+    type: [
+      {
+        type: {
+          type: String,
+          enum: [
+            "Instagram",
+            "X",
+            "Facebook",
+            "Snapchat",
+            "YouTube",
+            "TikTok",
+            "Apple Music",
+            "Spotify",
+          ],
+        },
+        url: {
+          type: String,
+          trim: true,
+        },
+      },
+    ],
+    validate: [
+      {
+        validator: function (array) {
+          return array.length <= 8;
+        },
+        message: "Cannot have more than 8 Flow Page Links.",
+      },
+    ],
+  },
+
   settings: {
     type: userSettingsSchema,
     default: {

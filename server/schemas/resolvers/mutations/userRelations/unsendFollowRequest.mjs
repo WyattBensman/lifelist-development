@@ -20,13 +20,16 @@ const unsendFollowRequest = async (_, { userIdToUnfollow }, { user }) => {
       userIdToUnfollow,
       {
         $pull: {
-          followerRequests: { userId: user._id },
+          followRequests: { userId: user._id },
         },
       },
       { new: true }
     );
 
-    return updatedUser;
+    return {
+      success: true,
+      message: "Follow request unsent successfully.",
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during unsending follow request.");

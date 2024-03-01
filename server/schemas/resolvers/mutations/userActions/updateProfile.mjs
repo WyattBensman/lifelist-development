@@ -1,10 +1,10 @@
 import { User } from "../../../../models/index.mjs";
-import { isCurrentUser } from "../../../../utils/auth.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 import { uploadSingleImage } from "../../../../utils/uploadImages.mjs";
 
-const updateUserProfile = async (
+const updateProfile = async (
   _,
-  { profilePicture, fName, lName, username, bio },
+  { profilePicture, fullName, username, bio },
   { user }
 ) => {
   try {
@@ -12,8 +12,8 @@ const updateUserProfile = async (
     isUser(user);
 
     // Validate fName & lName
-    if (!fName || !lName) {
-      throw new Error("Both first name and last name are required.");
+    if (!fullName) {
+      throw new Error("Full name is required.");
     }
 
     // Validate username
@@ -36,19 +36,23 @@ const updateUserProfile = async (
       user._id,
       {
         profilePicture: fileUrl,
-        fName,
-        lName,
+        fullName,
         username,
         bio,
       },
       { new: true, runValidators: true }
     );
 
-    return updatedUser;
+    return {
+      profilePicture: updatedUser.profilePicture,
+      fullName: updatedUser.fullName,
+      username: updatedUser.username,
+      bio: updatedUser.bio,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during profile update.");
   }
 };
 
-export default updateUserProfile;
+export default updateProfile;

@@ -10,7 +10,7 @@ const denyFollowRequest = async (_, { userIdToDeny }, { user }) => {
       user._id,
       {
         $pull: {
-          followerRequests: {
+          followRequests: {
             userId: userIdToDeny,
           },
         },
@@ -18,7 +18,11 @@ const denyFollowRequest = async (_, { userIdToDeny }, { user }) => {
       { new: true }
     );
 
-    return updatedUser;
+    return {
+      success: true,
+      message: "Follow request denied.",
+      followRequests: updatedUser.followRequests,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during denying follow request.");

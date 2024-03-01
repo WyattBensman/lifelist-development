@@ -1,17 +1,17 @@
 import deleteUser from "./deleteUser.mjs";
 import login from "./login.mjs";
-import updateUserContact from "./updateUserContact.mjs";
-import updateUserPassword from "./updateUserPassword.mjs";
-import updateUserProfile from "./updateUserProfile.mjs";
-import updateUserSettings from "./updateUserSettings.mjs";
+import updateContact from "./updateContact.mjs";
 import updateFlowpageLinks from "./updateFlowpageLinks.mjs";
+import updatePassword from "./updatePassword.mjs";
+import updateProfile from "./updateProfile.mjs";
+import updateSettings from "./updateSettings.mjs";
 
 export {
   deleteUser,
   login,
-  updateUserContact,
-  updateUserPassword,
-  updateUserProfile,
-  updateUserSettings,
+  updateContact,
   updateFlowpageLinks,
+  updatePassword,
+  updateProfile,
+  updateSettings,
 };

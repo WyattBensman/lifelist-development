@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
-import { AuthenticationError, isCurrentUser } from "../../../../utils/auth.mjs";
+import { AuthenticationError, isUser } from "../../../../utils/auth.mjs";
 
-const updateUserPassword = async (
+const updatePassword = async (
   _,
   { currentPassword, newPassword },
   { user }
@@ -26,11 +26,14 @@ const updateUserPassword = async (
     currentUser.password = newPassword;
     const updatedUser = await currentUser.save();
 
-    return updatedUser;
+    return {
+      success: true,
+      message: "Password updated successfully",
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during password update");
   }
 };
 
-export default updateUserPassword;
+export default updatePassword;

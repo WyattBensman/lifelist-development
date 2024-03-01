@@ -1,5 +1,6 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
+import createNotification from "../notifications/createNotification.mjs";
 
 const acceptFollowRequest = async (_, { userIdToAccept }, { user }) => {
   try {
@@ -19,12 +20,32 @@ const acceptFollowRequest = async (_, { userIdToAccept }, { user }) => {
       user._id,
       {
         $addToSet: { followers: userIdToAccept },
-        $pull: { followerRequests: { userId: userIdToAccept } },
+        $pull: { followRequests: { userId: userIdToAccept } },
       },
       { new: true }
     );
 
-    return updatedUser;
+    // Fetch the user object using userIdToAccept
+    const acceptedUser = await User.findById(userIdToAccept);
+
+    if (!acceptedUser) {
+      throw new Error("User not found.");
+    }
+
+    // Create a notification for the current user indicating a new follower
+    await createNotification({
+      recipientId: user._id,
+      senderId: userIdToAccept,
+      type: "FOLLOW",
+      message: `${acceptedUser.fullName} is now following you.`,
+    });
+
+    return {
+      success: true,
+      status: "ACCEPTED",
+      message: "Follow request accepted.",
+      followRequests: updatedUser.followRequests,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during accepting follow request.");

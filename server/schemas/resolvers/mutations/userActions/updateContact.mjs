@@ -1,9 +1,9 @@
 import { User } from "../../../../models/index.mjs";
-import { isCurrentUser } from "../../../../utils/auth.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
-const updateUserContact = async (
+const updateContact = async (
   _,
-  { email, phoneNumber, gender },
+  { email, phoneNumber, gender, birthday },
   { user }
 ) => {
   try {
@@ -27,15 +27,21 @@ const updateUserContact = async (
         email,
         phoneNumber,
         gender,
+        birthday,
       },
       { new: true, runValidators: true }
     );
 
-    return updatedUser;
+    return {
+      email: updatedUser.email,
+      phoneNumber: updatedUser.phoneNumber,
+      gender: updatedUser.gender,
+      birthday: updatedUser.birthday,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during contact information update");
   }
 };
 
-export default updateUserContact;
+export default updateContact;

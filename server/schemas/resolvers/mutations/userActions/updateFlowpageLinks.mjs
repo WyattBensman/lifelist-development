@@ -12,6 +12,11 @@ const updateFlowpageLinks = async (_, { flowpageLinks }, { user }) => {
       throw new Error("Duplicate link types are not allowed.");
     }
 
+    // Check for maximum length
+    if (flowpageLinks.length > 8) {
+      throw new Error("Cannot have more than 8 Flow Page Links.");
+    }
+
     // Update the user's profile with the new or edited flowpageLinks
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
@@ -23,7 +28,7 @@ const updateFlowpageLinks = async (_, { flowpageLinks }, { user }) => {
       { new: true, runValidators: true }
     );
 
-    return updatedUser;
+    return updatedUser.flowpageLinks;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during flowpageLinks update.");

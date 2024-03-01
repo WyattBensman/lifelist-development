@@ -4,6 +4,7 @@ import {
   CameraAlbum,
   Collage,
   CameraShot,
+  Comment,
 } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
@@ -58,6 +59,7 @@ const deleteUser = async (_, __, { user }) => {
     await Collage.updateMany({}, { $pull: { comments: { author: user._id } } });
 
     return {
+      success: true,
       message: `User ${userToDelete.id} deleted successfully.`,
     };
   } catch (error) {

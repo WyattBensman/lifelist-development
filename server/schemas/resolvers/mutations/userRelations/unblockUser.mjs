@@ -13,7 +13,11 @@ const unblockUser = async (_, { userIdToUnblock }, { user }) => {
       { new: true, runValidators: true }
     );
 
-    return updatedUser;
+    return {
+      success: true,
+      message: "User unblocked successfully.",
+      action: "UNBLOCK",
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during user unblocking.");

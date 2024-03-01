@@ -14,12 +14,12 @@ const notificationSchema = new Schema({
   type: {
     type: String,
     enum: [
-      "friendRequest",
-      "friendAccepted",
-      "follow",
-      "collageReposted",
-      "commented",
-      "tagged",
+      "FRIEND_REQUEST",
+      "FOLLOW",
+      "COLLAGE_REPOST",
+      "COMMENT",
+      "TAG",
+      "MESSAGE",
     ],
     required: true,
   },

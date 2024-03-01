@@ -28,7 +28,11 @@ const followUser = async (_, { userIdToFollow }, { user }) => {
       message: `${user.fullName} started following you.`,
     });
 
-    return updatedUser;
+    return {
+      success: true,
+      message: "User followed successfully.",
+      action: "FOLLOW",
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during follow action.");

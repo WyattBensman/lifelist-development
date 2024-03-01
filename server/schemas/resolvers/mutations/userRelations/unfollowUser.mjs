@@ -19,7 +19,11 @@ const unfollowUser = async (_, { userIdToUnfollow }, { user }) => {
       { new: true }
     );
 
-    return updatedUser;
+    return {
+      success: true,
+      message: "User followed successfully.",
+      action: "UNFOLLOW",
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during unfollow action.");

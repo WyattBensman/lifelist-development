@@ -20,7 +20,7 @@ type User {
     birthday: Date
     followers: [User]
     following: [User]
-    followerRequests: [FollowerRequest]
+    followRequests: [FollowRequest]
     lifeList: [LifeListItem]
     collages: [Collage]
     dailyCameraShots: DailyCameraShots
@@ -57,15 +57,15 @@ type User {
     verified: Boolean
   }
 
-  type FollowerRequest {
+  type FollowRequest {
     userId: ID
-    status: FollowerRequestStatus
+    status: FollowRequestStatus
   }
 
-  enum FollowerRequestStatus {
-    pending
-    accepted
-    rejected
+  enum FollowRequestStatus {
+    PENDING
+    ACCEPTED
+    REJECTED
   }
 
   type LifeListItem {
@@ -269,10 +269,6 @@ type User {
     url: String
   }
 
-  type MutationResult {
-    message: String
-  }
-
   # User Queries
   type Query {
     getUserById(userId: ID!): User
@@ -315,7 +311,7 @@ type User {
   # Notification Queries
   type Query {
     getUserNotifications: [Notification]
-    getUserFollowRequest: [FollowerRequest]
+    getUserFollowRequest: [FollowRequest]
   }
 
   # Experience Queries
@@ -344,25 +340,25 @@ type User {
 
   # User Actions Mutations
   type Mutation {
-    deleteUser(userId: ID!): MutationResult
     login(usernameOrEmailOrPhone: String!, password: String!): Auth
-    updateUserContact(userId: ID!, email: String, phoneNumber: String, gender: String): User
-    updateUserPassword(userId: ID!, currentPassword: String!, newPassword: String!): User
-    updateUserProfile(userId: ID!, profilePicture: Upload, fullName: String!, username: String!, bio: String): User
-    updateUserSettings(userId: ID!, privacy: String, darkMode: Boolean, language: String, notifications: Boolean): User
-    updateFlowpageLinks(flowpageLinks: [FlowpageLinkInput]): User
+    deleteUser(userId: ID!): MutationResponse
+    updateContact(email: String, phoneNumber: String, gender: String, birthday: String): UpdateContactResponse
+    updatePassword(currentPassword: String!, newPassword: String!): MutationResponse
+    updateProfile(profilePicture: Upload, fullName: String, username: String, bio: String): UpdateProfileResponse
+    updateSettings(privacy: String, darkMode: Boolean, language: String, notifications: Boolean): UpdateSettingsResponse
+    updateFlowpageLinks(flowpageLinks: [FlowpageLinkInput]): [FlowpageLink]
   }
 
   # User Relations Mutations
   type Mutation {
-    sendFollowRequest(userIdToFollow: ID!): User
+    sendFollowRequest(userIdToFollow: ID!): FollowRequestResponse
     unsendFollowRequest(userIdToUnfollow: ID!): User
-    acceptFollowRequest(userIdToAccept: ID!): User
-    denyFollowRequest(userIdToDeny: ID!): User
-    followUser(userIdToFollow: ID!): User
-    unfollowUser(userIdToUnfollow: ID!): User
-    blockUser(userIdToBlock: ID!): User
-    unblockUser(userIdToUnblock: ID!): User
+    acceptFollowRequest(userIdToAccept: ID!): FollowRequestResponse
+    denyFollowRequest(userIdToDeny: ID!): FollowRequestResponse
+    followUser(userIdToFollow: ID!): MutationResponse
+    unfollowUser(userIdToUnfollow: ID!): MutationResponse
+    blockUser(userIdToBlock: ID!): MutationResponse
+    unblockUser(userIdToUnblock: ID!): MutationResponse
   }
 
   # Privacy Group Mutations
@@ -448,6 +444,44 @@ type User {
       editShot(shotId: ID!, orientation: String, filter: Boolean): CameraShot
       removeShotsFromAlbum(albumId: ID!, shotIds: [ID!]!): CameraAlbum
       takeShot(filter: Boolean, shotOrientation: String): CameraShot
+    }
+
+    type MutationResponse {
+      success: Boolean!
+      message: String
+      action: String
+    }
+
+    type MutationResult {
+      message: String
+    }
+
+    type UpdateContactResponse {
+      email: String
+      phoneNumber: String
+      gender: String
+      birthday: String
+    }
+
+    type UpdateProfileResponse {
+      profilePicture: String
+      fullName: String
+      username: String
+      bio: String
+    }
+
+    type UpdateSettingsResponse {
+      privacy: String
+      darkMode: Boolean
+      language: String
+      notifications: Boolean
+    }
+
+    type FollowRequestResponse {
+      success: Boolean
+      status: FollowRequestStatus
+      message: String
+      followRequests: [FollowRequest!]
     }
     
 

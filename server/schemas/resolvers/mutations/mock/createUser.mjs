@@ -16,8 +16,7 @@ const createUser = async (
 
     // Create the user
     const newUser = await User.create({
-      fName,
-      lName,
+      fullName,
       username,
       email,
       phoneNumber,

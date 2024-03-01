@@ -1,7 +1,7 @@
-import { isCurrentUser } from "../../../../utils/auth.mjs";
 import { User } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
-const updateUserSettings = async (
+const updateSettings = async (
   _,
   { privacy, darkMode, language, notifications },
   { user }
@@ -24,11 +24,16 @@ const updateUserSettings = async (
       { new: true, runValidators: true }
     );
 
-    return updatedUser;
+    return {
+      privacy: updatedUser.settings.privacy,
+      darkMode: updatedUser.settings.darkMode,
+      language: updatedUser.settings.language,
+      notifications: updatedUser.settings.notifications,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during user settings update.");
   }
 };
 
-export default updateUserSettings;
+export default updateSettings;
