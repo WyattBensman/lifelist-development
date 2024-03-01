@@ -10,6 +10,16 @@ const unrepostCollage = async (_, { collageId }, { user }) => {
       throw new Error("Collage not found.");
     }
 
+    // Check if the user has already reposted the collage
+    const existingRepost = await User.findOne({
+      _id: user._id,
+      repostedCollages: collageId,
+    });
+
+    if (!existingRepost) {
+      throw new Error("Collage already reposted by the user.");
+    }
+
     // Remove the collage from the user's repostedCollages
     await User.findByIdAndUpdate(
       user._id,
@@ -25,7 +35,9 @@ const unrepostCollage = async (_, { collageId }, { user }) => {
     );
 
     return {
+      success: true,
       message: "Collage un-reposted successfully.",
+      action: "UNREPOST",
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

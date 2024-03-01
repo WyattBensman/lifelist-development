@@ -106,6 +106,12 @@ const collageSchema = new Schema({
       ref: "User",
     },
   ],
+  saves: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   audience: [
     {
       type: Schema.Types.ObjectId,

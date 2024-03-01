@@ -6,9 +6,8 @@ const deleteCollage = async (_, { collageId }, { user }) => {
     // Check if the user is authenticated
     isUser(user);
 
-    // Retrieve the collage and check if the user is the author
-    const collage = await Collage.findById(collageId);
-    isCurrentAuthor(user, collage.author);
+    // Check if the user is the author
+    await isCurrentAuthor(user, collageId);
 
     // Remove the collage from the current user's collages
     await User.findByIdAndUpdate(user._id, {

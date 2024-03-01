@@ -12,8 +12,12 @@ const repostCollage = async (_, { collageId }, { user }) => {
     }
 
     // Check if the user has already reposted the collage
-    const isAlreadyReposted = user.repostedCollages.includes(collageId);
-    if (isAlreadyReposted) {
+    const existingRepost = await User.findOne({
+      _id: user._id,
+      repostedCollages: collageId,
+    });
+
+    if (existingRepost) {
       throw new Error("Collage already reposted by the user.");
     }
 
@@ -35,13 +39,15 @@ const repostCollage = async (_, { collageId }, { user }) => {
     await createNotification({
       recipientId: collage.author,
       senderId: user._id,
-      type: "COLLAGE_REPOSTED",
+      type: "COLLAGE_REPOST",
       collageId: collageId,
-      message: `${user.fullName} reposted your collage.`,
+      message: `$reposted your collage.`,
     });
 
     return {
+      success: true,
       message: "Collage reposted successfully.",
+      action: "REPOST",
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

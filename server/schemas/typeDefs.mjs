@@ -189,6 +189,7 @@ type User {
     tagged: [User]
     comments: [Comment]
     reposts: [User]
+    saves: [User]
     audience: [PrivacyGroup]
     posted: Boolean
     reports: [Report]
@@ -435,10 +436,10 @@ type User {
       editComment(collageId: ID!, commentId: ID!, newText: String!): Comment
       reportCollage(collageId: ID!, reason: String!): MutationResult
       reportComment(collageId: ID!, commentId: ID!, reason: String!): MutationResult
-      repostCollage(collageId: ID!): MutationResult
-      saveCollage(collageId: ID!): MutationResult
-      unrepostCollage(collageId: ID!): MutationResult
-      unsaveCollage(collageId: ID!): MutationResult
+      repostCollage(collageId: ID!): MutationResponse
+      saveCollage(collageId: ID!): MutationResponse
+      unrepostCollage(collageId: ID!): MutationResponse
+      unsaveCollage(collageId: ID!): MutationResponse
       deleteCollage(collageId: ID!): String
       archiveCollage(collageId: ID!): Collage
       unarchiveCollage(collageId: ID!): Collage

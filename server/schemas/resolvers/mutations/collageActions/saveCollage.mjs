@@ -11,7 +11,12 @@ const saveCollage = async (_, { collageId }, { user }) => {
     }
 
     // Check if the user has already saved the collage
-    if (user.savedCollages.includes(collageId)) {
+    const existingSave = await User.findOne({
+      _id: user._id,
+      savedCollages: collageId,
+    });
+
+    if (existingSave) {
       throw new Error("Collage already saved by the user.");
     }
 
@@ -22,8 +27,17 @@ const saveCollage = async (_, { collageId }, { user }) => {
       { new: true }
     );
 
+    // Add the user to the collage's saves
+    await Collage.findByIdAndUpdate(
+      collageId,
+      { $push: { saves: user._id } },
+      { new: true }
+    );
+
     return {
+      success: true,
       message: "Collage saved successfully.",
+      action: "SAVE",
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

@@ -11,7 +11,12 @@ const unsaveCollage = async (_, { collageId }, { user }) => {
     }
 
     // Check if the user has saved the collage
-    if (!user.savedCollages.includes(collageId)) {
+    const existingSave = await User.findOne({
+      _id: user._id,
+      savedCollages: collageId,
+    });
+
+    if (!existingSave) {
       throw new Error("Collage not saved by the user.");
     }
 
@@ -22,8 +27,17 @@ const unsaveCollage = async (_, { collageId }, { user }) => {
       { new: true }
     );
 
+    // Remove the user from the collage's saves
+    await Collage.findByIdAndUpdate(
+      collageId,
+      { $pull: { saves: user._id } },
+      { new: true }
+    );
+
     return {
+      success: true,
       message: "Collage unsaved successfully.",
+      action: "UNSAVE",
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

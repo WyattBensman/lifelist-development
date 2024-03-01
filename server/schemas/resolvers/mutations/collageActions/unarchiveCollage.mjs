@@ -6,9 +6,8 @@ const unarchiveCollage = async (_, { collageId }, { user }) => {
     // Check if the user is authenticated
     isUser(user);
 
-    // Retrieve the collage and check if the user is the author
-    const collage = await Collage.findById(collageId);
-    isCurrentAuthor(user, collage.author);
+    // Check if the user is the author
+    await isCurrentAuthor(user, collageId);
 
     // Unarchive the collage
     const unarchivedCollage = await Collage.findByIdAndUpdate(collageId, {
