@@ -31,7 +31,14 @@ const editComment = async (_, { collageId, commentId, newText }, { user }) => {
     // Save the updated comment
     const updatedComment = await comment.save();
 
-    return updatedComment;
+    // Query all comments of the collage after the edit
+    const allComments = await Comment.find({ collage: collageId });
+
+    return {
+      success: true,
+      message: "Comment edited successfully",
+      comments: allComments,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during comment editing.");

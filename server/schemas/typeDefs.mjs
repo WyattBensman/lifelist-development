@@ -431,9 +431,9 @@ type User {
 
     # Collage Actions Mutations
     type Mutation {
-      createComment(collageId: ID!, text: String!): Comment
-      deleteComment(collageId: ID!, commentId: ID!): MutationResult
-      editComment(collageId: ID!, commentId: ID!, newText: String!): Comment
+      createComment(collageId: ID!, text: String!): CommentResponse
+      deleteComment(collageId: ID!, commentId: ID!): CommentResponse
+      editComment(collageId: ID!, commentId: ID!, newText: String!): CommentResponse
       reportCollage(collageId: ID!, reason: String!): MutationResult
       reportComment(collageId: ID!, commentId: ID!, reason: String!): MutationResult
       repostCollage(collageId: ID!): MutationResponse
@@ -568,6 +568,12 @@ type User {
       message: String
       collageId: ID
       logbook: [Collage]
+    }
+
+    type CommentResponse {
+      success: Boolean!
+      message: String!
+      comments: [Comment]
     }
 
     input DateInput {

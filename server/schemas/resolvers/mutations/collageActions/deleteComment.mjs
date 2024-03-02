@@ -7,9 +7,15 @@ const deleteComment = async (_, { collageId, commentId }, { user }) => {
     isUser(user);
 
     // Find the comment by its ID
-    const comment = await Comment.findByIdAndDelete(commentId);
+    const comment = await Comment.findById(commentId);
     if (!comment) {
       throw new Error("Comment not found.");
+    }
+
+    // Find the collage by its ID
+    const collage = await Collage.findById(collageId);
+    if (!collage) {
+      throw new Error("Collage not found.");
     }
 
     // Check if the current user is either the author of the comment or the creator of the collage
@@ -21,14 +27,25 @@ const deleteComment = async (_, { collageId, commentId }, { user }) => {
     }
 
     // Use $pull to remove the comment from the comments array
-    await Collage.findByIdAndUpdate(
+    const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
       { $pull: { comments: commentId } },
       { new: true }
-    );
+    ).populate({
+      path: "comments",
+      populate: {
+        path: "author",
+        select: "_id username profilePicture",
+      },
+    });
+
+    // Delete the comment
+    await Comment.findByIdAndDelete(commentId);
 
     return {
-      message: "Comment deleted successfully.",
+      success: true,
+      message: "Comment deleted successfully",
+      comments: updatedCollage.comments,
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

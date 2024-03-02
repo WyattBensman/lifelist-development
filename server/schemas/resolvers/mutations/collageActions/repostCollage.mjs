@@ -41,7 +41,7 @@ const repostCollage = async (_, { collageId }, { user }) => {
       senderId: user._id,
       type: "COLLAGE_REPOST",
       collageId: collageId,
-      message: `$reposted your collage.`,
+      message: `${user.fullName}reposted your collage.`,
     });
 
     return {
