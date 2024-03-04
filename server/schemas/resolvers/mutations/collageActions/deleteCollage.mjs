@@ -9,6 +9,13 @@ const deleteCollage = async (_, { collageId }, { user }) => {
     // Check if the user is the author
     await isCurrentAuthor(user, collageId);
 
+    // Retrieve the collage document
+    const collage = await Collage.findById(collageId);
+
+    if (!collage) {
+      throw new Error("Collage not found.");
+    }
+
     // Remove the collage from the current user's collages
     await User.findByIdAndUpdate(user._id, {
       $pull: { collages: collageId },
@@ -38,7 +45,11 @@ const deleteCollage = async (_, { collageId }, { user }) => {
     // Delete the collage
     await Collage.findByIdAndDelete(collageId);
 
-    return "Collage deleted successfully.";
+    return {
+      success: true,
+      message: "Collage successfully deleted.",
+      action: "DELETE",
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while deleting the collage.");

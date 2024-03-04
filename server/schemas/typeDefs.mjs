@@ -440,9 +440,9 @@ type User {
       saveCollage(collageId: ID!): MutationResponse
       unrepostCollage(collageId: ID!): MutationResponse
       unsaveCollage(collageId: ID!): MutationResponse
-      deleteCollage(collageId: ID!): String
-      archiveCollage(collageId: ID!): Collage
-      unarchiveCollage(collageId: ID!): Collage
+      deleteCollage(collageId: ID!): MutationResponse
+      archiveCollage(collageId: ID!): MutationResponse
+      unarchiveCollage(collageId: ID!): MutationResponse
     }
 
     # Camera Mutations

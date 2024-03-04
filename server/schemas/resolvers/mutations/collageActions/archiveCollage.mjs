@@ -19,7 +19,11 @@ const archiveCollage = async (_, { collageId }, { user }) => {
       $addToSet: { archivedCollages: collageId },
     });
 
-    return archivedCollage;
+    return {
+      success: true,
+      message: "Successfully archived collage.",
+      action: "ARCHIVE",
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while archiving the collage.");

@@ -19,7 +19,11 @@ const unarchiveCollage = async (_, { collageId }, { user }) => {
       $pull: { archivedCollages: collageId },
     });
 
-    return unarchivedCollage;
+    return {
+      success: true,
+      message: "Successfully archived collage.",
+      action: "UNARCHIVE",
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred while unarchiving the collage.");
