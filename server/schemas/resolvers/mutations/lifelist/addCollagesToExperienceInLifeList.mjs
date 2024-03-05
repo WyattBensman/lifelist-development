@@ -1,18 +1,17 @@
-import { User } from "../../../../models/index.mjs";
+import { User, Experience } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-const addCollageToExperienceInLifeList = async (
+const addCollagesToExperienceInLifeList = async (
   _,
-  { experienceId, collageId },
+  { experienceId, collageIds },
   { user }
 ) => {
   try {
     // Check if the user is authenticated
     isUser(user);
 
-    // Check if the current user is the creator of the collage
-    const collage = await Collage.findById(collageId);
-    isCurrentAuthor(user, collage.author);
+    // Check if the user is the author of the LifeList
+    await isCurrentLifeListAuthor(user, lifeListId);
 
     // Check if the collage is already associated with the experience
     const isCollageAlreadyAssociated = await Experience.exists({
@@ -42,4 +41,4 @@ const addCollageToExperienceInLifeList = async (
   }
 };
 
-export default addCollageToExperienceInLifeList;
+export default addCollagesToExperienceInLifeList;

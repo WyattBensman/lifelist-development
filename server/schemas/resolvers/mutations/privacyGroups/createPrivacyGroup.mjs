@@ -9,15 +9,15 @@ const createPrivacyGroup = async (_, { groupName, userIds }, { user }) => {
     // Create a new privacy group with the specified users
     const newPrivacyGroup = { groupName, users: userIds || [] };
 
-    // Add the privacy group to the user's settings
+    // Add the privacy group to the user's privacyGroups
     const updatedUser = await User.findByIdAndUpdate(
-      "65d762da8d7b7d7105af76b3",
-      { $push: { "settings.privacyGroups": newPrivacyGroup } },
+      "65e72e4e82f12a087695250d",
+      { $push: { privacyGroups: newPrivacyGroup } },
       { new: true, runValidators: true }
     );
 
-    // Find the newly created privacy group in the user's settings
-    const createdPrivacyGroup = updatedUser.settings.privacyGroups.find(
+    // Find the newly created privacy group in the user's privacyGroups
+    const createdPrivacyGroup = updatedUser.privacyGroups.find(
       (group) => group.groupName === groupName
     );
 

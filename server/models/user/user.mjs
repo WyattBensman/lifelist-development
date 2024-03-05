@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import userSettingsSchema from "./userSettings.mjs";
+import { LifeList } from "../index.mjs";
 
 const validatePassword = (value) => {
   return /^(?=.*\d)(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*$/.test(value);
@@ -253,6 +254,27 @@ const userSchema = new Schema({
       },
     ],
   },
+});
+
+// Middleware to create and assign a LifeList to a new user
+userSchema.pre("save", async function (next) {
+  try {
+    // If the document is newly created (not updated)
+    if (this.isNew) {
+      // Create a new LifeList and set the author as the user
+      const newLifeList = await LifeList.create({
+        author: this._id,
+        experiences: [],
+      });
+
+      // Set the user's lifeList to the new LifeList
+      this.lifeList = newLifeList._id;
+    }
+    next();
+  } catch (error) {
+    console.error(`Error in LifeList middleware: ${error.message}`);
+    next(error);
+  }
 });
 
 // Hashes Password

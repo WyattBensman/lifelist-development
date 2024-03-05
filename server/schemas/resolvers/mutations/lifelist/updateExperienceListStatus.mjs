@@ -1,37 +1,42 @@
-import { User } from "../../../../models/index.mjs";
+import { LifeList } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 const updateExperienceListStatus = async (
   _,
-  { experienceId, newList },
+  { lifeListId, experienceId, newListStatus },
   { user }
 ) => {
   try {
     // Check if the user is authenticated
     /* isUser(user); */
 
-    const user = User.findById("65e08edb5242a6c8ff3c8152");
+    // Check if the user is the author of the LifeList
+    /* await isCurrentLifeListAuthor(user, lifeListId); */
 
-    // Check if the experience exists in the user's lifeList
-    const experienceToUpdate = user.lifeList.find((item) =>
-      item.experience.equals(experienceId)
-    );
+    // Use findOneAndUpdate to update the specific experience's list status
+    const updatedLifeList = await LifeList.findOneAndUpdate(
+      {
+        _id: lifeListId,
+        "experiences.experience": experienceId,
+      },
+      {
+        $set: {
+          "experiences.$.list": newListStatus,
+        },
+      },
+      {
+        new: true, // Return the updated document
+        runValidators: true, // Run validators on the update operation
+      }
+    ).populate("experiences.experience");
 
-    if (!experienceToUpdate) {
-      throw new Error("Experience not found in the user's LifeList.");
+    if (!updatedLifeList) {
+      throw new Error(
+        `LifeList with ID ${lifeListId} not found or experience with ID ${experienceId} not found in the LifeList.`
+      );
     }
 
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: user._id, "lifeList.experience": experienceId },
-      { $set: { "lifeList.$.list": newList } },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      throw new Error("User not found.");
-    }
-
-    return updatedUser.lifeList;
+    return updatedLifeList;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error(

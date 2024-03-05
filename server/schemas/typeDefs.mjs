@@ -417,11 +417,11 @@ type User {
   
     # LifeList Mutations
     type Mutation {
-      addCollageToExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeList]
-      addExperienceToLifeList(experienceId: ID!, list: String!, collageIds: [ID]): [LifeList]
-      removeCollageFromExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeList]
-      removeExperienceFromLifeList(experienceId: ID!): [LifeList]
-      updateExperienceListStatus(experienceId: ID!, newList: String): [LifeList]
+      addExperiencesToLifeList(lifeListId: ID!, experiences: [ExperienceInput]): LifeList
+      removeExperiencesFromLifeList(lifeListId: ID!, experienceIds: [ID]): LifeList
+      updateExperienceListStatus(lifeListId: ID!, experienceId: ID!, newListStatus: String!): LifeList
+      addCollagesToExperienceInLifeList(experienceId: ID!, collageId: ID!): LifeList
+      removeCollageFromExperienceInLifeList(experienceId: ID!, collageId: ID!): LifeList
     }
 
     # Collage Creation Mutations
@@ -595,6 +595,12 @@ type User {
     input MonthInput {
       name: String
       year: Int
+    }
+
+    input ExperienceInput {
+      experience: ID!
+      list: String!
+      associatedCollages: [ID]
     }
     
 
