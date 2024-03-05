@@ -30,7 +30,7 @@ type User {
     savedCollages: [Collage]
     logbook: [Collage]
     archivedCollages: [Collage]
-    conversations: [Conversation]
+    conversations: [UserConversation]
     privacyGroups: [PrivacyGroup]
     blocked: [User]
     flowpageLinks: [FlowpageLink]
@@ -109,6 +109,7 @@ type User {
 
   type PrivacyGroup {
     _id: ID!
+    author: User
     groupName: String!
     users: [User]
   }
@@ -143,7 +144,7 @@ type User {
   type Message {
     _id: ID!
     sender: User
-    content: String!
+    content: String
     sentAt: Date
   }
 
@@ -152,6 +153,11 @@ type User {
     participants: [User]
     messages: [Message]
     lastMessage: Message
+  }
+
+  type UserConversation {
+    conversation: ID!
+    isRead: Boolean!
   }
 
   type Experience {
@@ -295,7 +301,7 @@ type User {
     getUserReposts(userId: ID!): [Collage]
     getUserSavedCollages(userId: ID!): [Collage]
     getUserTaggedCollages(userId: ID!): [Collage]
-    getUserLifeList(userId: ID!): [LifeListItem]
+    getUserLifeList(userId: ID!): [LifeList]
     getUserLogbook: [Collage]
     getUserArchives: [Collage]
   }
@@ -403,19 +409,19 @@ type User {
     # Messaging Mutations
     type Mutation {
       createConversation(recipientId: ID!, message: String): Conversation
-      deleteConversation(conversationId: ID!): MutationResult
+      sendMessage(conversationId: ID!, recipientId: ID, content: String): Conversation
       deleteMessage(conversationId: ID!, messageId: ID!): Conversation
       markConversationAsRead(conversationId: ID!): Conversation
-      sendMessage(conversationId: ID!, content: String!): Conversation
+      deleteConversation(conversationId: ID!): [Conversation]
     }
   
     # LifeList Mutations
     type Mutation {
-      addCollageToExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeListItem]
-      addExperienceToLifeList(experienceId: ID!, list: String!, collageIds: [ID]): [LifeListItem]
-      removeCollageFromExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeListItem]
-      removeExperienceFromLifeList(experienceId: ID!): [LifeListItem]
-      updateExperienceListStatus(experienceId: ID!, newList: String): [LifeListItem]
+      addCollageToExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeList]
+      addExperienceToLifeList(experienceId: ID!, list: String!, collageIds: [ID]): [LifeList]
+      removeCollageFromExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeList]
+      removeExperienceFromLifeList(experienceId: ID!): [LifeList]
+      updateExperienceListStatus(experienceId: ID!, newList: String): [LifeList]
     }
 
     # Collage Creation Mutations

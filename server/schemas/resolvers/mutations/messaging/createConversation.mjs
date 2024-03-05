@@ -1,109 +1,76 @@
-import { Conversation, User } from "../../../../models/index.mjs";
+import { Conversation, User, Message } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 import createNotification from "../notifications/createNotification.mjs";
 
 const createConversation = async (_, { recipientId, message }, { user }) => {
   try {
     // Check if the user is authenticated
-    /* isUser(user); */
+    isUser(user);
 
-    // Check if conversation exists between sender and recipient
-    const existingConversation = await Conversation.findOne({
-      participants: { $all: ["65e08edb5242a6c8ff3c8152", recipientId] },
-    });
+    // Find the existing conversation between sender and recipient
+    let existingConversation = await Conversation.findOne({
+      participants: { $all: [user._id, recipientId] },
+    }).populate("messages");
 
-    if (existingConversation) {
-      // Conversation exists, push the message
-      existingConversation.messages.push({
-        sender: "65e08edb5242a6c8ff3c8152",
-        content: message,
-        sentAt: new Date(),
-      });
-
-      existingConversation.lastMessage = {
-        sender: "65e08edb5242a6c8ff3c8152",
-        content: message,
-        sentAt: new Date(),
-      };
-
-      await existingConversation.save();
-
-      // Set isRead to true for the sender and false for the recipient in User model
-      await User.updateOne(
-        {
-          _id: "65e08edb5242a6c8ff3c8152",
-          "conversations.conversation": existingConversation._id,
-        },
-        { $set: { "conversations.$.isRead": true } }
-      );
-
-      await User.updateOne(
-        {
-          _id: recipientId,
-          "conversations.conversation": existingConversation._id,
-        },
-        { $set: { "conversations.$.isRead": false } }
-      );
-
-      // Create a notification for the recipient
-      await createNotification({
-        recipientId,
-        senderId: "65e08edb5242a6c8ff3c8152",
-        type: "MESSAGE",
-        message: `You received a new message from`,
-      });
-
-      return existingConversation;
-    } else {
+    if (!existingConversation) {
       // Conversation does not exist, create a new one
       const newConversation = new Conversation({
-        participants: ["65e08edb5242a6c8ff3c8152", recipientId],
-        messages: [
-          {
-            sender: "65e08edb5242a6c8ff3c8152",
-            content: message,
-            sentAt: new Date(),
-          },
-        ],
-        lastMessage: {
-          sender: "65e08edb5242a6c8ff3c8152",
-          content: message,
-          sentAt: new Date(),
-        },
-        isRead: false,
+        participants: [user._id, recipientId],
       });
 
-      await newConversation.save();
+      existingConversation = await newConversation.save();
+    }
 
-      // Set isRead to true for the sender and false for the recipient in User model
-      await User.updateOne(
-        { _id: "65e08edb5242a6c8ff3c8152" },
-        {
-          $addToSet: {
-            conversations: { conversation: newConversation._id, isRead: true },
-          },
-        }
-      );
+    // Check if the recipient removed the conversation
+    const recipientRemoved = await User.exists({
+      _id: recipientId,
+      "conversations.conversation": existingConversation._id,
+    });
 
+    if (!recipientRemoved) {
+      // If the recipient removed the conversation, add it back to their conversations array
       await User.updateOne(
         { _id: recipientId },
         {
           $addToSet: {
-            conversations: { conversation: newConversation._id, isRead: false },
+            conversations: {
+              conversation: existingConversation._id,
+              isRead: false,
+            },
           },
         }
       );
-
-      // Create a notification for the recipient
-      await createNotification({
-        recipientId,
-        senderId: "65e08edb5242a6c8ff3c8152",
-        type: "MESSAGE",
-        message: `You received a new message from`,
-      });
-
-      return newConversation;
     }
+
+    // Create and save the new message
+    const newMessage = await Message.create({
+      sender: user._id,
+      content: message,
+      sentAt: new Date(),
+    });
+
+    existingConversation.messages.push(newMessage);
+    existingConversation.lastMessage = newMessage;
+    await existingConversation.save();
+
+    // Update isRead for the sender in User model
+    await User.updateOne(
+      {
+        _id: "65e08edb5242a6c8ff3c8152",
+        "conversations.conversation": existingConversation._id,
+      },
+      { $set: { "conversations.$.isRead": true } }
+    );
+
+    // Create a notification for the recipient
+    await createNotification({
+      recipientId,
+      senderId: user._id,
+      type: "MESSAGE",
+      message: `You received a new message from ${user.fullName}`,
+    });
+
+    return existingConversation;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during conversation creation.");

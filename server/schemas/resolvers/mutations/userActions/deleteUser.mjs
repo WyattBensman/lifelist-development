@@ -5,6 +5,9 @@ import {
   Collage,
   CameraShot,
   Comment,
+  LifeList,
+  PrivacyGroup,
+  Message,
 } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
@@ -21,6 +24,15 @@ const deleteUser = async (_, __, { user }) => {
       console.error("User not found.");
       throw new Error("User not found.");
     }
+
+    // Delete the user's lifelist
+    await LifeList.deleteOne({ author: user._id });
+
+    // Delete all privacy groups where the user is the owner
+    await PrivacyGroup.deleteMany({ author: user._id });
+
+    // Delete all messages sent by the user
+    await Message.deleteMany({ sender: user._id });
 
     // Delete all conversations the user is in
     await Conversation.deleteMany({ participants: user._id });

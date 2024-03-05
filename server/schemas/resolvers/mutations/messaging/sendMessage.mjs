@@ -1,52 +1,63 @@
-import { Conversation, User } from "../../../../models/index.mjs";
+import { Conversation, User, Message } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 import createNotification from "../notifications/createNotification.mjs";
 
-const sendMessage = async (_, { conversationId, content }, { user }) => {
+const sendMessage = async (
+  _,
+  { conversationId, recipientId, content },
+  { user }
+) => {
   try {
     // Check if the user is authenticated
-    /* isUser(user); */
+    isUser(user);
 
-    // Add the message to the conversation
+    // Create the new message
+    const newMessage = await Message.create({
+      sender: user._id,
+      content,
+    });
+
+    // Add the new message to the conversation
     const updatedConversation = await Conversation.findByIdAndUpdate(
       conversationId,
       {
-        $push: {
-          messages: {
-            sender: "65e1109f53d40acba3a8e994",
-            content,
-          },
-        },
-        $set: {
-          lastMessage: {
-            sender: "65e1109f53d40acba3a8e994",
-            content,
-          },
-        },
+        $push: { messages: newMessage },
+        $set: { lastMessage: newMessage },
       },
       { new: true, runValidators: true }
-    );
+    ).populate("messages");
 
-    const conversation = await Conversation.findById(conversationId);
-
-    if (!conversation) {
-      throw new Error("Conversation not found.");
-    }
-
-    const recipient = await User.findOne({
-      _id: { $ne: "65e1109f53d40acba3a8e994" },
-      _id: {
-        $in: conversation.participants.map((participant) => participant._id),
-      },
-    });
+    // Find the recipient directly using recipientId
+    const recipient = await User.findById(recipientId);
 
     if (!recipient) {
       throw new Error("Recipient not found.");
     }
 
+    // Check if the recipient removed the conversation
+    const recipientRemoved = await User.exists({
+      _id: recipient._id,
+      "conversations.conversation": conversationId,
+    });
+
+    if (recipientRemoved) {
+      // If the recipient removed the conversation, add it back to their conversations array
+      await User.updateOne(
+        { _id: recipient._id },
+        {
+          $addToSet: {
+            conversations: {
+              conversation: conversationId,
+              isRead: false,
+            },
+          },
+        }
+      );
+    }
+
     await User.updateOne(
       {
-        _id: "65e1109f53d40acba3a8e994",
+        _id: user._id,
         "conversations.conversation": conversationId,
       },
       { $set: { "conversations.$.isRead": true } }
@@ -59,9 +70,9 @@ const sendMessage = async (_, { conversationId, content }, { user }) => {
 
     await createNotification({
       recipientId: recipient._id,
-      senderId: "65e1109f53d40acba3a8e994",
+      senderId: user._id,
       type: "MESSAGE",
-      message: `You received a new message from `,
+      message: `You received a new message from ${user.fullName}`,
     });
 
     return updatedConversation;
