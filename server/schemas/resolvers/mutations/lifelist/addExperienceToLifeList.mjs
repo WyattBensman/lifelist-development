@@ -8,7 +8,7 @@ const addExperienceToLifeList = async (
 ) => {
   try {
     // Check if the user is authenticated
-    isUser(user);
+    /* isUser(user); */
 
     // Check if the experience exists
     const experience = await Experience.findById(experienceId);
@@ -18,7 +18,7 @@ const addExperienceToLifeList = async (
 
     // Check if the experience is already in the user's lifeList
     const isAlreadyInLifeList = await User.findOne({
-      _id: user._id,
+      _id: "65e08edb5242a6c8ff3c8152",
       lifeList: {
         $elemMatch: { experience: experienceId },
       },
@@ -30,7 +30,7 @@ const addExperienceToLifeList = async (
 
     // Update the user's lifeList with the array of collageIds
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      "65e08edb5242a6c8ff3c8152",
       {
         $push: {
           lifeList: {

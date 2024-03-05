@@ -4,19 +4,12 @@ import { isUser } from "../../../../utils/auth.mjs";
 const removeExperienceFromLifeList = async (_, { experienceId }, { user }) => {
   try {
     // Check if the user is authenticated
-    isUser(user);
+    /* isUser(user); */
 
-    // Check if the experience exists in the user's lifeList
-    const experienceToRemove = user.lifeList.find((item) =>
-      item.experience.equals(experienceId)
-    );
-
-    if (!experienceToRemove) {
-      throw new Error("Experience not found in the user's LifeList.");
-    }
+    const user = User.findById("65e08edb5242a6c8ff3c8152");
 
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      "65e08edb5242a6c8ff3c8152",
       {
         $pull: {
           lifeList: { experience: experienceId },

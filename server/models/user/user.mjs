@@ -111,25 +111,10 @@ const userSchema = new Schema({
       },
     },
   ],
-  lifeList: [
-    {
-      experience: {
-        type: Schema.Types.ObjectId,
-        ref: "Experience",
-      },
-      list: {
-        type: String,
-        enum: ["experienced", "wishListed"],
-      },
-      associatedCollages: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "Collage",
-        },
-      ],
-      default: [],
-    },
-  ],
+  lifeList: {
+    type: Schema.Types.ObjectId,
+    ref: "LifeList",
+  },
   collages: [
     {
       type: Schema.Types.ObjectId,
@@ -196,8 +181,14 @@ const userSchema = new Schema({
   ],
   conversations: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "Conversation",
+      conversation: {
+        type: Schema.Types.ObjectId,
+        ref: "Conversation",
+      },
+      isRead: {
+        type: Boolean,
+        default: false,
+      },
     },
   ],
   unreadMessagesCount: {
@@ -210,6 +201,27 @@ const userSchema = new Schema({
       ref: "Notification",
     },
   ],
+  privacyGroups: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "PrivacyGroup",
+    },
+  ],
+  blocked: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
+  settings: {
+    type: userSettingsSchema,
+    default: {
+      privacy: "public",
+      darkMode: false,
+      language: "en",
+      notifications: true,
+    },
+  },
   flowpageLinks: {
     type: [
       {
@@ -240,18 +252,6 @@ const userSchema = new Schema({
         message: "Cannot have more than 8 Flow Page Links.",
       },
     ],
-  },
-
-  settings: {
-    type: userSettingsSchema,
-    default: {
-      privacy: "public",
-      darkMode: false,
-      language: "en",
-      notifications: true,
-      blocked: [],
-      privacyGroups: [],
-    },
   },
 });
 

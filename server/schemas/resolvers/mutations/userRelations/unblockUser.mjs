@@ -9,7 +9,7 @@ const unblockUser = async (_, { userIdToUnblock }, { user }) => {
     // Unblock the user
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
-      { $pull: { "settings.blocked": userIdToUnblock } },
+      { $pull: { blocked: userIdToUnblock } },
       { new: true, runValidators: true }
     );
 

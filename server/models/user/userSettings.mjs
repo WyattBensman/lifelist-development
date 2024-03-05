@@ -1,18 +1,5 @@
 import { Schema } from "mongoose";
 
-const privacyGroupSchema = new Schema({
-  groupName: {
-    type: String,
-    required: true,
-  },
-  users: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-});
-
 const userSettingsSchema = new Schema({
   privacy: {
     type: String,
@@ -31,13 +18,6 @@ const userSettingsSchema = new Schema({
     type: Boolean,
     default: true,
   },
-  blocked: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  privacyGroups: [privacyGroupSchema],
 });
 
 export default userSettingsSchema;

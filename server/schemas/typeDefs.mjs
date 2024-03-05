@@ -3,7 +3,6 @@ scalar Date
 scalar Int
 scalar Upload
 
-# user schema
 type User {
     _id: ID!
     fullName: String
@@ -21,7 +20,7 @@ type User {
     followers: [User]
     following: [User]
     followRequests: [FollowRequest]
-    lifeList: [LifeListItem]
+    lifeList: LifeList
     collages: [Collage]
     dailyCameraShots: DailyCameraShots
     cameraShots: [CameraShot]
@@ -32,6 +31,8 @@ type User {
     logbook: [Collage]
     archivedCollages: [Collage]
     conversations: [Conversation]
+    privacyGroups: [PrivacyGroup]
+    blocked: [User]
     flowpageLinks: [FlowpageLink]
     unreadMessagesCount: Int
     settings: UserSettings
@@ -68,15 +69,21 @@ type User {
     REJECTED
   }
 
-  type LifeListItem {
+  type LifeList {
+    _id: ID!
+    author: User
+    experiences: [LifeListExperience]
+  }
+
+  type LifeListExperience {
     experience: Experience
     list: LifeListTypeEnum
     associatedCollages: [Collage]
   }
   
   enum LifeListTypeEnum {
-    experienced
-    wishlisted
+    EXPERIENCED
+    WISHLISTED
   }
 
   type FlowpageLink {
@@ -111,8 +118,6 @@ type User {
     darkMode: Boolean
     language: String
     notifications: Boolean
-    blocked: [User]
-    privacyGroups: [PrivacyGroup]
   }
 
   type Notification {
@@ -403,14 +408,14 @@ type User {
       markConversationAsRead(conversationId: ID!): Conversation
       sendMessage(conversationId: ID!, content: String!): Conversation
     }
-
+  
     # LifeList Mutations
     type Mutation {
       addCollageToExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeListItem]
       addExperienceToLifeList(experienceId: ID!, list: String!, collageIds: [ID]): [LifeListItem]
       removeCollageFromExperienceInLifeList(experienceId: ID!, collageId: ID!): [LifeListItem]
       removeExperienceFromLifeList(experienceId: ID!): [LifeListItem]
-      updateExperienceStatusInLifeList(experienceId: ID!, newList: String): [LifeListItem]
+      updateExperienceListStatus(experienceId: ID!, newList: String): [LifeListItem]
     }
 
     # Collage Creation Mutations
@@ -494,8 +499,6 @@ type User {
       message: String
       followRequests: [FollowRequest!]
     }
-
-
 
     type CollageCreationResponse {
       success: Boolean

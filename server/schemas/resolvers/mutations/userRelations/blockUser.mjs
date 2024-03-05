@@ -9,7 +9,7 @@ const blockUser = async (_, { userIdToBlock }, { user }) => {
     // Check if the user is already blocked
     const existingBlockedUser = await User.findOne({
       _id: user._id,
-      "settings.blocked": userIdToBlock,
+      blocked: userIdToBlock,
     });
 
     if (existingBlockedUser) {
@@ -23,7 +23,7 @@ const blockUser = async (_, { userIdToBlock }, { user }) => {
     const updatedUser = await User.findByIdAndUpdate(
       user_id,
       {
-        $push: { "settings.blocked": userIdToBlock },
+        $push: { blocked: userIdToBlock },
         $pull: { followers: userIdToBlock, following: userIdToBlock },
       },
       { new: true, runValidators: true }

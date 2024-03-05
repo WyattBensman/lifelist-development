@@ -2,12 +2,12 @@ import addCollageToExperienceInLifeList from "./addCollageToExperienceInLifeList
 import addExperienceToLifeList from "./addExperienceToLifeList.mjs";
 import removeCollageFromExperienceInLifeList from "./removeCollageFromExperienceInLifeList.mjs";
 import removeExperienceFromLifeList from "./removeExperienceFromLifeList.mjs";
-import updateExperienceStatusInLifeList from "./updateExperienceStatusInLifeList.mjs";
+import updateExperienceListStatus from "./updateExperienceListStatus.mjs";
 
 export {
   addCollageToExperienceInLifeList,
   addExperienceToLifeList,
   removeCollageFromExperienceInLifeList,
   removeExperienceFromLifeList,
-  updateExperienceStatusInLifeList,
+  updateExperienceListStatus,
 };

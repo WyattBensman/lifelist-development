@@ -1,14 +1,16 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-const updateExperienceStatusInLifeList = async (
+const updateExperienceListStatus = async (
   _,
   { experienceId, newList },
   { user }
 ) => {
   try {
     // Check if the user is authenticated
-    isUser(user);
+    /* isUser(user); */
+
+    const user = User.findById("65e08edb5242a6c8ff3c8152");
 
     // Check if the experience exists in the user's lifeList
     const experienceToUpdate = user.lifeList.find((item) =>
@@ -38,4 +40,4 @@ const updateExperienceStatusInLifeList = async (
   }
 };
 
-export default updateExperienceStatusInLifeList;
+export default updateExperienceListStatus;

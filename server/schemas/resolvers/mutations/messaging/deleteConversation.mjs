@@ -4,7 +4,7 @@ import { isUser } from "../../../../utils/auth.mjs";
 const deleteConversation = async (_, { conversationId }, { user }) => {
   try {
     // Check if the user is authenticated
-    isUser(user);
+    /* isUser(user); */
 
     // Check if the conversation exists in both users' conversations
     const conversationExists = await Conversation.exists({
