@@ -1,11 +1,17 @@
 import { User } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
-export const getUserById = async (_, { userId }) => {
+export const getUserProfileById = async (_, { userId }) => {
   try {
-    const user = await User.findById(userId);
+    const user = await User.findById(userId).populate({
+      path: "collages",
+      select: "_id images",
+    });
+
     if (!user) {
       throw new Error("User not found.");
     }
+
     return user;
   } catch (error) {
     console.error(`Error: ${error.message}`);
@@ -27,11 +33,13 @@ export const searchUsers = async (_, { query }) => {
   }
 };
 
-export const getUserFollowers = async (_, { userId }) => {
+export const getFollowers = async (_, { userId }, { user }) => {
+  /* isUser(user); */
+
   try {
     const user = await User.findById(userId).populate({
       path: "followers",
-      select: "username fullName profilePicture",
+      select: "_id username fullName profilePicture",
     });
 
     if (!user) {
@@ -45,11 +53,13 @@ export const getUserFollowers = async (_, { userId }) => {
   }
 };
 
-export const getUserFollowing = async (_, { userId }) => {
+export const getFollowing = async (_, { userId }, { user }) => {
+  /* isUser(user); */
+
   try {
     const user = await User.findById(userId).populate({
       path: "following",
-      select: "username fullName profilePicture",
+      select: "_id username fullName profilePicture",
     });
 
     if (!user) {
@@ -65,7 +75,10 @@ export const getUserFollowing = async (_, { userId }) => {
 
 export const getUserCollages = async (_, { userId }) => {
   try {
-    const user = await User.findById(userId).populate("collages");
+    const user = await User.findById(userId).populate("collages").populate({
+      path: "collages",
+      select: "_id coverImage",
+    });
 
     if (!user) {
       throw new Error("User not found for the provided ID.");
@@ -77,9 +90,14 @@ export const getUserCollages = async (_, { userId }) => {
   }
 };
 
-export const getUserReposts = async (_, { userId }) => {
+export const getUserRepostedCollages = async (_, { userId }, { user }) => {
+  /* isUser(user); */
+
   try {
-    const user = await User.findById(userId).populate("repostedCollages");
+    const user = await User.findById(userId).populate({
+      path: "repostedCollages",
+      select: "_id coverImage",
+    });
 
     if (!user) {
       throw new Error("User not found for the provided ID.");
@@ -93,23 +111,14 @@ export const getUserReposts = async (_, { userId }) => {
   }
 };
 
-export const getUserSavedCollages = async (_, { userId }) => {
+export const getUserTaggedCollages = async (_, { userId }, { user }) => {
+  /* isUser(user); */
+
   try {
-    const user = await User.findById(userId).populate("savedCollages");
-
-    if (!user) {
-      throw new Error("User not found for the provided ID.");
-    }
-
-    return user.savedCollages;
-  } catch (error) {
-    throw new Error(`Error fetching user's saved collages: ${error.message}`);
-  }
-};
-
-export const getUserTaggedCollages = async (_, { userId }) => {
-  try {
-    const user = await User.findById(userId).populate("taggedCollages");
+    const user = await User.findById(userId).populate({
+      path: "taggedCollages",
+      select: "_id coverImage",
+    });
 
     if (!user) {
       throw new Error("User not found for the provided ID.");
@@ -121,9 +130,47 @@ export const getUserTaggedCollages = async (_, { userId }) => {
   }
 };
 
+export const getUserSavedCollages = async (_, __, { user }) => {
+  /* isUser(user); */
+
+  try {
+    const user = await User.findById(user._id).populate({
+      path: "savedCollages",
+      select: "_id coverImage",
+    });
+
+    if (!user) {
+      throw new Error("User not found for the provided ID.");
+    }
+
+    return user.savedCollages;
+  } catch (error) {
+    throw new Error(`Error fetching user's saved collages: ${error.message}`);
+  }
+};
+
+export const getUserArchives = async (_, __, { user }) => {
+  /* isUser(user); */
+
+  try {
+    const user = await User.findById(user._id).populate({
+      path: "archivedCollages",
+      select: "_id coverImage",
+    });
+
+    if (!user) {
+      throw new Error("User not found for the provided ID.");
+    }
+    return user.archivedCollages;
+  } catch (error) {
+    throw new Error(
+      `Error fetching user's archived collages: ${error.message}`
+    );
+  }
+};
+
 export const getUserLogbook = async (_, __, { user }) => {
-  // Check if the user is authenticated
-  isUser(user);
+  /* isUser(user); */
 
   try {
     const user = await User.findById(user.id).populate("logbook");
@@ -135,23 +182,5 @@ export const getUserLogbook = async (_, __, { user }) => {
     return user.logbook;
   } catch (error) {
     throw new Error(`Error fetching user's logbook: ${error.message}`);
-  }
-};
-
-export const getUserArchives = async (_, __, { user }) => {
-  // Check if the user is authenticated
-  isUser(user);
-
-  try {
-    const user = await User.findById(user.id).populate("archivedCollages");
-
-    if (!user) {
-      throw new Error("User not found for the provided ID.");
-    }
-    return user.archivedCollages;
-  } catch (error) {
-    throw new Error(
-      `Error fetching user's archived collages: ${error.message}`
-    );
   }
 };

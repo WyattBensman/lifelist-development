@@ -32,6 +32,12 @@ const collageSchema = new Schema({
     ],
     required: true,
   },
+  coverImage: {
+    type: String,
+    default: function () {
+      return this.images.length > 0 ? this.images[0] : null;
+    },
+  },
   title: {
     type: String,
     maxlength: 40,

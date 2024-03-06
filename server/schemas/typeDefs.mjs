@@ -188,7 +188,8 @@ type User {
     _id: ID!
     author: User
     createdAt: Date
-    images: [String]!
+    images: [String]
+    coverImage: String
     title: String
     caption: String
     date: Date
@@ -294,14 +295,14 @@ type User {
 
   # User Queries
   type Query {
-    getUserById(userId: ID!): User
+    getUserProfileById(userId: ID!): User
     searchUsers(query: String!): [User]
-    getUserFollowers(userId: ID!): [User]
-    getUserFollowing(userId: ID!): [User]
+    getFollowers(userId: ID!): [User]
+    getFollowing(userId: ID!): [User]
     getUserCollages(userId: ID!): [Collage]
-    getUserReposts(userId: ID!): [Collage]
-    getUserSavedCollages(userId: ID!): [Collage]
+    getUserRepostedCollages(userId: ID!): [Collage]
     getUserTaggedCollages(userId: ID!): [Collage]
+    getUserSavedCollages: [Collage]
     getUserLogbook: [Collage]
     getUserArchives: [Collage]
   }
@@ -441,6 +442,7 @@ type User {
       addExperiences(collageId: ID!, experienceIds: [ID]): AddExperiencesResponse
       setAudience(collageId: ID!, audience: [PrivacyGroupInput]): CollageCreationResponse
       setLocation(collageId: ID!, locations: [LocationInput]): SetLocationResponse
+      setCoverImage(collageId: ID!, selectedImage: String!): SetCoverImageResponse
       setDate(collageId: ID!, startDate: Date, finishDate: Date, month: MonthInput, date: Date): SetDateResponse
       tagUsers(collageId: ID!, taggedUserIds: [ID]): TagUsersResponse
       removeExperiences(collageId: ID!, experienceIds: [ID]!): AddExperiencesResponse
@@ -573,6 +575,13 @@ type User {
       message: String
       collageId: ID
       locations: [Location]
+    }
+
+    type SetCoverImageResponse {
+      success: Boolean!
+      message: String!
+      collageId: ID
+      selectedImage: String
     }
 
     type TagUsersResponse {

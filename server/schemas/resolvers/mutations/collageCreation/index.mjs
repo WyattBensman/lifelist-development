@@ -10,6 +10,7 @@ import startCollage from "./startCollage.mjs";
 import tagUsers from "./tagUsers.mjs";
 import untagUsers from "./untagUsers.mjs";
 import removeExperiences from "./removeExperiences.mjs";
+import setCoverImage from "./setCoverImage.mjs";
 
 export {
   addDescription,
@@ -24,4 +25,5 @@ export {
   tagUsers,
   untagUsers,
   removeExperiences,
+  setCoverImage,
 };
