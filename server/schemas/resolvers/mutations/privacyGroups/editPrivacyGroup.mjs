@@ -1,37 +1,31 @@
-import { User } from "../../../../models/index.mjs";
-import { isCurrentUser } from "../../../../utils/auth.mjs";
+import { PrivacyGroup } from "../../../../models/index.mjs";
+import {
+  isUser,
+  isCurrentPrivacyGroupAuthor,
+} from "../../../../utils/auth.mjs";
 
-const editPrivacyGroup = async (_, { groupId, newGroupName }, { user }) => {
+const editPrivacyGroup = async (
+  _,
+  { privacyGroupId, newGroupName },
+  { user }
+) => {
   try {
-    // Ensure the user is authenticated and is the current user
-    /* isCurrentUser(user, userId); */
+    // Check if the user is authenticated
+    isUser(user);
 
-    // Check if the privacy group exists
-    const privacyGroupExists = await User.exists({
-      _id: "65d762da8d7b7d7105af76b3",
-      "settings.privacyGroups._id": groupId,
-    });
+    // Check if the user is the author of the PrivacyGroup
+    await isCurrentPrivacyGroupAuthor(user, privacyGroupId);
 
-    if (!privacyGroupExists) {
-      throw new Error("Privacy group not found");
+    // Update the PrivacyGroup's groupName using findByIdAndUpdate
+    const updatedPrivacyGroup = await PrivacyGroup.findByIdAndUpdate(
+      privacyGroupId,
+      { $set: { groupName: newGroupName } },
+      { new: true }
+    ).populate("users");
+
+    if (!updatedPrivacyGroup) {
+      throw new Error(`PrivacyGroup with ID ${privacyGroupId} not found.`);
     }
-
-    // Update the groupName of the privacy group
-    const updatedUser = await User.findOneAndUpdate(
-      {
-        _id: "65d762da8d7b7d7105af76b3",
-        "settings.privacyGroups._id": groupId,
-      },
-      {
-        $set: { "settings.privacyGroups.$.groupName": newGroupName },
-      },
-      { new: true, runValidators: true }
-    );
-
-    // Find the updated privacy group in the user's settings
-    const updatedPrivacyGroup = updatedUser.settings.privacyGroups.find(
-      (group) => group._id.toString() === groupId
-    );
 
     return updatedPrivacyGroup;
   } catch (error) {

@@ -1,21 +1,40 @@
-import { User } from "../../../../models/index.mjs";
-import { isCurrentUser } from "../../../../utils/auth.mjs";
+import { User, PrivacyGroup } from "../../../../models/index.mjs";
+import {
+  isUser,
+  isCurrentPrivacyGroupAuthor,
+} from "../../../../utils/auth.mjs";
 
-const deletePrivacyGroup = async (_, { groupId }, { user }) => {
+const deletePrivacyGroup = async (_, { privacyGroupId }, { user }) => {
   try {
-    // Ensure the user is authenticated and is the current user
-    /* isCurrentUser(user, userId); */
+    // Check if the user is authenticated
+    isUser(user);
 
-    // Remove the privacy group from the user's settings
-    const updatedUser = await User.findByIdAndUpdate(
-      "65d762da8d7b7d7105af76b3",
-      { $pull: { "settings.privacyGroups": { _id: groupId } } },
-      { new: true, runValidators: true }
+    // Check if the user is the author of the PrivacyGroup
+    await isCurrentPrivacyGroupAuthor(user, privacyGroupId);
+
+    // Find and remove the PrivacyGroup by ID
+    const deletedPrivacyGroup = await PrivacyGroup.findByIdAndDelete(
+      privacyGroupId
     );
 
-    return {
-      message: "Privacy group deleted successfully.",
-    };
+    if (!deletedPrivacyGroup) {
+      throw new Error(`PrivacyGroup with ID ${privacyGroupId} not found.`);
+    }
+
+    // Remove the deleted PrivacyGroup from the user's privacyGroups field
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      { $pull: { privacyGroups: privacyGroupId } },
+      { new: true }
+    ).populate({
+      path: "privacyGroups",
+      populate: {
+        path: "users",
+        model: "User",
+      },
+    });
+
+    return updatedUser.privacyGroups;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during privacy group deletion.");

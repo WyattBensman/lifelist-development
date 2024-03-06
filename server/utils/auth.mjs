@@ -97,3 +97,18 @@ export const isCurrentLifeListAuthor = async (user, lifeListId) => {
     throw new AuthenticationError("Not authorized to perform this action");
   }
 };
+
+// Check to see if the user is authenticated & is the LifeList owner
+export const isCurrentPrivacyGroupAuthor = async (user, privacyGroupId) => {
+  if (!user) {
+    throw new AuthenticationError("User not authenticated");
+  }
+
+  // Find the PrivacyGroup by ID
+  const privacyGroup = await PrivacyGroup.findById(privacyGroupId);
+
+  // Check if the current user is the author of the PrivacyGroup
+  if (privacyGroup.author.toString() !== user._id.toString()) {
+    throw new Error("User is not authorized to edit this privacy group.");
+  }
+};

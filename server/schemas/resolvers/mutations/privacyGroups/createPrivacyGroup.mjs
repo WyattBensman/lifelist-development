@@ -1,27 +1,42 @@
-import { User } from "../../../../models/index.mjs";
-import { isCurrentUser } from "../../../../utils/auth.mjs";
+import { User, PrivacyGroup } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const createPrivacyGroup = async (_, { groupName, userIds }, { user }) => {
   try {
-    // Ensure the user is authenticated and is the current user
-    /* isCurrentUser(user, userId); */
+    // Check if the user is authenticated
+    isUser(user);
 
-    // Create a new privacy group with the specified users
-    const newPrivacyGroup = { groupName, users: userIds || [] };
+    // Check for duplicate user IDs in the userIds array
+    const uniqueUserIds = [...new Set(userIds)];
 
-    // Add the privacy group to the user's privacyGroups
+    if (userIds.length !== uniqueUserIds.length) {
+      throw new Error("Duplicate users found in the array.");
+    }
+
+    // Create a new PrivacyGroup
+    const newPrivacyGroup = await PrivacyGroup.create({
+      author: user._id,
+      groupName,
+      users: userIds,
+    });
+
+    // Update the current user's privacyGroups field
     const updatedUser = await User.findByIdAndUpdate(
-      "65e72e4e82f12a087695250d",
-      { $push: { privacyGroups: newPrivacyGroup } },
-      { new: true, runValidators: true }
-    );
+      user._id,
+      { $push: { privacyGroups: newPrivacyGroup._id } },
+      { new: true }
+    ).populate({
+      path: "privacyGroups",
+      populate: { path: "users", model: "User" },
+    });
 
-    // Find the newly created privacy group in the user's privacyGroups
-    const createdPrivacyGroup = updatedUser.privacyGroups.find(
-      (group) => group.groupName === groupName
-    );
+    // Populate the users field in the newPrivacyGroup
+    const populatedPrivacyGroup = await PrivacyGroup.populate(newPrivacyGroup, {
+      path: "users",
+      model: "User",
+    });
 
-    return createdPrivacyGroup;
+    return populatedPrivacyGroup;
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during privacy group creation.");

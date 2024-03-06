@@ -33,6 +33,7 @@ type User {
     conversations: [UserConversation]
     privacyGroups: [PrivacyGroup]
     blocked: [User]
+    notifications: [Notification]
     flowpageLinks: [FlowpageLink]
     unreadMessagesCount: Int
     settings: UserSettings
@@ -110,7 +111,7 @@ type User {
   type PrivacyGroup {
     _id: ID!
     author: User
-    groupName: String!
+    groupName: String
     users: [User]
   }
 
@@ -385,11 +386,11 @@ type User {
 
   # Privacy Group Mutations
   type Mutation {
-    addUsersToPrivacyGroup(groupId: ID!, userIds: [ID!]!): PrivacyGroup
-    createPrivacyGroup(groupName: String!, userIds: [ID!]): PrivacyGroup    
-    deletePrivacyGroup(groupId: ID!): MutationResult
-    editPrivacyGroup(groupId: ID!, newGroupName: String!): PrivacyGroup
-    removeUsersFromPrivacyGroup(groupId: ID!, userIds: [ID!]!): PrivacyGroup
+    createPrivacyGroup(groupName: String!, userIds: [ID]!): PrivacyGroup
+    editPrivacyGroup(privacyGroupId: ID!, newGroupName: String!): PrivacyGroup
+    addUsersToPrivacyGroup(privacyGroupId: ID!, userIds: [ID]!): PrivacyGroup
+    removeUsersFromPrivacyGroup(privacyGroupId: ID!, userIds: [ID]!): PrivacyGroup
+    deletePrivacyGroup(privacyGroupId: ID!): [PrivacyGroup]
   }
 
   # Notification Mutations
@@ -401,9 +402,8 @@ type User {
       collageId: ID
       message: String
     ): Notification
-    deleteNotification(notificationId: ID!): String
-    markAllNotificationsAsSeen(userId: ID!): [Notification]
-    updateNotificationSeenStatus(notificationId: ID!, seen: Boolean!): Notification
+    deleteNotification(notificationId: ID!): [Notification]
+    markAllNotificationsAsSeen: MutationResponse
     }
 
     # Messaging Mutations
