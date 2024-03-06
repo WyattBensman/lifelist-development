@@ -1,5 +1,5 @@
 import { LifeList } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils/auth.mjs";
+import { isUser, isCurrentLifeListAuthor } from "../../../../utils/auth.mjs";
 
 const removeCollagesFromExperienceInLifeList = async (
   _,
@@ -8,10 +8,10 @@ const removeCollagesFromExperienceInLifeList = async (
 ) => {
   try {
     // Check if the user is authenticated
-    /* isUser(user); */
+    isUser(user);
 
     // Check if the user is the author of the LifeList
-    /* await isCurrentLifeListAuthor(user, lifeListId); */
+    await isCurrentLifeListAuthor(user, lifeListId);
 
     // Update the specific experience in the LifeList to remove collages
     const updatedLifeList = await LifeList.findOneAndUpdate(

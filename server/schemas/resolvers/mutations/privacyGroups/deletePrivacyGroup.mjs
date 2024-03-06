@@ -18,7 +18,7 @@ const deletePrivacyGroup = async (_, { privacyGroupId }, { user }) => {
     );
 
     if (!deletedPrivacyGroup) {
-      throw new Error(`PrivacyGroup with ID ${privacyGroupId} not found.`);
+      throw new Error(`Privacy Group not found.`);
     }
 
     // Remove the deleted PrivacyGroup from the user's privacyGroups field

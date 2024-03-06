@@ -1,5 +1,5 @@
 import { LifeList } from "../../../../models/index.mjs";
-import { isCurrentLifeListAuthor, isUser } from "../../../../utils/auth.mjs";
+import { isUser, isCurrentLifeListAuthor } from "../../../../utils/auth.mjs";
 
 const addExperiencesToLifeList = async (
   _,
@@ -33,9 +33,7 @@ const addExperiencesToLifeList = async (
         // Add the experience to the LifeList
         lifeList.experiences.push(newExperience);
       } else {
-        console.error(
-          `Error: Experience with ID ${experience} is already in the LifeList.`
-        );
+        console.error(`Error: ${experience} is already in the LifeList.`);
       }
     });
 

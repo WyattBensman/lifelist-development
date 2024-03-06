@@ -1,5 +1,5 @@
 import { LifeList } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils/auth.mjs";
+import { isUser, isCurrentLifeListAuthor } from "../../../../utils/auth.mjs";
 
 const updateExperienceListStatus = async (
   _,
@@ -8,10 +8,10 @@ const updateExperienceListStatus = async (
 ) => {
   try {
     // Check if the user is authenticated
-    /* isUser(user); */
+    isUser(user);
 
     // Check if the user is the author of the LifeList
-    /* await isCurrentLifeListAuthor(user, lifeListId); */
+    await isCurrentLifeListAuthor(user, lifeListId);
 
     // Use findOneAndUpdate to update the specific experience's list status
     const updatedLifeList = await LifeList.findOneAndUpdate(
@@ -32,7 +32,7 @@ const updateExperienceListStatus = async (
 
     if (!updatedLifeList) {
       throw new Error(
-        `LifeList with ID ${lifeListId} not found or experience with ID ${experienceId} not found in the LifeList.`
+        `LifeList not found or experience not found in the LifeList.`
       );
     }
 
