@@ -1,7 +1,7 @@
-import { User, LifeList } from "../../../../models/index.mjs";
+import { LifeList } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-const addCollagesToExperienceInLifeList = async (
+const removeCollagesFromExperienceInLifeList = async (
   _,
   { lifeListId, experienceId, collageIds },
   { user }
@@ -13,12 +13,12 @@ const addCollagesToExperienceInLifeList = async (
     // Check if the user is the author of the LifeList
     /* await isCurrentLifeListAuthor(user, lifeListId); */
 
-    // Update the specific experience in the LifeList
+    // Update the specific experience in the LifeList to remove collages
     const updatedLifeList = await LifeList.findOneAndUpdate(
       { _id: lifeListId, "experiences.experience": experienceId },
       {
-        $addToSet: {
-          "experiences.$.associatedCollages": { $each: collageIds },
+        $pullAll: {
+          "experiences.$.associatedCollages": collageIds,
         },
       },
       { new: true }
@@ -28,9 +28,9 @@ const addCollagesToExperienceInLifeList = async (
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error(
-      "An error occurred during adding collage to experience in life list."
+      "An error occurred during removing collage from experience in life list."
     );
   }
 };
 
-export default addCollagesToExperienceInLifeList;
+export default removeCollagesFromExperienceInLifeList;

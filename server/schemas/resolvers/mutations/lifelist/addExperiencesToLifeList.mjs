@@ -8,19 +8,17 @@ const addExperiencesToLifeList = async (
 ) => {
   try {
     // Check if the user is authenticated
-    /*  isUser(user); */
+    isUser(user);
 
     // Check if the user is the author of the LifeList
-    /* await isCurrentLifeListAuthor(user, lifeListId); */
+    await isCurrentLifeListAuthor(user, lifeListId);
 
-    // Fetch the LifeList by ID
     const lifeList = await LifeList.findById(lifeListId);
 
     // Loop through the experiences and add them to the LifeList
     experiences.forEach(async (exp) => {
-      const { experience, list, associatedCollages } = exp;
+      const { experience, list } = exp;
 
-      // Check if the experience ID already exists in the LifeList
       const isExperienceAlreadyAdded = lifeList.experiences.some(
         (existingExp) => existingExp.experience.toString() === experience
       );
@@ -30,7 +28,6 @@ const addExperiencesToLifeList = async (
         const newExperience = {
           experience,
           list,
-          associatedCollages,
         };
 
         // Add the experience to the LifeList
@@ -42,10 +39,8 @@ const addExperiencesToLifeList = async (
       }
     });
 
-    // Save the updated LifeList
     await lifeList.save();
 
-    // Return the updated LifeList
     return LifeList.findById(lifeListId).populate("experiences.experience");
   } catch (error) {
     console.error(`Error: ${error.message}`);

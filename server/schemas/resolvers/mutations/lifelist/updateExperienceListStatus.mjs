@@ -25,8 +25,8 @@ const updateExperienceListStatus = async (
         },
       },
       {
-        new: true, // Return the updated document
-        runValidators: true, // Run validators on the update operation
+        new: true,
+        runValidators: true,
       }
     ).populate("experiences.experience");
 

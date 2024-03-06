@@ -420,8 +420,8 @@ type User {
       addExperiencesToLifeList(lifeListId: ID!, experiences: [ExperienceInput]): LifeList
       removeExperiencesFromLifeList(lifeListId: ID!, experienceIds: [ID]): LifeList
       updateExperienceListStatus(lifeListId: ID!, experienceId: ID!, newListStatus: String!): LifeList
-      addCollagesToExperienceInLifeList(experienceId: ID!, collageId: ID!): LifeList
-      removeCollageFromExperienceInLifeList(experienceId: ID!, collageId: ID!): LifeList
+      addCollagesToExperienceInLifeList(lifeListId: ID!, experienceId: ID!, collageIds: [ID]!): LifeList
+      removeCollagesFromExperienceInLifeList(lifeListId: ID!, experienceId: ID!, collageIds: [ID]!): LifeList
     }
 
     # Collage Creation Mutations
@@ -600,7 +600,6 @@ type User {
     input ExperienceInput {
       experience: ID!
       list: String!
-      associatedCollages: [ID]
     }
     
 
