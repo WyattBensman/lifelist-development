@@ -1,70 +1,17 @@
-import {
-  getUserById,
-  searchUsers,
-  getUserFollowers,
-  getUserFollowing,
-  getUserCollages,
-  getUserReposts,
-  getUserSavedCollages,
-  getUserTaggedCollages,
-  getUserLifeList,
-  getUserLogbook,
-  getUserArchives,
-} from "./user/userQueries.mjs";
+import * as userQueries from "./user/userQueries.mjs";
+import * as notificationQueries from "./notifications/notificationQueries.mjs";
+import * as messagingQueries from "./messaging/messagingQueries.mjs";
+import * as experienceQueries from "./experience/experienceQueries.mjs";
+import * as collageMutations from "./collage/collageMutations.mjs";
+import * as cameraQueries from "./camera/cameraQueries.mjs";
 
-import {
-  getUserNotifications,
-  getUserFollowRequest,
-} from "./notifications/notificationQueries.mjs";
-
-import {
-  getUserConversations,
-  getConversationMessages,
-  getUnreadMessagesCount,
-} from "./messaging/messagingQueries.mjs";
-
-import { getExperience } from "./experience/experienceQueries.mjs";
-
-import {
-  getCollageById,
-  getCollageMedia,
-  getCollageSummary,
-  getCollageComments,
-  getCollageTaggedUsers,
-} from "./collage/collageMutations.mjs";
-
-import {
-  getAllCameraAlbums,
-  getCameraAlbum,
-  getAllCameraShots,
-  getCameraShot,
-} from "./camera/cameraQueries.mjs";
-
-export {
-  getUserById,
-  searchUsers,
-  getUserFollowers,
-  getUserFollowing,
-  getUserCollages,
-  getUserReposts,
-  getUserSavedCollages,
-  getUserTaggedCollages,
-  getUserLifeList,
-  getUserLogbook,
-  getUserArchives,
-  getUserNotifications,
-  getUserFollowRequest,
-  getUserConversations,
-  getConversationMessages,
-  getUnreadMessagesCount,
-  getExperience,
-  getCollageById,
-  getCollageMedia,
-  getCollageSummary,
-  getCollageComments,
-  getCollageTaggedUsers,
-  getAllCameraAlbums,
-  getCameraAlbum,
-  getAllCameraShots,
-  getCameraShot,
+const queries = {
+  ...userQueries,
+  ...notificationQueries,
+  ...messagingQueries,
+  ...experienceQueries,
+  ...collageMutations,
+  ...cameraQueries,
 };
+
+export default queries;
