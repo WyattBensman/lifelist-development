@@ -24,7 +24,7 @@ const removeUsersFromPrivacyGroup = async (
     ).populate("users");
 
     if (!updatedPrivacyGroup) {
-      throw new Error(`Privacy Group not found.`);
+      throw new Error(`PrivacyGroup with ID ${privacyGroupId} not found.`);
     }
 
     return updatedPrivacyGroup;

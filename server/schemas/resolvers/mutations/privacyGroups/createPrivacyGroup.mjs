@@ -10,7 +10,7 @@ const createPrivacyGroup = async (_, { groupName, userIds }, { user }) => {
     const uniqueUserIds = [...new Set(userIds)];
 
     if (userIds.length !== uniqueUserIds.length) {
-      throw new Error("Cannot have duplicate users.");
+      throw new Error("Duplicate users found in the array.");
     }
 
     // Create a new PrivacyGroup
