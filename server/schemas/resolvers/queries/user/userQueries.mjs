@@ -34,9 +34,9 @@ export const searchUsers = async (_, { query }) => {
 };
 
 export const getFollowers = async (_, { userId }, { user }) => {
-  /* isUser(user); */
-
   try {
+    isUser(user);
+
     const user = await User.findById(userId).populate({
       path: "followers",
       select: "_id username fullName profilePicture",
@@ -54,9 +54,9 @@ export const getFollowers = async (_, { userId }, { user }) => {
 };
 
 export const getFollowing = async (_, { userId }, { user }) => {
-  /* isUser(user); */
-
   try {
+    isUser(user);
+
     const user = await User.findById(userId).populate({
       path: "following",
       select: "_id username fullName profilePicture",
@@ -91,9 +91,9 @@ export const getUserCollages = async (_, { userId }) => {
 };
 
 export const getUserRepostedCollages = async (_, { userId }, { user }) => {
-  /* isUser(user); */
-
   try {
+    isUser(user);
+
     const user = await User.findById(userId).populate({
       path: "repostedCollages",
       select: "_id coverImage",
@@ -112,9 +112,9 @@ export const getUserRepostedCollages = async (_, { userId }, { user }) => {
 };
 
 export const getUserTaggedCollages = async (_, { userId }, { user }) => {
-  /* isUser(user); */
-
   try {
+    isUser(user);
+
     const user = await User.findById(userId).populate({
       path: "taggedCollages",
       select: "_id coverImage",
@@ -131,9 +131,9 @@ export const getUserTaggedCollages = async (_, { userId }, { user }) => {
 };
 
 export const getUserSavedCollages = async (_, __, { user }) => {
-  /* isUser(user); */
-
   try {
+    isUser(user);
+
     const user = await User.findById(user._id).populate({
       path: "savedCollages",
       select: "_id coverImage",
@@ -150,9 +150,9 @@ export const getUserSavedCollages = async (_, __, { user }) => {
 };
 
 export const getUserArchives = async (_, __, { user }) => {
-  /* isUser(user); */
-
   try {
+    isUser(user);
+
     const user = await User.findById(user._id).populate({
       path: "archivedCollages",
       select: "_id coverImage",
@@ -170,9 +170,9 @@ export const getUserArchives = async (_, __, { user }) => {
 };
 
 export const getUserLogbook = async (_, __, { user }) => {
-  /* isUser(user); */
-
   try {
+    isUser(user);
+
     const user = await User.findById(user.id).populate("logbook");
 
     if (!user) {

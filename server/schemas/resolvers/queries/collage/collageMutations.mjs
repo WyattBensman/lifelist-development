@@ -1,8 +1,13 @@
 import { Collage } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 export const getCollageById = async (_, { collageId }) => {
   try {
-    const collage = await Collage.findById(collageId);
+    const collage = await Collage.findById(collageId).populate({
+      path: "author",
+      select: "username fullName",
+    });
+
     if (!collage) {
       throw new Error("Collage not found.");
     }
@@ -29,16 +34,16 @@ export const getCollageMedia = async (_, { collageId }) => {
 
 export const getCollageSummary = async (_, { collageId }) => {
   try {
-    const collage = await Collage.findById(collageId).select(
-      "summary experiences"
-    );
+    const collage = await Collage.findById(collageId)
+      .select("entries experiences")
+      .populate("experiences");
 
     if (!collage) {
       throw new Error("Collage not found.");
     }
 
     return {
-      summary: collage.summary,
+      entries: collage.entries || [],
       experiences: collage.experiences || [],
     };
   } catch (error) {
@@ -46,11 +51,16 @@ export const getCollageSummary = async (_, { collageId }) => {
   }
 };
 
-export const getCollageComments = async (_, { collageId }) => {
+export const getCollageComments = async (_, { collageId }, { user }) => {
   try {
+    isUser(user);
+
     const collage = await Collage.findById(collageId).populate({
       path: "comments",
-      populate: { path: "user", select: "username fName lName profilePicture" },
+      populate: {
+        path: "author",
+        select: "username fullName profilePicture",
+      },
     });
 
     if (!collage) {
@@ -67,8 +77,10 @@ export const getCollageComments = async (_, { collageId }) => {
   }
 };
 
-export const getCollageTaggedUsers = async (_, { collageId }) => {
+export const getCollageTaggedUsers = async (_, { collageId }, { user }) => {
   try {
+    isUser(user);
+
     const collage = await Collage.findById(collageId).populate({
       path: "tagged",
       select: "username fullName profilePicture",

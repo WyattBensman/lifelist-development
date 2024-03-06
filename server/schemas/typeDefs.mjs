@@ -60,7 +60,7 @@ type User {
   }
 
   type FollowRequest {
-    userId: ID
+    userId: User
     status: FollowRequestStatus
   }
 
@@ -293,6 +293,11 @@ type User {
     url: String
   }
 
+  type CollageSummary {
+    entries: [Entry]
+    experiences: [Experience]
+  }
+
   # User Queries
   type Query {
     getUserProfileById(userId: ID!): User
@@ -321,7 +326,7 @@ type User {
   type Query {
     getCollageById(collageId: ID!): Collage
     getCollageMedia(collageId: ID!): [String]
-    getCollageSummary(collageId: ID!): String
+    getCollageSummary(collageId: ID!): CollageSummary
     getCollageComments(collageId: ID!): [Comment]
     getCollageTaggedUsers(collageId: ID!): [User]
   }
@@ -620,6 +625,7 @@ type User {
       experience: ID!
       list: String!
     }
+    
     
 
     `;
