@@ -302,10 +302,19 @@ type User {
     getUserReposts(userId: ID!): [Collage]
     getUserSavedCollages(userId: ID!): [Collage]
     getUserTaggedCollages(userId: ID!): [Collage]
-    getUserLifeList(userId: ID!): [LifeList]
     getUserLogbook: [Collage]
     getUserArchives: [Collage]
   }
+
+  # LifeList Queries
+  type Query {
+    getCurrentUserLifeList: LifeList
+    getUserLifeList(userId: ID!): LifeList
+    getExperiencedList(lifeListId: ID!): LifeList
+    getWishListedList(lifeListId: ID!): LifeList
+    getSingleExperience(lifeListId: ID!, experienceId: ID!): Experience
+  }
+  
   
   # Collage Queries
   type Query {
@@ -468,6 +477,7 @@ type User {
       takeShot(filter: Boolean, shotOrientation: String): CameraShot
     }
 
+    
     type MutationResponse {
       success: Boolean!
       message: String
@@ -602,8 +612,6 @@ type User {
       list: String!
     }
     
-
-
 
     `;
 

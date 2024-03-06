@@ -121,20 +121,6 @@ export const getUserTaggedCollages = async (_, { userId }) => {
   }
 };
 
-export const getUserLifeList = async (_, { userId }) => {
-  try {
-    const user = await User.findById(userId).populate("lifeList");
-
-    if (!user) {
-      throw new Error("User not found for the provided ID.");
-    }
-
-    return user.lifeList;
-  } catch (error) {
-    throw new Error(`Error fetching user's life list: ${error.message}`);
-  }
-};
-
 export const getUserLogbook = async (_, __, { user }) => {
   // Check if the user is authenticated
   isUser(user);
