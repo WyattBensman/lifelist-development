@@ -157,7 +157,7 @@ type User {
   }
 
   type UserConversation {
-    conversation: ID!
+    conversation: ID
     isRead: Boolean!
   }
 
@@ -342,7 +342,7 @@ type User {
   # Messaging Queries
   type Query {
     getUserConversations: [Conversation]
-    getConversationMessages(conversationId: ID!): [Message]
+    getConversation(conversationId: ID!): Conversation
     getUnreadMessagesCount: Int
   }
 

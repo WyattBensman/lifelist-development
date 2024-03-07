@@ -1,43 +1,65 @@
-import { User } from "../../../../models/index.mjs";
+import { User, Conversation } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 export const getUserConversations = async (_, __, { user }) => {
-  // Check if the user is authenticated
-  isUser(user);
-
   try {
-    const userWithConversations = await User.findById(user.id).populate({
-      path: "conversations",
-      populate: [
+    /* isUser(user); */
+    const user = {
+      _id: "65e72e4e82f12a087695250d",
+      conversations: [
         {
-          path: "participants.user",
-          select: "username fullName profilePicture",
+          conversation: "65e8e27fef629d9763169403",
+          isRead: true,
         },
-        { path: "lastMessage", select: "text createdAt" },
       ],
+    };
+
+    // Get conversation IDs from the user's conversations field
+    const conversationIds = user.conversations.map(
+      (conversation) => conversation.conversation
+    );
+
+    // Find conversations based on the IDs
+    const foundConversations = await Conversation.find({
+      _id: { $in: conversationIds },
+    }).populate({
+      path: "lastMessage",
+      model: "Message",
+      populate: {
+        path: "sender",
+        model: "User",
+      },
     });
 
-    if (!userWithConversations) {
-      throw new Error("User not found for the provided ID.");
-    }
-
-    return userWithConversations.conversations;
+    // Return only the found conversations
+    return foundConversations;
   } catch (error) {
     throw new Error(`Error fetching user's conversations: ${error.message}`);
   }
 };
 
-export const getConversationMessages = async (_, { conversationId }) => {
+export const getConversation = async (_, { conversationId }, { user }) => {
   try {
-    const conversation = await Conversation.findById(conversationId).populate({
-      path: "messages",
-      populate: { path: "sender", select: "username fullName profilePicture" },
-    });
+    /* isUser(user); */
+
+    const conversation = await Conversation.findById(conversationId)
+      .populate({
+        path: "participants",
+        select: "_id username fullName profilePicture",
+      })
+      .populate({
+        path: "messages",
+        populate: {
+          path: "sender",
+          select: "_id username fullName profilePicture",
+        },
+      });
 
     if (!conversation) {
       throw new Error("Conversation not found.");
     }
 
-    return conversation.messages;
+    return conversation;
   } catch (error) {
     throw new Error(
       `Error fetching messages for the conversation: ${error.message}`
@@ -46,13 +68,12 @@ export const getConversationMessages = async (_, { conversationId }) => {
 };
 
 export const getUnreadMessagesCount = async (_, __, { user }) => {
-  // Check if the user is authenticated
-  isUser(user);
-
   try {
-    const userWithUnreadCount = await User.findById(user.id).select(
-      "unreadMessagesCount"
-    );
+    isUser(user);
+
+    const userWithUnreadCount = await User.findById(
+      "65e72e4e82f12a087695250d"
+    ).select("unreadMessagesCount");
 
     if (!userWithUnreadCount) {
       throw new Error("User not found for the provided ID.");

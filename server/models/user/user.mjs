@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import userSettingsSchema from "./userSettings.mjs";
-import { LifeList } from "../index.mjs";
+import { LifeList, Message } from "../index.mjs";
 
 const validatePassword = (value) => {
   return /^(?=.*\d)(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).*$/.test(value);
@@ -276,6 +276,39 @@ userSchema.pre("save", async function (next) {
     next(error);
   }
 });
+
+// Adds to Message Count
+userSchema.post("save", async function (user) {
+  const unreadMessagesCount = await Message.countDocuments({
+    recipient: user._id,
+    isRead: false,
+  });
+
+  user.unreadMessagesCount = unreadMessagesCount;
+  await user.save();
+});
+
+// Middleware to update unreadMessagesCount when a user reads a message
+userSchema.methods.readMessage = async function (messageId) {
+  const message = await Message.findById(messageId);
+
+  if (message && message.sender.equals(this._id) && !message.isRead) {
+    message.isRead = true;
+    await message.save();
+
+    const conversation = await Conversation.findById(message.conversation);
+    if (conversation) {
+      const unreadMessagesCount = await Message.countDocuments({
+        conversation: conversation._id,
+        sender: { $ne: this._id }, // Exclude the current user as the sender
+        isRead: false,
+      });
+
+      this.unreadMessagesCount = unreadMessagesCount;
+      await this.save();
+    }
+  }
+};
 
 // Hashes Password
 userSchema.pre("save", async function (next) {
