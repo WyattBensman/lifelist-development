@@ -7,10 +7,8 @@ const updateExperienceListStatus = async (
   { user }
 ) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
 
-    // Check if the user is the author of the LifeList
     await isCurrentLifeListAuthor(user, lifeListId);
 
     // Use findOneAndUpdate to update the specific experience's list status
