@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import reportSchema from "./reportSchema.mjs";
 
 const validateImageCount = (value) => value.length > 0;
 const validateMaxImageCount = (value) => value.length <= 14;
@@ -118,12 +119,11 @@ const collageSchema = new Schema({
       ref: "User",
     },
   ],
-  audience: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "PrivacyGroup",
-    },
-  ],
+  /* audience: {
+    type: String,
+    enum: ["PUBLIC", "PRIVATE", "CUSTOM"],
+    default: "PUBLIC",
+  }, */
   posted: {
     type: Boolean,
     default: false,
@@ -132,18 +132,9 @@ const collageSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  reports: [
-    {
-      user: {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-      },
-      reason: {
-        type: String,
-        required: true,
-      },
-    },
-  ],
+  reports: {
+    type: [reportSchema],
+  },
 });
 
 const Collage = model("Collage", collageSchema);

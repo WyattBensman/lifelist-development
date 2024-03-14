@@ -1,16 +1,5 @@
 import { Schema, model } from "mongoose";
-
-const reportSchema = new Schema({
-  reporter: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  reason: {
-    type: String,
-    required: true,
-  },
-});
+import reportSchema from "./reportSchema.mjs";
 
 const commentSchema = new Schema({
   author: {
@@ -34,7 +23,6 @@ const commentSchema = new Schema({
   ],
   reports: {
     type: [reportSchema],
-    default: [],
   },
 });
 

@@ -249,7 +249,16 @@ type User {
   
   type Report {
     reporter: User
-    reason: String
+    reason: ReportReason
+  }
+
+  enum ReportReason {
+    INAPPROPRIATE_CONTENT
+    COPYRIGHT_VIOLATION
+    HARASSMENT_OR_BULLYING
+    FALSE_INFORMATION_OR_MISREPRESENTATION
+    VIOLATES_COMMUNITY_GUIDELINES
+    SPAM_OR_SCAMS
   }
 
   type CameraAlbum {
@@ -472,8 +481,8 @@ type User {
       createComment(collageId: ID!, text: String!): CommentResponse
       deleteComment(collageId: ID!, commentId: ID!): CommentResponse
       editComment(collageId: ID!, commentId: ID!, newText: String!): CommentResponse
-      reportCollage(collageId: ID!, reason: String!): MutationResult
-      reportComment(collageId: ID!, commentId: ID!, reason: String!): MutationResult
+      reportCollage(collageId: ID!, reason: ReportReason!): MutationSuccessMessage
+      reportComment(commentId: ID!, reason: ReportReason!): MutationSuccessMessage
       repostCollage(collageId: ID!): MutationResponse
       saveCollage(collageId: ID!): MutationResponse
       unrepostCollage(collageId: ID!): MutationResponse
@@ -503,6 +512,11 @@ type User {
     }
 
     type MutationResult {
+      message: String
+    }
+
+    type MutationSuccessMessage {
+      success: Boolean!
       message: String
     }
 

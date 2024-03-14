@@ -1,32 +1,29 @@
-import { Collage } from "../../../../models/index.mjs";
+import { Comment } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-const reportComment = async (_, { collageId, commentId, reason }, { user }) => {
+const reportComment = async (_, { commentId, reason }, { user }) => {
   try {
-    // Check if the user is authenticated
-    isUser(user);
+    /* isUser(user); */
 
-    // Check if the collage exists
-    const collage = await Collage.findById(collageId);
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
-
-    // Find the comment by its ID
-    const comment = collage.comments.id(commentId);
+    const comment = await Comment.findById(commentId);
     if (!comment) {
-      throw new Error("Comment not found.");
+      throw new Error("Comment not found");
     }
 
-    // Report the comment (you can customize this part based on your reporting logic)
-    comment.reports.push({
-      reporter: user.id,
-      reason,
-    });
+    // Check if the reporter has already reported the comment
+    const alreadyReported = comment.reports.some(
+      (report) => report.reporter.toString() === "65e72e4e82f12a087695250d"
+    );
+    if (alreadyReported) {
+      throw new Error("You have already reported this comment");
+    }
 
-    await collage.save();
+    // Update the reports field of the comment with the new report
+    comment.reports.push({ reporter: "65e72e4e82f12a087695250d", reason });
+    await comment.save();
 
     return {
+      success: true,
       message: "Comment reported successfully.",
     };
   } catch (error) {

@@ -3,28 +3,27 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const reportCollage = async (_, { collageId, reason }, { user }) => {
   try {
-    // Check if the user is authenticated
-    isUser(user);
+    /* isUser(user); */
 
-    // Check if the collage exists
     const collage = await Collage.findById(collageId);
     if (!collage) {
       throw new Error("Collage not found.");
     }
 
-    // Check if the user has already reported this collage
+    // Check if the reporter has already reported the collage
     const alreadyReported = collage.reports.some(
-      (report) => report.user.toString() === user.id
+      (report) => report.reporter.toString() === "65e72e4e82f12a087695250d"
     );
     if (alreadyReported) {
       throw new Error("You have already reported this collage.");
     }
 
-    // Add the user's report to the collage
-    collage.reports.push({ user: user.id, reason });
+    // Add the report to the collage
+    collage.reports.push({ reporter: "65e72e4e82f12a087695250d", reason });
     await collage.save();
 
     return {
+      success: true,
       message: "Collage reported successfully.",
     };
   } catch (error) {
