@@ -463,7 +463,7 @@ type User {
       tagUsers(collageId: ID!, taggedUserIds: [ID]): TagUsersResponse
       removeExperiences(collageId: ID!, experienceIds: [ID]!): AddExperiencesResponse
       untagUsers(collageId: ID!, userIdsToUntag: [ID]): TagUsersResponse
-      addToLogbook(collageId: ID!): AddToLogBookResponse
+      addToLogbook(collageId: ID!): MutationResponse
       postCollage(collageId: ID!): Collage
     }
 
@@ -605,13 +605,6 @@ type User {
       message: String
       collageId: ID
       taggedUsers: [User]
-    }
-
-    type AddToLogBookResponse {
-      success: Boolean
-      message: String
-      collageId: ID
-      logbook: [Collage]
     }
 
     type CommentResponse {
