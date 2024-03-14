@@ -312,6 +312,12 @@ type User {
     getUserArchives: [Collage]
   }
 
+  # Privacy Group Queries
+  type Query {
+    getPrivacyGroups: [PrivacyGroup]
+    getSpecificPrivacyGroup(privacyGroupId: ID!): PrivacyGroup
+  }
+
   # LifeList Queries
   type Query {
     getCurrentUserLifeList: LifeList
@@ -320,7 +326,6 @@ type User {
     getWishListedList(lifeListId: ID!): LifeList
     getSingleExperience(lifeListId: ID!, experienceId: ID!): Experience
   }
-  
   
   # Collage Queries
   type Query {

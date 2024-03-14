@@ -23,8 +23,8 @@ export const searchUsers = async (_, { query }) => {
   try {
     const users = await User.find({
       $or: [
-        { username: { $regex: query, $options: "i" } }, // Case-insensitive username match
-        { fullName: { $regex: query, $options: "i" } }, // Case-insensitive full name match
+        { username: { $regex: query, $options: "i" } },
+        { fullName: { $regex: query, $options: "i" } },
       ],
     }).select("username fullName profilePicture");
   } catch (error) {
