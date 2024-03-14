@@ -328,7 +328,7 @@ type User {
   type Query {
     getCurrentUserLifeList: LifeList
     getUserLifeList(userId: ID!): LifeList
-    getExperiencedList(lifeListId: ID!): LifeList
+    getExperiencedList(lifeListId: ID!): [Experience]
     getWishListedList(lifeListId: ID!): LifeList
     getSingleExperience(lifeListId: ID!, experienceId: ID!): Experience
   }

@@ -26,7 +26,12 @@ export const getUserLifeList = async (_, { userId }, { user }) => {
   try {
     isUser(user);
 
-    const userLifeList = await LifeList.findOne({ author: userId });
+    const userLifeList = await LifeList.findOne({
+      author: userId,
+    }).populate({
+      path: "experiences.experience",
+      model: "Experience",
+    });
 
     if (!userLifeList) {
       throw new Error("LifeList not found for the specified user.");
