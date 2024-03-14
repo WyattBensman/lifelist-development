@@ -173,7 +173,7 @@ export const getUserLogbook = async (_, __, { user }) => {
   try {
     isUser(user);
 
-    const user = await User.findById(user.id).populate("logbook");
+    const user = await User.findById(user._id).populate("logbook");
 
     if (!user) {
       throw new Error("User not found for the provided ID.");
@@ -182,5 +182,102 @@ export const getUserLogbook = async (_, __, { user }) => {
     return user.logbook;
   } catch (error) {
     throw new Error(`Error fetching user's logbook: ${error.message}`);
+  }
+};
+
+export const getBlockedUsers = async (_, __, { user }) => {
+  try {
+    isUser(user);
+
+    const currentUser = await User.findById(user._id).populate({
+      path: "blocked",
+      select: "_id username fullName profilePicture",
+    });
+
+    if (!currentUser) {
+      throw new Error("User not found for the provided ID.");
+    }
+
+    return currentUser.blocked;
+  } catch (error) {
+    throw new Error(`Error fetching blocked users: ${error.message}`);
+  }
+};
+
+export const getFlowpageLinks = async (_, { userId }, { user }) => {
+  try {
+    isUser(user);
+
+    const user = await User.findById(userId).select("flowpageLinks");
+
+    if (!user) {
+      throw new Error("User not found for the provided ID.");
+    }
+
+    return user.flowpageLinks;
+  } catch (error) {
+    throw new Error(`Error fetching Flowpage links: ${error.message}`);
+  }
+};
+
+export const getUserProfileInformation = async (_, __, { user }) => {
+  try {
+    isUser(user);
+
+    const userProfile = await User.findById(user._id).select(
+      "profilePicture fullName username bio"
+    );
+
+    return userProfile;
+  } catch (error) {
+    throw new Error(
+      `Error fetching user profile information: ${error.message}`
+    );
+  }
+};
+
+export const getUserContactInformation = async (_, __, { user }) => {
+  try {
+    isUser(user);
+
+    const userContactInfo = await User.findById(user._id).select(
+      "email phoneNumber"
+    );
+
+    return userContactInfo;
+  } catch (error) {
+    throw new Error(
+      `Error fetching user contact information: ${error.message}`
+    );
+  }
+};
+
+export const getUserIdentityInformation = async (_, __, { user }) => {
+  try {
+    isUser(user);
+
+    const userIdentityInfo = await User.findById(user._id).select(
+      "birthday gender"
+    );
+
+    return userIdentityInfo;
+  } catch (error) {
+    throw new Error(
+      `Error fetching user identity information: ${error.message}`
+    );
+  }
+};
+
+export const getUserSettingsInformation = async (_, __, { user }) => {
+  try {
+    isUser(user);
+
+    const userSettingsInfo = await User.findById(user._id).select("settings");
+
+    return userSettingsInfo;
+  } catch (error) {
+    throw new Error(
+      `Error fetching user settings information: ${error.message}`
+    );
   }
 };

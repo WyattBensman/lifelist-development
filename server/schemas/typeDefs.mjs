@@ -310,6 +310,12 @@ type User {
     getUserSavedCollages: [Collage]
     getUserLogbook: [Collage]
     getUserArchives: [Collage]
+    getFlowpageLinks(userId: ID!): [FlowpageLink]
+    getBlockedUsers: [User]
+    getUserProfileInformation: UserProfileInformation
+    getUserContactInformation: UserContactInformation
+    getUserIdentityInformation: UserIdentityInformation
+    getUserSettingsInformation: UserSettingsInformation
   }
 
   # Privacy Group Queries
@@ -629,6 +635,27 @@ type User {
     input ExperienceInput {
       experience: ID!
       list: String!
+    }
+
+    type UserProfileInformation {
+      profilePicture: String
+      fullName: String
+      username: String
+      bio: String
+    }
+
+    type UserContactInformation {
+      email: String
+      phoneNumber: String
+    }
+
+    type UserIdentityInformation {
+      birthday: Date
+      gender: String
+    }
+
+    type UserSettingsInformation {
+      settings: UserSettings
     }
     
     

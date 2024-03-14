@@ -24,11 +24,11 @@ export const getSpecificPrivacyGroup = async (
   { user }
 ) => {
   try {
-    /* isUser(user); */
+    isUser(user);
 
     const privacyGroup = await PrivacyGroup.findOne({
       _id: privacyGroupId,
-      author: "65e08edb5242a6c8ff3c8152",
+      author: user._id,
     }).populate({
       path: "users",
       select: "fullName username profilePicture",

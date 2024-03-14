@@ -3,10 +3,8 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const blockUser = async (_, { userIdToBlock }, { user }) => {
   try {
-    // Ensure the user is authenticated
     isUser(user);
 
-    // Check if the user is already blocked
     const existingBlockedUser = await User.findOne({
       _id: user._id,
       blocked: userIdToBlock,

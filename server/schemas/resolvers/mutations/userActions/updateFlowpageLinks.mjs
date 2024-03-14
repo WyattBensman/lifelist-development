@@ -3,7 +3,6 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const updateFlowpageLinks = async (_, { flowpageLinks }, { user }) => {
   try {
-    // Authenticate
     isUser(user);
 
     // Check for duplicate types in the incoming flowpageLinks
