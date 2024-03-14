@@ -221,6 +221,7 @@ const userSchema = new Schema({
       darkMode: false,
       language: "en",
       notifications: true,
+      postRepostToMainFeed: true,
     },
   },
   flowpageLinks: {

@@ -18,6 +18,10 @@ const userSettingsSchema = new Schema({
     type: Boolean,
     default: true,
   },
+  postRepostToMainFeed: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 export default userSettingsSchema;

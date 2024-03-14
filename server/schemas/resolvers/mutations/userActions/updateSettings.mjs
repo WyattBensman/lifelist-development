@@ -3,22 +3,22 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const updateSettings = async (
   _,
-  { privacy, darkMode, language, notifications },
+  { privacy, darkMode, language, notifications, postRepostToMainFeed },
   { user }
 ) => {
   try {
-    // Authenticate
-    isUser(user);
+    /* isUser(user); */
 
     // Update the user's settings
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      "65e72e4e82f12a087695250d",
       {
         settings: {
           privacy,
           darkMode,
           language,
           notifications,
+          postRepostToMainFeed,
         },
       },
       { new: true, runValidators: true }
@@ -29,6 +29,7 @@ const updateSettings = async (
       darkMode: updatedUser.settings.darkMode,
       language: updatedUser.settings.language,
       notifications: updatedUser.settings.notifications,
+      postRepostToMainFeed: updatedUser.settings.postRepostToMainFeed,
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

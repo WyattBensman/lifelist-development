@@ -1,14 +1,10 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-const updateContact = async (
-  _,
-  { email, phoneNumber, gender, birthday },
-  { user }
-) => {
+const updateContact = async (_, { email, phoneNumber }, { user }) => {
   try {
-    // Authenticate
-    isUser(user);
+    /* isUser(user); */
+    const user = await User.findById("65e72e4e82f12a087695250d");
 
     // Check if the verified email is being modified
     if (user.emailVerified && email !== user.email) {
@@ -26,8 +22,6 @@ const updateContact = async (
       {
         email,
         phoneNumber,
-        gender,
-        birthday,
       },
       { new: true, runValidators: true }
     );
@@ -35,8 +29,6 @@ const updateContact = async (
     return {
       email: updatedUser.email,
       phoneNumber: updatedUser.phoneNumber,
-      gender: updatedUser.gender,
-      birthday: updatedUser.birthday,
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

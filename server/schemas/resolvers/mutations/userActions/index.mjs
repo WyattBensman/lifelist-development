@@ -5,6 +5,7 @@ import updateFlowpageLinks from "./updateFlowpageLinks.mjs";
 import updatePassword from "./updatePassword.mjs";
 import updateProfile from "./updateProfile.mjs";
 import updateSettings from "./updateSettings.mjs";
+import updateIdentity from "./updateIdentity.mjs";
 
 export {
   deleteUser,
@@ -14,4 +15,5 @@ export {
   updatePassword,
   updateProfile,
   updateSettings,
+  updateIdentity,
 };

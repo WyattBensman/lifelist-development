@@ -120,6 +120,7 @@ type User {
     darkMode: Boolean
     language: String
     notifications: Boolean
+    postRepostToMainFeed: Boolean
   }
 
   type Notification {
@@ -400,10 +401,11 @@ type User {
   type Mutation {
     login(usernameOrEmailOrPhone: String!, password: String!): Auth
     deleteUser(userId: ID!): MutationResponse
-    updateContact(email: String, phoneNumber: String, gender: String, birthday: String): UpdateContactResponse
     updatePassword(currentPassword: String!, newPassword: String!): MutationResponse
     updateProfile(profilePicture: Upload, fullName: String, username: String, bio: String): UpdateProfileResponse
-    updateSettings(privacy: String, darkMode: Boolean, language: String, notifications: Boolean): UpdateSettingsResponse
+    updateContact(email: String, phoneNumber: String): UpdateContactResponse
+    updateIdentity(gender: String, birthday: String): UpdateIdentityResponse
+    updateSettings(privacy: String, darkMode: Boolean, language: String, notifications: Boolean, postRepostToMainFeed: Boolean): UpdateSettingsResponse
     updateFlowpageLinks(flowpageLinks: [FlowpageLinkInput]): [FlowpageLink]
   }
 
@@ -523,6 +525,9 @@ type User {
     type UpdateContactResponse {
       email: String
       phoneNumber: String
+    }
+
+    type UpdateIdentityResponse {
       gender: String
       birthday: String
     }
@@ -539,6 +544,7 @@ type User {
       darkMode: Boolean
       language: String
       notifications: Boolean
+      postRepostToMainFeed: Boolean
     }
 
     type FollowRequestResponse {
