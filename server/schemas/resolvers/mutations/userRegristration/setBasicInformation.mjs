@@ -1,8 +1,8 @@
 import { User } from "../../../../models/index.mjs";
 
-const setBasicInformation = async (_, { userId, fName, lName, gender }) => {
+const setBasicInformation = async (_, { userId, fullName, gender }) => {
   // Input validation
-  if (!fName || !lName) {
+  if (!fullName) {
     throw new Error("Both first name and last name are required.");
   }
 
@@ -15,8 +15,7 @@ const setBasicInformation = async (_, { userId, fName, lName, gender }) => {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
-        fName,
-        lName,
+        fullName,
         gender,
       },
       { new: true, runValidators: true }
