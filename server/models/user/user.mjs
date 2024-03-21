@@ -177,7 +177,7 @@ const userSchema = new Schema({
   logbook: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Collage",
+      ref: "LogbookItem",
     },
   ],
   conversations: [

@@ -28,7 +28,7 @@ type User {
     repostedCollages: [Collage]
     taggedCollages: [Collage]
     savedCollages: [Collage]
-    logbook: [Collage]
+    logbook: [LogbookItem]
     archivedCollages: [Collage]
     conversations: [UserConversation]
     privacyGroups: [PrivacyGroup]
@@ -208,6 +208,16 @@ type User {
     reports: [Report]
   }
 
+  type LogbookItem {
+    _id: ID!
+    title: String!
+    collage: Collage
+    startDate: Date
+    finishDate: Date
+    date: Date
+    month: String
+  }
+
   type Month {
     name: String
     year: Int
@@ -305,6 +315,15 @@ type User {
   type CollageSummary {
     entries: [Entry]
     experiences: [Experience]
+  }
+
+  input LogbookInput {
+    title: String!
+    collageId: ID!
+    date: String
+    startDate: String
+    finishDate: String
+    month: String
   }
 
   # User Queries
@@ -473,7 +492,7 @@ type User {
       tagUsers(collageId: ID!, taggedUserIds: [ID]): TagUsersResponse
       removeExperiences(collageId: ID!, experienceIds: [ID]!): AddExperiencesResponse
       untagUsers(collageId: ID!, userIdsToUntag: [ID]): TagUsersResponse
-      addToLogbook(collageId: ID!): MutationResponse
+      addToLogbook(logbookInput: LogbookInput!): MutationResponse
       postCollage(collageId: ID!): Collage
     }
 
@@ -505,7 +524,13 @@ type User {
       takeShot(filter: Boolean, shotOrientation: String): CameraShot
     }
 
-    
+    # Logbook Mutations
+    type Mutation {
+      createUpcomingExperience(title: String!, date: String, startDate: String, endDate: String, month: String): LogbookMutationResponse
+      editLogbookItem(logbookItemId: ID!, title: String, date: String, startDate: String, endDate: String, month: String): LogbookMutationResponse
+      deleteLogbookItem(logbookItemId: ID!): LogbookMutationResponse
+    }
+
     type MutationResponse {
       success: Boolean!
       message: String
@@ -667,6 +692,13 @@ type User {
 
     type UserSettingsInformation {
       settings: UserSettings
+    }
+
+    type LogbookMutationResponse {
+      success: Boolean
+      message: String
+      action: String
+      logbook: [LogbookItem]
     }
     
     

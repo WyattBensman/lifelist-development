@@ -9,6 +9,7 @@ import * as messagingMutations from "./messaging/index.mjs";
 import * as notificationsMutations from "./notifications/index.mjs";
 import * as privacyGroupsMutations from "./privacyGroups/index.mjs";
 import * as mockMutations from "./mock/index.mjs";
+import * as logbookMutations from "./logbook/index.mjs";
 
 const mutations = {
   ...userActionsMutations,
@@ -22,6 +23,7 @@ const mutations = {
   ...notificationsMutations,
   ...privacyGroupsMutations,
   ...mockMutations,
+  ...logbookMutations,
 };
 
 export default mutations;

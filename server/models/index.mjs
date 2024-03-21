@@ -9,6 +9,7 @@ import LifeList from "./lifelist/lifeList.mjs";
 import PrivacyGroup from "./user/privacyGroup.mjs";
 import Conversation from "./messaging/conversation.mjs";
 import Message from "./messaging/message.mjs";
+import LogbookItem from "./user/logbookItem.mjs";
 
 export {
   User,
@@ -22,4 +23,5 @@ export {
   Comment,
   LifeList,
   PrivacyGroup,
+  LogbookItem,
 };

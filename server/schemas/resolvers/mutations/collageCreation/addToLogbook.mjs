@@ -1,19 +1,35 @@
-import { Collage, User } from "../../../../models/index.mjs";
+import { Collage, User, LogbookItem } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-const addToLogbook = async (_, { collageId }, { user }) => {
+const addToLogbook = async (
+  _,
+  { collageId, title, date, startDate, finishDate, month },
+  { user }
+) => {
   try {
-    /* isUser(user);
-    await isCurrentAuthor(user, collageId); */
+    isUser(user);
+    await isCurrentAuthor(user, collageId);
+
+    if ((startDate || finishDate) && (date || month)) {
+      throw new Error(
+        "Provide either startDate and finishDate, or date, or month, not a combination."
+      );
+    }
+
+    const newLogbookItem = await LogbookItem.create({
+      user: user._id,
+      title,
+      collage: collageId,
+      startDate: startDate || null,
+      finishDate: finishDate || null,
+      date: date || null,
+      month: month || null,
+    });
 
     // Add or remove the collage from the user's logbook
     const updatedUser = await User.findByIdAndUpdate(
-      "65e08edb5242a6c8ff3c8152",
-      {
-        $addToSet: {
-          logbook: collageId,
-        },
-      },
+      user._id,
+      { $push: { logbook: newLogbookItem._id } },
       { new: true, runValidators: true }
     );
 
