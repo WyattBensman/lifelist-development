@@ -1,4 +1,4 @@
-import addDescription from "./addDescription.mjs";
+import setCaption from "./setCaption.mjs";
 import addExperiences from "./addExperiences.mjs";
 import addEntries from "./addEntries.mjs";
 import addToLogbook from "./addToLogbook.mjs";
@@ -13,7 +13,7 @@ import removeExperiences from "./removeExperiences.mjs";
 import setCoverImage from "./setCoverImage.mjs";
 
 export {
-  addDescription,
+  setCaption,
   addExperiences,
   addEntries,
   addToLogbook,

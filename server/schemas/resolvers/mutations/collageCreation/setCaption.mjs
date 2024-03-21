@@ -1,7 +1,7 @@
 import { Collage } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-const addDescription = async (_, { collageId, title, caption }, { user }) => {
+const setCaption = async (_, { collageId, caption }, { user }) => {
   try {
     // Check if the user is authenticated
     isUser(user);
@@ -12,7 +12,7 @@ const addDescription = async (_, { collageId, title, caption }, { user }) => {
     // Update the collage with the provided title and caption
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { title, caption },
+      { caption },
       { new: true }
     );
 
@@ -20,7 +20,6 @@ const addDescription = async (_, { collageId, title, caption }, { user }) => {
       success: true,
       message: "Description added successfully",
       collageId: updatedCollage._id,
-      title: updatedCollage.title,
       caption: updatedCollage.caption,
     };
   } catch (error) {
@@ -29,4 +28,4 @@ const addDescription = async (_, { collageId, title, caption }, { user }) => {
   }
 };
 
-export default addDescription;
+export default setCaption;

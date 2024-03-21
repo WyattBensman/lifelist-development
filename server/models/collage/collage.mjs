@@ -39,10 +39,6 @@ const collageSchema = new Schema({
       return this.images.length > 0 ? this.images[0] : null;
     },
   },
-  title: {
-    type: String,
-    maxlength: 40,
-  },
   caption: {
     type: String,
     maxlength: 75,

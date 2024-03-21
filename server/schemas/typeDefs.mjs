@@ -191,7 +191,6 @@ type User {
     createdAt: Date
     images: [String]
     coverImage: String
-    title: String
     caption: String
     date: Date
     startDate: Date
@@ -464,7 +463,7 @@ type User {
     # Collage Creation Mutations
     type Mutation {
       startCollage(images: [Upload]): StartCollageReponse
-      addDescription(collageId: ID!, title: String, caption: String): AddDescriptionReponse
+      setCaption(collageId: ID!, caption: String): setCaptionReponse
       addEntries(collageId: ID!, entries: [EntryInput]): AddEntriesResponse
       addExperiences(collageId: ID!, experienceIds: [ID]): AddExperiencesResponse
       setAudience(collageId: ID!, audience: [PrivacyGroupInput]): CollageCreationResponse
@@ -567,11 +566,10 @@ type User {
       images: [String]
     }
 
-    type AddDescriptionReponse {
+    type setCaptionReponse {
       success: Boolean
       message: String
       collageId: ID
-      title: String
       caption: String
     }
 
