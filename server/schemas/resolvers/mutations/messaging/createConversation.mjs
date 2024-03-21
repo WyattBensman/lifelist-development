@@ -4,7 +4,6 @@ import createNotification from "../notifications/createNotification.mjs";
 
 const createConversation = async (_, { recipientId, message }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
 
     // Find the existing conversation between sender and recipient

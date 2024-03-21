@@ -7,10 +7,7 @@ const removeExperiencesFromLifeList = async (
   { user }
 ) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
-
-    // Check if the user is the author of the LifeList
     await isCurrentLifeListAuthor(user, lifeListId);
 
     const lifeList = await LifeList.findById(lifeListId);

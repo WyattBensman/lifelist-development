@@ -8,7 +8,6 @@ const updateProfile = async (
   { user }
 ) => {
   try {
-    // Authenticate
     isUser(user);
 
     // Validate fName & lName

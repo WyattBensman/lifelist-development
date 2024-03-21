@@ -8,7 +8,6 @@ const updateExperienceListStatus = async (
 ) => {
   try {
     isUser(user);
-
     await isCurrentLifeListAuthor(user, lifeListId);
 
     // Use findOneAndUpdate to update the specific experience's list status

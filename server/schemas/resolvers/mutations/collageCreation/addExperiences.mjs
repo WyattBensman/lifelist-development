@@ -3,10 +3,7 @@ import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
 const addExperiences = async (_, { collageId, experienceIds }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
-
-    // Check if the user is the author
     await isCurrentAuthor(user, collageId);
 
     // Update the collage with the provided experiences

@@ -3,7 +3,6 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const deleteComment = async (_, { collageId, commentId }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
 
     // Find the comment by its ID

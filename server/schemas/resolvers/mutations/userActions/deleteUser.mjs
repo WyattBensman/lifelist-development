@@ -13,7 +13,6 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const deleteUser = async (_, __, { user }) => {
   try {
-    // Authenticate
     isUser(user);
 
     // Find the user to delete
@@ -24,6 +23,9 @@ const deleteUser = async (_, __, { user }) => {
       console.error("User not found.");
       throw new Error("User not found.");
     }
+
+    // Delete all associated logbook items
+    await LogbookItem.deleteMany({ author: user._id });
 
     // Delete the user's lifelist
     await LifeList.deleteOne({ author: user._id });

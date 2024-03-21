@@ -4,7 +4,6 @@ import createNotification from "../notifications/createNotification.mjs";
 
 const createComment = async (_, { collageId, text }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
 
     // Check if the collage exists

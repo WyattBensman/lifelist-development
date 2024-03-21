@@ -3,10 +3,7 @@ import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
 const setLocation = async (_, { collageId, locations }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
-
-    // Check if the user is the author
     await isCurrentAuthor(user, collageId);
 
     // Update locations for the collage

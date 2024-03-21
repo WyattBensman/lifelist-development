@@ -7,7 +7,6 @@ const updatePassword = async (
   { user }
 ) => {
   try {
-    // Authenticate
     isUser(user);
 
     // Fetch the current user data

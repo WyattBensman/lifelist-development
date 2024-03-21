@@ -3,18 +3,17 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const deleteNotification = async (_, { notificationId }, { user }) => {
   try {
-    // Check if the user is authenticated
-    /* isUser(user); */
+    isUser(user);
 
     // Remove the notification from the user's notifications array
     const updatedUser = await User.findByIdAndUpdate(
-      "65e08edb5242a6c8ff3c8152",
+      user._id,
       { $pull: { notifications: notificationId } },
       { new: true }
     ).populate("notifications");
 
     if (!updatedUser) {
-      throw new Error(`User with ID ${"65e08edb5242a6c8ff3c8152"} not found.`);
+      throw new Error(`User with ID ${user._id} not found.`);
     }
 
     // Delete the notification itself

@@ -3,8 +3,7 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const updateContact = async (_, { email, phoneNumber }, { user }) => {
   try {
-    /* isUser(user); */
-    const user = await User.findById("65e72e4e82f12a087695250d");
+    isUser(user);
 
     // Check if the verified email is being modified
     if (user.emailVerified && email !== user.email) {

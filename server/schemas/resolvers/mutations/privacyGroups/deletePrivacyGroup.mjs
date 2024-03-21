@@ -6,10 +6,7 @@ import {
 
 const deletePrivacyGroup = async (_, { privacyGroupId }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
-
-    // Check if the user is the author of the PrivacyGroup
     await isCurrentPrivacyGroupAuthor(user, privacyGroupId);
 
     // Find and remove the PrivacyGroup by ID

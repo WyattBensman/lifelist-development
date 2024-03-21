@@ -3,7 +3,6 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const createPrivacyGroup = async (_, { groupName, userIds }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
 
     // Check for duplicate user IDs in the userIds array

@@ -3,12 +3,11 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const markAllNotificationsAsSeen = async (_, __, { user }) => {
   try {
-    // Check if the user is authenticated
-    /* isUser(user); */
+    isUser(user);
 
     // Find all notifications with the recipient being the current user & set read to true
     const notifications = await Notification.updateMany(
-      { recipient: "65e08edb5242a6c8ff3c8152" },
+      { recipient: user._id },
       { $set: { read: true } }
     );
 

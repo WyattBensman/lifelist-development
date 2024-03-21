@@ -3,7 +3,6 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const editComment = async (_, { collageId, commentId, newText }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
 
     // Check if the collage exists

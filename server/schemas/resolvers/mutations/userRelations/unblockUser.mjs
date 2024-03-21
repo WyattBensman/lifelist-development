@@ -3,7 +3,6 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const unblockUser = async (_, { userIdToUnblock }, { user }) => {
   try {
-    // Ensure the user is authenticated
     isUser(user);
 
     // Unblock the user

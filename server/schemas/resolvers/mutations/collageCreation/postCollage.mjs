@@ -4,10 +4,7 @@ import createNotification from "../notifications/createNotification.mjs";
 
 const postCollage = async (_, { collageId }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
-
-    // Check if the user is the author
     await isCurrentAuthor(user, collageId);
 
     // Check if the collage is in the user's logbook

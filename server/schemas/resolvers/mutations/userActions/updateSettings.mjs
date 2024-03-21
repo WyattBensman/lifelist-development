@@ -7,11 +7,11 @@ const updateSettings = async (
   { user }
 ) => {
   try {
-    /* isUser(user); */
+    isUser(user);
 
     // Update the user's settings
     const updatedUser = await User.findByIdAndUpdate(
-      "65e72e4e82f12a087695250d",
+      user._id,
       {
         settings: {
           privacy,

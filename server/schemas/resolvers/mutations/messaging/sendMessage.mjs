@@ -8,7 +8,6 @@ const sendMessage = async (
   { user }
 ) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
 
     // Create the new message

@@ -3,10 +3,7 @@ import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
 const untagUsers = async (_, { collageId, userIdsToUntag }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
-
-    // Check if the user is the author
     await isCurrentAuthor(user, collageId);
 
     // Update tagged users for the collage

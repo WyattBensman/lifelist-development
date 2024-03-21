@@ -10,10 +10,7 @@ const editPrivacyGroup = async (
   { user }
 ) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
-
-    // Check if the user is the author of the PrivacyGroup
     await isCurrentPrivacyGroupAuthor(user, privacyGroupId);
 
     // Update the PrivacyGroup's groupName using findByIdAndUpdate

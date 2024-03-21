@@ -7,10 +7,7 @@ const setDate = async (
   { user }
 ) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
-
-    // Check if the user is the author
     await isCurrentAuthor(user, collageId);
 
     // Validate that either startDate and finishDate go together, or date, or month is provided

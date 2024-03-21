@@ -3,10 +3,7 @@ import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
 const deleteCollage = async (_, { collageId }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
-
-    // Check if the user is the author
     await isCurrentAuthor(user, collageId);
 
     // Retrieve the collage document

@@ -3,7 +3,6 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const markConversationAsRead = async (_, { conversationId }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
 
     // Update the current user's conversations array to set isRead to true

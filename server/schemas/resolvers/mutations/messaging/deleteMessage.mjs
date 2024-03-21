@@ -3,7 +3,6 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const deleteMessage = async (_, { conversationId, messageId }, { user }) => {
   try {
-    // Check if the user is authenticated
     isUser(user);
 
     // Check if the message exists in the conversation

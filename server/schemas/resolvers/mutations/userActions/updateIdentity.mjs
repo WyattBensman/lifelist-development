@@ -3,8 +3,7 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const updateIdentity = async (_, { gender, birthday }, { user }) => {
   try {
-    /* isUser(user); */
-    const user = await User.findById("65e72e4e82f12a087695250d");
+    isUser(user);
 
     // Update the user's identity information
     const updatedUser = await User.findByIdAndUpdate(
