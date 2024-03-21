@@ -1,4 +1,4 @@
-import { User } from "../../../../models/index.mjs";
+import { User, LogbookItem } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 export const getUserProfileById = async (_, { userId }) => {
@@ -173,13 +173,9 @@ export const getUserLogbook = async (_, __, { user }) => {
   try {
     isUser(user);
 
-    const user = await User.findById(user._id).populate("logbook");
+    const logbookItems = await LogbookItem.find({ user: user._id });
 
-    if (!user) {
-      throw new Error("User not found for the provided ID.");
-    }
-
-    return user.logbook;
+    return logbookItems;
   } catch (error) {
     throw new Error(`Error fetching user's logbook: ${error.message}`);
   }

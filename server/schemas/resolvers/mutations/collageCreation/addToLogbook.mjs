@@ -17,7 +17,7 @@ const addToLogbook = async (
     }
 
     const newLogbookItem = await LogbookItem.create({
-      user: user._id,
+      author: user._id,
       title,
       collage: collageId,
       startDate: startDate || null,

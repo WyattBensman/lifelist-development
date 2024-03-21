@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 
 const logbookItemSchema = new Schema({
-  user: {
+  author: {
     type: Schema.Types.ObjectId,
     ref: "User",
     required: true,

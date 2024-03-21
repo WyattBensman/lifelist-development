@@ -210,6 +210,7 @@ type User {
 
   type LogbookItem {
     _id: ID!
+    author: User!
     title: String!
     collage: Collage
     startDate: Date
@@ -336,7 +337,7 @@ type User {
     getUserRepostedCollages(userId: ID!): [Collage]
     getUserTaggedCollages(userId: ID!): [Collage]
     getUserSavedCollages: [Collage]
-    getUserLogbook: [Collage]
+    getUserLogbook: [LogbookItem]
     getUserArchives: [Collage]
     getFlowpageLinks(userId: ID!): [FlowpageLink]
     getBlockedUsers: [User]

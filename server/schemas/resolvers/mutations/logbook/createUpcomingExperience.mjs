@@ -18,7 +18,7 @@ const createUpcomingExperience = async (
 
     // Create a new LogbookItem
     const newLogbookItem = await LogbookItem.create({
-      user: user._id,
+      author: user._id,
       title,
       startDate: startDate || null,
       endDate: endDate || null,
