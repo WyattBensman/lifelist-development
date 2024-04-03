@@ -5,25 +5,73 @@ import ExploreHome from "../pages/Explore/Screens/ExploreHome";
 import CameraHome from "../pages/Camera/Screens/CameraHome";
 import LifeList from "../pages/LifeList/Screens/LifeList";
 import Profile from "../pages/Profile/Screens/Profile";
+import TabIcon from "./TabIcon";
+import { useTheme } from "react-native-paper";
 
 const Tab = createMaterialBottomTabNavigator();
 
 export default function NavigationTab() {
+  const theme = useTheme();
+  theme.colors.secondaryContainer = "";
+
   return (
     <NavigationContainer>
-      <Tab.Navigator barStyle={{ backgroundColor: "#262828" }} shifting={true}>
-        <Tab.Screen name="MainFeed" component={MainFeed} />
+      <Tab.Navigator
+        barStyle={{
+          backgroundColor: "#262828",
+          height: 80,
+          borderRadius: 50,
+        }}
+      >
+        <Tab.Screen
+          name="MainFeed"
+          component={MainFeed}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <TabIcon focused={focused} color={color} routeName="Home" />
+            ),
+            tabBarLabel: () => null,
+          }}
+        />
         <Tab.Screen
           name="Explore"
           component={ExploreHome}
-          options={{ tabBarLabel: () => null }}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <TabIcon focused={focused} color={color} routeName="Explore" />
+            ),
+            tabBarLabel: () => null,
+          }}
         />
-        <Tab.Screen name="Camera" component={CameraHome} />
-        <Tab.Screen name="LifeList" component={LifeList} />
+        <Tab.Screen
+          name="Camera"
+          component={CameraHome}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <TabIcon focused={focused} color={color} routeName="Camera" />
+            ),
+            tabBarLabel: () => null,
+          }}
+        />
+        <Tab.Screen
+          name="LifeList"
+          component={LifeList}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <TabIcon focused={focused} color={color} routeName="LifeList" />
+            ),
+            tabBarLabel: () => null,
+          }}
+        />
         <Tab.Screen
           name="Profile"
           component={Profile}
-          options={{ tabBarLabel: () => null }}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <TabIcon focused={focused} color={color} routeName="Profile" />
+            ),
+            tabBarLabel: () => null,
+          }}
         />
       </Tab.Navigator>
     </NavigationContainer>

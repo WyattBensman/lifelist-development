@@ -1,9 +1,16 @@
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 
 export default function CameraHome() {
   return (
-    <View>
+    <View style={styles.container}>
       <Text>CameraHome</Text>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    margin: 75,
+  },
+});

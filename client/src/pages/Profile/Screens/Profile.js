@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, View } from "react-native";
 
 export default function Profile() {
   return (
@@ -11,5 +11,6 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    margin: 75,
   },
 });
