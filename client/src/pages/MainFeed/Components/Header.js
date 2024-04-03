@@ -1,13 +1,18 @@
 import { Image, StyleSheet, Text, View } from "react-native";
+import CreateCollageIcon from "../../../../public/svgs/MainFeed/CreateCollageIcon";
+import LogbookIcon from "../../../../public/svgs/MainFeed/LogbookIcon";
+import InboxIcon from "../../../../public/svgs/MainFeed/InboxIcon";
+import LifeListLogo from "../../../../public/svgs/MainFeed/LifeListLogo";
 
 export default function Header() {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.contentContainer}>
-        <Text style={styles.logo}>LifeList</Text>
+        <LifeListLogo />
         <View style={styles.btnContainer}>
-          <Text>Here!</Text>
-          <Text>Here!</Text>
+          <CreateCollageIcon style={styles.icon} />
+          <LogbookIcon style={styles.icon} />
+          <InboxIcon style={styles.icon} />
         </View>
       </View>
     </View>
@@ -16,10 +21,11 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    marginTop: 50,
-    paddingVertical: 10,
+    marginTop: 40,
+    paddingTop: 10,
+    paddingBottom: 5,
     borderBottomWidth: 1,
-    borderBottomColor: "#B9B9B9",
+    borderBottomColor: "#D4D4D4",
   },
   contentContainer: {
     marginHorizontal: 20,
@@ -34,5 +40,8 @@ const styles = StyleSheet.create({
   },
   logo: {
     fontSize: 24,
+  },
+  icon: {
+    marginLeft: 10,
   },
 });
