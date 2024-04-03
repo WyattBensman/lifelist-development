@@ -19,8 +19,10 @@ export default function NavigationTab() {
       <Tab.Navigator
         barStyle={{
           backgroundColor: "#262828",
-          height: 80,
-          borderRadius: 50,
+          height: 75,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          overflow: "hidden",
         }}
       >
         <Tab.Screen

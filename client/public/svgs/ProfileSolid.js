@@ -5,13 +5,13 @@ export default function ProfileSolid() {
     <Svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width="40.000000pt"
-      height="40.000000pt"
+      width="37.500000pt"
+      height="37.500000pt"
       viewBox="0 0 160.000000 160.000000"
       preserveAspectRatio="xMidYMid meet"
     >
       <G
-        transform="translate(0.000000,160.000000) scale(0.100000,-0.100000)"
+        transform="translate(0.000000,135.000000) scale(0.100000,-0.100000)"
         fill="#FFFFFF"
         stroke="none"
       >

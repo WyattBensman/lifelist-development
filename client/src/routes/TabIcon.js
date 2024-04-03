@@ -4,6 +4,7 @@ import LifeListOutline from "../../public/svgs/LifeListOutline";
 import ExploreOutline from "../../public/svgs/ExploreOutline";
 import ProfileOutline from "../../public/svgs/ProfileOutline";
 import ProfileSolid from "../../public/svgs/ProfileSolid";
+import CameraIcon from "../../public/svgs/CameraIcon";
 
 export default function TabIcon({ focused, color, routeName }) {
   switch (routeName) {
@@ -20,11 +21,7 @@ export default function TabIcon({ focused, color, routeName }) {
         <ExploreOutline color={color} />
       );
     case "Camera":
-      return focused ? (
-        <HomeOutline color={color} />
-      ) : (
-        <HomeSolid color={color} />
-      );
+      return focused ? <CameraIcon /> : <HomeSolid color={color} />;
     case "LifeList":
       return focused ? (
         <HomeOutline color={color} />
