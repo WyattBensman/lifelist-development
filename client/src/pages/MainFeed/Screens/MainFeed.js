@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
+import Header from "../Components/Header";
 
 export default function MainFeed() {
   return (
     <View style={styles.container}>
-      <Text>Main Feed</Text>
+      <Header />
     </View>
   );
 }
@@ -11,6 +12,5 @@ export default function MainFeed() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 75,
   },
 });
