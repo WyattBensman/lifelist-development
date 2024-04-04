@@ -5,7 +5,7 @@ import ExploreHome from "../pages/Explore/Screens/ExploreHome";
 import CameraHome from "../pages/Camera/Screens/CameraHome";
 import LifeList from "../pages/LifeList/Screens/LifeList";
 import Profile from "../pages/Profile/Screens/Profile";
-import TabIcon from "./TabIcon";
+import TabIcon from "../icons/NavigationBar/TabIcon";
 import { useTheme } from "react-native-paper";
 
 const Tab = createMaterialBottomTabNavigator();

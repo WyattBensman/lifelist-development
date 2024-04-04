@@ -1,5 +1,4 @@
 import { Text, View, StyleSheet } from "react-native";
-import CameraIcon from "../../../../public/svgs/CameraIcon";
 
 export default function CameraHome() {
   return (

@@ -1,12 +1,12 @@
-import HomeOutline from "../../public/svgs/HomeOutline";
-import HomeSolid from "../../public/svgs/HomeSolid";
-import LifeListOutline from "../../public/svgs/LifeListOutline";
-import ExploreOutline from "../../public/svgs/ExploreOutline";
-import ProfileOutline from "../../public/svgs/ProfileOutline";
-import ProfileSolid from "../../public/svgs/ProfileSolid";
-import CameraIcon from "../../public/svgs/CameraIcon";
-import ExploreSolid from "../../public/svgs/ExploreSolid";
-import LifeListSolid from "../../public/svgs/LifeListSolid";
+import CameraIcon from "./CameraIcon";
+import ExploreOutline from "./ExploreOutline";
+import ExploreSolid from "./ExploreSolid";
+import HomeOutline from "./HomeOutline";
+import HomeSolid from "./HomeSolid";
+import LifeListOutline from "./LifeListOutline";
+import LifeListSolid from "./LifeListSolid";
+import ProfileSolid from "./ProfileSolid";
+import ProfileOutline from "./ProfileOutline";
 
 export default function TabIcon({ focused, color, routeName }) {
   switch (routeName) {

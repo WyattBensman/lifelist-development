@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import Header from "../Components/Header";
-import LifeListLogo from "../../../../public/svgs/MainFeed/LifeListLogo";
+import LifeListLogo from "../../../icons/MainFeed/LifeListLogo";
 
 export default function MainFeed() {
   return (

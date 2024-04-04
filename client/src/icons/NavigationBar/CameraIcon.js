@@ -3,7 +3,7 @@ import { Image, StyleSheet } from "react-native";
 export default function CameraIcon() {
   return (
     <Image
-      source={require("../icons/CameraIcon.png")}
+      source={require("./CameraIcon.png")}
       style={styles.image}
       resizeMode="contain"
     />
