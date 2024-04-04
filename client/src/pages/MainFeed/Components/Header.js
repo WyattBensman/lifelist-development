@@ -10,9 +10,9 @@ export default function Header() {
       <View style={styles.contentContainer}>
         <LifeListLogo />
         <View style={styles.btnContainer}>
-          <CreateCollageIcon style={styles.icon} />
-          <LogbookIcon style={styles.icon} />
-          <InboxIcon style={styles.icon} />
+          <CreateCollageIcon style={styles.iconSpacing} />
+          <LogbookIcon style={styles.iconSpacing} />
+          <InboxIcon style={styles.iconSpacing} />
         </View>
       </View>
     </View>
@@ -21,7 +21,7 @@ export default function Header() {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    marginTop: 40,
+    marginTop: 45,
     paddingTop: 10,
     paddingBottom: 5,
     borderBottomWidth: 1,
@@ -41,7 +41,8 @@ const styles = StyleSheet.create({
   logo: {
     fontSize: 24,
   },
-  icon: {
-    marginLeft: 10,
+  iconSpacing: {
+    marginLeft: 18,
+    marginTop: 5,
   },
 });

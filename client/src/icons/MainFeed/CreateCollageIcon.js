@@ -10,7 +10,7 @@ export default function CreateCollageIcon({ style }) {
       height="28.000000pt"
       viewBox="0 0 128.000000 128.000000"
       preserveAspectRatio="xMidYMid meet"
-      style={styles.spacing}
+      style={style}
     >
       <G
         transform="translate(0.000000,135.000000) scale(0.100000,-0.100000)"
@@ -35,9 +35,3 @@ export default function CreateCollageIcon({ style }) {
     </Svg>
   );
 }
-
-const styles = StyleSheet.create({
-  spacing: {
-    marginTop: 5,
-  },
-});
