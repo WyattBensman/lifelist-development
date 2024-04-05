@@ -3,12 +3,19 @@ import StackHeader from "../../../components/StackHeader";
 import EditLogbookIcon from "../icons/EditLogbookIcon";
 import OngoingUpcomingExperiences from "../Components/OngoingUpcomingExperiences";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LogbookButtons from "../Components/LogbookButtons";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
+import { useNavigationContext } from "../../../utils/NavigationContext";
 
 export default function Logbook({ navigation }) {
   const [editMode, setEditMode] = useState(false);
+  const { setIsTabBarVisible } = useNavigationContext();
+
+  useEffect(() => {
+    setIsTabBarVisible(false);
+    return () => setIsTabBarVisible(true);
+  }, [setIsTabBarVisible]);
 
   const toggleEditMode = () => {
     setEditMode(true);

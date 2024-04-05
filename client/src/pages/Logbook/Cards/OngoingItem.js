@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View, Platform } from "react-native";
 import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
 import { useState } from "react";
 import UncheckedBoxIcon from "../../../icons/Universal/UncheckedBoxIcon";
@@ -41,7 +41,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 8,
     marginBottom: 10,
-    borderWidth: 1,
     borderRadius: 8,
     borderColor: "rgba(212, 212, 212, 0.50)",
   },

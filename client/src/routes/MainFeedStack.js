@@ -17,16 +17,21 @@ export default function MainFeedStack() {
         component={Logbook}
         options={{ headerShown: false }}
       />
-      {/*         <Stack.Screen
+    </Stack.Navigator>
+  );
+}
+
+{
+  /*         <Stack.Screen
           name="CreateCollage"
           component={CreateCollageScreen}
           options={{ headerShown: false }}
-        /> */}
-      {/*         <Stack.Screen
+        /> */
+}
+{
+  /*         <Stack.Screen
           name="Inbox"
           component={InboxScreen}
           options={{ headerShown: false }}
-        /> */}
-    </Stack.Navigator>
-  );
+        /> */
 }

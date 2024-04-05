@@ -1,5 +1,10 @@
+import { NavigationProvider } from "./src/utils/NavigationContext";
 import NavigationTab from "./src/routes/NavigationTab";
 
 export default function App() {
-  return <NavigationTab />;
+  return (
+    <NavigationProvider>
+      <NavigationTab />
+    </NavigationProvider>
+  );
 }
