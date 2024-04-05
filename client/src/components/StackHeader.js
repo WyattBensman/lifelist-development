@@ -1,15 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
 import BackArrowIcon from "../icons/Universal/BackArrowIcon";
-import EditButtonIcon from "../icons/Logbook/EditButtonIcon";
 
-export default function StackHeader({ title, button1, button2 }) {
+export default function StackHeader({ arrow, title, button1, button2 }) {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.contentContainer}>
         <View style={styles.leftContainer}>
-          <BackArrowIcon />
+          {arrow || <View style={styles.iconContainer} />}
         </View>
-        <View style={styles.centerContainer}>
+        <View style={styles.middleContainer}>
           <Text style={styles.header}>{title}</Text>
         </View>
         <View style={styles.rightContainer}>
@@ -43,7 +42,7 @@ const styles = StyleSheet.create({
   leftContainer: {
     flex: 1,
   },
-  centerContainer: {
+  middleContainer: {
     flex: 1,
     alignItems: "center",
     marginTop: 5,
@@ -56,12 +55,16 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   header: {
-    fontSize: 20,
-    fontWeight: "500",
+    fontSize: 16,
+    fontWeight: "600",
     fontFamily: "Helvetica",
     color: "#6AB952",
   },
   iconSpacing: {
     marginLeft: 18,
+  },
+  iconContainer: {
+    width: 35,
+    height: 35,
   },
 });

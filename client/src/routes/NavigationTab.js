@@ -1,6 +1,7 @@
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useIsFocused } from "@react-navigation/native";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import MainFeed from "../pages/MainFeed/Screens/MainFeed";
+
+/* Screen */
 import MainFeedStack from "./MainFeedStack";
 import ExploreHome from "../pages/Explore/Screens/ExploreHome";
 import CameraHome from "../pages/Camera/Screens/CameraHome";
@@ -14,6 +15,7 @@ const Tab = createMaterialBottomTabNavigator();
 export default function NavigationTab() {
   const theme = useTheme();
   theme.colors.secondaryContainer = "";
+
   return (
     <NavigationContainer>
       <Tab.Navigator

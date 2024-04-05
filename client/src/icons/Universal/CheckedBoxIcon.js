@@ -5,14 +5,14 @@ export default function CheckedBoxIcon() {
     <Svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width="35.000000pt"
-      height="35.000000pt"
+      width="25.000000pt"
+      height="25.000000pt"
       viewBox="0 0 176.000000 176.000000"
       preserveAspectRatio="xMidYMid meet"
     >
       <G
         transform="translate(0.000000,176.000000) scale(0.100000,-0.100000)"
-        fill="#000000"
+        fill="#FF0000"
         stroke="none"
       >
         <Path

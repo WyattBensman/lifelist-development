@@ -1,3 +1,4 @@
+import { StyleSheet } from "react-native";
 import Svg, { Path, G } from "react-native-svg";
 
 export default function UpcomingExperienceIcon() {
@@ -5,10 +6,11 @@ export default function UpcomingExperienceIcon() {
     <Svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width="81.000000pt"
-      height="80.000000pt"
+      width="20.000000pt"
+      height="20.000000pt"
       viewBox="0 0 81.000000 80.000000"
       preserveAspectRatio="xMidYMid meet"
+      style={styles.spacing}
     >
       <G
         transform="translate(0.000000,80.000000) scale(0.100000,-0.100000)"
@@ -43,3 +45,9 @@ export default function UpcomingExperienceIcon() {
     </Svg>
   );
 }
+
+const styles = StyleSheet.create({
+  spacing: {
+    marginRight: 5,
+  },
+});
