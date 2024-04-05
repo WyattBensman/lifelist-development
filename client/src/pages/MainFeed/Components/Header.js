@@ -1,8 +1,8 @@
 import { StyleSheet, View } from "react-native";
-import CreateCollageIcon from "../../../icons/MainFeed/CreateCollageIcon";
-import LogbookIcon from "../../../icons/MainFeed/LogbookIcon";
-import InboxIcon from "../../../icons/MainFeed/InboxIcon";
-import LifeListLogo from "../../../icons/MainFeed/LifeListLogo";
+import LifeListLogo from "../Icons/LifeListLogo";
+import CreateCollageIcon from "../Icons/CreateCollageIcon";
+import LogbookIcon from "../Icons/LogbookIcon";
+import InboxIcon from "../Icons/InboxIcon";
 
 export default function Header() {
   return (
