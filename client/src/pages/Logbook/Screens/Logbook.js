@@ -41,7 +41,7 @@ export default function Logbook({ navigation }) {
         </Pressable>
       </View>
       <View style={styles.bottomContainer}>
-        <Text>Hey</Text>
+        <LogbookButtons />
       </View>
     </View>
   );
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     color: "#D4D4D4",
   },
   bottomContainer: {
-    height: 100,
+    height: 125,
     backgroundColor: "#d4d4d4",
     justifyContent: "center",
     alignItems: "center",
