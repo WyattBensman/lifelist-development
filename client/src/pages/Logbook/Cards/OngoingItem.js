@@ -43,6 +43,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 8,
     borderColor: "rgba(212, 212, 212, 0.50)",
+    backgroundColor: "#ffffff",
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 1,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
   },
   flex: {
     flexDirection: "row",

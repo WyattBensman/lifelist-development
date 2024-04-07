@@ -40,6 +40,9 @@ export default function Logbook({ navigation }) {
           <Text>Hey</Text>
         </Pressable>
       </View>
+      <View style={styles.bottomContainer}>
+        <Text>Hey</Text>
+      </View>
     </View>
   );
 }
@@ -59,5 +62,15 @@ const styles = StyleSheet.create({
   },
   editModeHeader: {
     color: "#D4D4D4",
+  },
+  bottomContainer: {
+    height: 100,
+    backgroundColor: "#d4d4d4",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
