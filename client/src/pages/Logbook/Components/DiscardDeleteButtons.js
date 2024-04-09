@@ -1,14 +1,24 @@
 import { StyleSheet, View } from "react-native";
 import RedButton from "../../../components/Buttons/RedButton";
-import GreyOutlineButton from "../../../components/Buttons/GreyOutlineButton";
+import SolidButton from "../../../components/SolidButton";
+import OutlinedButton from "../../../components/OutlinedButton";
 
 export default function DiscardDeleteButtons({ toggleEditMode }) {
   return (
     <View style={styles.buttonContainer}>
       <View style={styles.buttonSpacer}>
-        <RedButton text="Delete Experiences" />
+        <SolidButton
+          backgroundColor={"#DB302D"}
+          text={"Delete Experiences"}
+          textColor={"#FFFFFF"}
+        />
       </View>
-      <GreyOutlineButton text="Discard Changes" onPress={toggleEditMode} />
+      <OutlinedButton
+        borderColor={"#d4d4d4"}
+        text={"Discard"}
+        textColor={"#000000"}
+        onPress={toggleEditMode}
+      />
     </View>
   );
 }
