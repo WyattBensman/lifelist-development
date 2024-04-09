@@ -10,6 +10,7 @@ import {
   Keyboard,
 } from "react-native";
 import GalleryIcon from "../Icons/GalleryIcon";
+import { formStyling } from "../../../styles/FormStyling";
 
 export default function BottomBar() {
   const [message, setMessage] = useState("");
@@ -46,7 +47,7 @@ export default function BottomBar() {
           <GalleryIcon />
         </TouchableOpacity>
         <TextInput
-          style={styles.input}
+          style={formStyling.input}
           value={message}
           onChangeText={setMessage}
           placeholder="Type a message..."
@@ -55,7 +56,6 @@ export default function BottomBar() {
           style={styles.sendContainer}
           onPress={() => console.log("Send message:", message)}
         >
-          {/* Implement your send icon or logic here */}
           <Text>Send</Text>
         </TouchableOpacity>
       </View>
@@ -80,15 +80,6 @@ const styles = StyleSheet.create({
     marginRight: 20,
     marginLeft: 5,
     marginBottom: 10,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    marginBottom: 12,
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 8,
-    borderColor: "#D4D4D4",
   },
   sendContainer: {
     marginLeft: 20,
