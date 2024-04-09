@@ -1,5 +1,4 @@
 import { StyleSheet, Text, View } from "react-native";
-import BackArrowIcon from "../icons/Universal/BackArrowIcon";
 
 export default function StackHeader({ arrow, title, button1, button2 }) {
   return (
@@ -9,16 +8,13 @@ export default function StackHeader({ arrow, title, button1, button2 }) {
           {arrow || <View style={styles.iconContainer} />}
         </View>
         <View style={styles.middleContainer}>
-          <Text style={styles.header}>{title}</Text>
+          <Text style={styles.header} numberOfLines={1} ellipsizeMode="tail">
+            {title}
+          </Text>
         </View>
         <View style={styles.rightContainer}>
-          {button2 && (
-            <>
-              <View style={styles.iconSpacing}>{button2}</View>
-              <View style={styles.iconSpacing}>{button1}</View>
-            </>
-          )}
-          {!button2 && <View style={styles.iconSpacing}>{button1}</View>}
+          {button2 && <View style={styles.iconSpacing}>{button2}</View>}
+          <View style={styles.iconSpacing}>{button1}</View>
         </View>
       </View>
     </View>
@@ -32,6 +28,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
     borderBottomWidth: 1,
     borderBottomColor: "#D4D4D4",
+    backgroundColor: "#FFFFFF",
   },
   contentContainer: {
     marginHorizontal: 20,

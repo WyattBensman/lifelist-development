@@ -1,5 +1,4 @@
 import Svg, { Path, G } from "react-native-svg";
-import { StyleSheet } from "react-native";
 import { Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 

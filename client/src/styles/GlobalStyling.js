@@ -9,4 +9,12 @@ export const globalStyling = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
+  flexCol: {
+    flexDirection: "col",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  marginHorizontal: {
+    marginHorizontal: 25,
+  },
 });
