@@ -12,7 +12,7 @@ export default function CheckedBoxIcon() {
     >
       <G
         transform="translate(0.000000,176.000000) scale(0.100000,-0.100000)"
-        fill="#FF0000"
+        fill="#DB302D"
         stroke="none"
       >
         <Path

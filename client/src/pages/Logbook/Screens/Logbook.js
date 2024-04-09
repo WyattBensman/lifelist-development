@@ -4,12 +4,15 @@ import EditLogbookIcon from "../icons/EditLogbookIcon";
 import OngoingUpcomingExperiences from "../Components/OngoingUpcomingExperiences";
 
 import { useEffect, useState } from "react";
-import LogbookButtons from "../Components/LogbookButtons";
+import StartAddButtons from "../Components/StartAddButtons";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigationContext } from "../../../utils/NavigationContext";
+import DiscardDeleteButtons from "../Components/DiscardDeleteButtons";
+import AddUpcomingExperienceModal from "../Popups/AddUpcomingExperienceModal";
 
 export default function Logbook({ navigation }) {
   const [editMode, setEditMode] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const { setIsTabBarVisible } = useNavigationContext();
 
   useEffect(() => {
@@ -18,7 +21,11 @@ export default function Logbook({ navigation }) {
   }, [setIsTabBarVisible]);
 
   const toggleEditMode = () => {
-    setEditMode(true);
+    setEditMode(!editMode);
+  };
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible);
   };
 
   return (
@@ -35,14 +42,19 @@ export default function Logbook({ navigation }) {
         </Text>
 
         <OngoingUpcomingExperiences editMode={editMode} />
-        {!editMode && <LogbookButtons />}
-        <Pressable onPress={() => setEditMode(false)}>
-          <Text>Hey</Text>
-        </Pressable>
+        {!editMode && <StartAddButtons onAddPress={toggleModal} />}
+        <AddUpcomingExperienceModal
+          modalVisible={isModalVisible}
+          setModalVisible={setIsModalVisible}
+        />
       </View>
-      <View style={styles.bottomContainer}>
-        <LogbookButtons />
-      </View>
+      {editMode && (
+        <View style={styles.bottomContainer}>
+          <View style={styles.contentContainer}>
+            <DiscardDeleteButtons toggleEditMode={toggleEditMode} />
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -64,10 +76,9 @@ const styles = StyleSheet.create({
     color: "#D4D4D4",
   },
   bottomContainer: {
-    height: 125,
-    backgroundColor: "#d4d4d4",
+    borderTopColor: "#D4D4D4",
+    borderWidth: 1,
     justifyContent: "center",
-    alignItems: "center",
     position: "absolute",
     left: 0,
     right: 0,

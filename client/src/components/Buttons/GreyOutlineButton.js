@@ -11,7 +11,7 @@ export default function GreyOutlineButton({ width, onPress, text }) {
         ]}
         onPress={onPress}
       >
-        <Text style={[ButtonStyling.buttonMessage, { color: "#B9B9B9" }]}>
+        <Text style={[ButtonStyling.buttonMessage, { color: "#262828" }]}>
           {text}
         </Text>
       </Pressable>

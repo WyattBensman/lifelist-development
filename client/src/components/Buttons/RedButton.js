@@ -7,7 +7,7 @@ export default function RedButton({ width, onPress, text }) {
       <Pressable
         style={[
           ButtonStyling.button,
-          { backgroundColor: "#C5221F", width: width },
+          { backgroundColor: "#DB302D", width: width },
         ]}
         onPress={onPress}
       >

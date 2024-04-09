@@ -4,6 +4,10 @@ import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 /* Screen */
 import MainFeedStack from "./MainFeedStack";
+import ExploreHome from "../pages/Explore/Screens/ExploreHome";
+import CameraHome from "../pages/Camera/Screens/CameraHome";
+import LifeList from "../pages/LifeList/Screens/LifeList";
+import Profile from "../pages/Profile/Screens/Profile";
 import TabIcon from "../icons/NavigationBar/TabIcon";
 import { useTheme } from "react-native-paper";
 import { useNavigationContext } from "../utils/NavigationContext";
@@ -37,6 +41,46 @@ export default function NavigationTab() {
             tabBarLabel: () => null,
           }}
         />
+        <Tab.Screen
+          name="Explore"
+          component={ExploreHome}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <TabIcon focused={focused} color={color} routeName="Explore" />
+            ),
+            tabBarLabel: () => null,
+          }}
+        />
+        <Tab.Screen
+          name="Camera"
+          component={CameraHome}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <TabIcon focused={focused} color={color} routeName="Camera" />
+            ),
+            tabBarLabel: () => null,
+          }}
+        />
+        <Tab.Screen
+          name="LifeList"
+          component={LifeList}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <TabIcon focused={focused} color={color} routeName="LifeList" />
+            ),
+            tabBarLabel: () => null,
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={Profile}
+          options={{
+            tabBarIcon: ({ focused, color }) => (
+              <TabIcon focused={focused} color={color} routeName="Profile" />
+            ),
+            tabBarLabel: () => null,
+          }}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );
@@ -48,44 +92,5 @@ import LifeList from "../pages/LifeList/Screens/LifeList";
 import Profile from "../pages/Profile/Screens/Profile"; */
 
 {
-  /* <Tab.Screen
-name="Explore"
-component={ExploreHome}
-options={{
-  tabBarIcon: ({ focused, color }) => (
-    <TabIcon focused={focused} color={color} routeName="Explore" />
-  ),
-  tabBarLabel: () => null,
-}}
-/>
-<Tab.Screen
-name="Camera"
-component={CameraHome}
-options={{
-  tabBarIcon: ({ focused, color }) => (
-    <TabIcon focused={focused} color={color} routeName="Camera" />
-  ),
-  tabBarLabel: () => null,
-}}
-/>
-<Tab.Screen
-name="LifeList"
-component={LifeList}
-options={{
-  tabBarIcon: ({ focused, color }) => (
-    <TabIcon focused={focused} color={color} routeName="LifeList" />
-  ),
-  tabBarLabel: () => null,
-}}
-/>
-<Tab.Screen
-name="Profile"
-component={Profile}
-options={{
-  tabBarIcon: ({ focused, color }) => (
-    <TabIcon focused={focused} color={color} routeName="Profile" />
-  ),
-  tabBarLabel: () => null,
-}}
-/> */
+  /*  */
 }
