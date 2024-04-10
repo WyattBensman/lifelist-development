@@ -1,6 +1,5 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import { getFocusedRouteNameFromRoute } from "@react-navigation/native";
 
 /* Screen */
 import MainFeedStack from "./MainFeedStack";
@@ -84,13 +83,4 @@ export default function NavigationTab() {
       </Tab.Navigator>
     </NavigationContainer>
   );
-}
-
-/* import ExploreHome from "../pages/Explore/Screens/ExploreHome";
-import CameraHome from "../pages/Camera/Screens/CameraHome";
-import LifeList from "../pages/LifeList/Screens/LifeList";
-import Profile from "../pages/Profile/Screens/Profile"; */
-
-{
-  /*  */
 }

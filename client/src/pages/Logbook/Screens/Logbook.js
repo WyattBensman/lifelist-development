@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import StackHeader from "../../../components/StackHeader";
 import EditLogbookIcon from "../icons/EditLogbookIcon";
 import OngoingUpcomingExperiences from "../Components/OngoingUpcomingExperiences";
@@ -9,8 +9,11 @@ import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigationContext } from "../../../utils/NavigationContext";
 import DiscardDeleteButtons from "../Components/DiscardDeleteButtons";
 import AddUpcomingExperienceModal from "../Popups/AddUpcomingExperienceModal";
+import { globalStyling } from "../../../styles/GlobalStyling";
+import { useTheme } from "../../../utils/ThemeContext";
 
 export default function Logbook({ navigation }) {
+  const theme = useTheme();
   const [editMode, setEditMode] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { setIsTabBarVisible } = useNavigationContext();
@@ -29,40 +32,52 @@ export default function Logbook({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={[
+        globalStyling.container,
+        { backgroundColor: theme.colors.background },
+      ]}
+    >
       <StackHeader
         arrow={!editMode && <BackArrowIcon navigation={navigation} />}
         title={!editMode ? "Logbook" : "Edit Logbook"}
         button1={!editMode && <EditLogbookIcon onPress={toggleEditMode} />}
       />
-      <View style={styles.contentContainer}>
+      <ScrollView style={styles.contentContainer}>
         <Text style={[styles.header, editMode && styles.editModeHeader]}>
           Create & continuous update collages before sharing, or plan for
           upcoming experiences
         </Text>
 
         <OngoingUpcomingExperiences editMode={editMode} />
-        {!editMode && <StartAddButtons onAddPress={toggleModal} />}
+        {/* {!editMode && <StartAddButtons onAddPress={toggleModal} />} */}
         <AddUpcomingExperienceModal
           modalVisible={isModalVisible}
           setModalVisible={setIsModalVisible}
         />
+      </ScrollView>
+      <View style={styles.bottomContainer}>
+        <View style={styles.contentContainer}>
+          {editMode ? (
+            <DiscardDeleteButtons toggleEditMode={toggleEditMode} />
+          ) : (
+            <StartAddButtons onAddPress={toggleModal} />
+          )}
+        </View>
       </View>
-      {editMode && (
+
+      {/* {editMode && (
         <View style={styles.bottomContainer}>
           <View style={styles.contentContainer}>
             <DiscardDeleteButtons toggleEditMode={toggleEditMode} />
           </View>
         </View>
-      )}
+      )} */}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   contentContainer: {
     flex: 1,
     marginHorizontal: 25,

@@ -2,10 +2,19 @@ import { StyleSheet, Text, View } from "react-native";
 import StackHeader from "../../../components/StackHeader";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import FriendRequestCard from "../Cards/FriendRequestCard";
+import { globalStyling } from "../../../styles/GlobalStyling";
+import { useTheme } from "../../../utils/ThemeContext";
 
 export default function FriendRequest({ navigation }) {
+  const theme = useTheme();
+
   return (
-    <View>
+    <View
+      style={[
+        globalStyling.container,
+        { backgroundColor: theme.colors.background },
+      ]}
+    >
       <StackHeader
         arrow={<BackArrowIcon navigation={navigation} />}
         title={"Friend Request"}

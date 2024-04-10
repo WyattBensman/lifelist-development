@@ -43,10 +43,10 @@ const styling = StyleSheet.create({
   declineBox: {
     borderWidth: 1,
     borderRadius: 5,
-    borderColor: "#d4d4d4",
+    borderColor: "#f4f4f4",
     width: 75,
     marginHorizontal: 2.5,
-    backgroundColor: "#d4d4d4",
+    backgroundColor: "#f4f4f4",
   },
   acceptText: {
     paddingVertical: 4,

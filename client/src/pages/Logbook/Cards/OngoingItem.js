@@ -42,19 +42,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     marginBottom: 10,
     borderRadius: 8,
+    borderWidth: 1,
     borderColor: "rgba(212, 212, 212, 0.50)",
     backgroundColor: "#ffffff",
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 1,
-      },
-      android: {
-        elevation: 3,
-      },
-    }),
   },
   flex: {
     flexDirection: "row",

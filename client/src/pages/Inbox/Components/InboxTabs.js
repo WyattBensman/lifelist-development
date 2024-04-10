@@ -12,7 +12,7 @@ function InboxTabs({ onTabChange }) {
         tabBarActiveTintColor: "#000000",
         tabBarInactiveTintColor: "#d4d4d4",
         tabBarStyle: {
-          backgroundColor: "#f4f4f4",
+          backgroundColor: "#ffffff",
         },
         tabBarIndicatorStyle: {
           backgroundColor: "#6AB952",

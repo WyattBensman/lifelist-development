@@ -1,28 +1,15 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import Header from "../Components/Header";
-import GreenButton from "../../../components/Buttons/GreenButton";
-import BlueButton from "../../../components/Buttons/BlueButton";
-import RedButton from "../../../components/Buttons/RedButton";
-import GreyButton from "../../../components/Buttons/GreyButton";
-import BlueOutlineButton from "../../../components/Buttons/BlueOutlineButton";
-import GreenOutlineButton from "../../../components/Buttons/GreenOutlineButton";
-import GreyOutlineButton from "../../../components/Buttons/GreyOutlineButton";
-import RedOutlineButton from "../../../components/Buttons/RedOutlineButton";
+import { useTheme } from "../../../utils/ThemeContext";
 
 export default function MainFeed() {
+  const theme = useTheme();
+
   return (
-    <View style={styles.container}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       <Header />
-      <View style={styles.center}>
-        <GreenButton width={250} text={"Hey"} />
-        <BlueButton width={250} text={"Hey"} />
-        <RedButton width={250} text={"Hey"} />
-        <GreyButton width={250} text={"Hey"} />
-        <BlueOutlineButton width={250} text={"Hey"} />
-        <GreenOutlineButton width={250} text={"Hey"} />
-        <GreyOutlineButton width={250} text={"Hey"} />
-        <RedOutlineButton width={250} text={"Hey"} />
-      </View>
     </View>
   );
 }
@@ -30,8 +17,5 @@ export default function MainFeed() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  center: {
-    alignItems: "center",
   },
 });

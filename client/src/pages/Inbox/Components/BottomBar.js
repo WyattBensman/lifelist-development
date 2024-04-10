@@ -67,11 +67,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 10,
+    paddingTop: 12,
     paddingHorizontal: 10,
     paddingBottom: 25,
     borderTopColor: "#D4D4D4",
-    backgroundColor: "#FFFFFF",
+    borderTopWidth: 1,
   },
   containerKeyboardActive: {
     paddingBottom: 0,
