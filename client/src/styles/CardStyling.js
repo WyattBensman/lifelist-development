@@ -27,3 +27,5 @@ export const cardStyling = StyleSheet.create({
     color: "#b9b9b9",
   },
 });
+
+/* change descriptionContainer to spacer  */

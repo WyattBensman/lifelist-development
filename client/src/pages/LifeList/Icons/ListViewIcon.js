@@ -1,9 +1,9 @@
-import { TouchableOpacity } from "react-native";
+import { Pressable } from "react-native";
 import Svg, { Path, G } from "react-native-svg";
 
 export default function ListViewIcon({ style, onPress }) {
   return (
-    <TouchableOpacity onPress={onPress}>
+    <Pressable onPress={onPress}>
       <Svg
         version="1.0"
         xmlns="http://www.w3.org/2000/svg"
@@ -32,6 +32,6 @@ export default function ListViewIcon({ style, onPress }) {
           />
         </G>
       </Svg>
-    </TouchableOpacity>
+    </Pressable>
   );
 }

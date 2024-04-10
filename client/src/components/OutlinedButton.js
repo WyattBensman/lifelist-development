@@ -29,7 +29,7 @@ const styling = StyleSheet.create({
   button: {
     paddingHorizontal: 8,
     paddingVertical: 9,
-    borderRadius: 8,
+    borderRadius: 4,
   },
   buttonMessage: {
     textAlign: "center",

@@ -3,7 +3,7 @@ import Svg, { Path, G } from "react-native-svg";
 
 export default function BackArrowIcon({ navigation }) {
   return (
-    <Pressable onPress={() => navigation.goBack()}>
+    <Pressable onPress={() => navigation.goBack()} style={{ width: 15 }}>
       <Svg
         version="1.0"
         xmlns="http://www.w3.org/2000/svg"

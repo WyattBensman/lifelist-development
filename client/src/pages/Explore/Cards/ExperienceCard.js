@@ -1,7 +1,5 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import { globalStyling } from "../../../styles/GlobalStyling";
 import PinIcon from "../Icons/PinIcon";
-import TicketIcon from "../Icons/TicketIcon";
 
 export default function ExperienceCard() {
   return (

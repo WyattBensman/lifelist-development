@@ -34,7 +34,7 @@ export default function ExploreHome({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
+    paddingTop: 60,
     paddingLeft: 20,
   },
   content: {
