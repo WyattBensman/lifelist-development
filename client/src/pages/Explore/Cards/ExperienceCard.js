@@ -1,5 +1,7 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import { globalStyling } from "../../../styles/GlobalStyling";
+import PinIcon from "../Icons/PinIcon";
+import TicketIcon from "../Icons/TicketIcon";
 
 export default function ExperienceCard() {
   return (
@@ -12,7 +14,7 @@ export default function ExperienceCard() {
       <View style={styles.descriptionContainer}>
         <Text style={styles.cardHeader}>Wyatt Bensman</Text>
         <View style={styles.flex}>
-          <Text style={styles.cardDescription}>!</Text>
+          <PinIcon />
           <Text style={styles.cardDescription}> California</Text>
         </View>
       </View>
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   cardDescription: {
-    fontSize: 12,
+    fontSize: 10,
     marginTop: 2,
   },
   flex: {

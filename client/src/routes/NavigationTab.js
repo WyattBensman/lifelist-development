@@ -10,6 +10,7 @@ import Profile from "../pages/Profile/Screens/Profile";
 import TabIcon from "../icons/NavigationBar/TabIcon";
 import { useTheme } from "react-native-paper";
 import { useNavigationContext } from "../utils/NavigationContext";
+import ExploreStack from "./ExploreStack";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -42,7 +43,7 @@ export default function NavigationTab() {
         />
         <Tab.Screen
           name="Explore"
-          component={ExploreHome}
+          component={ExploreStack}
           options={{
             tabBarIcon: ({ focused, color }) => (
               <TabIcon focused={focused} color={color} routeName="Explore" />

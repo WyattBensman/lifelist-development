@@ -1,10 +1,10 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import Messages from "../Screens/Messages";
-import Notifications from "../Screens/Notifications";
+import Trending from "../Screens/Trending";
+import Recent from "../Screens/Recent";
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function InboxTabs({ onTabChange }) {
+export default function ExploreTabs({ onTabChange }) {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -23,17 +23,17 @@ export default function InboxTabs({ onTabChange }) {
       }}
     >
       <Tab.Screen
-        name="Messages"
-        component={Messages}
+        name="Trending"
+        component={Trending}
         listeners={{
-          focus: () => onTabChange("Messages"),
+          focus: () => onTabChange("Trending"),
         }}
       />
       <Tab.Screen
-        name="Notifications"
-        component={Notifications}
+        name="Recent"
+        component={Recent}
         listeners={{
-          focus: () => onTabChange("Notifications"),
+          focus: () => onTabChange("Recent"),
         }}
       />
     </Tab.Navigator>

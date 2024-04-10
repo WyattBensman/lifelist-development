@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import SearchBar from "../../../components/SearchBar";
 import { useNavigationContext } from "../../../utils/NavigationContext";
 import { useTheme } from "../../../utils/ThemeContext";
+import CreateConversationIcon from "../Icons/CreateConversationIcon";
 
 export default function Inbox({ navigation }) {
   const theme = useTheme();
@@ -20,9 +21,6 @@ export default function Inbox({ navigation }) {
     return () => setIsTabBarVisible(true);
   }, [setIsTabBarVisible]);
 
-  const getRightIcon = () =>
-    activeTab === "Messages" ? <CreateMessageIcon /> : <FriendsIcon />;
-
   return (
     <View
       style={[
@@ -33,7 +31,7 @@ export default function Inbox({ navigation }) {
       <StackHeader
         arrow={<BackArrowIcon navigation={navigation} />}
         title={"Inbox"}
-        button1={<CreateMessageIcon />}
+        button1={<CreateConversationIcon />}
         button2={<FriendsIcon />}
       />
       <View style={styles.searchBar}>
