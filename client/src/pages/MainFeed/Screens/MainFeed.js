@@ -1,6 +1,10 @@
 import { StyleSheet, View } from "react-native";
-import Header from "../Components/Header";
 import { useTheme } from "../../../utils/ThemeContext";
+import Header from "../../../components/Header";
+import LifeListLogo from "../Icons/LifeListLogo";
+import CreateCollageIcon from "../Icons/CreateCollageIcon";
+import LogbookIcon from "../Icons/LogbookIcon";
+import InboxIcon from "../Icons/InboxIcon";
 
 export default function MainFeed() {
   const theme = useTheme();
@@ -9,7 +13,12 @@ export default function MainFeed() {
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
-      <Header />
+      <Header
+        titleComponent={<LifeListLogo />}
+        icon1={<CreateCollageIcon />}
+        icon2={<LogbookIcon />}
+        icon3={<InboxIcon />}
+      />
     </View>
   );
 }

@@ -1,20 +1,31 @@
 import { StyleSheet, Text, View } from "react-native";
 
+const IconFiller = () => <View style={{ width: 35, height: 35 }} />;
+
 export default function StackHeader({ arrow, title, button1, button2 }) {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.contentContainer}>
-        <View style={styles.leftContainer}>
-          {arrow || <View style={styles.iconContainer} />}
+        {/* Left Container */}
+        <View style={styles.sideContainer}>
+          {arrow ? arrow : <IconFiller />}
         </View>
-        <View style={styles.middleContainer}>
+
+        {/* Right Container */}
+        <View style={[styles.sideContainer, styles.rightContainer]}>
+          {button2 && <View style={styles.iconSpacing}>{button2}</View>}
+          {button1 && (
+            <View style={[styles.iconSpacing, button2 && styles.iconGap]}>
+              {button1}
+            </View>
+          )}
+        </View>
+
+        {/* Title Container - Absolutely positioned */}
+        <View style={styles.titleContainer}>
           <Text style={styles.header} numberOfLines={1} ellipsizeMode="tail">
             {title}
           </Text>
-        </View>
-        <View style={styles.rightContainer}>
-          {button2 && <View style={styles.iconSpacing}>{button2}</View>}
-          <View style={styles.iconSpacing}>{button1}</View>
         </View>
       </View>
     </View>
@@ -24,8 +35,8 @@ export default function StackHeader({ arrow, title, button1, button2 }) {
 const styles = StyleSheet.create({
   mainContainer: {
     marginTop: 45,
-    paddingTop: 10,
-    paddingBottom: 5,
+    paddingTop: 15,
+    paddingBottom: 2,
     borderBottomWidth: 1,
     borderBottomColor: "#D4D4D4",
   },
@@ -34,21 +45,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    position: "relative",
   },
-  leftContainer: {
-    flex: 1,
-  },
-  middleContainer: {
-    flex: 1,
+  sideContainer: {
+    flexDirection: "row",
     alignItems: "center",
-    marginTop: 5,
+    zIndex: 1,
   },
   rightContainer: {
-    flex: 1,
-    flexDirection: "row",
     justifyContent: "flex-end",
+  },
+  titleContainer: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: "center",
     alignItems: "center",
-    marginTop: 5,
   },
   header: {
     fontSize: 16,
@@ -57,10 +71,9 @@ const styles = StyleSheet.create({
     color: "#6AB952",
   },
   iconSpacing: {
-    marginLeft: 18,
+    alignItems: "flex-end",
   },
-  iconContainer: {
-    width: 35,
-    height: 35,
+  iconGap: {
+    marginLeft: 20,
   },
 });

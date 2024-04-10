@@ -4,7 +4,6 @@ import StackHeader from "../../../components/StackHeader";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import FriendsIcon from "../Icons/FriendsIcon";
 import InboxTabs from "../Components/InboxTabs";
-import CreateMessageIcon from "../Icons/CreateMessageIcon";
 import { useEffect, useState } from "react";
 import SearchBar from "../../../components/SearchBar";
 import { useNavigationContext } from "../../../utils/NavigationContext";

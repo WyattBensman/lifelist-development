@@ -6,8 +6,8 @@ export default function LifeListLogo() {
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
       width="111.129678pt"
-      height="34.000000pt"
-      viewBox="0 0 800.000000 260.000000"
+      height="32.000000pt"
+      viewBox="0 10 800.000000 260.000000"
       preserveAspectRatio="xMidYMid meet"
     >
       <G

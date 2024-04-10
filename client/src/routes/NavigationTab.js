@@ -3,14 +3,13 @@ import { createMaterialBottomTabNavigator } from "@react-navigation/material-bot
 
 /* Screen */
 import MainFeedStack from "./MainFeedStack";
-import ExploreHome from "../pages/Explore/Screens/ExploreHome";
 import CameraHome from "../pages/Camera/Screens/CameraHome";
-import LifeList from "../pages/LifeList/Screens/LifeList";
 import Profile from "../pages/Profile/Screens/Profile";
 import TabIcon from "../icons/NavigationBar/TabIcon";
 import { useTheme } from "react-native-paper";
 import { useNavigationContext } from "../utils/NavigationContext";
 import ExploreStack from "./ExploreStack";
+import LifeListStack from "./LifeListStack";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -63,7 +62,7 @@ export default function NavigationTab() {
         />
         <Tab.Screen
           name="LifeList"
-          component={LifeList}
+          component={LifeListStack}
           options={{
             tabBarIcon: ({ focused, color }) => (
               <TabIcon focused={focused} color={color} routeName="LifeList" />

@@ -27,13 +27,12 @@ const styles = StyleSheet.create({
     width: 115,
     overflow: "hidden",
     borderRadius: 5,
-    marginRight: 5,
+    marginRight: 4,
   },
   image: {
     height: 150,
     width: "100%",
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
+    borderRadius: 3,
   },
   cardHeader: {
     fontSize: 12,

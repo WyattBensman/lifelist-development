@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable } from "react-native";
 import Svg, { Path, G } from "react-native-svg";
 
 export default function BackArrowIcon({ navigation }) {
@@ -9,7 +9,7 @@ export default function BackArrowIcon({ navigation }) {
         xmlns="http://www.w3.org/2000/svg"
         width="35.000000pt"
         height="35.000000pt"
-        viewBox="60 -15 176.000000 176.000000"
+        viewBox="60 0 176.000000 176.000000"
         preserveAspectRatio="xMidYMid meet"
       >
         <G
