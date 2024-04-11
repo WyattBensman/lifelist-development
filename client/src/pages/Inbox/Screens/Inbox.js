@@ -43,6 +43,7 @@ export default function Inbox({ navigation }) {
 
 const styles = StyleSheet.create({
   searchBar: {
+    marginTop: 10,
     marginHorizontal: 10,
   },
 });
