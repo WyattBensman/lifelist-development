@@ -9,19 +9,19 @@ export default function OutlinedButton({
   onPress,
 }) {
   return (
-    <View>
-      <Pressable
-        style={[
-          styling.button,
-          { borderColor: borderColor, borderWidth: 1, width: width },
-        ]}
-        onPress={onPress}
-      >
-        <Text style={[styling.buttonMessage, { color: textColor }]}>
-          {text}
-        </Text>
-      </Pressable>
-    </View>
+    <Pressable
+      style={[
+        styling.button,
+        {
+          borderColor: borderColor,
+          borderWidth: 1,
+          width: width,
+        },
+      ]}
+      onPress={onPress}
+    >
+      <Text style={[styling.buttonMessage, { color: textColor }]}>{text}</Text>
+    </Pressable>
   );
 }
 

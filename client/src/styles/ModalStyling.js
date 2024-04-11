@@ -23,8 +23,8 @@ export const modalStyles = StyleSheet.create({
     elevation: 5,
   },
   modalHeader: {
-    fontSize: 18,
-    marginBottom: 17.5,
+    fontSize: 16,
+    marginBottom: 15,
   },
   buttonClose: {
     position: "absolute",

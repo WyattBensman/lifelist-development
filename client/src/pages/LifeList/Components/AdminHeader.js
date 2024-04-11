@@ -4,12 +4,12 @@ import EditLifeListIcon from "../Icons/EditLifeListIcon";
 import SearchIcon from "../Icons/SearchIcon";
 import ListViewIcon from "../Icons/ListViewIcon";
 
-export default function AdminHeader({ navigation }) {
+export default function AdminHeader({ navigation, setModalVisible }) {
   return (
     <Header
       titleComponent={<Text style={styles.header}>My LifeList</Text>}
       icon1={<SearchIcon />}
-      icon2={<EditLifeListIcon />}
+      icon2=<EditLifeListIcon onPress={() => setModalVisible(true)} />
       icon3={
         <ListViewIcon
           style={styles.iconSpacing}

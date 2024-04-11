@@ -2,7 +2,7 @@ import { Image, StyleSheet, Text, View } from "react-native";
 import PinIcon from "../Icons/PinIcon";
 import TicketIcon from "../Icons/TicketIcon";
 
-export default function ItemCard() {
+export default function ItemCard({ editMode }) {
   return (
     <View style={styles.largeCard}>
       <Image

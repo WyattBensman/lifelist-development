@@ -10,11 +10,13 @@ import SearchIcon from "../Icons/SearchIcon";
 import ListViewIcon from "../Icons/ListViewIcon";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import ActionModal from "../Popups/ActionsModal";
 
 export default function LifeList() {
   const theme = useTheme();
-  const [isAdmin, setIsAdmin] = useState(true);
   const navigation = useNavigation();
+  const [isAdmin, setIsAdmin] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View
@@ -24,12 +26,15 @@ export default function LifeList() {
       ]}
     >
       {isAdmin ? (
-        <AdminHeader navigation={navigation} />
+        <AdminHeader
+          navigation={navigation}
+          setModalVisible={setModalVisible}
+        />
       ) : (
         <StackHeader
           arrow={<BackArrowIcon />}
           title={"Seth's LifeList"}
-          button1={<ListViewIcon style={{ marginLeft: 0 }} />}
+          button1={<ListViewIcon />}
           button2={<SearchIcon />}
         />
       )}
@@ -39,6 +44,15 @@ export default function LifeList() {
         <ExpereincedList />
         <WishListedList />
       </View>
+
+      <ActionModal
+        modalVisible={modalVisible}
+        setModalVisible={setModalVisible}
+        onEditExperiences={() => {
+          setModalVisible(false); // Close the modal
+          navigation.navigate("Listview", { editMode: true }); // Navigate with editMode = true
+        }}
+      />
     </View>
   );
 }
