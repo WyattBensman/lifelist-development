@@ -1,13 +1,13 @@
-import { Dimensions, Image, StyleSheet, Text, View } from "react-native";
-import { globalStyling } from "../../../styles/GlobalStyling";
-import { useTheme } from "../../../utils/ThemeContext";
+import { Dimensions, StyleSheet, View } from "react-native";
 import CollageCard from "../Cards/CollageCard";
+import { globalStyling } from "../../../styles/GlobalStyling";
+import { useTheme } from "@react-navigation/native";
 
 const screenWidth = Dimensions.get("window").width;
 const totalMarginPerImage = 1;
 const imageWidth = (screenWidth - totalMarginPerImage * 3 * 4) / 3;
 
-export default function Trending() {
+export default function Reposts() {
   const theme = useTheme();
 
   return (
@@ -18,6 +18,9 @@ export default function Trending() {
       ]}
     >
       <View style={styles.imageRow}>
+        <CollageCard width={imageWidth} />
+        <CollageCard width={imageWidth} />
+        <CollageCard width={imageWidth} />
         <CollageCard width={imageWidth} />
       </View>
     </View>

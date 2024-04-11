@@ -1,9 +1,9 @@
 import { Text, View } from "react-native";
 
-export default function WorldMap() {
+export default function ViewLifeList() {
   return (
     <View>
-      <Text>WorldMap</Text>
+      <Text>Hey</Text>
     </View>
   );
 }

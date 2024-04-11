@@ -1,15 +1,14 @@
 import { NavigationContainer } from "@react-navigation/native";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-
-/* Screen */
-import MainFeedStack from "./MainFeedStack";
-import CameraHome from "../pages/Camera/Screens/CameraHome";
-import Profile from "../pages/Profile/Screens/Profile";
-import TabIcon from "../icons/NavigationBar/TabIcon";
 import { useTheme } from "react-native-paper";
 import { useNavigationContext } from "../utils/NavigationContext";
+
+import MainFeedStack from "./MainFeedStack";
+import CameraHome from "../pages/Camera/Screens/CameraHome";
 import ExploreStack from "./ExploreStack";
 import LifeListStack from "./LifeListStack";
+import ProfileStack from "./ProfileStack";
+import TabIcon from "../icons/NavigationBar/TabIcon";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -72,7 +71,7 @@ export default function NavigationTab() {
         />
         <Tab.Screen
           name="Profile"
-          component={Profile}
+          component={ProfileStack}
           options={{
             tabBarIcon: ({ focused, color }) => (
               <TabIcon focused={focused} color={color} routeName="Profile" />
