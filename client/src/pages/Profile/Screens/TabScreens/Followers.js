@@ -1,6 +1,6 @@
 import { View } from "react-native";
-import UserCard from "../../Cards/UserCard";
 import { layoutStyles } from "../../../../styles";
+import UserCard from "../../Cards/UserCard";
 
 export default function Followers() {
   return (

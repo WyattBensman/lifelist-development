@@ -16,6 +16,7 @@ const styles = StyleSheet.create({
     borderTopColor: "#D4D4D4",
     borderTopWidth: 1,
     justifyContent: "center",
+    backgroundColor: "#ffffff",
     position: "absolute",
     left: 0,
     right: 0,

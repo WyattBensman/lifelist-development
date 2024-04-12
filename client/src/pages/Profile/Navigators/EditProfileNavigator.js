@@ -1,11 +1,12 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import Followers from "../Screens/TabScreens/Followers";
-import Following from "../Screens/TabScreens/Following";
 import { Text } from "react-native";
+import EditContact from "../Screens/TabScreens/EditContact";
+import EditSettings from "../Screens/TabScreens/EditSettings";
+import EditProfile from "../Screens/TabScreens/EditProfile";
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function UserRelationsNavigator() {
+export default function EditProfileNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -26,17 +27,24 @@ export default function UserRelationsNavigator() {
       }}
     >
       <Tab.Screen
-        name="Followers"
-        component={Followers}
+        name="EditProfileTab"
+        component={EditProfile}
         options={{
-          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Followers</Text>,
+          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Profile</Text>,
         }}
       />
       <Tab.Screen
-        name="Following"
-        component={Following}
+        name="EditContact"
+        component={EditContact}
         options={{
-          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Following</Text>,
+          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Contact</Text>,
+        }}
+      />
+      <Tab.Screen
+        name="EditSettings"
+        component={EditSettings}
+        options={{
+          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Settings</Text>,
         }}
       />
     </Tab.Navigator>

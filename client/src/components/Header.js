@@ -48,6 +48,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   iconSpacing: {
-    marginLeft: 20,
+    marginLeft: 16,
   },
 });

@@ -12,7 +12,7 @@ export const layoutStyles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    marginHorizontal: 25,
+    marginHorizontal: 24,
   },
   marginContainer: {
     marginHorizontal: 10,

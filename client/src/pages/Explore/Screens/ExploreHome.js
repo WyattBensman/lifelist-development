@@ -5,6 +5,7 @@ import TrendingCollages from "../Containers/TrendingCollages";
 import TrendingDestinations from "../Containers/TrendingDestinations";
 import TrendingActivities from "../Containers/TrendingActivites";
 import TrendingAttractions from "../Containers/TrendingAttractions";
+import TrendingConcertsFestivals from "../Containers/TrendingConcertsFestivals";
 
 export default function ExploreHome({ navigation }) {
   return (

@@ -3,6 +3,7 @@ import Profile from "../pages/Profile/Screens/Profile";
 import WorldMap from "../pages/Profile/Screens/WorldMap";
 import ViewLifeList from "../pages/Profile/Screens/ViewLifeList";
 import UserRelations from "../pages/Profile/Screens/UserRelations";
+import EditProfile from "../pages/Profile/Screens/EditProfile";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,11 @@ export default function ProfileStack() {
       <Stack.Screen
         name="UserRelations"
         component={UserRelations}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfile}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

@@ -74,6 +74,6 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   iconGap: {
-    marginLeft: 20,
+    marginLeft: 16,
   },
 });

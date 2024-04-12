@@ -38,6 +38,7 @@ export default function ProfileOverview() {
             </Pressable>
           </View>
           <ButtonSkinny
+            onPress={() => navigation.navigate("EditProfile")}
             text="Edit Profile"
             backgroundColor="#ececec"
             textColor="#262828"
