@@ -1,6 +1,6 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import Followers from "../Screens/Followers";
-import Following from "../Screens/Following";
+import Followers from "../Screens/TabScreens/Followers";
+import Following from "../Screens/TabScreens/Following";
 import { Text } from "react-native";
 
 const Tab = createMaterialTopTabNavigator();

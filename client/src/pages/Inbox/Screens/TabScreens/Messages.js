@@ -1,7 +1,7 @@
 import { Pressable, View, Text } from "react-native";
-import ConversationCard from "../Cards/ConversationCard";
+import ConversationCard from "../../Cards/ConversationCard";
 import { useNavigation } from "@react-navigation/native";
-import { layoutStyles } from "../../../styles";
+import { layoutStyles } from "../../../../styles";
 
 export default function Messages() {
   const navigation = useNavigation();

@@ -1,6 +1,6 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import Trending from "../Screens/Trending";
-import Recent from "../Screens/Recent";
+import Trending from "../Screens/TabScreens/Trending";
+import Recent from "../Screens/TabScreens/Recent";
 import { Text } from "react-native";
 
 const Tab = createMaterialTopTabNavigator();

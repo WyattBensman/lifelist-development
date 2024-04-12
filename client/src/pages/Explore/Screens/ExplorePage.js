@@ -1,11 +1,11 @@
 import { Image, StyleSheet, View } from "react-native";
 import StackHeader from "../../../components/StackHeader";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
-import ExploreTabs from "../Components/ExploreTabs";
 import { useState } from "react";
 import DropdownModal from "../Popups/DropdownModal";
 import OptionsIcon from "../Icons/OptionsIcon";
 import { layoutStyles } from "../../../styles";
+import ExploreTabs from "../Navigators/ExploreTabs";
 
 export default function ExplorePage({ navigation }) {
   const [activeTab, setActiveTab] = useState("Trending");

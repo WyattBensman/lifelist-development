@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { View } from "react-native";
 import StackHeader from "../../../components/StackHeader";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import FriendRequestCard from "../Cards/FriendRequestCard";

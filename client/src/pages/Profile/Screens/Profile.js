@@ -3,7 +3,7 @@ import Header from "../../../components/Header";
 import FlowPageIcon from "../Icons/FlowPageIcon";
 import OptionsIcon from "../Icons/OptionsIcon";
 import ProfileOverview from "../Components/ProfileOverview";
-import ProfileNavigator from "../Components/ProfileNavigator";
+import ProfileNavigator from "../Navigators/ProfileNavigator";
 import BottomPopup from "../Popups/BottomPopup";
 import { useState } from "react";
 import { headerStyles, layoutStyles } from "../../../styles";

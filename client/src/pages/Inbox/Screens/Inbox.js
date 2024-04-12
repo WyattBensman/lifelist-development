@@ -2,7 +2,7 @@ import { View } from "react-native";
 import StackHeader from "../../../components/StackHeader";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import FriendsIcon from "../Icons/FriendsIcon";
-import InboxTabs from "../Components/InboxTabs";
+import InboxTabs from "../Navigators/InboxTabs";
 import { useEffect, useState } from "react";
 import SearchBar from "../../../components/SearchBar";
 import { useNavigationContext } from "../../../utils/NavigationContext";

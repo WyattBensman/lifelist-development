@@ -1,6 +1,6 @@
 import { View, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import UserRelationsNavigator from "../Components/UserRelationsNavigator";
+import UserRelationsNavigator from "../Navigators/UserRelationsNavigator";
 import StackHeader from "../../../components/StackHeader";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { globalStyling } from "../../../styles/GlobalStyling";

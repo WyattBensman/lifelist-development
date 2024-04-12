@@ -1,11 +1,10 @@
 import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
 import SearchBar from "../../../components/SearchBar";
-import FromYourListList from "../Components/FromYourLifeList";
-import TrendingCollages from "../Components/TrendingCollages";
-import TrendingDestinations from "../Components/TrendingDestinations";
-import TrendingActivities from "../Components/TrendingActivites";
-import TrendingAttractions from "../Components/TrendingAttractions";
-import TrendingConcertsFestivals from "../Components/TrendingConcertsFestivals";
+import FromYourListList from "../Containers/FromYourLifeList";
+import TrendingCollages from "../Containers/TrendingCollages";
+import TrendingDestinations from "../Containers/TrendingDestinations";
+import TrendingActivities from "../Containers/TrendingActivites";
+import TrendingAttractions from "../Containers/TrendingAttractions";
 
 export default function ExploreHome({ navigation }) {
   return (

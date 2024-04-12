@@ -1,6 +1,6 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import Messages from "../Screens/Messages";
-import Notifications from "../Screens/Notifications";
+import Messages from "../Screens/TabScreens/Messages";
+import Notifications from "../Screens/TabScreens/Notifications";
 import { Text } from "react-native";
 
 const Tab = createMaterialTopTabNavigator();
