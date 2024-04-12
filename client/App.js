@@ -3,8 +3,10 @@ import NavigationTab from "./src/routes/NavigationTab";
 import { ThemeProvider, useTheme } from "./src/utils/ThemeContext";
 
 export default function App() {
+  const theme = useTheme();
+
   return (
-    <ThemeProvider>
+    <ThemeProvider theme={{ backgroundColor: "#ffffff" }}>
       <NavigationProvider>
         <NavigationTab />
       </NavigationProvider>

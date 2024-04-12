@@ -1,18 +1,14 @@
-import { StyleSheet, View } from "react-native";
-import { useTheme } from "../../../utils/ThemeContext";
+import { View } from "react-native";
 import Header from "../../../components/Header";
 import LifeListLogo from "../Icons/LifeListLogo";
 import CreateCollageIcon from "../Icons/CreateCollageIcon";
 import LogbookIcon from "../Icons/LogbookIcon";
 import InboxIcon from "../Icons/InboxIcon";
+import { layoutStyles } from "../../../styles";
 
 export default function MainFeed() {
-  const theme = useTheme();
-
   return (
-    <View
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-    >
+    <View style={layoutStyles.container}>
       <Header
         titleComponent={<LifeListLogo />}
         icon1={<CreateCollageIcon />}
@@ -22,9 +18,3 @@ export default function MainFeed() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

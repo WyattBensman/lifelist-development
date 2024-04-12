@@ -10,9 +10,9 @@ export default function CreateCollageIcon({ style }) {
       <Svg
         version="1.0"
         xmlns="http://www.w3.org/2000/svg"
-        width="28.000000pt"
-        height="28.000000pt"
-        viewBox="0 0 128.000000 128.000000"
+        width="27.000000pt"
+        height="27.000000pt"
+        viewBox="0 -2 128.000000 128.000000"
         preserveAspectRatio="xMidYMid meet"
         style={style}
       >

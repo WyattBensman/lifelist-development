@@ -1,11 +1,12 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import ItemCard from "../Cards/ItemCard";
+import { headerStyles, layoutStyles } from "../../../styles";
 
 export default function WishListedList() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>Wish Listed</Text>
-      <View style={styles.flex}>
+    <View style={{ marginTop: 20 }}>
+      <Text style={headerStyles.headerMedium}>Wish Listed</Text>
+      <View style={layoutStyles.flexRow}>
         <ItemCard />
         <ItemCard />
         <ItemCard />
@@ -14,17 +15,3 @@ export default function WishListedList() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 20,
-  },
-  header: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 10,
-  },
-  flex: {
-    flexDirection: "row",
-  },
-});

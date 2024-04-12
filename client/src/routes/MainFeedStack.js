@@ -14,6 +14,7 @@ export default function MainFeedStack() {
         headerStyle: {
           backgroundColor: "#000000",
         },
+        cardStyle: { backgroundColor: "#ffffff" },
       }}
     >
       <Stack.Screen

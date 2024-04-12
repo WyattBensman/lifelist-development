@@ -1,9 +1,8 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import { cardStyling } from "../../../styles/CardStyling";
 import { globalStyling } from "../../../styles/GlobalStyling";
-import DeleteIcon from "../../LifeList/Icons/DeleteIcon";
 
-export default function UserCard({ editMode }) {
+export default function UserCard() {
   return (
     <View style={cardStyling.container}>
       <View style={styles.flex}>

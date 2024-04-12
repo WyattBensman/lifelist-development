@@ -1,18 +1,11 @@
-import { Text, View } from "react-native";
-import { useTheme } from "../../../utils/ThemeContext";
-import { globalStyling } from "../../../styles/GlobalStyling";
+import { View } from "react-native";
+import { layoutStyles } from "../../../styles";
+import UserCard from "../Cards/UserCard";
 
 export default function Following() {
-  const theme = useTheme();
-
   return (
-    <View
-      style={[
-        globalStyling.container,
-        { backgroundColor: theme.colors.background },
-      ]}
-    >
-      <Text>Sup</Text>
+    <View style={layoutStyles.containerTab}>
+      <UserCard />
     </View>
   );
 }

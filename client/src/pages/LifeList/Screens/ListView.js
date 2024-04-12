@@ -1,8 +1,6 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import SearchBarHeader from "../../../components/SearchBarHeader";
-import { useTheme } from "../../../utils/ThemeContext";
-import { globalStyling } from "../../../styles/GlobalStyling";
 import EditLifeListIcon from "../Icons/EditLifeListIcon";
 import ListItemCard from "../Cards/ListItemCard";
 import { useEffect, useState } from "react";
@@ -10,9 +8,9 @@ import { useNavigationContext } from "../../../utils/NavigationContext";
 import SaveDiscardContainer from "../Popups/SaveDiscardContainer";
 import ActionModal from "../Popups/ActionsModal";
 import { useRoute } from "@react-navigation/native";
+import { layoutStyles } from "../../../styles";
 
 export default function ListView({ navigation }) {
-  const theme = useTheme();
   const route = useRoute();
   const { setIsTabBarVisible } = useNavigationContext();
   const [editMode, setEditMode] = useState(false);
@@ -38,18 +36,13 @@ export default function ListView({ navigation }) {
   };
 
   return (
-    <View
-      style={[
-        globalStyling.container,
-        { backgroundColor: theme.colors.background },
-      ]}
-    >
+    <View style={layoutStyles.container}>
       <SearchBarHeader
         arrowIcon={!editMode && <BackArrowIcon navigation={navigation} />}
         icon1={!editMode && <EditLifeListIcon onPress={toggleModal} />}
       />
       {!editMode && (
-        <View style={[globalStyling.flex, styles.buttonContainer]}>
+        <View style={[layoutStyles.flex, styles.buttonContainer]}>
           <Pressable style={styles.button}>
             <Text style={styles.buttonText}>Experienced</Text>
           </Pressable>
@@ -60,20 +53,14 @@ export default function ListView({ navigation }) {
       )}
       <ListItemCard editMode={editMode} />
 
-      {/* {editMode && (
-        <Pressable onPress={() => setEditMode(false)}>
-          <Text>Discard (Test)</Text>
-        </Pressable>
-      )} */}
-
       {editMode && <SaveDiscardContainer toggleEditMode={toggleEditMode} />}
 
       <ActionModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
         onEditExperiences={() => {
-          setModalVisible(false); // Close the modal
-          setEditMode(true); // Enable edit mode directly
+          setModalVisible(false);
+          setEditMode(true);
         }}
       />
     </View>

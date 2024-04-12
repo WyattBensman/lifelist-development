@@ -23,6 +23,3 @@ export const globalStyling = StyleSheet.create({
     marginHorizontal: 25,
   },
 });
-
-/* Create a Flex */
-/* Turn Flex into FlexSpace */

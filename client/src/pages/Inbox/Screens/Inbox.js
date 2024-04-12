@@ -1,5 +1,4 @@
-import { StyleSheet, View } from "react-native";
-import { globalStyling } from "../../../styles/GlobalStyling";
+import { View } from "react-native";
 import StackHeader from "../../../components/StackHeader";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import FriendsIcon from "../Icons/FriendsIcon";
@@ -7,11 +6,10 @@ import InboxTabs from "../Components/InboxTabs";
 import { useEffect, useState } from "react";
 import SearchBar from "../../../components/SearchBar";
 import { useNavigationContext } from "../../../utils/NavigationContext";
-import { useTheme } from "../../../utils/ThemeContext";
 import CreateConversationIcon from "../Icons/CreateConversationIcon";
+import { layoutStyles } from "../../../styles";
 
 export default function Inbox({ navigation }) {
-  const theme = useTheme();
   const [activeTab, setActiveTab] = useState("Messages");
   const { setIsTabBarVisible } = useNavigationContext();
 
@@ -21,29 +19,17 @@ export default function Inbox({ navigation }) {
   }, [setIsTabBarVisible]);
 
   return (
-    <View
-      style={[
-        globalStyling.container,
-        { backgroundColor: theme.colors.background },
-      ]}
-    >
+    <View style={layoutStyles.container}>
       <StackHeader
         arrow={<BackArrowIcon navigation={navigation} />}
         title={"Inbox"}
-        button1={<CreateConversationIcon />}
-        button2={<FriendsIcon />}
+        button1={<FriendsIcon />}
+        button2={<CreateConversationIcon />}
       />
-      <View style={styles.searchBar}>
+      <View style={layoutStyles.marginContainer}>
         <SearchBar />
       </View>
       <InboxTabs onTabChange={setActiveTab} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  searchBar: {
-    marginTop: 10,
-    marginHorizontal: 10,
-  },
-});

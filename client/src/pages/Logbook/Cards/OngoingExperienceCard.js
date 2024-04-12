@@ -1,11 +1,10 @@
 import { Pressable, StyleSheet, Text, View, Platform } from "react-native";
 import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
-import UpcomingExperienceIcon from "../icons/UpcomingExperienceIcon";
 import { useState } from "react";
-import CheckedBoxIcon from "../../../icons/Universal/CheckedBoxIcon";
 import UncheckedBoxIcon from "../../../icons/Universal/UncheckedBoxIcon";
+import CheckedBoxIcon from "../../../icons/Universal/CheckedBoxIcon";
 
-export default function Upcomingitem({ editMode }) {
+export default function OngoingExperienceCard({ editMode }) {
   const [selected, setSelected] = useState(false);
 
   const handlePress = () => {
@@ -19,14 +18,11 @@ export default function Upcomingitem({ editMode }) {
   return (
     <Pressable onPress={handlePress} style={styles.container}>
       <View style={styles.flex}>
-        <View style={styles.flex}>
-          <UpcomingExperienceIcon />
-          <Text>Punta Cana Vacation</Text>
-        </View>
+        <Text>July Recap</Text>
         <View style={styles.flex}>
           {!editMode ? (
             <>
-              <Text style={styles.editText}>Start</Text>
+              <Text style={styles.editText}>Edit</Text>
               <ForwardArrowIcon />
             </>
           ) : selected ? (

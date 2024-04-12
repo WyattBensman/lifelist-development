@@ -1,11 +1,12 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import ItemCard from "../Cards/ItemCard";
+import { headerStyles, layoutStyles } from "../../../styles";
 
 export default function ExpereincedList() {
   return (
     <View>
-      <Text style={styles.header}>Experienced</Text>
-      <View style={styles.flex}>
+      <Text style={headerStyles.headerMedium}>Experienced</Text>
+      <View style={layoutStyles.flexRow}>
         <ItemCard />
         <ItemCard />
         <ItemCard />
@@ -14,14 +15,3 @@ export default function ExpereincedList() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    fontSize: 18,
-    fontWeight: "600",
-    marginBottom: 10,
-  },
-  flex: {
-    flexDirection: "row",
-  },
-});

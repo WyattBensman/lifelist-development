@@ -1,21 +1,16 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import StackHeader from "../../../components/StackHeader";
-import EditLogbookIcon from "../icons/EditLogbookIcon";
-import OngoingUpcomingExperiences from "../Components/OngoingUpcomingExperiences";
-
 import { useEffect, useState } from "react";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigationContext } from "../../../utils/NavigationContext";
 import AddUpcomingExperienceModal from "../Popups/AddUpcomingExperienceModal";
-import { globalStyling } from "../../../styles/GlobalStyling";
-import { useTheme } from "../../../utils/ThemeContext";
-import BottomContainer from "../../../components/BottomContainer";
-import SolidButton from "../../../components/SolidButton";
-import StartAddButtons from "../Components/StartAddButtons";
-import DiscardDeleteButtons from "../Components/DiscardDeleteButtons";
+import StartAddContainer from "../Containers/StartAddContainer";
+import DiscardDeleteContainer from "../Containers/DiscardDeleteContainer";
+import ExperiencesContainer from "../Containers/ExperiencesContainer";
+import ToggleEditIcon from "../Icons/ToggleEditIcon";
+import { layoutStyles } from "../../../styles";
 
 export default function Logbook({ navigation }) {
-  const theme = useTheme();
   const [editMode, setEditMode] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { setIsTabBarVisible } = useNavigationContext();
@@ -34,46 +29,36 @@ export default function Logbook({ navigation }) {
   };
 
   return (
-    <View
-      style={[
-        globalStyling.container,
-        { backgroundColor: theme.colors.background },
-      ]}
-    >
+    <View style={layoutStyles.container}>
       <StackHeader
         arrow={!editMode && <BackArrowIcon navigation={navigation} />}
         title={!editMode ? "Logbook" : "Edit Logbook"}
-        button1={!editMode && <EditLogbookIcon onPress={toggleEditMode} />}
+        button1={!editMode && <ToggleEditIcon onPress={toggleEditMode} />}
       />
-      <ScrollView style={styles.contentContainer}>
+      <ScrollView style={layoutStyles.contentContainer}>
         <Text style={[styles.header, editMode && styles.editModeHeader]}>
           Create & continuous update collages before sharing, or plan for
           upcoming experiences
         </Text>
-        <OngoingUpcomingExperiences editMode={editMode} />
+        <ExperiencesContainer editMode={editMode} />
         <AddUpcomingExperienceModal
           modalVisible={isModalVisible}
           setModalVisible={setIsModalVisible}
         />
       </ScrollView>
       {!editMode ? (
-        <StartAddButtons toggleModal={toggleModal} />
+        <StartAddContainer toggleModal={toggleModal} />
       ) : (
-        <DiscardDeleteButtons toggleEditMode={toggleEditMode} />
+        <DiscardDeleteContainer toggleEditMode={toggleEditMode} />
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    marginHorizontal: 25,
-  },
   header: {
     textAlign: "center",
-    fontSize: 14,
-    marginTop: 20,
+    marginVertical: 20,
   },
   editModeHeader: {
     color: "#D4D4D4",

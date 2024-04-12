@@ -1,6 +1,7 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import Trending from "../Screens/Trending";
 import Recent from "../Screens/Recent";
+import { Text } from "react-native";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -12,6 +13,7 @@ export default function ExploreTabs({ onTabChange }) {
         tabBarInactiveTintColor: "#d4d4d4",
         tabBarStyle: {
           backgroundColor: "#ffffff",
+          height: 42.5,
         },
         tabBarIndicatorStyle: {
           backgroundColor: "#6AB952",
@@ -19,12 +21,16 @@ export default function ExploreTabs({ onTabChange }) {
         tabBarLabelStyle: {
           textTransform: "none",
           fontSize: 15,
+          marginBottom: 10,
         },
       }}
     >
       <Tab.Screen
         name="Trending"
         component={Trending}
+        options={{
+          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Trending</Text>,
+        }}
         listeners={{
           focus: () => onTabChange("Trending"),
         }}
@@ -32,6 +38,9 @@ export default function ExploreTabs({ onTabChange }) {
       <Tab.Screen
         name="Recent"
         component={Recent}
+        options={{
+          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Recent</Text>,
+        }}
         listeners={{
           focus: () => onTabChange("Recent"),
         }}

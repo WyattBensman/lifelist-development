@@ -1,18 +1,11 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import { useTheme } from "../../../utils/ThemeContext";
-import { globalStyling } from "../../../styles/GlobalStyling";
 import UserCard from "../Cards/UserCard";
+import { layoutStyles } from "../../../styles";
 
 export default function Followers() {
-  const theme = useTheme();
-
   return (
-    <View
-      style={[
-        globalStyling.container,
-        { backgroundColor: theme.colors.background },
-      ]}
-    >
+    <View style={layoutStyles.containerTab}>
       <UserCard />
     </View>
   );

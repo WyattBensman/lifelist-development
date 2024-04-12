@@ -1,20 +1,12 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import StackHeader from "../../../components/StackHeader";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import BottomBar from "../Components/BottomBar";
-import { globalStyling } from "../../../styles/GlobalStyling";
-import { useTheme } from "../../../utils/ThemeContext";
+import { layoutStyles } from "../../../styles";
 
 export default function Conversation({ navigation }) {
-  const theme = useTheme();
-
   return (
-    <View
-      style={[
-        globalStyling.container,
-        { backgroundColor: theme.colors.background },
-      ]}
-    >
+    <View style={layoutStyles.container}>
       <StackHeader
         arrow={<BackArrowIcon navigation={navigation} />}
         title={"Wyatt Bensman"}

@@ -1,7 +1,7 @@
 import SolidButton from "../../../components/SolidButton";
 import BottomContainer from "../../../components/BottomContainer";
 
-export default function StartAddButtons({ toggleModal }) {
+export default function StartAddContainer({ toggleModal }) {
   return (
     <BottomContainer
       topButton={

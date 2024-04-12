@@ -3,9 +3,9 @@ import StackHeader from "../../../components/StackHeader";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import ExploreTabs from "../Components/ExploreTabs";
 import { useState } from "react";
-import { globalStyling } from "../../../styles/GlobalStyling";
-import MoreIcon from "../Icons/MoreIcon";
 import DropdownModal from "../Popups/DropdownModal";
+import OptionsIcon from "../Icons/OptionsIcon";
+import { layoutStyles } from "../../../styles";
 
 export default function ExplorePage({ navigation }) {
   const [activeTab, setActiveTab] = useState("Trending");
@@ -20,11 +20,11 @@ export default function ExplorePage({ navigation }) {
   };
 
   return (
-    <View style={globalStyling.container}>
+    <View style={layoutStyles.container}>
       <StackHeader
         title={"Jackson Hole, Wyoming"}
         arrow={<BackArrowIcon navigation={navigation} />}
-        button1={<MoreIcon onPress={handleMoreIconPress} />}
+        button1={<OptionsIcon onPress={handleMoreIconPress} />}
       />
       <DropdownModal isVisible={modalVisible} onClose={closeModal} />
       <Image

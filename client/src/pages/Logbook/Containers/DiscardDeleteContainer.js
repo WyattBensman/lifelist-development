@@ -2,7 +2,7 @@ import SolidButton from "../../../components/SolidButton";
 import OutlinedButton from "../../../components/OutlinedButton";
 import BottomContainer from "../../../components/BottomContainer";
 
-export default function DiscardDeleteButtons({ toggleEditMode }) {
+export default function DiscardDeleteContainer({ toggleEditMode }) {
   return (
     <BottomContainer
       topButton={
