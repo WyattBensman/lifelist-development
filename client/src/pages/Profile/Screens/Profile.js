@@ -4,15 +4,24 @@ import FlowPageIcon from "../Icons/FlowPageIcon";
 import OptionsIcon from "../Icons/OptionsIcon";
 import ProfileOverview from "../Components/ProfileOverview";
 import ProfileNavigator from "../Navigators/ProfileNavigator";
-import BottomPopup from "../Popups/BottomPopup";
 import { useState } from "react";
 import { headerStyles, layoutStyles } from "../../../styles";
+import DefaultOptionsPopup from "../Popups/DefaultOptionsPopup";
+import AdminOptionsPopup from "../Popups/AdminOptionsPopup";
+import FlowPagePopup from "../Popups/FlowPagePopup";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Profile() {
-  const [popupVisible, setPopupVisible] = useState(false);
+  const navigation = useNavigation();
+  const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
+  const [flowpagePopupVisible, setFlowpagePopuVisible] = useState(false);
 
-  const togglePopup = () => {
-    setPopupVisible(!popupVisible);
+  const toggleOptionsPopup = () => {
+    setOptionsPopupVisible(!optionsPopupVisible);
+  };
+
+  const toggleFlowpagePopup = () => {
+    setFlowpagePopuVisible(!flowpagePopupVisible);
   };
 
   return (
@@ -21,15 +30,28 @@ export default function Profile() {
         titleComponent={
           <Text style={headerStyles.headerHeavy}>Wyatt Bensman</Text>
         }
-        icon1={<FlowPageIcon />}
-        icon2={<OptionsIcon onPress={togglePopup} />}
+        icon1={<FlowPageIcon onPress={toggleFlowpagePopup} />}
+        icon2={<OptionsIcon onPress={toggleOptionsPopup} />}
       />
       <ProfileOverview />
       <ProfileNavigator />
 
-      <BottomPopup visible={popupVisible} onRequestClose={togglePopup}>
-        <Text>Options</Text>
-      </BottomPopup>
+      <AdminOptionsPopup
+        visible={optionsPopupVisible}
+        onRequestClose={toggleOptionsPopup}
+        navigation={navigation}
+      />
+
+      <FlowPagePopup
+        visible={flowpagePopupVisible}
+        onRequestClose={toggleFlowpagePopup}
+        navigation={navigation}
+      />
+      {/* <DefaultOptionsPopup
+        visible={optionsPopupVisible}
+        onRequestClose={toggleOptionsPopup}
+        navigation={navigation}
+      /> */}
     </View>
   );
 }

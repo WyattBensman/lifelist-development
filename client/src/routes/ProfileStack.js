@@ -4,6 +4,8 @@ import WorldMap from "../pages/Profile/Screens/WorldMap";
 import ViewLifeList from "../pages/Profile/Screens/ViewLifeList";
 import UserRelations from "../pages/Profile/Screens/UserRelations";
 import EditProfile from "../pages/Profile/Screens/EditProfile";
+import Saved from "../pages/Profile/Screens/Saved";
+import Archived from "../pages/Profile/Screens/Archived";
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +40,21 @@ export default function ProfileStack() {
       />
       <Stack.Screen
         name="EditProfile"
+        component={EditProfile}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Saved"
+        component={Saved}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Archived"
+        component={Archived}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PrivacyGroups"
         component={EditProfile}
         options={{ headerShown: false }}
       />

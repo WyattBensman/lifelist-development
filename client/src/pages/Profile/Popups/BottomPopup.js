@@ -8,13 +8,13 @@ import {
   TouchableWithoutFeedback,
 } from "react-native";
 
-const BottomPopup = ({ visible, children, onRequestClose }) => {
+const BottomPopup = ({ visible, children, onRequestClose, height }) => {
   const [showModal, setShowModal] = useState(visible);
   const animatedHeight = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     toggleModal();
-  }, [visible]);
+  }, [visible, height]);
 
   const toggleModal = () => {
     if (visible) {
@@ -35,7 +35,7 @@ const BottomPopup = ({ visible, children, onRequestClose }) => {
 
   const modalHeight = animatedHeight.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 400], // Adjust the "300" value to the desired popup height
+    outputRange: [0, height],
   });
 
   return (

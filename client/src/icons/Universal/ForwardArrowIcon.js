@@ -5,13 +5,13 @@ export default function ForwardArrowIcon() {
     <Svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width="25.000000pt"
-      height="25.000000pt"
+      width="17.50000pt"
+      height="17.50000pt"
       viewBox="0 0 176.000000 176.000000"
       preserveAspectRatio="xMidYMid meet"
     >
       <G
-        transform="translate(0.000000,176.000000) scale(0.100000,-0.100000)"
+        transform="translate(-22.500000,205.00000) scale(0.130000,-0.130000)"
         fill="#000000"
         stroke="none"
       >
