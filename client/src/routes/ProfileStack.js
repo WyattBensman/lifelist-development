@@ -8,6 +8,8 @@ import Saved from "../pages/Profile/Screens/Saved";
 import Archived from "../pages/Profile/Screens/Archived";
 import EditFlowPage from "../pages/Profile/Screens/EditFlowPage";
 import BlockedUsers from "../pages/Profile/Screens/BlockedUsers";
+import PrivacyGroups from "../pages/Profile/Screens/PrivacyGroups";
+import PrivacyGroup from "../pages/Profile/Screens/PrivacyGroup";
 
 const Stack = createNativeStackNavigator();
 
@@ -62,7 +64,17 @@ export default function ProfileStack() {
       />
       <Stack.Screen
         name="PrivacyGroups"
-        component={EditProfile}
+        component={PrivacyGroups}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PrivacyGroup"
+        component={PrivacyGroup}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditPrivacyGroup"
+        component={PrivacyGroup}
         options={{ headerShown: false }}
       />
       <Stack.Screen

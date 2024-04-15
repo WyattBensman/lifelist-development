@@ -37,5 +37,17 @@ export const layoutStyles = StyleSheet.create({
     justifyContent: "space-between",
     marginHorizontal: 2,
   },
+  marginTopLg: {
+    marginTop: 16,
+  },
+  marginTopMd: {
+    marginTop: 8,
+  },
+  marginTopSm: {
+    marginTop: 4,
+  },
+  marginVertLg: {
+    marginVertical: 16,
+  },
   /* I need a name for this */
 });

@@ -17,8 +17,8 @@ export default function AdminOptionsPopup({
   onRequestClose,
   navigation,
 }) {
-  const handleNavigate = (screen) => {
-    navigation.navigate(screen);
+  const handleNavigate = (screen, params) => {
+    navigation.navigate(screen, params);
     onRequestClose();
   };
 
@@ -26,20 +26,28 @@ export default function AdminOptionsPopup({
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={540}>
       <View style={popupStyles.popupContainer}>
         <Text style={headerStyles.headerMedium}>Profile Options</Text>
-        <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
+        <Pressable
+          style={[popupStyles.cardContainer, layoutStyles.flex]}
+          onPress={() => handleNavigate("EditProfile")}
+        >
           <View style={layoutStyles.flexRow}>
             <EditProfile />
             <Text style={popupStyles.spacer}>Edit Profile</Text>
           </View>
           <ForwardArrowIcon />
-        </View>
-        <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
+        </Pressable>
+        <Pressable
+          style={[popupStyles.cardContainer, layoutStyles.flex]}
+          onPress={() =>
+            handleNavigate("EditProfile", { screen: "EditSettings" })
+          }
+        >
           <View style={layoutStyles.flexRow}>
             <Settings />
             <Text style={popupStyles.spacer}>Settings</Text>
           </View>
           <ForwardArrowIcon />
-        </View>
+        </Pressable>
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={() => handleNavigate("Saved")}
@@ -74,13 +82,16 @@ export default function AdminOptionsPopup({
           </View>
           <ForwardArrowIcon />
         </View>
-        <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
+        <Pressable
+          style={[popupStyles.cardContainer, layoutStyles.flex]}
+          onPress={() => handleNavigate("PrivacyGroups")}
+        >
           <View style={layoutStyles.flexRow}>
             <CameraShots />
             <Text style={popupStyles.spacer}>Privacy Groups</Text>
           </View>
           <ForwardArrowIcon />
-        </View>
+        </Pressable>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
           <View style={layoutStyles.flexRow}>
             <InviteFriends />

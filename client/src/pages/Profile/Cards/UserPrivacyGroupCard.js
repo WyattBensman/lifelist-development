@@ -1,9 +1,17 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import { cardStyling } from "../../../styles/CardStyling";
-import { globalStyling } from "../../../styles/GlobalStyling";
 import { layoutStyles } from "../../../styles";
+import { useState } from "react";
+import CheckedBoxIcon from "../../../icons/Universal/CheckedBoxIcon";
+import UncheckedBoxIcon from "../../../icons/Universal/UncheckedBoxIcon";
 
-export default function UserCard() {
+export default function UserPrivacyGroupCard({ isEditMode }) {
+  const [isChecked, setIsChecked] = useState(false);
+
+  const handleCheckedToggle = () => {
+    setIsChecked(!isChecked);
+  };
+
   return (
     <View style={cardStyling.container}>
       <View style={styles.flex}>
@@ -17,14 +25,32 @@ export default function UserCard() {
           >
             Wyatt Bensman
           </Text>
-          <View style={styles.followContainer}>
-            <Text style={styles.followText}>Follow</Text>
+          <View style={{ marginRight: 24 }}>
+            {isEditMode &&
+              (isChecked ? (
+                <CheckedBoxIcon onPress={handleCheckedToggle} />
+              ) : (
+                <UncheckedBoxIcon onPress={handleCheckedToggle} />
+              ))}
           </View>
         </View>
       </View>
     </View>
   );
 }
+
+/* {
+  !editMode ? (
+    <>
+      <Text style={styles.editText}>Edit</Text>
+      <ForwardArrowIcon />
+    </>
+  ) : selected ? (
+    <CheckedBoxIcon />
+  ) : (
+    <UncheckedBoxIcon />
+  );
+} */
 
 const styles = StyleSheet.create({
   flex: {

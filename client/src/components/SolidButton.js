@@ -26,6 +26,7 @@ const styling = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 10,
     borderRadius: 4,
+    height: 36,
   },
   buttonMessage: {
     textAlign: "center",
