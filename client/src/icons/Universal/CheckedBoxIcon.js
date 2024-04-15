@@ -5,8 +5,8 @@ export default function CheckedBoxIcon() {
     <Svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width="25.000000pt"
-      height="25.000000pt"
+      width="17.5000000pt"
+      height="17.5000000pt"
       viewBox="0 0 176.000000 176.000000"
       preserveAspectRatio="xMidYMid meet"
     >

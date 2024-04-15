@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { headerStyles, layoutStyles } from "../../../../styles";
 import { useState } from "react";
 import BottomContainer from "../../../../components/BottomContainer";
@@ -6,11 +6,13 @@ import SolidButton from "../../../../components/SolidButton";
 import OutlinedButton from "../../../../components/OutlinedButton";
 import ForwardArrowIcon from "../../../../icons/Universal/ForwardArrowIcon";
 import GlobalSwitch from "../../../../components/Switch";
+import { useNavigation } from "@react-navigation/native";
 
 export default function EditSettings() {
   const [isPrivate, setIsPrivate] = useState(false);
   const [isRepostToMainFeed, setIsRepostToMainFeed] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const navigation = useNavigation();
 
   return (
     <View style={layoutStyles.container}>
@@ -21,10 +23,13 @@ export default function EditSettings() {
             <Text>Private</Text>
             <GlobalSwitch isOn={isPrivate} onToggle={setIsPrivate} />
           </View>
-          <View style={[layoutStyles.flex, styles.inputSpacer]}>
+          <Pressable
+            style={[layoutStyles.flex, styles.inputSpacer]}
+            onPress={() => navigation.navigate("BlockedUsers")}
+          >
             <Text>Blocked User</Text>
             <ForwardArrowIcon />
-          </View>
+          </Pressable>
           <View style={[layoutStyles.flex, styles.inputSpacer]}>
             <Text>Privacy Groups</Text>
             <ForwardArrowIcon />

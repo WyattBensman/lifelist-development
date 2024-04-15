@@ -1,4 +1,4 @@
-import { Image, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import BottomPopup from "./BottomPopup";
 import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
 import { headerStyles, layoutStyles, popupStyles } from "../../../styles";
@@ -7,15 +7,22 @@ import CopyProfileUrl from "../Icons/PopupIcons/CopyProfileURL";
 import Facebook from "../Icons/FlowpageIcons/Facebook";
 import Instagram from "../Icons/FlowpageIcons/Instagram";
 
-export default function FlowPagePopup({ visible, onRequestClose }) {
+export default function FlowPagePopup({ visible, onRequestClose, navigation }) {
+  const handleNavigate = (screen) => {
+    navigation.navigate(screen);
+    onRequestClose();
+  };
+
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={288}>
       <View style={popupStyles.popupContainer}>
         <View style={layoutStyles.flex}>
           <Text style={headerStyles.headerMedium}>Profile Options</Text>
-          <Text style={{ fontSize: 12, color: "#d4d4d4", paddingBottom: 8 }}>
-            Edit
-          </Text>
+          <Pressable onPress={() => handleNavigate("EditFlowPage")}>
+            <Text style={{ fontSize: 12, color: "#d4d4d4", paddingBottom: 8 }}>
+              Edit
+            </Text>
+          </Pressable>
         </View>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
           <View style={layoutStyles.flexRow}>

@@ -39,7 +39,7 @@ export default function OngoingExperienceCard({ editMode }) {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 8,
-    paddingVertical: 8,
+    paddingVertical: 12,
     marginBottom: 10,
     borderRadius: 8,
     borderWidth: 1,
