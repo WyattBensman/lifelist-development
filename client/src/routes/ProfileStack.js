@@ -7,6 +7,7 @@ import EditProfile from "../pages/Profile/Screens/EditProfile";
 import Saved from "../pages/Profile/Screens/Saved";
 import Archived from "../pages/Profile/Screens/Archived";
 import EditFlowPage from "../pages/Profile/Screens/EditFlowPage";
+import BlockedUsers from "../pages/Profile/Screens/BlockedUsers";
 
 const Stack = createNativeStackNavigator();
 
@@ -66,7 +67,7 @@ export default function ProfileStack() {
       />
       <Stack.Screen
         name="BlockedUsers"
-        component={EditProfile}
+        component={BlockedUsers}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

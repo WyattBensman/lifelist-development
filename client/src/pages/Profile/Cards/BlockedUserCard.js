@@ -1,8 +1,21 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { cardStyling } from "../../../styles/CardStyling";
-import { globalStyling } from "../../../styles/GlobalStyling";
+import { layoutStyles } from "../../../styles";
+import { useState } from "react";
+import UnblockUserModal from "../Popups/UnblockUserModal";
 
-export default function UserCard() {
+export default function BlockedUserCard() {
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const toggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+
+  const unblockUser = () => {
+    console.log("User has been unblocked!"); // Implement actual unblock logic here
+    setModalVisible(false);
+  };
+
   return (
     <View style={cardStyling.container}>
       <View style={styles.flex}>
@@ -16,11 +29,16 @@ export default function UserCard() {
           >
             Wyatt Bensman
           </Text>
-          <View style={styles.followContainer}>
-            <Text style={styles.followText}>Follow</Text>
-          </View>
+          <Pressable style={styles.followContainer} onPress={toggleModal}>
+            <Text style={styles.followText}>Blocked</Text>
+          </Pressable>
         </View>
       </View>
+      <UnblockUserModal
+        modalVisible={modalVisible}
+        onClose={toggleModal}
+        onUnblock={unblockUser}
+      />
     </View>
   );
 }
