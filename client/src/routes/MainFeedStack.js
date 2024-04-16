@@ -4,6 +4,10 @@ import Logbook from "../pages/Logbook/Screens/Logbook";
 import Inbox from "../pages/Inbox/Screens/Inbox";
 import FriendRequest from "../pages/Inbox/Screens/FriendRequest";
 import Conversation from "../pages/Inbox/Screens/Conversation";
+import Authentication from "../pages/Authentication/Screens/Authentication";
+import VerifyAccount from "../pages/Authentication/Screens/VerifyAccount";
+import SetLoginInformation from "../pages/Authentication/Screens/SetLoginInformation";
+import SetProfileInformation from "../pages/Authentication/Screens/SetProfileInformation";
 
 const Stack = createNativeStackNavigator();
 
@@ -47,6 +51,26 @@ export default function MainFeedStack() {
         component={CreateCollageScreen}
         options={{ headerShown: false }}
       /> */}
+      <Stack.Screen
+        name="Authentication"
+        component={Authentication}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="VerifyAccount"
+        component={VerifyAccount}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SetLoginInformation"
+        component={SetLoginInformation}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SetProfileInformation"
+        component={SetProfileInformation}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }

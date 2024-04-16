@@ -1,12 +1,26 @@
 import { StyleSheet } from "react-native";
 
 export const formStyles = StyleSheet.create({
+  formContainer: {
+    flex: 1,
+    marginTop: 24,
+  },
   input: {
     height: 36,
     borderWidth: 1,
     padding: 10,
     borderRadius: 8,
     borderColor: "#D4D4D4",
+  },
+  label: {
+    marginBottom: 6,
+  },
+  inputSpacer: {
+    marginTop: 16,
+  },
+  smallText: {
+    fontSize: 12,
+    fontStyle: "italic",
   },
   buttons: {
     flexDirection: "row",

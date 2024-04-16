@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 
 export default function ButtonSkinny({
   backgroundColor,
+  marginTop,
   textColor,
   width,
   text,
@@ -13,7 +14,11 @@ export default function ButtonSkinny({
     <Pressable
       style={[
         styling.button,
-        { backgroundColor: backgroundColor, width: width },
+        {
+          backgroundColor: backgroundColor,
+          width: width,
+          marginTop: marginTop,
+        },
         style,
       ]}
       onPress={onPress}
