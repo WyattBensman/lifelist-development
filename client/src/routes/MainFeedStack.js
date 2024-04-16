@@ -46,11 +46,11 @@ export default function MainFeedStack() {
         component={Conversation}
         options={{ headerShown: false }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="CreateCollage"
         component={CreateCollageScreen}
         options={{ headerShown: false }}
-      /> */}
+      />
       <Stack.Screen
         name="Authentication"
         component={Authentication}

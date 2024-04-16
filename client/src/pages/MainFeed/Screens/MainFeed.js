@@ -6,6 +6,7 @@ import LogbookIcon from "../Icons/LogbookIcon";
 import InboxIcon from "../Icons/InboxIcon";
 import { layoutStyles } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
+import Collage from "../../Collage/Screens/Collage";
 
 export default function MainFeed() {
   const navigation = useNavigation();
@@ -18,9 +19,13 @@ export default function MainFeed() {
         icon2={<LogbookIcon />}
         icon3={<InboxIcon />}
       />
-      <Pressable onPress={() => navigation.navigate("Authentication")}>
-        <Text>Login & Sign Up Screens</Text>
-      </Pressable>
+      <Collage />
     </View>
   );
+}
+
+{
+  /* <Pressable onPress={() => navigation.navigate("Authentication")}>
+        <Text>Login & Sign Up Screens</Text>
+      </Pressable> */
 }

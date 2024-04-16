@@ -1,6 +1,5 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import { cardStyling } from "../../../styles/CardStyling";
-import { globalStyling } from "../../../styles/GlobalStyling";
 import { layoutStyles } from "../../../styles";
 
 export default function UserCard() {
@@ -12,11 +11,14 @@ export default function UserCard() {
           style={cardStyling.image}
         />
         <View style={[layoutStyles.flex, { flex: 1 }]}>
-          <Text
-            style={[cardStyling.username, cardStyling.descriptionContainer]}
-          >
-            Wyatt Bensman
-          </Text>
+          <View>
+            <Text
+              style={[cardStyling.username, cardStyling.descriptionContainer]}
+            >
+              Wyatt Bensman
+            </Text>
+            <Text>Hey</Text>
+          </View>
           <View style={styles.followContainer}>
             <Text style={styles.followText}>Follow</Text>
           </View>
