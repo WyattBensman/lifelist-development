@@ -1,9 +1,9 @@
 import SolidButton from "../../../components/SolidButton";
-import BottomContainer from "../../../components/BottomContainer";
+import BottomButtonContainer from "../../../components/Containers/BottomButtonContainer";
 
 export default function StartAddContainer({ toggleModal }) {
   return (
-    <BottomContainer
+    <BottomButtonContainer
       topButton={
         <SolidButton
           text="Start New Experience"

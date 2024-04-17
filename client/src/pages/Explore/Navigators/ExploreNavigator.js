@@ -5,7 +5,7 @@ import { Text } from "react-native";
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function ExploreTabs({ onTabChange }) {
+export default function ExploreNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
@@ -20,31 +20,12 @@ export default function ExploreTabs({ onTabChange }) {
         },
         tabBarLabelStyle: {
           textTransform: "none",
-          fontSize: 15,
-          marginBottom: 10,
+          fontSize: 14,
         },
       }}
     >
-      <Tab.Screen
-        name="Trending"
-        component={Trending}
-        options={{
-          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Trending</Text>,
-        }}
-        listeners={{
-          focus: () => onTabChange("Trending"),
-        }}
-      />
-      <Tab.Screen
-        name="Recent"
-        component={Recent}
-        options={{
-          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Recent</Text>,
-        }}
-        listeners={{
-          focus: () => onTabChange("Recent"),
-        }}
-      />
+      <Tab.Screen name="Trending" component={Trending} />
+      <Tab.Screen name="Recent" component={Recent} />
     </Tab.Navigator>
   );
 }

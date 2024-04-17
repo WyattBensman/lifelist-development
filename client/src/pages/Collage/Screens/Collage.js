@@ -4,7 +4,7 @@ import CollageNavigator from "../Navigators/CollageNavigator";
 
 export default function Collage() {
   return (
-    <View style={layoutStyles.container}>
+    <View style={layoutStyles.wrapper}>
       <CollageNavigator />
     </View>
   );

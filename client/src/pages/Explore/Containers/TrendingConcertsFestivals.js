@@ -4,7 +4,7 @@ import { headerStyles, layoutStyles } from "../../../styles";
 
 export default function TrendingConcertsFestivals() {
   return (
-    <View style={{ marginTop: 15 }}>
+    <View style={layoutStyles.marginTopLg}>
       <Text style={headerStyles.headerMedium}>
         Trending Concerts & Festivals
       </Text>

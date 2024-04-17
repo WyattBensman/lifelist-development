@@ -1,10 +1,10 @@
 import SolidButton from "../../../components/SolidButton";
 import OutlinedButton from "../../../components/OutlinedButton";
-import BottomContainer from "../../../components/BottomContainer";
+import BottomButtonContainer from "../../../components/Containers/BottomButtonContainer";
 
 export default function DiscardDeleteContainer({ toggleEditMode }) {
   return (
-    <BottomContainer
+    <BottomButtonContainer
       topButton={
         <SolidButton
           backgroundColor={"#DB302D"}

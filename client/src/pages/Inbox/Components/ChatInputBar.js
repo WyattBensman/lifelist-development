@@ -3,16 +3,16 @@ import {
   StyleSheet,
   View,
   TextInput,
-  TouchableOpacity,
   Text,
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  Pressable,
 } from "react-native";
 import GalleryIcon from "../Icons/GalleryIcon";
 import { formStyling } from "../../../styles/FormStyling";
 
-export default function BottomBar() {
+export default function ChatInputBar() {
   const [message, setMessage] = useState("");
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
@@ -43,21 +43,21 @@ export default function BottomBar() {
           keyboardVisible && styles.containerKeyboardActive,
         ]}
       >
-        <TouchableOpacity style={styles.iconContainer}>
+        <Pressable style={styles.iconContainer}>
           <GalleryIcon />
-        </TouchableOpacity>
+        </Pressable>
         <TextInput
           style={formStyling.input}
           value={message}
           onChangeText={setMessage}
           placeholder="Type a message..."
         />
-        <TouchableOpacity
+        <Pressable
           style={styles.sendContainer}
           onPress={() => console.log("Send message:", message)}
         >
           <Text>Send</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </KeyboardAvoidingView>
   );
@@ -67,8 +67,8 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingTop: 12,
-    paddingHorizontal: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     paddingBottom: 25,
     borderTopColor: "#D4D4D4",
     borderTopWidth: 1,
@@ -77,13 +77,11 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   iconContainer: {
-    marginRight: 20,
-    marginLeft: 5,
-    marginBottom: 10,
+    marginRight: 16,
+    height: 30,
   },
   sendContainer: {
-    marginLeft: 20,
-    marginRight: 5,
-    marginBottom: 10,
+    marginLeft: 16,
+    height: 30,
   },
 });

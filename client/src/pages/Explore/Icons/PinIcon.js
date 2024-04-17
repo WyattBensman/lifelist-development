@@ -9,7 +9,7 @@ export default function PinIcon() {
       height="13.50000pt"
       viewBox="0 0 56.000000 56.000000"
       preserveAspectRatio="xMidYMid meet"
-      style={{ marginTop: 1.25 }}
+      style={{ marginTop: 4, marginRight: 4 }}
     >
       <G
         transform="translate(5.000000,56.000000) scale(0.100000,-0.100000)"

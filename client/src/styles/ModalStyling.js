@@ -32,6 +32,7 @@ export const modalStyles = StyleSheet.create({
     top: 12,
     zIndex: 1,
   },
+  /* CORRECT USAGE INSTANCES */
   input: {
     height: 40,
     marginBottom: 12,

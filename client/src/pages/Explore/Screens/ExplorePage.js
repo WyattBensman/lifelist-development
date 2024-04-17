@@ -1,38 +1,36 @@
 import { Image, StyleSheet, View } from "react-native";
-import StackHeader from "../../../components/StackHeader";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useState } from "react";
-import DropdownModal from "../Popups/DropdownModal";
-import OptionsIcon from "../Icons/OptionsIcon";
 import { layoutStyles } from "../../../styles";
-import ExploreTabs from "../Navigators/ExploreTabs";
+import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
+import OptionsIcon from "../Icons/OptionsIcon";
+import HeaderStack from "../../../components/Headers/HeaderStack";
+import ExploreNavigator from "../Navigators/ExploreNavigator";
+import ActionsModal from "../Popups/ActionsModal";
 
 export default function ExplorePage({ navigation }) {
-  const [activeTab, setActiveTab] = useState("Trending");
-  const [modalVisible, setModalVisible] = useState(false);
+  const [actionsPopupVisible, setActionsPopupVisible] = useState(false);
 
-  const handleMoreIconPress = () => {
-    setModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setModalVisible(false);
+  const toggleActionsPopup = () => {
+    setActionsPopupVisible(!actionsPopupVisible);
   };
 
   return (
     <View style={layoutStyles.container}>
-      <StackHeader
+      <HeaderStack
         title={"Jackson Hole, Wyoming"}
         arrow={<BackArrowIcon navigation={navigation} />}
-        button1={<OptionsIcon onPress={handleMoreIconPress} />}
+        button1={<OptionsIcon onPress={toggleActionsPopup} />}
       />
-      <DropdownModal isVisible={modalVisible} onClose={closeModal} />
       <Image
         source={require("../../../../public/images/jackson-hole-01.png")}
         style={styles.image}
         resizeMode="cover"
       />
-      <ExploreTabs onTabChange={setActiveTab} />
+      <ExploreNavigator />
+      <ActionsModal
+        modalVisible={actionsPopupVisible}
+        setModalVisible={setActionsPopupVisible}
+      />
     </View>
   );
 }

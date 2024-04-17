@@ -1,50 +1,32 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Text, View } from "react-native";
+import { cardStyles, layoutStyles } from "../../../styles";
+import { truncateText } from "../../../utils/utils";
 import PinIcon from "../Icons/PinIcon";
 
 export default function ExperienceCard() {
+  const experienceTitle = "Jackson Hole";
+  const truncatedTitle = truncateText(experienceTitle, 16);
+  const experienceDescription = "Wyoming";
+  const truncatedDescription = truncateText(experienceDescription, 16);
+
   return (
-    <View style={styles.cardContainer}>
+    <View style={cardStyles.experienceCardContainerMd}>
       <Image
-        source={require("../../../../public/images/wyattbensman.png")}
-        style={styles.image}
+        source={require("../../../../public/images/jackson-hole-01.png")}
+        style={cardStyles.imageExperienceMd}
         resizeMode="cover"
       />
-      <View style={styles.descriptionContainer}>
-        <Text style={styles.cardHeader}>Wyatt Bensman</Text>
-        <View style={styles.flex}>
+      <View style={{ marginLeft: 4 }}>
+        <Text style={[cardStyles.primaryTextSm, layoutStyles.marginTopTy]}>
+          {truncatedTitle}
+        </Text>
+        <View style={layoutStyles.flexRow}>
           <PinIcon />
-          <Text style={styles.cardDescription}> California</Text>
+          <Text style={[cardStyles.secondaryTextSm]}>
+            {truncatedDescription}
+          </Text>
         </View>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  cardContainer: {
-    width: 115,
-    overflow: "hidden",
-    borderRadius: 5,
-    marginRight: 4,
-  },
-  image: {
-    height: 150,
-    width: "100%",
-    borderRadius: 3,
-  },
-  cardHeader: {
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  cardDescription: {
-    fontSize: 10,
-    marginTop: 2,
-  },
-  flex: {
-    flexDirection: "row",
-  },
-  descriptionContainer: {
-    marginHorizontal: 5,
-    marginVertical: 4,
-  },
-});

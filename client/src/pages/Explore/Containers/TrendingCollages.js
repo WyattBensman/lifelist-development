@@ -4,7 +4,7 @@ import { headerStyles, layoutStyles } from "../../../styles";
 
 export default function TrendingCollages() {
   return (
-    <View style={{ marginTop: 15 }}>
+    <View style={layoutStyles.marginTopLg}>
       <Text style={headerStyles.headerMedium}>Trending Collages</Text>
       <View style={layoutStyles.flexRow}>
         <ExperienceCard />

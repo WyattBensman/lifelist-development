@@ -1,14 +1,14 @@
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import StackHeader from "../../../components/StackHeader";
 import { useEffect, useState } from "react";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigationContext } from "../../../utils/NavigationContext";
+import { layoutStyles } from "../../../styles";
+import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import AddUpcomingExperienceModal from "../Popups/AddUpcomingExperienceModal";
 import StartAddContainer from "../Containers/StartAddContainer";
 import DiscardDeleteContainer from "../Containers/DiscardDeleteContainer";
 import ExperiencesContainer from "../Containers/ExperiencesContainer";
 import ToggleEditIcon from "../Icons/ToggleEditIcon";
-import { layoutStyles } from "../../../styles";
+import HeaderStack from "../../../components/Headers/HeaderStack";
 
 export default function Logbook({ navigation }) {
   const [editMode, setEditMode] = useState(false);
@@ -29,8 +29,8 @@ export default function Logbook({ navigation }) {
   };
 
   return (
-    <View style={layoutStyles.container}>
-      <StackHeader
+    <View style={layoutStyles.wrapper}>
+      <HeaderStack
         arrow={!editMode && <BackArrowIcon navigation={navigation} />}
         title={!editMode ? "Logbook" : "Edit Logbook"}
         button1={!editMode && <ToggleEditIcon onPress={toggleEditMode} />}
@@ -58,7 +58,7 @@ export default function Logbook({ navigation }) {
 const styles = StyleSheet.create({
   header: {
     textAlign: "center",
-    marginVertical: 20,
+    marginVertical: 24,
   },
   editModeHeader: {
     color: "#D4D4D4",

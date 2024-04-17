@@ -2,9 +2,9 @@ import { Text, View } from "react-native";
 import ItemCard from "../Cards/ItemCard";
 import { headerStyles, layoutStyles } from "../../../styles";
 
-export default function ExpereincedList() {
+export default function ExperiencedList() {
   return (
-    <View>
+    <View style={layoutStyles.marginTopSm}>
       <Text style={headerStyles.headerMedium}>Experienced</Text>
       <View style={layoutStyles.flexRow}>
         <ItemCard />

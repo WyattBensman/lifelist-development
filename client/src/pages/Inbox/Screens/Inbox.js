@@ -1,35 +1,34 @@
 import { View } from "react-native";
-import StackHeader from "../../../components/StackHeader";
+import { useEffect, useState } from "react";
+import { useNavigationContext } from "../../../utils/NavigationContext";
+import { layoutStyles } from "../../../styles";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import FriendsIcon from "../Icons/FriendsIcon";
-import InboxTabs from "../Navigators/InboxTabs";
-import { useEffect, useState } from "react";
-import SearchBar from "../../../components/SearchBar";
-import { useNavigationContext } from "../../../utils/NavigationContext";
 import CreateConversationIcon from "../Icons/CreateConversationIcon";
-import { layoutStyles } from "../../../styles";
+import SearchBar from "../../../components/SearchBar";
+import InboxNavigator from "../Navigators/InboxNavigator";
+import HeaderStack from "../../../components/Headers/HeaderStack";
 
 export default function Inbox({ navigation }) {
-  const [activeTab, setActiveTab] = useState("Messages");
   const { setIsTabBarVisible } = useNavigationContext();
 
   useEffect(() => {
     setIsTabBarVisible(false);
-    return () => setIsTabBarVisible(true);
+    return () => setIsTabBarVisible(true); // Cleanup to show the tab bar again
   }, [setIsTabBarVisible]);
 
   return (
-    <View style={layoutStyles.container}>
-      <StackHeader
+    <View style={layoutStyles.wrapper}>
+      <HeaderStack
         arrow={<BackArrowIcon navigation={navigation} />}
         title={"Inbox"}
         button1={<FriendsIcon />}
         button2={<CreateConversationIcon />}
       />
-      <View style={layoutStyles.marginContainer}>
+      <View style={[layoutStyles.marginXs, { marginBottom: 0 }]}>
         <SearchBar />
       </View>
-      <InboxTabs onTabChange={setActiveTab} />
+      <InboxNavigator />
     </View>
   );
 }

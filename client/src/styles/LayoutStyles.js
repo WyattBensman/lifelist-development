@@ -5,19 +5,19 @@ export const layoutStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#ffffff",
   },
-  /* DELETE */
   container: {
     flex: 1,
     backgroundColor: "#ffffff",
   },
+  contentContainer: {
+    flex: 1,
+    marginHorizontal: 16,
+  },
+  /* DELETE LATER ON?????? */
   containerTab: {
     flex: 1,
     backgroundColor: "#ffffff",
     marginTop: 1,
-  },
-  contentContainer: {
-    flex: 1,
-    marginHorizontal: 16,
   },
   marginContainer: {
     marginHorizontal: 10,
@@ -31,6 +31,15 @@ export const layoutStyles = StyleSheet.create({
   flexRow: {
     flexDirection: "row",
   },
+  flexRowCenter: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  flexRowSpace: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   flexCol: {
     flexDirection: "col",
     justifyContent: "space-between",
@@ -42,17 +51,103 @@ export const layoutStyles = StyleSheet.create({
     justifyContent: "space-between",
     marginHorizontal: 2,
   },
+  alignJustifyCenter: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  /* MARGIN */
+  marginXs: {
+    margin: 8,
+  },
+  marginSm: {
+    margin: 12,
+  },
+  /* MARGIN TOP */
+  marginTopXl: {
+    marginTop: 32,
+  },
   marginTopLg: {
-    marginTop: 16,
+    marginTop: 24,
   },
   marginTopMd: {
-    marginTop: 8,
+    marginTop: 16,
   },
   marginTopSm: {
+    marginTop: 12,
+  },
+  marginTopXs: {
+    marginTop: 8,
+  },
+  marginTopXxs: {
+    marginTop: 6,
+  },
+  marginTopTy: {
     marginTop: 4,
   },
+  /* MARGIN BOTTOM */
+  marginBtmXl: {
+    marginBottom: 32,
+  },
+  marginBtmLg: {
+    marginBottom: 24,
+  },
+  marginBtmMd: {
+    marginBottom: 16,
+  },
+  marginBtmSm: {
+    marginBottom: 12,
+  },
+  marginBtmXs: {
+    marginBottom: 8,
+  },
+  marginBtmXxs: {
+    marginBottom: 6,
+  },
+  marginBtmTy: {
+    marginBottom: 4,
+  },
+  /* MARGIN RIGHT */
+  marginRightXs: {
+    marginRight: 8,
+  },
+  marginRightSm: {
+    marginRight: 12,
+  },
+  marginRightMd: {
+    marginRight: 16,
+  },
+  /* MARGIN LEFT */
+  marginLeftXs: {
+    marginLeft: 8,
+  },
+  marginLeftSm: {
+    marginLeft: 12,
+  },
+  marginLeftMd: {
+    marginLeft: 16,
+  },
+  /* MARGIN HORIZONTAL */
+  marginHorXs: {
+    marginHorizontal: 8,
+  },
+  marginHorSm: {
+    marginHorizontal: 12,
+  },
+  marginHorMd: {
+    marginHorizontal: 16,
+  },
+  marginHorLg: {
+    marginHorizontal: 24,
+  },
+  /* PADDING TOP */
+  paddingTopXs: {
+    paddingTop: 8,
+  },
+  paddingTopSm: {
+    paddingTop: 12,
+  },
+  /* IDK WHAT THIS GUY IS DOING */
   marginVertLg: {
     marginVertical: 16,
   },
-  /* I need a name for this */
 });

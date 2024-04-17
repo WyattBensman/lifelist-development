@@ -4,7 +4,7 @@ import { headerStyles, layoutStyles } from "../../../styles";
 
 export default function TrendingEvents() {
   return (
-    <View style={{ marginTop: 10 }}>
+    <View style={layoutStyles.marginTopLg}>
       <Text style={headerStyles.headerMedium}>Trending Events</Text>
       <View style={layoutStyles.flexRow}>
         <ExperienceCard />

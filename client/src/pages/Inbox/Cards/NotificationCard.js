@@ -1,25 +1,24 @@
 import { Image, Text, View } from "react-native";
-import { globalStyling } from "../../../styles/GlobalStyling";
-import { cardStyling } from "../../../styles/CardStyling";
+import { cardStyles, layoutStyles } from "../../../styles";
+import { truncateText } from "../../../utils/utils";
 
 export default function NotificationCard() {
+  const messageText = "commented on your collage";
+  const truncatedMessage = truncateText(messageText, 30);
+
   return (
-    <View>
-      <View style={[globalStyling.flex, cardStyling.container]}>
-        <View style={globalStyling.flex}>
-          <Image
-            source={require("../../../../public/images/wyattbensman.png")}
-            style={cardStyling.image}
-          />
-          <View style={cardStyling.descriptionContainer}>
-            <Text style={cardStyling.username}>Wyatt Bensman</Text>
-            <Text style={cardStyling.description}>
-              commented on your collage
-            </Text>
-          </View>
+    <View style={layoutStyles.userCardContainer}>
+      <View style={layoutStyles.flexRowSpace}>
+        <Image
+          source={require("../../../../public/images/wyattbensman.png")}
+          style={cardStyles.imageMd}
+        />
+        <View>
+          <Text style={cardStyles.primaryText}>Wyatt Bensman</Text>
+          <Text style={cardStyles.secondaryText}>{truncatedMessage}</Text>
         </View>
-        <Text style={cardStyling.time}>39 Minutes ago</Text>
       </View>
+      <Text style={cardStyles.secondaryText}>39 Minutes ago</Text>
     </View>
   );
 }

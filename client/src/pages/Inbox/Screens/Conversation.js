@@ -1,18 +1,18 @@
 import { View } from "react-native";
-import StackHeader from "../../../components/StackHeader";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
-import BottomBar from "../Components/BottomBar";
 import { layoutStyles } from "../../../styles";
+import HeaderStack from "../../../components/Headers/HeaderStack";
+import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
+import ChatInputBar from "../Components/ChatInputBar";
 
 export default function Conversation({ navigation }) {
   return (
-    <View style={layoutStyles.container}>
-      <StackHeader
+    <View style={layoutStyles.wrapper}>
+      <HeaderStack
         arrow={<BackArrowIcon navigation={navigation} />}
         title={"Wyatt Bensman"}
         onPress={() => navigation.goBack()}
       />
-      <BottomBar />
+      <ChatInputBar />
     </View>
   );
 }

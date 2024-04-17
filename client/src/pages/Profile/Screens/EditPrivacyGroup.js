@@ -5,7 +5,7 @@ import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 
 export default function EditPrivacyGroup() {
   return (
-    <View style={layoutStyles.container}>
+    <View style={[layoutStyles.container]}>
       <StackHeader title={"Cool Guys"} arrow={<BackArrowIcon />} />
       <Text>Hey</Text>
     </View>

@@ -12,9 +12,11 @@ export const formStyles = StyleSheet.create({
     borderRadius: 8,
     borderColor: "#D4D4D4",
   },
+  /* CORRECT USAGE INSTANCES */
   label: {
     marginBottom: 6,
   },
+  /* CORRECT USAGE INSTANCES */
   inputSpacer: {
     marginTop: 16,
   },

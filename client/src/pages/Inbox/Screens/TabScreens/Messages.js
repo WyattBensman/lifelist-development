@@ -1,17 +1,19 @@
-import { Pressable, View, Text } from "react-native";
-import ConversationCard from "../../Cards/ConversationCard";
+import { Pressable, Text, ScrollView } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { layoutStyles } from "../../../../styles";
+import ConversationCard from "../../Cards/ConversationCard";
 
 export default function Messages() {
   const navigation = useNavigation();
 
   return (
-    <View style={layoutStyles.container}>
+    <ScrollView style={[layoutStyles.wrapper, layoutStyles.paddingTopXs]}>
+      <ConversationCard />
+      <ConversationCard />
       <ConversationCard />
       <Pressable onPress={() => navigation.navigate("Conversation")}>
         <Text>Go to Conversation</Text>
       </Pressable>
-    </View>
+    </ScrollView>
   );
 }

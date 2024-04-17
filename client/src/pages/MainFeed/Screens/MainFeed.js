@@ -7,19 +7,20 @@ import InboxIcon from "../Icons/InboxIcon";
 import { layoutStyles } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
 import Collage from "../../Collage/Screens/Collage";
+import HeaderMain from "../../../components/Headers/HeaderMain";
 
 export default function MainFeed() {
   const navigation = useNavigation();
 
   return (
-    <View style={layoutStyles.container}>
-      <Header
+    <View style={layoutStyles.wrapper}>
+      <HeaderMain
         titleComponent={<LifeListLogo />}
         icon1={<CreateCollageIcon />}
         icon2={<LogbookIcon />}
         icon3={<InboxIcon />}
       />
-      <Collage />
+      {/* <Collage /> */}
     </View>
   );
 }

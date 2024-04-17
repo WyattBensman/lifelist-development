@@ -4,7 +4,7 @@ import { headerStyles, layoutStyles } from "../../../styles";
 
 export default function TrendingAttractions() {
   return (
-    <View style={{ marginTop: 15 }}>
+    <View style={layoutStyles.marginTopLg}>
       <Text style={headerStyles.headerMedium}>Trending Attractions</Text>
       <View style={layoutStyles.flexRow}>
         <ExperienceCard />

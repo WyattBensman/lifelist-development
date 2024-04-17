@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { useState } from "react";
+import { cardStyles, layoutStyles } from "../../../styles";
 import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
 import UpcomingExperienceIcon from "../Icons/UpcomingExperienceIcon";
 import CheckedBoxIcon from "../../../icons/Universal/CheckedBoxIcon";
@@ -17,16 +18,16 @@ export default function UpcomingExperienceCard({ editMode }) {
   };
 
   return (
-    <Pressable onPress={handlePress} style={styles.container}>
-      <View style={styles.flex}>
-        <View style={styles.flex}>
+    <Pressable onPress={handlePress} style={cardStyles.logbookCardContainer}>
+      <View style={layoutStyles.flexRowSpace}>
+        <View style={layoutStyles.flexRowSpace}>
           <UpcomingExperienceIcon />
           <Text>Punta Cana Vacation</Text>
         </View>
-        <View style={styles.flex}>
+        <View style={layoutStyles.flexRowSpace}>
           {!editMode ? (
             <>
-              <Text style={styles.editText}>Start</Text>
+              <Text style={cardStyles.secondaryText}>Start</Text>
               <ForwardArrowIcon />
             </>
           ) : selected ? (
@@ -39,23 +40,3 @@ export default function UpcomingExperienceCard({ editMode }) {
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 8,
-    paddingVertical: 12,
-    marginBottom: 10,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "rgba(212, 212, 212, 0.50)",
-    backgroundColor: "#ffffff",
-  },
-  flex: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  editText: {
-    fontSize: 10,
-  },
-});

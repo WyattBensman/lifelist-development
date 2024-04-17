@@ -1,13 +1,13 @@
-import { StyleSheet, Text } from "react-native";
-import Header from "../../../components/Header";
+import { Text } from "react-native";
 import EditLifeListIcon from "../Icons/EditLifeListIcon";
 import SearchIcon from "../Icons/SearchIcon";
 import ListViewIcon from "../Icons/ListViewIcon";
 import { headerStyles } from "../../../styles";
+import HeaderMain from "../../../components/Headers/HeaderMain";
 
 export default function AdminHeader({ navigation, setModalVisible }) {
   return (
-    <Header
+    <HeaderMain
       titleComponent={<Text style={headerStyles.headerHeavy}>My LifeList</Text>}
       icon1={<SearchIcon />}
       icon2=<EditLifeListIcon onPress={() => setModalVisible(true)} />

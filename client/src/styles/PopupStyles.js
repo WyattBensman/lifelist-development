@@ -9,6 +9,7 @@ export const popupStyles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: "#ececec",
   },
+  /* CORRECT USAGE INSTANCES */
   spacer: {
     marginLeft: 6,
   },
