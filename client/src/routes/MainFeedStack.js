@@ -8,6 +8,10 @@ import Authentication from "../pages/Authentication/Screens/Authentication";
 import VerifyAccount from "../pages/Authentication/Screens/VerifyAccount";
 import SetLoginInformation from "../pages/Authentication/Screens/SetLoginInformation";
 import SetProfileInformation from "../pages/Authentication/Screens/SetProfileInformation";
+import Media from "../pages/CreateCollage/Screens/Media";
+import Summary from "../pages/CreateCollage/Screens/Summary";
+import Overview from "../pages/CreateCollage/Screens/Overview";
+import Preview from "../pages/CreateCollage/Screens/Preview";
 
 const Stack = createNativeStackNavigator();
 
@@ -48,7 +52,22 @@ export default function MainFeedStack() {
       />
       <Stack.Screen
         name="CreateCollage"
-        component={CreateCollageScreen}
+        component={Media}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CollageSummary"
+        component={Summary}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CollageOverview"
+        component={Overview}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CollagePreview"
+        component={Preview}
         options={{ headerShown: false }}
       />
       <Stack.Screen

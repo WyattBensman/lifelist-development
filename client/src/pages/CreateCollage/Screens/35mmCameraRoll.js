@@ -1,10 +1,10 @@
 import { Text, View } from "react-native";
 import { layoutStyles } from "../../../styles";
 
-export default function Experiences() {
+export default function DispoCameraRoll() {
   return (
     <View style={layoutStyles.container}>
-      <Text>Experiences</Text>
+      <Text>35mmCameraRoll</Text>
     </View>
   );
 }
