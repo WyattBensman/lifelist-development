@@ -3,13 +3,17 @@ import { StyleSheet } from "react-native";
 export const formStyles = StyleSheet.create({
   formContainer: {
     flex: 1,
-    marginTop: 24,
+    marginVertical: 24,
+    marginHorizontal: 20,
+  },
+  inputContainer: {
+    marginBottom: 16,
   },
   input: {
     height: 36,
     borderWidth: 1,
     padding: 10,
-    borderRadius: 8,
+    borderRadius: 4,
     borderColor: "#D4D4D4",
   },
   /* CORRECT USAGE INSTANCES */

@@ -1,10 +1,10 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { layoutStyles } from "../../../styles";
-import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
+import { cardStyles, layoutStyles } from "../../../styles";
+import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
 import OutlinedButton from "../../../components/OutlinedButton";
 import SolidButton from "../../../components/SolidButton";
-import { useState } from "react";
 import DeletePrivacyGroupModal from "../Popups/DeletePrivacyGroupModal";
 
 export default function PrivacyGroupCard({ isEditMode }) {
@@ -23,11 +23,11 @@ export default function PrivacyGroupCard({ isEditMode }) {
 
   return (
     <Pressable onPress={handlePress}>
-      <View style={[styles.cardContainer, layoutStyles.marginTopLg]}>
+      <View style={cardStyles.privacyGroupCard}>
         <View style={layoutStyles.flex}>
           <View>
-            <Text style={styles.title}>Cool Guys</Text>
-            <Text style={styles.users}>
+            <Text style={{ fontWeight: "500" }}>Cool Guys</Text>
+            <Text style={{ fontSize: 12, marginTop: 6 }}>
               Wyatt Bensman, Eli Kuck, Carter Elliott
             </Text>
             <Text style={[styles.users, { fontStyle: "italic" }]}>
@@ -46,13 +46,6 @@ export default function PrivacyGroupCard({ isEditMode }) {
               width={"48%"}
               onPress={toggleModal}
             />
-            {/* <SolidButton
-              style={styles.button}
-              text={"Edit"}
-              backgroundColor={"#5FC4ED"}
-              textColor={"#ffffff"}
-              width={"32%"}
-            /> */}
             <SolidButton
               style={[styles.button, styles.lastButton]}
               text={"Edit"}
@@ -72,23 +65,10 @@ export default function PrivacyGroupCard({ isEditMode }) {
 }
 
 const styles = StyleSheet.create({
-  cardContainer: {
-    padding: 16,
-    borderWidth: 1,
-    borderRadius: 4,
-    borderColor: "#d4d4d4",
-  },
-  title: {
-    fontWeight: "500",
-  },
-  users: {
-    fontSize: 12,
-    marginTop: 6,
-  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 10,
+    marginTop: 12,
     paddingHorizontal: 6,
   },
 });

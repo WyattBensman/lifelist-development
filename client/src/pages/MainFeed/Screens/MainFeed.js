@@ -20,7 +20,7 @@ export default function MainFeed() {
         icon2={<LogbookIcon />}
         icon3={<InboxIcon />}
       />
-      {/* <Collage /> */}
+      <Collage />
     </View>
   );
 }

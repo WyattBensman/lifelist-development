@@ -1,19 +1,19 @@
 import { Image, StyleSheet, Text, View } from "react-native";
+import { cardStyles, layoutStyles } from "../../../styles";
 import PinIcon from "../Icons/PinIcon";
-import TicketIcon from "../Icons/TicketIcon";
 
-export default function ItemCard({ editMode }) {
+export default function ExperienceCard() {
   return (
-    <View style={styles.largeCard}>
+    <View style={cardStyles.experienceCardContainerLg}>
       <Image
         source={require("../../../../public/images/jackson-hole-01.png")}
-        style={styles.image}
+        style={cardStyles.imageExperienceLg}
       />
-      <View style={styles.descriptionContainer}>
-        <Text style={styles.title}>Jackson Hole</Text>
-        <View style={styles.flex}>
+      <View style={cardStyles.leftSpacer}>
+        <Text>Jackson Hole</Text>
+        <View style={layoutStyles.flexRow}>
           <PinIcon />
-          <Text style={styles.description}>Wyoming</Text>
+          <Text style={cardStyles.secondaryText}>Wyoming</Text>
         </View>
       </View>
     </View>
@@ -24,12 +24,12 @@ const styles = StyleSheet.create({
   largeCard: {
     width: 165,
     overflow: "hidden",
-    marginRight: 4,
+    marginRight: 6,
   },
   image: {
-    width: 165,
     height: 220,
-    borderRadius: 5,
+    width: "100%",
+    borderRadius: 6,
   },
   title: {
     marginTop: 2,

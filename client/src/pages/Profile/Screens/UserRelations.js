@@ -7,6 +7,7 @@ import SearchBar from "../../../components/SearchBar";
 import { layoutStyles } from "../../../styles";
 import { useNavigationContext } from "../../../utils/NavigationContext";
 import { useEffect } from "react";
+import HeaderStack from "../../../components/Headers/HeaderStack";
 
 export default function UserRelations() {
   const navigation = useNavigation();
@@ -18,25 +19,15 @@ export default function UserRelations() {
   }, [setIsTabBarVisible]);
 
   return (
-    <View style={layoutStyles.container}>
-      <StackHeader
+    <View style={layoutStyles.wrapper}>
+      <HeaderStack
         title="User Relations"
         arrow={<BackArrowIcon navigation={navigation} />}
       />
-      <View style={styles.searchBar}>
+      <View style={[layoutStyles.marginXs, { marginBottom: 0 }]}>
         <SearchBar />
       </View>
       <UserRelationsNavigator />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  searchBar: {
-    marginTop: 10,
-    marginHorizontal: 10,
-  },
-});

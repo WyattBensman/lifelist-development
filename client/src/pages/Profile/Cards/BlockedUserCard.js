@@ -1,7 +1,7 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { cardStyling } from "../../../styles/CardStyling";
-import { layoutStyles } from "../../../styles";
 import { useState } from "react";
+import { Image, Pressable, Text, View } from "react-native";
+import { cardStyles, layoutStyles } from "../../../styles";
+import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 import UnblockUserModal from "../Popups/UnblockUserModal";
 
 export default function BlockedUserCard() {
@@ -12,27 +12,32 @@ export default function BlockedUserCard() {
   };
 
   const unblockUser = () => {
-    console.log("User has been unblocked!"); // Implement actual unblock logic here
+    console.log("User has been unblocked!");
     setModalVisible(false);
   };
 
   return (
-    <View style={cardStyling.container}>
-      <View style={styles.flex}>
-        <Image
-          source={require("../../../../public/images/wyattbensman.png")}
-          style={cardStyling.image}
-        />
-        <View style={[layoutStyles.flex, { flex: 1 }]}>
-          <Text
-            style={[cardStyling.username, cardStyling.descriptionContainer]}
-          >
-            Wyatt Bensman
-          </Text>
-          <Pressable style={styles.followContainer} onPress={toggleModal}>
-            <Text style={styles.followText}>Blocked</Text>
-          </Pressable>
+    <View style={layoutStyles.wrapper}>
+      <View style={cardStyles.userCardContainer}>
+        <View style={layoutStyles.flexRowSpace}>
+          <Image
+            source={require("../../../../public/images/wyattbensman.png")}
+            style={cardStyles.imageMd}
+          />
+          <View>
+            <Text style={cardStyles.primaryText}>Wyatt Bensman</Text>
+            <Text style={[cardStyles.secondaryText, , { marginTop: 2 }]}>
+              @wyattbensman
+            </Text>
+          </View>
         </View>
+        <Pressable style={layoutStyles.marginRightMd}>
+          <ButtonSmall
+            text={"Blocked"}
+            backgroundColor={"#ececec"}
+            onPress={toggleModal}
+          />
+        </Pressable>
       </View>
       <UnblockUserModal
         modalVisible={modalVisible}
@@ -42,39 +47,3 @@ export default function BlockedUserCard() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  followContainer: {
-    borderWidth: 1,
-    borderColor: "#ececec",
-    backgroundColor: "#ececec",
-    borderRadius: 5,
-    marginRight: 10,
-    width: 75,
-  },
-  followText: {
-    paddingVertical: 4,
-    textAlign: "center",
-    fontWeight: "500",
-    fontSize: 12,
-    color: "#262828",
-  },
-  followingContainer: {
-    borderWidth: 1,
-    borderColor: "#d4d4d4",
-    borderRadius: 5,
-    marginRight: 10,
-    width: 75,
-  },
-  followingText: {
-    paddingVertical: 4,
-    textAlign: "center",
-    fontWeight: "500",
-    fontSize: 12,
-    color: "#262828",
-  },
-});

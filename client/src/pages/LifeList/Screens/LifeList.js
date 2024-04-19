@@ -8,7 +8,7 @@ import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import SearchIcon from "../Icons/SearchIcon";
 import ListViewIcon from "../Icons/ListViewIcon";
 import { layoutStyles } from "../../../styles";
-import CategoryNavigator from "../Navigation/LifeListNavigator";
+import CategoryNavigator from "../Navigation/CategoryNavigator";
 
 export default function LifeList() {
   const navigation = useNavigation();

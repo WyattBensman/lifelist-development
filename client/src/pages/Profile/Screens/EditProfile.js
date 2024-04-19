@@ -6,6 +6,7 @@ import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigation } from "@react-navigation/native";
 import { useNavigationContext } from "../../../utils/NavigationContext";
 import { useEffect } from "react";
+import HeaderStack from "../../../components/Headers/HeaderStack";
 
 export default function EditProfile() {
   const navigation = useNavigation();
@@ -18,7 +19,7 @@ export default function EditProfile() {
 
   return (
     <View style={layoutStyles.container}>
-      <StackHeader
+      <HeaderStack
         arrow={<BackArrowIcon navigation={navigation} />}
         title={"Edit Profile"}
       />

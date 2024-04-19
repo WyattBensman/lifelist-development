@@ -1,11 +1,8 @@
 import { Image, Text, View } from "react-native";
 import { cardStyles, layoutStyles } from "../../../styles";
-import { truncateText } from "../../../utils/utils";
+import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 
-export default function NotificationCard() {
-  const messageText = "commented on your collage";
-  const truncatedMessage = truncateText(messageText, 30);
-
+export default function UserRelationsCard() {
   return (
     <View style={cardStyles.userCardContainer}>
       <View style={layoutStyles.flexRowSpace}>
@@ -15,12 +12,15 @@ export default function NotificationCard() {
         />
         <View>
           <Text style={cardStyles.primaryText}>Wyatt Bensman</Text>
-          <Text style={[cardStyles.secondaryText, { marginTop: 2 }]}>
-            {truncatedMessage}
+          <Text style={[cardStyles.secondaryText, , { marginTop: 2 }]}>
+            @wyattbensman
           </Text>
         </View>
       </View>
-      <Text style={cardStyles.secondaryText}>39 Minutes ago</Text>
+      {/* NEED THIS TO EITHER BE FOLLOW OR FOLLOWING CONTAINER & TEXT */}
+      <View style={layoutStyles.marginRightMd}>
+        <ButtonSmall text={"Follow"} backgroundColor={"#ececec"} />
+      </View>
     </View>
   );
 }

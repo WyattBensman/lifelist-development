@@ -1,14 +1,14 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { useRoute } from "@react-navigation/native";
+import { layoutStyles } from "../../../styles";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import SearchBarHeader from "../../../components/SearchBarHeader";
 import EditLifeListIcon from "../Icons/EditLifeListIcon";
-import ListItemCard from "../Cards/ListItemCard";
-import { useEffect, useState } from "react";
 import { useNavigationContext } from "../../../utils/NavigationContext";
 import SaveDiscardContainer from "../Popups/SaveDiscardContainer";
 import ActionModal from "../Popups/ActionsModal";
-import { useRoute } from "@react-navigation/native";
-import { layoutStyles } from "../../../styles";
+import CategoryNavigator from "../Navigation/CategoryNavigator";
 
 export default function ListView({ navigation }) {
   const route = useRoute();
@@ -51,7 +51,8 @@ export default function ListView({ navigation }) {
           </Pressable>
         </View>
       )}
-      <ListItemCard editMode={editMode} />
+
+      <CategoryNavigator />
 
       {editMode && <SaveDiscardContainer toggleEditMode={toggleEditMode} />}
 
@@ -69,8 +70,8 @@ export default function ListView({ navigation }) {
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    marginHorizontal: 25,
-    marginTop: 10,
+    marginHorizontal: 24,
+    marginTop: 12,
   },
   button: {
     borderWidth: 1,

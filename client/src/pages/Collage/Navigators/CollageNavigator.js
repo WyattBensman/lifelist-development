@@ -13,33 +13,20 @@ export default function CollageNavigator({ onTabChange }) {
         tabBarInactiveTintColor: "#d4d4d4",
         tabBarStyle: {
           backgroundColor: "#ffffff",
-          height: 42.5,
+          height: 40,
         },
         tabBarIndicatorStyle: {
           backgroundColor: "#6AB952",
         },
         tabBarLabelStyle: {
           textTransform: "none",
-          fontSize: 15,
+          fontSize: 14,
           marginBottom: 10,
-          fontWeight: "500",
         },
       }}
     >
-      <Tab.Screen
-        name="Media"
-        component={Media}
-        options={{
-          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Media</Text>,
-        }}
-      />
-      <Tab.Screen
-        name="Summary"
-        component={Summary}
-        options={{
-          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Summary</Text>,
-        }}
-      />
+      <Tab.Screen name="Media" component={Media} />
+      <Tab.Screen name="Summary" component={Summary} />
     </Tab.Navigator>
   );
 }

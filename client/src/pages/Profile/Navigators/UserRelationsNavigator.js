@@ -20,8 +20,7 @@ export default function UserRelationsNavigator() {
         },
         tabBarLabelStyle: {
           textTransform: "none",
-          fontSize: 15,
-          marginBottom: 10,
+          fontSize: 14,
         },
       }}
     >
@@ -29,14 +28,14 @@ export default function UserRelationsNavigator() {
         name="Followers"
         component={Followers}
         options={{
-          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Followers</Text>,
+          tabBarLabel: "Followers",
         }}
       />
       <Tab.Screen
         name="Following"
         component={Following}
         options={{
-          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Following</Text>,
+          tabBarLabel: "Following",
         }}
       />
     </Tab.Navigator>

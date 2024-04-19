@@ -1,22 +1,25 @@
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import ButtonSkinny from "../../../components/ButtonSkinny";
 import { useNavigation } from "@react-navigation/native";
+import { layoutStyles } from "../../../styles";
 
 export default function ProfileOverview() {
   const navigation = useNavigation();
 
   return (
-    <View style={styles.container}>
-      <View style={styles.topContainer}>
+    <View style={[layoutStyles.marginMd, layoutStyles.marginBtmXs]}>
+      <View style={[layoutStyles.flex, { height: 100 }]}>
         <Image
           source={require("../../../../public/images/wyattbensman.png")}
-          style={styles.image}
+          style={styles.profilePicture}
         />
         <View style={styles.rightContainer}>
-          <View style={styles.flex}>
+          <View
+            style={[layoutStyles.flexSpaceBetween, layoutStyles.marginHorSm]}
+          >
             <View style={styles.col}>
-              <Text style={styles.number}>17</Text>
-              <Text style={styles.description}>Collages</Text>
+              <Text style={{ fontWeight: "700" }}>17</Text>
+              <Text style={{ fontSize: 12 }}>Collages</Text>
             </View>
             <Pressable
               style={styles.col}
@@ -24,8 +27,8 @@ export default function ProfileOverview() {
                 navigation.navigate("UserRelations", { screen: "Followers" })
               }
             >
-              <Text style={styles.number}>851</Text>
-              <Text style={styles.description}>Followers</Text>
+              <Text style={{ fontWeight: "700" }}>851</Text>
+              <Text style={{ fontSize: 12 }}>Followers</Text>
             </Pressable>
             <Pressable
               style={styles.col}
@@ -33,8 +36,8 @@ export default function ProfileOverview() {
                 navigation.navigate("UserRelations", { screen: "Following" })
               }
             >
-              <Text style={styles.number}>322</Text>
-              <Text style={styles.description}>Following</Text>
+              <Text style={{ fontWeight: "700" }}>322</Text>
+              <Text style={{ fontSize: 12 }}>Following</Text>
             </Pressable>
           </View>
           <ButtonSkinny
@@ -45,9 +48,9 @@ export default function ProfileOverview() {
           />
         </View>
       </View>
-      <View style={styles.userContainer}>
-        <Text style={styles.username}>@wyattbensman</Text>
-        <Text style={styles.caption}>
+      <View style={layoutStyles.marginTopXs}>
+        <Text style={{ fontWeight: "500" }}>@wyattbensman</Text>
+        <Text style={layoutStyles.marginTopXxs}>
           Hey how are ya? I guess this is my bio?
         </Text>
       </View>
@@ -56,83 +59,19 @@ export default function ProfileOverview() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    margin: 15,
-    marginBottom: 5,
-  },
-  topContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    height: 100,
-  },
-  flex: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginHorizontal: 10,
-  },
   rightContainer: {
     flex: 1,
-    marginHorizontal: 15,
-    paddingVertical: 9,
+    marginHorizontal: 16,
+    paddingVertical: 8,
     justifyContent: "space-between",
     height: "100%",
   },
   col: {
     alignItems: "center",
   },
-  number: {
-    fontWeight: "700",
-  },
-  description: {
-    fontSize: 12,
-  },
-  image: {
+  profilePicture: {
     height: 100,
     width: 100,
     borderRadius: 8,
   },
-  userContainer: {
-    marginTop: 10,
-  },
-  username: {
-    fontWeight: "500",
-  },
-  caption: {
-    marginTop: 5,
-  },
 });
-
-{
-  /* <Pressable
-style={styles.col}
-onPress={() => navigation.navigate('UserRelations', { screen: 'Followers' })} // Navigate to UserRelations screen, followers tab
->
-<Text style={styles.number}>851</Text>
-<Text style={styles.description}>Followers</Text>
-</Pressable>
-<Pressable
-style={styles.col}
-onPress={() => navigation.navigate('UserRelations', { screen: 'Following' })} // Navigate to UserRelations screen, following tab
->
-<Text style={styles.number}>322</Text>
-<Text style={styles.description}>Following</Text>
-</Pressable> */
-}
-
-{
-  /* <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <ButtonSkinny
-            text="Following"
-            backgroundColor="#6AB952"
-            textColor="#ffffff"
-            width={112.5}
-          />
-          <ButtonSkinny
-            text="Message"
-            backgroundColor="#ececec"
-            textColor="#262828"
-            width={112.5}
-          />
-        </View> */
-}

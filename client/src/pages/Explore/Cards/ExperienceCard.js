@@ -16,7 +16,7 @@ export default function ExperienceCard() {
         style={cardStyles.imageExperienceMd}
         resizeMode="cover"
       />
-      <View style={{ marginLeft: 4 }}>
+      <View style={cardStyles.leftSpacer}>
         <Text style={[cardStyles.primaryTextSm, layoutStyles.marginTopTy]}>
           {truncatedTitle}
         </Text>

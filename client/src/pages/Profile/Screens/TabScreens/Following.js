@@ -1,11 +1,11 @@
-import { View } from "react-native";
+import { ScrollView } from "react-native";
 import { layoutStyles } from "../../../../styles";
-import UserCard from "../../Cards/UserCard";
+import UserRelationsCard from "../../Cards/UserRelationsCard";
 
 export default function Following() {
   return (
-    <View style={layoutStyles.containerTab}>
-      <UserCard />
-    </View>
+    <ScrollView style={[layoutStyles.wrapper, layoutStyles.paddingTopXs]}>
+      <UserRelationsCard />
+    </ScrollView>
   );
 }

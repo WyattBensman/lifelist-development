@@ -4,7 +4,7 @@ import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 
 export default function FriendRequestCard() {
   return (
-    <View style={layoutStyles.userCardContainer}>
+    <View style={cardStyles.userCardContainer}>
       <View style={layoutStyles.flexRowSpace}>
         <Image
           source={require("../../../../public/images/wyattbensman.png")}

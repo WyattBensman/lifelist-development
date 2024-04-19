@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { headerStyles, layoutStyles } from "../../../../styles";
+import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
 import { useState } from "react";
 import BottomContainer from "../../../../components/BottomContainer";
 import SolidButton from "../../../../components/SolidButton";
@@ -15,46 +15,37 @@ export default function EditSettings() {
   const navigation = useNavigation();
 
   return (
-    <View style={layoutStyles.container}>
-      <View style={[layoutStyles.contentContainer, { marginTop: 24 }]}>
-        <Text style={styles.inputLabel}>Account Privacy</Text>
-        <View style={styles.indentContainer}>
-          <View style={[layoutStyles.flex, styles.inputSpacer]}>
-            <Text>Private</Text>
-            <GlobalSwitch isOn={isPrivate} onToggle={setIsPrivate} />
-          </View>
-          <Pressable
-            style={[layoutStyles.flex, styles.inputSpacer]}
-            onPress={() => navigation.navigate("BlockedUsers")}
-          >
-            <Text>Blocked User</Text>
-            <ForwardArrowIcon />
-          </Pressable>
-          <View style={[layoutStyles.flex, styles.inputSpacer]}>
-            <Text>Privacy Groups</Text>
-            <ForwardArrowIcon />
-          </View>
-          <View style={[layoutStyles.flex, styles.inputSpacer]}>
-            <Text>Post Repost to Main Feed</Text>
-            <GlobalSwitch
-              isOn={isRepostToMainFeed}
-              onToggle={setIsRepostToMainFeed}
-            />
-          </View>
+    <View style={layoutStyles.wrapper}>
+      <View style={formStyles.formContainer}>
+        <Text style={headerStyles.headerMedium}>Account Privacy</Text>
+        <View style={[layoutStyles.flex, layoutStyles.marginBtmMd]}>
+          <Text>Private</Text>
+          <GlobalSwitch isOn={isPrivate} onToggle={setIsPrivate} />
         </View>
-        <Text style={[styles.inputLabel, { marginTop: 16 }]}>
+        <Pressable
+          style={[layoutStyles.flex, layoutStyles.marginBtmLg]}
+          onPress={() => navigation.navigate("BlockedUsers")}
+        >
+          <Text>Blocked Users</Text>
+          <ForwardArrowIcon />
+        </Pressable>
+        <View style={layoutStyles.flex}>
+          <Text>Privacy Groups</Text>
+          <ForwardArrowIcon />
+        </View>
+        <Text style={[headerStyles.headerMedium, layoutStyles.marginTopLg]}>
           General Settings
         </Text>
-        <View style={styles.indentContainer}>
-          <View style={[layoutStyles.flex, styles.inputSpacer]}>
+        <View>
+          <View style={[layoutStyles.flex, layoutStyles.marginBtmMd]}>
             <Text>Dark Mode</Text>
             <GlobalSwitch isOn={isDarkMode} onToggle={setIsDarkMode} />
           </View>
-          <View style={[layoutStyles.flex, styles.inputSpacer]}>
+          <View style={[layoutStyles.flex, layoutStyles.marginBtmLg]}>
             <Text>Notifications</Text>
             <ForwardArrowIcon />
           </View>
-          <View style={[layoutStyles.flex, styles.inputSpacer]}>
+          <View style={layoutStyles.flex}>
             <Text>Language</Text>
             <ForwardArrowIcon />
           </View>
@@ -76,10 +67,17 @@ export default function EditSettings() {
   );
 }
 
+{
+  /*           <View style={[layoutStyles.flex, { borderWidth: 1 }]}>
+            <Text>Post Repost to Main Feed</Text>
+            <GlobalSwitch
+              isOn={isRepostToMainFeed}
+              onToggle={setIsRepostToMainFeed}
+            />
+          </View> */
+}
+
 const styles = StyleSheet.create({
-  indentContainer: {
-    marginLeft: 16,
-  },
   inputContainer: {
     marginBottom: 16,
   },

@@ -9,13 +9,60 @@ export const cardStyles = StyleSheet.create({
     marginHorizontal: 8,
     marginBottom: 8,
   },
+  logbookCardContainer: {
+    padding: 12,
+    marginBottom: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: "rgba(212, 212, 212, 0.50)",
+  },
   experienceCardContainerMd: {
     width: 130,
     marginRight: 6,
     borderRadius: 4,
     overflow: "hidden",
   },
-  /* IMAGES */
+  experienceCardContainerLg: {
+    width: 165,
+    overflow: "hidden",
+    marginRight: 6,
+  },
+  experienceListCardContainer: {
+    marginHorizontal: 8,
+    marginBottom: 8,
+  },
+  privacyGroupCard: {
+    marginTop: 16,
+    padding: 16,
+    borderWidth: 1,
+    borderRadius: 4,
+    borderColor: "#d4d4d4",
+  },
+  /* IMAGE */
+  imageSm: {
+    height: 35,
+    width: 35,
+    borderRadius: 4,
+    marginRight: 6,
+  },
+  imageMd: {
+    height: 50,
+    width: 50,
+    borderRadius: 4,
+    marginRight: 6,
+  },
+  imageExperienceMd: {
+    height: 170,
+    width: "100%",
+    borderRadius: 4,
+  },
+  imageExperienceLg: {
+    height: 220,
+    width: "100%",
+    borderRadius: 6,
+    marginBottom: 4,
+  },
+  /* DELETE THIS DOWN THE ROAD? */
   flexRowCenter: {
     flexDirection: "row",
     alignItems: "center",
@@ -40,34 +87,8 @@ export const cardStyles = StyleSheet.create({
     marginRight: 8,
     flexShrink: 1,
   },
-  /* IMAGE */
-  imageSm: {
-    height: 35,
-    width: 35,
-    borderRadius: 4,
-    marginRight: 6,
-  },
-  imageMd: {
-    height: 50,
-    width: 50,
-    borderRadius: 4,
-    marginRight: 6,
-  },
-  imageExperienceMd: {
-    height: 170,
-    width: "100%",
-    borderRadius: 4,
-  },
-  /* LOGBOOK */
-  logbookCardContainer: {
-    padding: 12,
-    marginBottom: 12,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "rgba(212, 212, 212, 0.50)",
-  },
   /* SPACER */
-  bottomSpacer: {
-    marginBottom: 4,
+  leftSpacer: {
+    marginLeft: 4,
   },
 });

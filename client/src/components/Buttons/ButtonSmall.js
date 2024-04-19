@@ -1,8 +1,14 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 
-export default function ButtonSmall({ text, backgroundColor, textColor }) {
+export default function ButtonSmall({
+  text,
+  backgroundColor,
+  textColor,
+  onPress,
+}) {
   return (
     <Pressable
+      onPress={onPress}
       style={[styles.buttonContainer, { backgroundColor: backgroundColor }]}
     >
       <Text style={[styles.buttonText, { color: textColor }]}>{text}</Text>

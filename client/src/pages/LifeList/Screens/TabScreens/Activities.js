@@ -1,15 +1,14 @@
-import { Text, View } from "react-native";
+import { ScrollView, View } from "react-native";
 import { layoutStyles } from "../../../../styles";
-import ExperiencedList from "../../Components/ExperiencedList";
-import WishListedList from "../../Components/WishListedList";
+import ListItemCard from "../../Cards/ListItemCard";
 
 export default function Activities() {
   return (
-    <View style={layoutStyles.wrapper}>
-      <View style={layoutStyles.marginLeftXs}>
-        <ExperiencedList />
-        <WishListedList />
-      </View>
-    </View>
+    <ScrollView style={[layoutStyles.wrapper, layoutStyles.paddingTopXs]}>
+      <ListItemCard />
+      <ListItemCard />
+      <ListItemCard />
+      <ListItemCard />
+    </ScrollView>
   );
 }

@@ -1,20 +1,20 @@
 import { Pressable, Text, View } from "react-native";
-import StackHeader from "../../../components/StackHeader";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
-import { useNavigation } from "@react-navigation/native";
-import SolidButton from "../../../components/SolidButton";
 import { layoutStyles } from "../../../styles";
+import { useNavigation } from "@react-navigation/native";
+import { useState } from "react";
+import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
+import SolidButton from "../../../components/SolidButton";
 import ToggleEditPrivacyGroupIcon from "../Icons/ToggleEditPrivacyGroupIcon";
 import PrivacyGroupCard from "../Cards/PrivacyGroupCard";
-import { useState } from "react";
+import HeaderStack from "../../../components/Headers/HeaderStack";
 
 export default function PrivacyGroups() {
   const navigation = useNavigation();
   const [isEditMode, setIsEditMode] = useState(false);
 
   return (
-    <View style={layoutStyles.container}>
-      <StackHeader
+    <View style={layoutStyles.wrapper}>
+      <HeaderStack
         title={"Privacy Groups"}
         arrow={<BackArrowIcon navigation={navigation} />}
         button1={
@@ -27,8 +27,12 @@ export default function PrivacyGroups() {
           )
         }
       />
-      <View style={[layoutStyles.contentContainer, layoutStyles.marginTopLg]}>
-        <SolidButton text={"Create New Group"} backgroundColor={"#ececec"} />
+      <View style={layoutStyles.contentContainer}>
+        <View style={layoutStyles.marginBtmXs}>
+          <SolidButton text={"Create New Group"} backgroundColor={"#ececec"} />
+        </View>
+        <PrivacyGroupCard isEditMode={isEditMode} />
+        <PrivacyGroupCard isEditMode={isEditMode} />
         <PrivacyGroupCard isEditMode={isEditMode} />
       </View>
     </View>

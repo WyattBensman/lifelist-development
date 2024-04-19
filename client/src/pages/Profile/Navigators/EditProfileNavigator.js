@@ -21,8 +21,7 @@ export default function EditProfileNavigator() {
         },
         tabBarLabelStyle: {
           textTransform: "none",
-          fontSize: 15,
-          marginBottom: 10,
+          fontSize: 14,
         },
       }}
     >
@@ -30,21 +29,21 @@ export default function EditProfileNavigator() {
         name="EditProfileTab"
         component={EditProfile}
         options={{
-          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Profile</Text>,
+          tabBarLabel: "Profile",
         }}
       />
       <Tab.Screen
         name="EditContact"
         component={EditContact}
         options={{
-          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Contact</Text>,
+          tabBarLabel: "Contact",
         }}
       />
       <Tab.Screen
         name="EditSettings"
         component={EditSettings}
         options={{
-          tabBarLabel: () => <Text style={{ marginBottom: 2 }}>Settings</Text>,
+          tabBarLabel: "Settings",
         }}
       />
     </Tab.Navigator>

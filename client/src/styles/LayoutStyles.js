@@ -11,6 +11,7 @@ export const layoutStyles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
+    marginTop: 16,
     marginHorizontal: 16,
   },
   /* DELETE LATER ON?????? */
@@ -34,6 +35,10 @@ export const layoutStyles = StyleSheet.create({
   flexRowCenter: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  flexSpaceBetween: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   flexRowSpace: {
     flexDirection: "row",
@@ -61,6 +66,9 @@ export const layoutStyles = StyleSheet.create({
   },
   marginSm: {
     margin: 12,
+  },
+  marginMd: {
+    margin: 16,
   },
   /* MARGIN TOP */
   marginTopXl: {
@@ -117,6 +125,9 @@ export const layoutStyles = StyleSheet.create({
     marginRight: 16,
   },
   /* MARGIN LEFT */
+  marginLeftXxs: {
+    marginLeft: 6,
+  },
   marginLeftXs: {
     marginLeft: 8,
   },

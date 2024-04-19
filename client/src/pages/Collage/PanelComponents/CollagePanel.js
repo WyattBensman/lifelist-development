@@ -69,8 +69,8 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 8,
     backgroundColor: "rgba(130, 130, 130, 0.4)",
-    borderRadius: 8,
-    padding: 8,
+    borderRadius: 6,
+    padding: 12,
     marginHorizontal: 8,
   },
   panelImage: {

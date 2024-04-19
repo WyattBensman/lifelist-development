@@ -1,8 +1,8 @@
 import { Dimensions, View } from "react-native";
 import { layoutStyles } from "../../../styles";
-import StackHeader from "../../../components/StackHeader";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigation } from "@react-navigation/native";
+import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
+import HeaderStack from "../../../components/Headers/HeaderStack";
 import CollageCard from "../Cards/CollageCard";
 
 const screenWidth = Dimensions.get("window").width;
@@ -13,16 +13,13 @@ export default function Archived() {
   const navigation = useNavigation();
 
   return (
-    <View styles={layoutStyles.container}>
-      <StackHeader
+    <View styles={layoutStyles.wrapper}>
+      <HeaderStack
         title={"Archived"}
         arrow={<BackArrowIcon navigation={navigation} />}
       />
-      <View style={layoutStyles.containerTab}>
+      <View style={{ marginTop: 1 }}>
         <View style={layoutStyles.flexRowWrap}>
-          <CollageCard width={imageWidth} />
-          <CollageCard width={imageWidth} />
-          <CollageCard width={imageWidth} />
           <CollageCard width={imageWidth} />
         </View>
       </View>

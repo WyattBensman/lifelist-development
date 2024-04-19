@@ -1,15 +1,15 @@
 import { Text, View } from "react-native";
-import Header from "../../../components/Header";
+import { useState } from "react";
+import { headerStyles, layoutStyles } from "../../../styles";
+import { useNavigation } from "@react-navigation/native";
 import FlowPageIcon from "../Icons/FlowPageIcon";
 import OptionsIcon from "../Icons/OptionsIcon";
 import ProfileOverview from "../Components/ProfileOverview";
 import ProfileNavigator from "../Navigators/ProfileNavigator";
-import { useState } from "react";
-import { headerStyles, layoutStyles } from "../../../styles";
 import DefaultOptionsPopup from "../Popups/DefaultOptionsPopup";
 import AdminOptionsPopup from "../Popups/AdminOptionsPopup";
 import FlowPagePopup from "../Popups/FlowPagePopup";
-import { useNavigation } from "@react-navigation/native";
+import HeaderMain from "../../../components/Headers/HeaderMain";
 
 export default function Profile() {
   const navigation = useNavigation();
@@ -26,7 +26,7 @@ export default function Profile() {
 
   return (
     <View style={layoutStyles.container}>
-      <Header
+      <HeaderMain
         titleComponent={
           <Text style={headerStyles.headerHeavy}>Wyatt Bensman</Text>
         }
