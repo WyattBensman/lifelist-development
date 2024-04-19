@@ -1,41 +1,25 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import { cardStyling } from "../../../styles/CardStyling";
-import { layoutStyles } from "../../../styles";
+import { Image, Text, View } from "react-native";
+import { cardStyles, layoutStyles } from "../../../styles";
 import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
 
 export default function ParticipantCard() {
   return (
-    <View style={[cardStyling.container, { flex: 1 }]}>
-      <View style={styles.flex}>
+    <View style={[cardStyles.userCardContainer, { flex: 1 }]}>
+      <View style={layoutStyles.flexRowSpace}>
         <Image
           source={require("../../../../public/images/wyattbensman.png")}
-          style={cardStyling.image}
+          style={cardStyles.imageMd}
         />
-        <View
-          style={[
-            layoutStyles.flex,
-            cardStyling.descriptionContainer,
-            { flex: 1 },
-          ]}
-        >
-          <View>
-            <Text style={cardStyling.username}>Wyatt Bensman</Text>
-            <Text style={styles.username}>@wyattbensman</Text>
-          </View>
-          <ForwardArrowIcon />
+        <View>
+          <Text style={cardStyles.primaryText}>Wyatt Bensman</Text>
+          <Text style={[cardStyles.secondaryText, , { marginTop: 2 }]}>
+            @wyattbensman
+          </Text>
         </View>
+      </View>
+      <View style={layoutStyles.marginRightXs}>
+        <ForwardArrowIcon />
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  username: {
-    fontSize: 12,
-    color: "#d4d4d4",
-  },
-});

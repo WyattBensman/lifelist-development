@@ -1,11 +1,11 @@
-import { Image, StyleSheet, Text, TextInput, View } from "react-native";
-import { layoutStyles } from "../../../styles";
+import { Image, StyleSheet, Text, View } from "react-native";
+import { layoutStyles, authenticationStyles } from "../../../styles";
 import { useCallback, useState } from "react";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import StackHeader from "../../../components/StackHeader";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import SetLoginInformationForm from "../Forms/SetLoginInformationForm";
 import NextPageArrowIcon from "../../../icons/Universal/NextPageArrowIcon";
+import HeaderStack from "../../../components/Headers/HeaderStack";
 
 export default function SetLoginInformation() {
   const navigation = useNavigation();
@@ -23,19 +23,19 @@ export default function SetLoginInformation() {
   };
 
   return (
-    <View style={layoutStyles.container}>
-      <StackHeader
+    <View style={layoutStyles.wrapper}>
+      <HeaderStack
         arrow={<BackArrowIcon navigation={navigation} />}
         button1={<NextPageArrowIcon color={"#d4d4d4"} />}
       />
-      <View style={styles.contentContainer}>
+      <View style={authenticationStyles.formContainer}>
         <Image
           source={require("../../../../public/branding/lifelist-logo.png")}
-          style={{ width: 40, height: 40, alignSelf: "center" }}
+          style={authenticationStyles.iconSmall}
           resizeMode="contain"
         />
-        <Text style={styles.header}>Set Login Information</Text>
-        <Text style={styles.subheader}>Step 1 of 2</Text>
+        <Text style={authenticationStyles.header}>Set Login Information</Text>
+        <Text style={authenticationStyles.subheader}>Step 1 of 2</Text>
         <SetLoginInformationForm />
       </View>
     </View>

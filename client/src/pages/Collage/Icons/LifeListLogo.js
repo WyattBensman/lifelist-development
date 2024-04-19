@@ -9,7 +9,7 @@ export default function LifeListLogo() {
       height="27.5"
       viewBox="0 0 1864.000000 620.000000"
       preserveAspectRatio="xMidYMid meet"
-      style={{ marginBottom: 3 }}
+      style={{ marginBottom: 4.5 }}
     >
       <G
         transform="translate(0.000000,620.000000) scale(0.100000,-0.100000)"

@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 export const cardStyles = StyleSheet.create({
   /* CARD CONTAINERS */
   userCardContainer: {
+    flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -10,6 +11,7 @@ export const cardStyles = StyleSheet.create({
     marginBottom: 8,
   },
   logbookCardContainer: {
+    flex: 1,
     padding: 12,
     marginBottom: 12,
     borderRadius: 6,
@@ -36,6 +38,13 @@ export const cardStyles = StyleSheet.create({
     padding: 16,
     borderWidth: 1,
     borderRadius: 4,
+    borderColor: "#d4d4d4",
+  },
+  entryCardContainer: {
+    padding: 16,
+    paddingBottom: 12,
+    borderWidth: 1,
+    borderRadius: 8,
     borderColor: "#d4d4d4",
   },
   /* IMAGE */
@@ -90,5 +99,11 @@ export const cardStyles = StyleSheet.create({
   /* SPACER */
   leftSpacer: {
     marginLeft: 4,
+  },
+  readMore: {
+    marginTop: 8,
+    fontSize: 12,
+    color: "#6AB952",
+    textAlign: "center",
   },
 });

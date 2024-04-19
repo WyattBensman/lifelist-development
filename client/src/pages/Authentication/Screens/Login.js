@@ -1,5 +1,5 @@
-import { Image, StyleSheet, Text, TextInput, View } from "react-native";
-import { layoutStyles } from "../../../styles";
+import { Image, Text, View } from "react-native";
+import { layoutStyles, authenticationStyles } from "../../../styles";
 import { useCallback, useState } from "react";
 import LoginAuthenticationOptions from "../Components/LoginAuthenticationOptions";
 import LoginPhoneEmailUsernameForm from "../Forms/LoginPhoneEmailUsernameForm";
@@ -20,51 +20,21 @@ export default function Login() {
   };
 
   return (
-    <View style={layoutStyles.container}>
-      <View style={styles.contentContainer}>
+    <View style={layoutStyles.wrapper}>
+      <View style={authenticationStyles.container}>
         <Image
           source={require("../../../../public/branding/lifelist-logo.png")}
-          style={{ width: 80, height: 80, alignSelf: "center" }}
+          style={authenticationStyles.iconLarge}
           resizeMode="contain"
         />
-        <Text style={styles.header}>Login to LifeList</Text>
-        <Text style={styles.subheader}>Early Access</Text>
+        <Text style={authenticationStyles.header}>Login to LifeList</Text>
+        <Text style={authenticationStyles.subheader}>Early Access</Text>
         {showLoginForm ? (
           <LoginPhoneEmailUsernameForm onLoginOption={toggleLoginOption} />
         ) : (
           <LoginAuthenticationOptions onLoginOption={toggleLoginOption} />
         )}
-        <Text style={styles.smallText}>
-          By continuing, you agree to LifeList’s Terms of Service and confirm
-          that you have read LifeList’s Privacy Policy.
-        </Text>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    justifyContent: "space-between",
-    marginTop: 48,
-    margin: 32,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  subheader: {
-    fontWeight: "500",
-    textAlign: "center",
-    fontStyle: "italic",
-    color: "#6AB952",
-    marginBottom: 16,
-    marginTop: 6,
-  },
-  smallText: {
-    fontSize: 10,
-    textAlign: "center",
-  },
-});

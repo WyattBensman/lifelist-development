@@ -1,5 +1,9 @@
-import { Image, StyleSheet, Text, TextInput, View } from "react-native";
-import { formStyles } from "../../../styles";
+import { Image, Text, TextInput, View } from "react-native";
+import {
+  formStyles,
+  layoutStyles,
+  authenticationStyles,
+} from "../../../styles";
 import SolidButton from "../../../components/SolidButton";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -12,13 +16,13 @@ export default function SetProfileInformationForm() {
   const [bio, setBio] = useState("");
 
   return (
-    <View style={[formStyles.formContainer, { marginTop: 8 }]}>
-      <View style={{ alignSelf: "center", marginBottom: 16 }}>
+    <View style={[formStyles.formContainer, layoutStyles.marginTopXs]}>
+      <View style={[layoutStyles.marginBtmMd, { alignSelf: "center" }]}>
         <Image
           source={require("../../../../public/images/wyattbensman.png")}
-          style={styles.image}
+          style={authenticationStyles.profilePictureContainer}
         />
-        <Text style={{ marginTop: 6 }}>Change Profile Picture</Text>
+        <Text style={layoutStyles.marginTopXs}>Set Profile Picture</Text>
       </View>
       <Text style={formStyles.label}>Full Name</Text>
       <TextInput
@@ -43,12 +47,3 @@ export default function SetProfileInformationForm() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  image: {
-    height: 85,
-    width: 85,
-    borderRadius: 4,
-    alignSelf: "center",
-  },
-});

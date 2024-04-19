@@ -6,10 +6,10 @@ import ExperienceCard from "../Cards/ExperienceCard";
 export default function Summary() {
   return (
     <View style={layoutStyles.container}>
-      <ScrollView style={[layoutStyles.contentContainer, { marginTop: 16 }]}>
+      <ScrollView style={layoutStyles.contentContainer}>
         <Text style={headerStyles.headerMedium}>Entries</Text>
         <EntryCard />
-        <View style={{ marginTop: 32 }}>
+        <View style={layoutStyles.marginTopLg}>
           <Text style={headerStyles.headerMedium}>
             Activities & Attractions
           </Text>
@@ -17,7 +17,7 @@ export default function Summary() {
             <ExperienceCard />
           </View>
         </View>
-        <View style={{ marginTop: 16 }}>
+        <View style={layoutStyles.marginTopLg}>
           <Text style={headerStyles.headerMedium}>
             Concerts, Events & Festivals
           </Text>
@@ -25,7 +25,7 @@ export default function Summary() {
             <ExperienceCard />
           </View>
         </View>
-        <View style={{ marginTop: 16 }}>
+        <View style={layoutStyles.marginTopMd}>
           <Text style={headerStyles.headerMedium}>
             Activities & Attractions
           </Text>

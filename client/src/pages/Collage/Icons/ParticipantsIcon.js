@@ -1,7 +1,7 @@
 import { Pressable } from "react-native";
 import Svg, { Path, G } from "react-native-svg";
 
-export default function ParticipantsIcon({ onPress }) {
+export default function ParticipantsIcon({ onPress, isAdmin }) {
   return (
     <Pressable onPress={onPress}>
       <Svg
@@ -11,7 +11,7 @@ export default function ParticipantsIcon({ onPress }) {
         height="24"
         viewBox="0 0 84.000000 84.000000"
         preserveAspectRatio="xMidYMid meet"
-        style={{ marginRight: 8 }}
+        style={isAdmin && { marginRight: 16 }}
       >
         <G
           transform="translate(0.000000,75.000000) scale(0.100000,-0.100000)"

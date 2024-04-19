@@ -1,4 +1,4 @@
-import { Image, Text, View } from "react-native";
+import { Image, View } from "react-native";
 import { layoutStyles } from "../../../styles";
 import SolidButton from "../../../components/SolidButton";
 import { useNavigation } from "@react-navigation/native";

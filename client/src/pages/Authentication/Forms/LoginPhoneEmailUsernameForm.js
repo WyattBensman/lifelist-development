@@ -2,7 +2,6 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { formStyles, layoutStyles } from "../../../styles";
 import SolidButton from "../../../components/SolidButton";
 import { useState } from "react";
-import ButtonSkinny from "../../../components/ButtonSkinny";
 
 export default function LoginPhoneEmailUsernameForm({ onLoginOption }) {
   const [contact, setContact] = useState("");
@@ -15,20 +14,23 @@ export default function LoginPhoneEmailUsernameForm({ onLoginOption }) {
         style={formStyles.input}
         onChangeText={setContact}
         value={contact}
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
       <Text style={[formStyles.label, formStyles.inputSpacer]}>Password</Text>
       <TextInput
         style={formStyles.input}
         onChangeText={setPassword}
         value={password}
+        secureTextEntry={true}
+        autoCapitalize="none"
       />
       <SolidButton text={"Login"} backgroundColor={"#ececec"} marginTop={12} />
-      <ButtonSkinny
-        textColor={"#d4d4d4"}
-        text={"Return to Options"}
-        marginTop={16}
-        onPress={onLoginOption}
-      />
+      <Pressable onPress={onLoginOption} style={layoutStyles.marginTopMd}>
+        <Text style={{ fontSize: 12, color: "#6AB952", textAlign: "center" }}>
+          Return to Options
+        </Text>
+      </Pressable>
     </View>
   );
 }

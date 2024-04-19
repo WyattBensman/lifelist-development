@@ -1,10 +1,10 @@
 import { Image, StyleSheet, Text, TextInput, View } from "react-native";
-import { layoutStyles } from "../../../styles";
-import StackHeader from "../../../components/StackHeader";
+import { layoutStyles, authenticationStyles } from "../../../styles";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigation } from "@react-navigation/native";
 import { createRef, useState } from "react";
 import SolidButton from "../../../components/SolidButton";
+import HeaderStack from "../../../components/Headers/HeaderStack";
 
 export default function VerifyAccount() {
   const navigation = useNavigation();
@@ -26,25 +26,30 @@ export default function VerifyAccount() {
   };
 
   return (
-    <View style={layoutStyles.container}>
-      <StackHeader arrow={<BackArrowIcon navigation={navigation} />} />
-      <View style={styles.contentContainer}>
+    <View style={layoutStyles.wrapper}>
+      <HeaderStack arrow={<BackArrowIcon navigation={navigation} />} />
+      <View
+        style={[
+          authenticationStyles.container,
+          { justifyContent: "flex-start" },
+        ]}
+      >
         <Image
           source={require("../../../../public/branding/lifelist-logo.png")}
-          style={{ width: 80, height: 80, alignSelf: "center" }}
+          style={authenticationStyles.iconLarge}
           resizeMode="contain"
         />
-        <Text style={styles.header}>Verify Account</Text>
+        <Text style={authenticationStyles.header}>Verify Account</Text>
         <Text style={styles.smallText}>
           We sent you a 5-digit code to wyatt@gmail.com. Enter the code below to
           confirm your phone number.
         </Text>
-        <View style={styles.codeContainer}>
+        <View style={authenticationStyles.codeContainer}>
           {code.map((digit, index) => (
             <TextInput
               key={index}
               ref={inputs[index]}
-              style={styles.codeInput}
+              style={authenticationStyles.codeInput}
               value={digit}
               onChangeText={(text) => handleCodeInput(text, index)}
               keyboardType="number-pad"
@@ -69,43 +74,9 @@ export default function VerifyAccount() {
 }
 
 const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    marginTop: 48,
-    margin: 32,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  subheader: {
-    fontWeight: "500",
-    textAlign: "center",
-    fontStyle: "italic",
-    color: "#6AB952",
-    marginBottom: 16,
-    marginTop: 6,
-  },
   smallText: {
     marginTop: 12,
     fontSize: 12,
     textAlign: "center",
-  },
-  codeContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 32,
-    marginBottom: 16,
-    marginHorizontal: 32,
-  },
-  codeInput: {
-    width: 40,
-    height: 40,
-    borderWidth: 1,
-    borderRadius: 4,
-    borderColor: "#d4d4d4",
-    textAlign: "center",
-    fontSize: 16,
   },
 });

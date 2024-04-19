@@ -2,7 +2,6 @@ import { Pressable, Text, TextInput, View } from "react-native";
 import { formStyles, layoutStyles } from "../../../styles";
 import SolidButton from "../../../components/SolidButton";
 import { useState } from "react";
-import ButtonSkinny from "../../../components/ButtonSkinny";
 import { useNavigation } from "@react-navigation/native";
 
 export default function SignUpPhoneEmailForm({ onSignUpOption }) {
@@ -46,12 +45,11 @@ export default function SignUpPhoneEmailForm({ onSignUpOption }) {
         marginTop={8}
         onPress={() => navigation.navigate("VerifyAccount")}
       />
-      <ButtonSkinny
-        textColor={"#d4d4d4"}
-        text={"Return to Options"}
-        marginTop={16}
-        onPress={onSignUpOption}
-      />
+      <Pressable onPress={onSignUpOption} style={layoutStyles.marginTopMd}>
+        <Text style={{ fontSize: 12, color: "#6AB952", textAlign: "center" }}>
+          Return to Options
+        </Text>
+      </Pressable>
     </View>
   );
 }

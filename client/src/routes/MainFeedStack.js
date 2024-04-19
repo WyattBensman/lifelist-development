@@ -12,6 +12,7 @@ import Media from "../pages/CreateCollage/Screens/Media";
 import Summary from "../pages/CreateCollage/Screens/Summary";
 import Overview from "../pages/CreateCollage/Screens/Overview";
 import Preview from "../pages/CreateCollage/Screens/Preview";
+import ViewCollage from "../pages/Collage/Screens/ViewCollage";
 
 const Stack = createNativeStackNavigator();
 
@@ -50,6 +51,11 @@ export default function MainFeedStack() {
         component={Conversation}
         options={{ headerShown: false }}
       />
+      {/* <Stack.Screen
+        name="ViewCollage"
+        component={ViewCollage}
+        options={{ headerShown: false }}
+      /> */}
       <Stack.Screen
         name="CreateCollage"
         component={Media}

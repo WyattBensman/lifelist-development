@@ -7,8 +7,10 @@ import { layoutStyles } from "../../../styles";
 import { useState } from "react";
 import ParticipantsPopup from "../Popups/ParticipantsPopup";
 import CommentsPopup from "../Popups/CommentsPopup";
+import ShareIcon from "../Icons/ShareIcon";
+import OptionsIcon from "../Icons/OptionsIcon";
 
-export default function CollagePanel() {
+export default function CollagePanel({ isAdmin }) {
   const [commentsPopupVisible, setCommentsPopupVisible] = useState(false);
   const [participantsPopupVisible, setParticipantsPopupVisible] =
     useState(false);
@@ -35,19 +37,33 @@ export default function CollagePanel() {
           <View
             style={[
               layoutStyles.flexRow,
+              layoutStyles.marginRightXs,
               { alignSelf: "flex-start", marginTop: 4 },
             ]}
           >
-            <CommentIcon onPress={toggleCommentsPopup} />
-            <RepostIcon />
-            <BookmarkOutline />
-            <ParticipantsIcon onPress={toggleParticipantsPopup} />
+            {isAdmin ? (
+              <>
+                <CommentIcon onPress={toggleCommentsPopup} />
+                <ParticipantsIcon
+                  onPress={toggleParticipantsPopup}
+                  isAdmin={isAdmin}
+                />
+                <ShareIcon color={"#ffffff"} marginRight={16} />
+                <OptionsIcon color={"#ffffff"} />
+              </>
+            ) : (
+              <>
+                <CommentIcon onPress={toggleCommentsPopup} />
+                <RepostIcon />
+                <BookmarkOutline />
+                <ParticipantsIcon onPress={toggleParticipantsPopup} />
+              </>
+            )}
           </View>
         </View>
         <Text style={{ marginTop: 8, color: "#ffffff" }}>
           No way this is the bio. No way this is the bio. No way this is the
-          bio. No way this is the bio. No way this is the bio. No way this is
-          the bio. No way this is the bio
+          bio. No way this is the bio. No wa
         </Text>
       </View>
       <ParticipantsPopup

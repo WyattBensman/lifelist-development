@@ -1,9 +1,17 @@
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { layoutStyles } from "../../../styles";
-import CollagePanel from "../PanelComponents/CollagePanel";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Media() {
-  return <View style={layoutStyles.container}></View>;
+  const navigation = useNavigation();
+
+  return (
+    <View style={layoutStyles.container}>
+      <Pressable onPress={navigation.navigate("ViewCollage")}>
+        <Text>View Collage</Text>
+      </Pressable>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

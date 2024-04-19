@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import { cardStyles, layoutStyles } from "../../../styles";
 
 export default function EntryCard() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -13,12 +14,12 @@ export default function EntryCard() {
       : textContent;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>This is the Title</Text>
-      <Text style={styles.spacer}>{displayText}</Text>
+    <View style={cardStyles.entryCardContainer}>
+      <Text style={{ fontWeight: "500" }}>This is the Title</Text>
+      <Text style={layoutStyles.marginTopXxs}>{displayText}</Text>
       {shouldTruncate && (
         <Pressable onPress={() => setIsExpanded(!isExpanded)}>
-          <Text style={styles.readMore}>
+          <Text style={cardStyles.readMore}>
             {isExpanded ? "Read Less" : "Read More"}
           </Text>
         </Pressable>
@@ -26,25 +27,3 @@ export default function EntryCard() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    paddingBottom: 8,
-    borderWidth: 1,
-    borderRadius: 8,
-    borderColor: "#d4d4d4",
-  },
-  title: {
-    fontWeight: "500",
-  },
-  readMore: {
-    marginTop: 8,
-    fontSize: 12,
-    color: "#6AB952",
-    textAlign: "center",
-  },
-  spacer: {
-    marginTop: 6,
-  },
-});
