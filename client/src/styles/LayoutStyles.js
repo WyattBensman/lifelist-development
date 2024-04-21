@@ -14,6 +14,12 @@ export const layoutStyles = StyleSheet.create({
     marginTop: 16,
     marginHorizontal: 16,
   },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: "4%",
+    marginTop: 12,
+  },
   /* DELETE LATER ON?????? */
   containerTab: {
     flex: 1,

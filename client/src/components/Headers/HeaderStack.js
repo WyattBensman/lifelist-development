@@ -2,9 +2,15 @@ import { StyleSheet, Text, View } from "react-native";
 
 const IconFiller = () => <View style={{ width: 35, height: 35 }} />;
 
-export default function HeaderStack({ arrow, title, button1, button2 }) {
+export default function HeaderStack({
+  arrow,
+  title,
+  button1,
+  button2,
+  hasBorder = true,
+}) {
   return (
-    <View style={styles.mainContainer}>
+    <View style={[styles.mainContainer, hasBorder && styles.border]}>
       <View style={styles.contentContainer}>
         {/* Left Container */}
         <View style={styles.sideContainer}>
@@ -37,6 +43,8 @@ const styles = StyleSheet.create({
     marginTop: 45,
     paddingTop: 15,
     paddingBottom: 2,
+  },
+  border: {
     borderBottomWidth: 1,
     borderBottomColor: "#D4D4D4",
   },

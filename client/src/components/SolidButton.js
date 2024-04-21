@@ -1,6 +1,5 @@
-import { Image, Pressable, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { StyleSheet } from "react-native";
-import { layoutStyles } from "../styles";
 
 export default function SolidButton({
   backgroundColor,

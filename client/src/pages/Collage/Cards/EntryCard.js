@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { cardStyles, layoutStyles } from "../../../styles";
+import EditEntryIcon from "../Icons/EditEntryIcon";
 
 export default function EntryCard() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -14,8 +15,11 @@ export default function EntryCard() {
       : textContent;
 
   return (
-    <View style={cardStyles.entryCardContainer}>
-      <Text style={{ fontWeight: "500" }}>This is the Title</Text>
+    <View style={[cardStyles.entryCardContainer, layoutStyles.marginTopMd]}>
+      <View style={layoutStyles.flex}>
+        <Text style={{ fontWeight: "500" }}>This is the Title</Text>
+        <EditEntryIcon />
+      </View>
       <Text style={layoutStyles.marginTopXxs}>{displayText}</Text>
       {shouldTruncate && (
         <Pressable onPress={() => setIsExpanded(!isExpanded)}>

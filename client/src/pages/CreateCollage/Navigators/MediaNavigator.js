@@ -1,5 +1,4 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { Text } from "react-native";
 import DispoCameraRoll from "../Screens/35mmCameraRoll";
 import CameraRoll from "../Screens/CameraRoll";
 
@@ -8,6 +7,7 @@ const Tab = createMaterialTopTabNavigator();
 export default function MediaNavigator() {
   return (
     <Tab.Navigator
+      initialRouteName="Messages"
       screenOptions={{
         tabBarActiveTintColor: "#000000",
         tabBarInactiveTintColor: "#d4d4d4",
@@ -20,29 +20,13 @@ export default function MediaNavigator() {
         },
         tabBarLabelStyle: {
           textTransform: "none",
-          fontSize: 15,
+          fontSize: 14,
           marginBottom: 10,
         },
       }}
     >
-      <Tab.Screen
-        name="CameraRoll"
-        component={CameraRoll}
-        options={{
-          tabBarLabel: () => (
-            <Text style={{ marginBottom: 2 }}>Camera Roll</Text>
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="35mmCamera"
-        component={DispoCameraRoll}
-        options={{
-          tabBarLabel: () => (
-            <Text style={{ marginBottom: 2 }}>35mm Camera</Text>
-          ),
-        }}
-      />
+      <Tab.Screen name="Camera Roll" component={CameraRoll} />
+      <Tab.Screen name="Your Shots" component={DispoCameraRoll} />
     </Tab.Navigator>
   );
 }
