@@ -2,98 +2,57 @@ import { Collage } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 export const getCollageById = async (_, { collageId }) => {
-  try {
-    const collage = await Collage.findById(collageId).populate({
+  const collage = await Collage.findById(collageId)
+    .populate({
       path: "author",
       select: "username fullName",
-    });
-
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
-
-    return collage;
-  } catch (error) {
-    throw new Error(`Error fetching collage by ID: ${error.message}`);
-  }
+    })
+    .exec();
+  if (!collage) throw new Error("Collage not found.");
+  return collage;
 };
 
 export const getCollageMedia = async (_, { collageId }) => {
-  try {
-    const collage = await Collage.findById(collageId).select("images");
-
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
-
-    return collage.images || [];
-  } catch (error) {
-    throw new Error(`Error fetching media for the collage: ${error.message}`);
-  }
+  const collage = await Collage.findById(collageId).select("images").exec();
+  if (!collage) throw new Error("Collage not found.");
+  return collage.images || [];
 };
 
 export const getCollageSummary = async (_, { collageId }) => {
-  try {
-    const collage = await Collage.findById(collageId)
-      .select("entries experiences")
-      .populate("experiences");
-
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
-
-    return {
-      entries: collage.entries || [],
-      experiences: collage.experiences || [],
-    };
-  } catch (error) {
-    throw new Error(`Error fetching summary for the collage: ${error.message}`);
-  }
+  const collage = await Collage.findById(collageId)
+    .select("entries experiences")
+    .populate("experiences")
+    .exec();
+  if (!collage) throw new Error("Collage not found.");
+  return {
+    entries: collage.entries || [],
+    experiences: collage.experiences || [],
+  };
 };
 
 export const getCollageComments = async (_, { collageId }, { user }) => {
-  try {
-    isUser(user);
-
-    const collage = await Collage.findById(collageId).populate({
+  isUser(user);
+  const collage = await Collage.findById(collageId)
+    .populate({
       path: "comments",
       populate: {
         path: "author",
         select: "username fullName profilePicture",
       },
-    });
-
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
-
-    const comments = collage.comments || [];
-
-    return comments;
-  } catch (error) {
-    throw new Error(
-      `Error fetching comments for the collage: ${error.message}`
-    );
-  }
+    })
+    .exec();
+  if (!collage) throw new Error("Collage not found.");
+  return collage.comments || [];
 };
 
 export const getCollageTaggedUsers = async (_, { collageId }, { user }) => {
-  try {
-    isUser(user);
-
-    const collage = await Collage.findById(collageId).populate({
+  isUser(user);
+  const collage = await Collage.findById(collageId)
+    .populate({
       path: "tagged",
       select: "username fullName profilePicture",
-    });
-
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
-
-    return collage.tagged;
-  } catch (error) {
-    throw new Error(
-      `Error fetching tagged users for the collage: ${error.message}`
-    );
-  }
+    })
+    .exec();
+  if (!collage) throw new Error("Collage not found.");
+  return collage.tagged;
 };
