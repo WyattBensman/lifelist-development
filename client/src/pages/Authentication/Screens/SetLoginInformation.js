@@ -1,7 +1,6 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import { layoutStyles, authenticationStyles } from "../../../styles";
-import { useCallback, useState } from "react";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import SetLoginInformationForm from "../Forms/SetLoginInformationForm";
 import NextPageArrowIcon from "../../../icons/Universal/NextPageArrowIcon";
@@ -9,18 +8,6 @@ import HeaderStack from "../../../components/Headers/HeaderStack";
 
 export default function SetLoginInformation() {
   const navigation = useNavigation();
-  const [showLoginForm, setShowLoginForm] = useState(false);
-
-  useFocusEffect(
-    useCallback(() => {
-      setShowLoginForm(false);
-      return () => {};
-    }, [])
-  );
-
-  const toggleLoginOption = () => {
-    setShowLoginForm(!showLoginForm);
-  };
 
   return (
     <View style={layoutStyles.wrapper}>
