@@ -8,6 +8,7 @@ import {
   LifeList,
   PrivacyGroup,
   Message,
+  LogbookItem,
 } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 

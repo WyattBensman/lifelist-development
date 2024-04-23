@@ -12,20 +12,25 @@ const login = async (_, { usernameOrEmailOrPhone, password }) => {
       ],
     });
 
-    // Check if user exists and password is correct
-    if (user && (await user.isCorrectPassword(password))) {
-      // Generate JWT token
-      const token = generateToken(user);
-
-      return { token, user };
-    } else {
-      throw new AuthenticationError(
-        "Invalid username, email, phone number, or password"
-      );
+    // Validate user
+    if (!user) {
+      throw new AuthenticationError("User does not exist.");
     }
+
+    // Validate password
+    const passwordIsValid = await user.isCorrectPassword(password);
+    if (!passwordIsValid) {
+      throw new AuthenticationError("Invalid password.");
+    }
+
+    // Generate and return JWT token
+    const token = generateToken(user);
+    return { token, user };
   } catch (error) {
     console.error(`Error during login: ${error.message}`);
-    throw new AuthenticationError("An error occurred during login");
+    throw new AuthenticationError(
+      "An error occurred during login. Please try again."
+    );
   }
 };
 

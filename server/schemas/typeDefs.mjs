@@ -4,7 +4,7 @@ scalar Int
 scalar Upload
 
 type User {
-  id: ID!
+  _id: ID!
   fullName: String
   email: String
   phoneNumber: String
@@ -53,28 +53,28 @@ type User {
   }
   
   type PrivacyGroup {
-    id: ID!
+    _id: ID!
     author: User
     groupName: String
     users: [User]
   }
 
   type Conversation {
-    id: ID!
+    _id: ID!
     participants: [User]
     messages: [Message]
     lastMessage: Message
   }
 
   type Message {
-    id: ID!
+    _id: ID!
     sender: User
     content: String!
     sentAt: Date
   }
 
   type Notification {
-    id: ID!
+    _id: ID!
     recipient: User
     sender: User
     type: NotificationType
@@ -142,7 +142,7 @@ type User {
   }
 
   type LifeList {
-    id: ID!
+    _id: ID!
     author: User
     experiences: [LifeListExperience]
   }
@@ -275,59 +275,6 @@ type User {
     shots: [CameraShot]
   }
 
-  
-
-
-  input MonthInput {
-    name: String
-    year: Int
-  }
-
-  input EntryInput {
-  title: String
-  content: String
-}
-  
-
-
-  
-
-
-
-
-  input PrivacyGroupInput {
-    groupId: ID!
-  }
-  
-  input LocationInput {
-    name: String!
-    coordinates: CoordinatesInput!
-  }
-  
-  input CoordinatesInput {
-    latitude: Float
-    longitude: Float
-  }
-
-  input FlowpageLinkInput {
-    type: String
-    url: String
-  }
-
-  type CollageSummary {
-    entries: [Entry]
-    experiences: [Experience]
-  }
-
-  input LogbookInput {
-    title: String!
-    collageId: ID!
-    date: String
-    startDate: String
-    finishDate: String
-    month: String
-  }
-
   type Query {
     # User Queries
     getUserProfileById(userId: ID!): User
@@ -382,6 +329,75 @@ type User {
   
     # Experience Queries
     getExperience(experienceId: ID!): Experience
+  }
+
+  # Query Responses
+  type UserProfileInformation {
+    profilePicture: String
+    fullName: String
+    username: String
+    bio: String
+  }
+
+  type UserContactInformation {
+    email: String
+    phoneNumber: String
+  }
+
+  type UserIdentityInformation {
+    birthday: Date
+    gender: String
+  }
+
+  type UserSettingsInformation {
+    privacy: String
+    darkMode: Boolean
+    language: String
+    notifications: Boolean
+    postRepostToMainFeed: Boolean
+  }
+
+  type CollageSummary {
+    entries: [Entry]
+    experiences: [Experience]
+  }
+
+  input MonthInput {
+    name: String
+    year: Int
+  }
+
+  input EntryInput {
+  title: String
+  content: String
+}
+
+  input PrivacyGroupInput {
+    groupId: ID!
+  }
+  
+  input LocationInput {
+    name: String!
+    coordinates: CoordinatesInput!
+  }
+  
+  input CoordinatesInput {
+    latitude: Float
+    longitude: Float
+  }
+
+  input FlowpageLinkInput {
+    type: String
+    url: String
+  }
+
+  input LogbookInput {
+    title: String!
+    collageId: ID!
+    date: String
+    startDate: String
+    finishDate: String
+    month: String
   }
 
   # User Regristration Mutations
@@ -659,27 +675,6 @@ type User {
     input ExperienceInput {
       experience: ID!
       list: String!
-    }
-
-    type UserProfileInformation {
-      profilePicture: String
-      fullName: String
-      username: String
-      bio: String
-    }
-
-    type UserContactInformation {
-      email: String
-      phoneNumber: String
-    }
-
-    type UserIdentityInformation {
-      birthday: Date
-      gender: String
-    }
-
-    type UserSettingsInformation {
-      settings: UserSettings
     }
 
     type LogbookMutationResponse {
