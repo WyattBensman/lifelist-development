@@ -3,8 +3,8 @@ import { Schema } from "mongoose";
 const userSettingsSchema = new Schema({
   privacy: {
     type: String,
-    enum: ["public", "private"],
-    default: "public",
+    enum: ["PUBLIC", "PRIVATE"],
+    default: "PUBLIC",
   },
   darkMode: {
     type: Boolean,
@@ -12,7 +12,8 @@ const userSettingsSchema = new Schema({
   },
   language: {
     type: String,
-    default: "en",
+    enum: ["EN", "ES", "FR", "DE"],
+    default: "EN",
   },
   notifications: {
     type: Boolean,

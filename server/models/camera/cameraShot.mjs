@@ -14,14 +14,18 @@ const cameraShotSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  camera: {
+    type: String,
+    enum: ["35MM_CAMERA", "FUJI_400"],
+  },
   filtered: {
     type: Boolean,
     default: false,
   },
   shotOrientation: {
     type: String,
-    enum: ["vertical", "horizontal"],
-    default: "vertical",
+    enum: ["VERTICAL", "HORIZONTAL"],
+    default: "VERTICAL",
   },
 });
 

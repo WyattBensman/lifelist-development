@@ -1,6 +1,7 @@
 import { User, Conversation } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
+/* MESSAGING QUERIES */
 export const getUserConversations = async (_, __, { user }) => {
   isUser(user);
   const conversationIds = user.conversations.map(
@@ -48,4 +49,33 @@ export const getUnreadMessagesCount = async (_, __, { user }) => {
   if (!userWithUnreadCount)
     throw new Error("User not found for the provided ID.");
   return userWithUnreadCount.unreadMessagesCount || 0;
+};
+
+/* NOTIFICATION QUERIES */
+export const getUserNotifications = async (_, __, { user }) => {
+  isUser(user);
+  const foundUser = await User.findById(user._id)
+    .populate({
+      path: "notifications",
+      populate: {
+        path: "sender",
+        model: "User",
+        select: "username fullName profilePicture",
+      },
+    })
+    .exec();
+  if (!foundUser) throw new Error("User not found.");
+  return foundUser.notifications || [];
+};
+
+export const getUserFollowRequest = async (_, __, { user }) => {
+  isUser(user);
+  const foundUser = await User.findById(user._id)
+    .populate({
+      path: "followRequests.userId",
+      select: "username fullName profilePicture",
+    })
+    .exec();
+  if (!foundUser) throw new Error("User not found for the provided ID.");
+  return foundUser.followRequests;
 };

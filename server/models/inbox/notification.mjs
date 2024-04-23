@@ -14,7 +14,7 @@ const notificationSchema = new Schema({
   type: {
     type: String,
     enum: [
-      "FRIEND_REQUEST",
+      "FOLLOW_REQUEST",
       "FOLLOW",
       "COLLAGE_REPOST",
       "COMMENT",

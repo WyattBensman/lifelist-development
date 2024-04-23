@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import reportSchema from "./reportSchema.mjs";
 
+// Utility functions for image validation
 const validateImageCount = (value) => value.length > 0;
 const validateMaxImageCount = (value) => value.length <= 14;
 
@@ -115,11 +116,6 @@ const collageSchema = new Schema({
       ref: "User",
     },
   ],
-  /* audience: {
-    type: String,
-    enum: ["PUBLIC", "PRIVATE", "CUSTOM"],
-    default: "PUBLIC",
-  }, */
   posted: {
     type: Boolean,
     default: false,

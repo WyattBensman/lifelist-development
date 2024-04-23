@@ -4,59 +4,93 @@ scalar Int
 scalar Upload
 
 type User {
-    _id: ID!
-    fullName: String
-    email: String
-    phoneNumber: String
-    verified: Boolean
-    emailVerification: EmailVerification
-    phoneVerification: PhoneVerification
-    password: String
-    profilePicture: String
-    username: String
-    bio: String
-    gender: String
-    birthday: Date
-    followers: [User]
-    following: [User]
-    followRequests: [FollowRequest]
-    lifeList: LifeList
-    collages: [Collage]
-    dailyCameraShots: DailyCameraShots
-    cameraShots: [CameraShot]
-    cameraAlbums: [CameraAlbum]
-    repostedCollages: [Collage]
-    taggedCollages: [Collage]
-    savedCollages: [Collage]
-    logbook: [LogbookItem]
-    archivedCollages: [Collage]
-    conversations: [UserConversation]
-    privacyGroups: [PrivacyGroup]
-    blocked: [User]
-    notifications: [Notification]
-    flowpageLinks: [FlowpageLink]
-    unreadMessagesCount: Int
-    settings: UserSettings
-  }
+  id: ID!
+  fullName: String
+  email: String
+  phoneNumber: String
+  password: String
+  username: String
+  bio: String
+  gender: String
+  birthday: String
+  profilePicture: String
+  followers: [User]
+  following: [User]
+  followRequests: [FollowRequest]
+  lifeList: LifeList
+  logbook: [LogbookItem]
+  collages: [Collage]
+  repostedCollages: [Collage]
+  taggedCollages: [Collage]
+  savedCollages: [Collage]
+  archivedCollages: [Collage]
+  dailyCameraShots: DailyCameraShots
+  cameraShots: [CameraShot]
+  cameraAlbums: [CameraAlbum]
+  notifications: [Notification]
+  conversations: [Conversation]
+  unreadMessagesCount: Int
+  settings: UserSettings
+  flowpageLinks: [FlowpageLink]
+  privacyGroups: [PrivacyGroup]
+  blocked: [User]
+  verified: Boolean
+  emailVerification: VerificationStatus
+  phoneVerification: VerificationStatus
+}
 
   type Auth {
     token: ID!
     user: User
   }
 
-  type Verification {
-    code: String
-    verified: Boolean
-  }
-
-  type EmailVerification {
-    code: String
-    verified: Boolean
+  type UserSettings {
+    privacy: String
+    darkMode: Boolean
+    language: String
+    notifications: Boolean
+    postRepostToMainFeed: Boolean
   }
   
-  type PhoneVerification {
-    code: String
-    verified: Boolean
+  type PrivacyGroup {
+    id: ID!
+    author: User
+    groupName: String
+    users: [User]
+  }
+
+  type Conversation {
+    id: ID!
+    participants: [User]
+    messages: [Message]
+    lastMessage: Message
+  }
+
+  type Message {
+    id: ID!
+    sender: User
+    content: String!
+    sentAt: Date
+  }
+
+  type Notification {
+    id: ID!
+    recipient: User
+    sender: User
+    type: NotificationType
+    collage: Collage
+    message: String
+    read: Boolean
+    createdAt: Date
+  }
+
+  enum NotificationType {
+    FOLLOW_REQUEST
+    FOLLOW
+    COLLAGE_REPOST
+    COMMENT
+    TAG
+    MESSAGE
   }
 
   type FollowRequest {
@@ -70,96 +104,58 @@ type User {
     REJECTED
   }
 
-  type LifeList {
-    _id: ID!
-    author: User
-    experiences: [LifeListExperience]
-  }
-
-  type LifeListExperience {
-    experience: Experience
-    list: LifeListTypeEnum
-    associatedCollages: [Collage]
-  }
-  
-  enum LifeListTypeEnum {
-    EXPERIENCED
-    WISHLISTED
-  }
-
   type FlowpageLink {
     type: FlowpageLinkType
     url: String
   }
 
   enum FlowpageLinkType {
-    Instagram
+    INSTAGRAM
     X
-    Facebook
-    Snapchat
-    YouTube
-    TikTok
-    AppleMusic
-    Spotify
+    FACEBOOK
+    SNAPCHAT
+    YOUTUBE
+    TIKTOK
+    APPLE_MUSIC
+    SPOTIFY
   }
 
   type DailyCameraShots {
-    count: Int!
-    lastReset: String!
+    count: Int
+    lastReset: String
   }
 
-  type PrivacyGroup {
+  type VerificationStatus {
+    code: String
+    verified: Boolean
+  }
+
+  type LogbookItem {
     _id: ID!
-    author: User
-    groupName: String
-    users: [User]
-  }
-
-  type UserSettings {
-    privacy: String
-    darkMode: Boolean
-    language: String
-    notifications: Boolean
-    postRepostToMainFeed: Boolean
-  }
-
-  type Notification {
-    _id: ID!
-    recipient: User
-    sender: User
-    type: NotificationType
+    author: User!
+    title: String!
     collage: Collage
-    message: String
-    read: Boolean
-    createdAt: Date
+    startDate: Date
+    finishDate: Date
+    date: Date
+    month: String
   }
 
-  enum NotificationType {
-    FRIEND_REQUEST
-    FOLLOW
-    COLLAGE_REPOST
-    COMMENT
-    TAG
-    MESSAGE
+  type LifeList {
+    id: ID!
+    author: User
+    experiences: [LifeListExperience]
   }
-
-  type Message {
-    _id: ID!
-    sender: User
-    content: String
-    sentAt: Date
+  
+  type LifeListExperience {
+    experience: Experience
+    list: LifeListListEnum
+    associatedCollages: [Collage]
   }
-
-  type Conversation {
-    _id: ID!
-    participants: [User]
-    messages: [Message]
-    lastMessage: Message
-  }
-
-  type UserConversation {
-    conversation: ID
-    isRead: Boolean!
+  
+  enum LifeListListEnum {
+    EXPERIENCED
+    WISHLISTED
   }
 
   type Experience {
@@ -171,18 +167,18 @@ type User {
     category: ExperienceCategory
     collages: [Collage]
   }
-  
+
   enum ExperienceCategory {
-    Attractions
-    Destinations
-    Events
-    Courses
-    Venues
-    Festivals
-    Hikes and Trails
-    Resorts
-    Concerts
-    Artists
+    ATTRACTIONS
+    DESTINATIONS
+    EVENTS
+    COURSES
+    VENUES
+    FESTIVALS
+    HIKES_AND_TRAILS
+    RESORTS
+    CONCERTS
+    ARTISTS
   }
 
   type Collage {
@@ -203,52 +199,11 @@ type User {
     comments: [Comment]
     reposts: [User]
     saves: [User]
-    audience: [PrivacyGroup]
     posted: Boolean
+    archived: Boolean
     reports: [Report]
   }
 
-  type LogbookItem {
-    _id: ID!
-    author: User!
-    title: String!
-    collage: Collage
-    startDate: Date
-    finishDate: Date
-    date: Date
-    month: String
-  }
-
-  type Month {
-    name: String
-    year: Int
-  }
-
-  input MonthInput {
-    name: String
-    year: Int
-  }
-
-  type Entry {
-    title: String
-    content: String
-  }
-
-  input EntryInput {
-  title: String
-  content: String
-}
-  
-  type Location {
-    name: String!
-    coordinates: Coordinates!
-  }
-  
-  type Coordinates {
-    latitude: Float!
-    longitude: Float!
-  }
-  
   type Comment {
     _id: ID!
     author: User
@@ -272,6 +227,46 @@ type User {
     SPAM_OR_SCAMS
   }
 
+  type Entry {
+    title: String
+    content: String
+  }
+ 
+  type Month {
+    name: String
+    year: Int
+  }
+  
+  type Location {
+    name: String
+    coordinates: Coordinates
+  }
+
+  type Coordinates {
+    latitude: Float
+    longitude: Float
+  }
+
+  type CameraShot {
+    _id: ID!
+    author: User
+    image: String
+    capturedAt: Date
+    camera: CameraType
+    filtered: Boolean
+    shotOrientation: ShotOrientation
+  }
+
+  enum CameraType {
+    MM_35
+    FUJI_400
+  }
+
+  enum ShotOrientation {
+    VERTICAL
+    HORIZONTAL
+  }
+
   type CameraAlbum {
     _id: ID!
     author: User
@@ -280,19 +275,25 @@ type User {
     shots: [CameraShot]
   }
 
-  type CameraShot {
-    _id: ID!
-    author: User
-    image: String
-    capturedAt: Date
-    filtered: Boolean
-    shotOrientation: ShotOrientation
-  }
   
-  enum ShotOrientation {
-    VERTICAL
-    HORIZONTAL
+
+
+  input MonthInput {
+    name: String
+    year: Int
   }
+
+  input EntryInput {
+  title: String
+  content: String
+}
+  
+
+
+  
+
+
+
 
   input PrivacyGroupInput {
     groupId: ID!
@@ -327,8 +328,8 @@ type User {
     month: String
   }
 
-  # User Queries
   type Query {
+    # User Queries
     getUserProfileById(userId: ID!): User
     searchUsers(query: String!): [User]
     getFollowers(userId: ID!): [User]
@@ -345,55 +346,41 @@ type User {
     getUserContactInformation: UserContactInformation
     getUserIdentityInformation: UserIdentityInformation
     getUserSettingsInformation: UserSettingsInformation
-  }
-
-  # Privacy Group Queries
-  type Query {
+  
+    # Privacy Group Queries
     getPrivacyGroups: [PrivacyGroup]
     getSpecificPrivacyGroup(privacyGroupId: ID!): PrivacyGroup
-  }
-
-  # LifeList Queries
-  type Query {
+  
+    # LifeList Queries
     getCurrentUserLifeList: LifeList
     getUserLifeList(userId: ID!): LifeList
     getExperiencedList(lifeListId: ID!): [Experience]
     getWishListedList(lifeListId: ID!): LifeList
     getSingleExperience(lifeListId: ID!, experienceId: ID!): Experience
-  }
   
-  # Collage Queries
-  type Query {
+    # Collage Queries
     getCollageById(collageId: ID!): Collage
     getCollageMedia(collageId: ID!): [String]
     getCollageSummary(collageId: ID!): CollageSummary
     getCollageComments(collageId: ID!): [Comment]
     getCollageTaggedUsers(collageId: ID!): [User]
-  }
-
-  # Camera Queries
-  type Query {
+  
+    # Camera Queries
     getAllCameraAlbums: [CameraAlbum]
     getCameraAlbum(albumId: ID!): CameraAlbum
     getAllCameraShots: [CameraShot]
     getCameraShot(shotId: ID!): CameraShot
-  }
   
-  # Messaging Queries
-  type Query {
+    # Messaging Queries
     getUserConversations: [Conversation]
     getConversation(conversationId: ID!): Conversation
     getUnreadMessagesCount: Int
-  }
-
-  # Notification Queries
-  type Query {
+  
+    # Notification Queries
     getUserNotifications: [Notification]
     getUserFollowRequest: [FollowRequest]
-  }
-
-  # Experience Queries
-  type Query {
+  
+    # Experience Queries
     getExperience(experienceId: ID!): Experience
   }
 
