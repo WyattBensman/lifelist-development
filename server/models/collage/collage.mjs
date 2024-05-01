@@ -1,10 +1,6 @@
 import { Schema, model } from "mongoose";
 import reportSchema from "./reportSchema.mjs";
 
-// Utility functions for image validation
-const validateImageCount = (value) => value.length > 0;
-const validateMaxImageCount = (value) => value.length <= 14;
-
 const collageSchema = new Schema({
   author: {
     type: Schema.Types.ObjectId,
@@ -16,23 +12,25 @@ const collageSchema = new Schema({
     default: Date.now,
     index: true,
   },
+  caption: {
+    type: String,
+    maxlength: 75,
+  },
   images: {
     type: [
       {
         type: String,
+        required: true,
       },
     ],
     validate: [
       {
-        validator: validateImageCount,
-        message: "At least one image is required.",
-      },
-      {
-        validator: validateMaxImageCount,
-        message: "Maximum of 14 images allowed.",
+        validator: function (images) {
+          return images.length >= 1 && images.length <= 12;
+        },
+        message: "A collage must have between 1 and 12 images.",
       },
     ],
-    required: true,
   },
   coverImage: {
     type: String,
@@ -40,94 +38,35 @@ const collageSchema = new Schema({
       return this.images.length > 0 ? this.images[0] : null;
     },
   },
-  caption: {
+  privacy: {
     type: String,
-    maxlength: 75,
+    enum: ["PUBLIC", "PRIVATE", "PRIVACY_GROUP"],
+    default: "PUBLIC",
   },
-  entries: [
-    {
-      title: {
-        type: String,
-      },
-      content: {
-        type: String,
-      },
-    },
-  ],
-  date: {
-    type: Date,
+  privacyGroup: {
+    type: Schema.Types.ObjectId,
+    ref: "PrivacyGroup",
   },
-  startDate: {
-    type: Date,
-  },
-  finishDate: {
-    type: Date,
-  },
-  month: {
-    name: {
-      type: String,
-    },
-    year: {
-      type: Number,
-    },
-  },
-  experiences: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Experience",
-    },
-  ],
   locations: [
     {
-      name: {
-        type: String,
-      },
+      name: { type: String },
       coordinates: {
-        latitude: {
-          type: Number,
-        },
-        longitude: {
-          type: Number,
-        },
+        type: { type: String, default: "Point" },
+        coordinates: [Number],
       },
     },
   ],
-  tagged: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  comments: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Comment",
-    },
-  ],
-  reposts: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  saves: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  posted: {
-    type: Boolean,
-    default: false,
-  },
-  archived: {
-    type: Boolean,
-    default: false,
-  },
-  reports: {
-    type: [reportSchema],
-  },
+  likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  reposts: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  saves: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  tagged: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+  posted: { type: Boolean, default: false },
+  archived: { type: Boolean, default: false },
+  reports: [reportSchema],
 });
+
+collageSchema.index({ locations: "2dsphere" });
 
 const Collage = model("Collage", collageSchema);
 

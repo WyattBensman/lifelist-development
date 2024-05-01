@@ -1,38 +1,22 @@
 import { Collage, Comment } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils/auth.mjs";
+import { findCollageById, isUser } from "../../../../utils/auth.mjs";
 import createNotification from "../notifications/createNotification.mjs";
 
 const createComment = async (_, { collageId, text }, { user }) => {
   try {
     isUser(user);
+    const collage = await findCollageById(collageId);
 
-    // Check if the collage exists
-    const collage = await Collage.findById(collageId);
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
-
-    // Create a new comment instance
     const newComment = await Comment.create({
       author: user._id,
       text,
       createdAt: new Date(),
     });
 
-    // Use $addToSet to add the new comment to the comments array without duplicates
-    const updatedCollage = await Collage.findByIdAndUpdate(
-      collageId,
-      { $addToSet: { comments: newComment } },
-      { new: true }
-    ).populate({
-      path: "comments",
-      populate: {
-        path: "author",
-        select: "_id username profilePicture",
-      },
+    await Collage.findByIdAndUpdate(collageId, {
+      $addToSet: { comments: newComment },
     });
 
-    // Create a notification for the original author of the collage
     await createNotification({
       recipientId: collage.author,
       senderId: user._id,
@@ -43,8 +27,7 @@ const createComment = async (_, { collageId, text }, { user }) => {
 
     return {
       success: true,
-      message: "Comment deleted successfully",
-      comments: updatedCollage.comments,
+      message: "Comment created successfully",
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

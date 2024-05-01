@@ -1,65 +1,56 @@
-import { LifeList, Experience } from "../../../../models/index.mjs";
+import { LifeList } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 export const getCurrentUserLifeList = async (_, __, { user }) => {
   isUser(user);
-  const currentUserLifeList = await LifeList.findOne({ author: user._id })
-    .populate({
-      path: "experiences.experience",
-      model: "Experience",
-    })
+
+  const lifeList = await LifeList.findOne({ author: user._id })
+    .populate("experiences")
     .exec();
-  if (!currentUserLifeList)
-    throw new Error("LifeList not found for the current user.");
-  return currentUserLifeList;
+  if (!lifeList) throw new Error("LifeList not found for the current user.");
+  return lifeList;
 };
 
 export const getUserLifeList = async (_, { userId }, { user }) => {
   isUser(user);
-  const userLifeList = await LifeList.findOne({ author: userId })
-    .populate({
-      path: "experiences.experience",
-      model: "Experience",
-    })
+
+  const lifeList = await LifeList.findOne({ author: userId })
+    .populate("experiences")
     .exec();
-  if (!userLifeList)
-    throw new Error("LifeList not found for the specified user.");
-  return userLifeList;
+  if (!lifeList) throw new Error("LifeList not found for the specified user.");
+  return lifeList;
 };
 
-export const getExperiencedList = async (_, { lifeListId }, { user }) => {
-  isUser(user);
-  const experiencedExperiences = await LifeList.findOne({
-    _id: lifeListId,
-    "experiences.list": "EXPERIENCED",
+export const getExperiencedList = async (_, { lifeListId }) => {
+  const lifeList = await LifeList.findById(lifeListId).exec();
+  if (!lifeList) throw new Error("LifeList not found.");
+
+  const experiencedList = await LifeListExperience.find({
+    lifeList: lifeList._id,
+    list: "EXPERIENCED",
   })
-    .populate("experiences.experience")
+    .populate("experience")
     .exec();
-  return experiencedExperiences;
+  return experiencedList;
 };
 
-export const getWishListedList = async (_, { lifeListId }, { user }) => {
-  isUser(user);
-  const wishListedExperiences = await LifeList.findOne({
-    _id: lifeListId,
-    "experiences.list": "WISHLISTED",
+export const getWishListedList = async (_, { lifeListId }) => {
+  const lifeList = await LifeList.findById(lifeListId).exec();
+  if (!lifeList) throw new Error("LifeList not found.");
+
+  const wishListedList = await LifeListExperience.find({
+    lifeList: lifeList._id,
+    list: "WISHLISTED",
   })
-    .populate("experiences.experience")
+    .populate("experience")
     .exec();
-  return wishListedExperiences;
+  return wishListedList;
 };
 
-export const getSingleExperience = async (
-  _,
-  { lifeListId, experienceId },
-  { user }
-) => {
-  isUser(user);
-  const singleExperience = await LifeList.findOne({
-    _id: lifeListId,
-    "experiences.experience": experienceId,
-  })
-    .populate("experiences.experience")
+export const getLifeListExperience = async (_, { experienceId }) => {
+  const experience = await LifeListExperience.findById(experienceId)
+    .populate("experience")
     .exec();
-  return singleExperience;
+  if (!experience) throw new Error("LifeList experience not found.");
+  return experience;
 };

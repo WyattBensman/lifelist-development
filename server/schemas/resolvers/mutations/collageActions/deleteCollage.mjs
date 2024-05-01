@@ -1,5 +1,9 @@
 import { Collage, User } from "../../../../models/index.mjs";
-import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
+import {
+  isUser,
+  isCurrentAuthor,
+  findCollageById,
+} from "../../../../utils/auth.mjs";
 
 const deleteCollage = async (_, { collageId }, { user }) => {
   try {
@@ -7,11 +11,7 @@ const deleteCollage = async (_, { collageId }, { user }) => {
     await isCurrentAuthor(user, collageId);
 
     // Retrieve the collage document
-    const collage = await Collage.findById(collageId);
-
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
+    const collage = await findCollageById(collageId);
 
     // Remove the collage from the current user's collages
     await User.findByIdAndUpdate(user._id, {

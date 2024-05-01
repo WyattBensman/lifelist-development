@@ -41,6 +41,12 @@ const experienceSchema = new Schema({
       ref: "Collage",
     },
   ],
+  cameraShots: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "CameraShot",
+    },
+  ],
 });
 
 const Experience = model("Experience", experienceSchema);

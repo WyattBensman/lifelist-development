@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import userSettingsSchema from "./userSettings.mjs";
-import { LifeList, Message, Conversation } from "../index.mjs";
+import { LifeList, Message } from "../index.mjs";
 
 // Regular expression constants for validation
 const emailRegex = /^\S+@\S+\.\S+$/;
@@ -11,36 +11,13 @@ const fullNameRegex = /^[a-zA-Z\s]+$/;
 const usernameRegex = /^[a-zA-Z]{2}[a-zA-Z0-9._-]*$/;
 
 const userSchema = new Schema({
+  // Identity
   fullName: {
     type: String,
     trim: true,
     match: [
       fullNameRegex,
       "Full name must only contain alphabetic characters and spaces.",
-    ],
-  },
-  email: {
-    type: String,
-    unique: true,
-    trim: true,
-    lowercase: true,
-    match: [emailRegex, "Please enter a valid email address."],
-  },
-  phoneNumber: {
-    type: String,
-    trim: true,
-    unique: true,
-    match: [
-      phoneNumberRegex,
-      "Phone number must be exactly 10 digits without any symbols or spaces.",
-    ],
-  },
-  password: {
-    type: String,
-    minlength: [8, "Password must be at least 8 characters long."],
-    match: [
-      passwordRegex,
-      "Password must include at least one digit, one uppercase letter, and one special character.",
     ],
   },
   username: {
@@ -57,6 +34,36 @@ const userSchema = new Schema({
   gender: { type: String, enum: ["MALE", "FEMALE", "PREFER NOT TO SAY"] },
   birthday: { type: Date },
   profilePicture: { type: String, default: "default-avatar.jpg" },
+
+  // Contact Information
+  email: {
+    type: String,
+    unique: true,
+    trim: true,
+    lowercase: true,
+    match: [emailRegex, "Please enter a valid email address."],
+  },
+  phoneNumber: {
+    type: String,
+    trim: true,
+    unique: true,
+    match: [
+      phoneNumberRegex,
+      "Phone number must be exactly 10 digits without any symbols or spaces.",
+    ],
+  },
+
+  // Authentication
+  password: {
+    type: String,
+    minlength: [8, "Password must be at least 8 characters long."],
+    match: [
+      passwordRegex,
+      "Password must include at least one digit, one uppercase letter, and one special character.",
+    ],
+  },
+
+  // User Relations
   followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   following: [{ type: Schema.Types.ObjectId, ref: "User" }],
   followRequests: [
@@ -69,26 +76,22 @@ const userSchema = new Schema({
       },
     },
   ],
+
+  // Content
   lifeList: { type: Schema.Types.ObjectId, ref: "LifeList" },
   collages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
-  dailyCameraShots: {
-    count: {
-      type: Number,
-      default: 0,
-      validate: [
-        (value) => value <= 10,
-        "Maximum of 10 snapshots allowed per day.",
-      ],
-    },
-    lastReset: { type: Date, default: Date.now },
-  },
-  cameraShots: [{ type: Schema.Types.ObjectId, ref: "CameraShot" }],
-  cameraAlbums: [{ type: Schema.Types.ObjectId, ref: "CameraAlbum" }],
+  likedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
   repostedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
-  taggedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
   savedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
   archivedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
-  logbook: [{ type: Schema.Types.ObjectId, ref: "LogbookItem" }],
+  taggedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
+
+  // Camera
+  developingCameraShots: [{ type: Schema.Types.ObjectId, ref: "CameraShot" }],
+  cameraShots: [{ type: Schema.Types.ObjectId, ref: "CameraShot" }],
+  cameraAlbums: [{ type: Schema.Types.ObjectId, ref: "CameraAlbum" }],
+
+  // Notifications & Settings
   unreadMessagesCount: { type: Number, default: 0 },
   notifications: [{ type: Schema.Types.ObjectId, ref: "Notification" }],
   conversations: [
@@ -133,6 +136,8 @@ const userSchema = new Schema({
   },
   privacyGroups: [{ type: Schema.Types.ObjectId, ref: "PrivacyGroup" }],
   blocked: [{ type: Schema.Types.ObjectId, ref: "User" }],
+
+  // Verification
   verified: {
     type: Boolean,
     default: false,

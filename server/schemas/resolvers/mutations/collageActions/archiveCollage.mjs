@@ -6,24 +6,18 @@ const archiveCollage = async (_, { collageId }, { user }) => {
     isUser(user);
     await isCurrentAuthor(user, collageId);
 
-    // Archive the collage
-    const archivedCollage = await Collage.findByIdAndUpdate(collageId, {
-      archived: true,
-    });
-
-    // Add the collage to the user's archivedCollages field
+    await Collage.findByIdAndUpdate(collageId, { archived: true });
     await User.findByIdAndUpdate(user._id, {
       $addToSet: { archivedCollages: collageId },
     });
 
     return {
       success: true,
-      message: "Successfully archived collage.",
-      action: "ARCHIVE",
+      message: "Collage successfully archived.",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred while archiving the collage.");
+    console.error(`Error archiving collage: ${error.message}`);
+    throw new Error("Failed to archive collage.");
   }
 };
 

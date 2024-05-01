@@ -21,6 +21,16 @@ const cameraAlbumSchema = new Schema({
       ref: "CameraShot",
     },
   ],
+  shotsCount: {
+    type: Number,
+    default: 0,
+  },
+});
+
+// Pre-save hook to update shotsCount
+cameraAlbumSchema.pre("save", async function (next) {
+  this.shotsCount = this.shots.length;
+  next();
 });
 
 const CameraAlbum = model("CameraAlbum", cameraAlbumSchema);

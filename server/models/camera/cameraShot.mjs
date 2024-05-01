@@ -1,5 +1,13 @@
 import { Schema, model } from "mongoose";
 
+// Dimension options based on aspect ratios
+const DIMENSION_OPTIONS = {
+  THREETWO: { width: 1200, height: 800 }, // 3:2 aspect ratio
+  TWOTHREE: { width: 800, height: 1200 }, // 2:3 aspect ratio
+  SIXNINE: { width: 800, height: 1400 }, // 16:9 aspect ratio
+  NINESIX: { width: 1400, height: 800 }, // 9:16 aspect ratio
+};
+
 const cameraShotSchema = new Schema({
   author: {
     type: Schema.Types.ObjectId,
@@ -16,16 +24,20 @@ const cameraShotSchema = new Schema({
   },
   camera: {
     type: String,
-    enum: ["35MM_CAMERA", "FUJI_400"],
-  },
-  filtered: {
-    type: Boolean,
-    default: false,
+    enum: ["STANDARD", "FUJI", "DISPOSABLE", "POLAROID"],
+    default: "STANDARD",
   },
   shotOrientation: {
     type: String,
     enum: ["VERTICAL", "HORIZONTAL"],
     default: "VERTICAL",
+  },
+  dimensions: {
+    type: {
+      width: Number,
+      height: Number,
+    },
+    default: () => DIMENSION_OPTIONS.TWOTHREE,
   },
 });
 

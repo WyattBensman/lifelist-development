@@ -4,20 +4,9 @@ import { isUser } from "../../../../utils/auth.mjs";
 const deleteComment = async (_, { collageId, commentId }, { user }) => {
   try {
     isUser(user);
+    const collage = await findCollageById(collageId);
+    const comment = await findCommentById(commentId);
 
-    // Find the comment by its ID
-    const comment = await Comment.findById(commentId);
-    if (!comment) {
-      throw new Error("Comment not found.");
-    }
-
-    // Find the collage by its ID
-    const collage = await Collage.findById(collageId);
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
-
-    // Check if the current user is either the author of the comment or the creator of the collage
     if (
       comment.author.toString() !== user._id &&
       collage.author.toString() !== user._id

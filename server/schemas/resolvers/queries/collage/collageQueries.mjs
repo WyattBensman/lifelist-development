@@ -12,25 +12,7 @@ export const getCollageById = async (_, { collageId }) => {
   return collage;
 };
 
-export const getCollageMedia = async (_, { collageId }) => {
-  const collage = await Collage.findById(collageId).select("images").exec();
-  if (!collage) throw new Error("Collage not found.");
-  return collage.images || [];
-};
-
-export const getCollageSummary = async (_, { collageId }) => {
-  const collage = await Collage.findById(collageId)
-    .select("entries experiences")
-    .populate("experiences")
-    .exec();
-  if (!collage) throw new Error("Collage not found.");
-  return {
-    entries: collage.entries || [],
-    experiences: collage.experiences || [],
-  };
-};
-
-export const getCollageComments = async (_, { collageId }, { user }) => {
+export const getComments = async (_, { collageId }, { user }) => {
   isUser(user);
   const collage = await Collage.findById(collageId)
     .populate({
@@ -45,7 +27,7 @@ export const getCollageComments = async (_, { collageId }, { user }) => {
   return collage.comments || [];
 };
 
-export const getCollageTaggedUsers = async (_, { collageId }, { user }) => {
+export const getTaggedUsers = async (_, { collageId }, { user }) => {
   isUser(user);
   const collage = await Collage.findById(collageId)
     .populate({
@@ -55,4 +37,26 @@ export const getCollageTaggedUsers = async (_, { collageId }, { user }) => {
     .exec();
   if (!collage) throw new Error("Collage not found.");
   return collage.tagged;
+};
+
+export const getInteractions = async (_, { collageId }, { user }) => {
+  isUser(user);
+  const collage = await Collage.findById(collageId)
+    .populate("likes reposts saves comments")
+    .exec();
+
+  if (!collage) throw new Error("Collage not found.");
+
+  // Assuming likes, reposts, saves, and comments are arrays of user IDs
+  const likesCount = collage.likes.length;
+  const repostsCount = collage.reposts.length;
+  const savesCount = collage.saves.length;
+  const commentsCount = collage.comments.length;
+
+  return {
+    likes: likesCount,
+    reposts: repostsCount,
+    saves: savesCount,
+    comments: commentsCount,
+  };
 };

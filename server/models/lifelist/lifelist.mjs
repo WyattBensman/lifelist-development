@@ -7,21 +7,8 @@ const lifeListSchema = new Schema({
   },
   experiences: [
     {
-      experience: {
-        type: Schema.Types.ObjectId,
-        ref: "Experience",
-      },
-      list: {
-        type: String,
-        enum: ["EXPERIENCED", "WISHLISTED"],
-        required: true,
-      },
-      associatedCollages: [
-        {
-          type: Schema.Types.ObjectId,
-          ref: "Collage",
-        },
-      ],
+      type: Schema.Types.ObjectId,
+      ref: "LifeListExperience",
     },
   ],
 });

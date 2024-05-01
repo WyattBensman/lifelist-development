@@ -8,23 +8,21 @@ type User {
   fullName: String
   email: String
   phoneNumber: String
-  password: String
   username: String
   bio: String
   gender: String
-  birthday: String
+  birthday: Date
   profilePicture: String
   followers: [User]
   following: [User]
   followRequests: [FollowRequest]
   lifeList: LifeList
-  logbook: [LogbookItem]
   collages: [Collage]
   repostedCollages: [Collage]
   taggedCollages: [Collage]
   savedCollages: [Collage]
   archivedCollages: [Collage]
-  dailyCameraShots: DailyCameraShots
+  developingCameraShots: [CameraShot]
   cameraShots: [CameraShot]
   cameraAlbums: [CameraAlbum]
   notifications: [Notification]
@@ -122,23 +120,12 @@ type User {
 
   type DailyCameraShots {
     count: Int
-    lastReset: String
+    lastReset: Date
   }
 
   type VerificationStatus {
     code: String
     verified: Boolean
-  }
-
-  type LogbookItem {
-    _id: ID!
-    author: User!
-    title: String!
-    collage: Collage
-    startDate: Date
-    finishDate: Date
-    date: Date
-    month: String
   }
 
   type LifeList {
@@ -148,8 +135,11 @@ type User {
   }
   
   type LifeListExperience {
+    _id: ID!
+    lifeList: LifeList
     experience: Experience
     list: LifeListListEnum
+    associatedShots: [CameraShot]
     associatedCollages: [Collage]
   }
   
@@ -185,20 +175,17 @@ type User {
     _id: ID!
     author: User
     createdAt: Date
+    caption: String
     images: [String]
     coverImage: String
-    caption: String
-    date: Date
-    startDate: Date
-    finishDate: Date
-    month: Month
-    entries: [Entry]
-    experiences: [Experience]
+    privacy: PrivacySetting
+    privacyGroup: PrivacyGroup
     locations: [Location]
-    tagged: [User]
-    comments: [Comment]
+    likes: [User]
     reposts: [User]
     saves: [User]
+    tagged: [User]
+    comments: [Comment]
     posted: Boolean
     archived: Boolean
     reports: [Report]
@@ -211,6 +198,22 @@ type User {
     createdAt: Date
     comments: [Comment]
     reports: [Report]
+  }
+
+  enum PrivacySetting {
+    PUBLIC
+    PRIVATE
+    PRIVACY_GROUP
+  }
+
+  type Location {
+    name: String
+    coordinates: GeoJSONPoint
+  }
+  
+  type GeoJSONPoint {
+    type: String
+    coordinates: [Float!]
   }
   
   type Report {
@@ -227,24 +230,13 @@ type User {
     SPAM_OR_SCAMS
   }
 
-  type Entry {
+  type CameraAlbum {
+    _id: ID!
+    author: User
     title: String
-    content: String
-  }
- 
-  type Month {
-    name: String
-    year: Int
-  }
-  
-  type Location {
-    name: String
-    coordinates: Coordinates
-  }
-
-  type Coordinates {
-    latitude: Float
-    longitude: Float
+    description: String
+    shots: [CameraShot]
+    shotsCount: Int
   }
 
   type CameraShot {
@@ -253,13 +245,20 @@ type User {
     image: String
     capturedAt: Date
     camera: CameraType
-    filtered: Boolean
     shotOrientation: ShotOrientation
+    dimensions: Dimensions
+  }
+
+  type Dimensions {
+    width: Int
+    height: Int
   }
 
   enum CameraType {
-    MM_35
-    FUJI_400
+    STANDARD
+    FUJI
+    DISPOSABLE
+    POLAROID
   }
 
   enum ShotOrientation {
@@ -267,56 +266,48 @@ type User {
     HORIZONTAL
   }
 
-  type CameraAlbum {
-    _id: ID!
-    author: User
-    title: String
-    description: String
-    shots: [CameraShot]
-  }
-
   type Query {
     # User Queries
     getUserProfileById(userId: ID!): User
-    searchUsers(query: String!): [User]
     getFollowers(userId: ID!): [User]
     getFollowing(userId: ID!): [User]
     getUserCollages(userId: ID!): [Collage]
-    getUserRepostedCollages(userId: ID!): [Collage]
-    getUserTaggedCollages(userId: ID!): [Collage]
-    getUserSavedCollages: [Collage]
-    getUserLogbook: [LogbookItem]
-    getUserArchives: [Collage]
-    getFlowpageLinks(userId: ID!): [FlowpageLink]
+    getRepostedCollages(userId: ID!): [Collage]
+    getTaggedCollages(userId: ID!): [Collage]
+    getLikedCollages: [Collage]
+    getSavedCollages: [Collage]
+    getArchives: [Collage]
     getBlockedUsers: [User]
+    getFlowpageLinks(userId: ID!): [FlowpageLink]
     getUserProfileInformation: UserProfileInformation
     getUserContactInformation: UserContactInformation
     getUserIdentityInformation: UserIdentityInformation
     getUserSettingsInformation: UserSettingsInformation
   
     # Privacy Group Queries
-    getPrivacyGroups: [PrivacyGroup]
-    getSpecificPrivacyGroup(privacyGroupId: ID!): PrivacyGroup
+    getAllPrivacyGroups: [PrivacyGroup]
+    getPrivacyGroup(privacyGroupId: ID!): PrivacyGroup
   
     # LifeList Queries
     getCurrentUserLifeList: LifeList
     getUserLifeList(userId: ID!): LifeList
-    getExperiencedList(lifeListId: ID!): [Experience]
-    getWishListedList(lifeListId: ID!): LifeList
-    getSingleExperience(lifeListId: ID!, experienceId: ID!): Experience
+    getExperiencedList(lifeListId: ID!): [LifeListExperience]
+    getWishListedList(lifeListId: ID!): [LifeListExperience]
+    getSingleExperience(lifeListId: ID!, experienceId: ID!): LifeListExperience
   
     # Collage Queries
     getCollageById(collageId: ID!): Collage
-    getCollageMedia(collageId: ID!): [String]
-    getCollageSummary(collageId: ID!): CollageSummary
-    getCollageComments(collageId: ID!): [Comment]
-    getCollageTaggedUsers(collageId: ID!): [User]
+    getComments(collageId: ID!): [Comment]
+    getTaggedUsers(collageId: ID!): [User]
+    getInteractions(collageId: ID!): CollageInteractions
   
     # Camera Queries
+    getDailyCameraShotsLeft: Int
     getAllCameraAlbums: [CameraAlbum]
     getCameraAlbum(albumId: ID!): CameraAlbum
     getAllCameraShots: [CameraShot]
     getCameraShot(shotId: ID!): CameraShot
+    getDevelopingCameraShots: [CameraShot]
   
     # Messaging Queries
     getUserConversations: [Conversation]
@@ -343,12 +334,12 @@ type User {
     email: String
     phoneNumber: String
   }
-
+  
   type UserIdentityInformation {
     birthday: Date
     gender: String
   }
-
+  
   type UserSettingsInformation {
     privacy: String
     darkMode: Boolean
@@ -357,20 +348,14 @@ type User {
     postRepostToMainFeed: Boolean
   }
 
-  type CollageSummary {
-    entries: [Entry]
-    experiences: [Experience]
+  type CollageInteractions {
+    likes: Int
+    reposts: Int
+    saves: Int
+    comments: Int
   }
 
-  input MonthInput {
-    name: String
-    year: Int
-  }
-
-  input EntryInput {
-  title: String
-  content: String
-}
+  # WASTEEEEEE
 
   input PrivacyGroupInput {
     groupId: ID!

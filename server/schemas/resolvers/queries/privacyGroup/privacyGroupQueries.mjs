@@ -1,7 +1,7 @@
 import { PrivacyGroup } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const getPrivacyGroups = async (_, __, { user }) => {
+export const getAllPrivacyGroups = async (_, __, { user }) => {
   isUser(user);
   const privacyGroups = await PrivacyGroup.find({ author: user._id })
     .populate("users", "fullName username")
@@ -9,11 +9,7 @@ export const getPrivacyGroups = async (_, __, { user }) => {
   return privacyGroups;
 };
 
-export const getSpecificPrivacyGroup = async (
-  _,
-  { privacyGroupId },
-  { user }
-) => {
+export const getPrivacyGroup = async (_, { privacyGroupId }, { user }) => {
   isUser(user);
   const privacyGroup = await PrivacyGroup.findOne({
     _id: privacyGroupId,
