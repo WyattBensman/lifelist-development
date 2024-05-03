@@ -89,13 +89,6 @@ export const getBlockedUsers = async (_, __, { user }) => {
   return foundUser.blocked;
 };
 
-export const getFlowpageLinks = async (_, { userId }, { user }) => {
-  isUser(user);
-  const foundUser = await User.findById(userId, "flowpageLinks").exec();
-  if (!foundUser) throw new Error("User not found for the provided ID.");
-  return foundUser.flowpageLinks;
-};
-
 export const getUserProfileInformation = async (_, __, { user }) => {
   isUser(user);
   return User.findById(user._id, "profilePicture fullName username bio").exec();

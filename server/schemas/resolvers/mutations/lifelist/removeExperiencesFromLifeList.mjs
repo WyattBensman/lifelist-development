@@ -1,5 +1,5 @@
-import { LifeList } from "../../../../models/index.mjs";
-import { isUser, isCurrentLifeListAuthor } from "../../../../utils/auth.mjs";
+import { LifeList, LifeListExperience } from "../../../../models/index.mjs";
+import { isLifeListAuthor } from "../../../../utils/auth.mjs";
 
 const removeExperiencesFromLifeList = async (
   _,
@@ -7,25 +7,23 @@ const removeExperiencesFromLifeList = async (
   { user }
 ) => {
   try {
-    isUser(user);
-    await isCurrentLifeListAuthor(user, lifeListId);
+    // Ensure the user is authorized to modify the LifeList
+    await isLifeListAuthor(user, lifeListId);
 
+    // Delete the specified LifeListExperience documents
+    await LifeListExperience.deleteMany({ _id: { $in: experienceIds } });
+
+    // Update the LifeList to remove the deleted experiences
     const lifeList = await LifeList.findById(lifeListId);
-
-    // Filter out experiences to be removed
     lifeList.experiences = lifeList.experiences.filter(
-      (existingExp) =>
-        !experienceIds.includes(existingExp.experience.toString())
+      (id) => !experienceIds.includes(id.toString())
     );
-
     await lifeList.save();
 
-    return LifeList.findById(lifeListId).populate("experiences.experience");
+    return lifeList; // Return the modified LifeList
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error(
-      "An error occurred during removing experience from life list."
-    );
+    console.error(`Error removing experiences from LifeList: ${error.message}`);
+    throw new Error("Failed to remove experiences from LifeList.");
   }
 };
 

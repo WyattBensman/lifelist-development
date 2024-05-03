@@ -11,27 +11,38 @@ const updatePassword = async (
 
     // Fetch the current user data
     const currentUser = await User.findById(user._id);
+    if (!currentUser) {
+      throw new AuthenticationError("User not found.");
+    }
 
     // Verify the current password
     const isCurrentPasswordValid = await currentUser.isCorrectPassword(
       currentPassword
     );
-
     if (!isCurrentPasswordValid) {
-      throw new AuthenticationError("Invalid current password");
+      throw new AuthenticationError("Invalid current password.");
+    }
+
+    // Ensure the new password is different from the current password (if necessary)
+    if (currentPassword === newPassword) {
+      throw new AuthenticationError(
+        "New password must be different from the current password."
+      );
     }
 
     // Update the user's password directly
     currentUser.password = newPassword;
-    const updatedUser = await currentUser.save();
+    await currentUser.save();
 
     return {
       success: true,
-      message: "Password updated successfully",
+      message: "Password successfully updated.",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during password update");
+    console.error(`Update Password Error: ${error.message}`);
+    throw new AuthenticationError(
+      "Failed to update password. Please try again."
+    );
   }
 };
 

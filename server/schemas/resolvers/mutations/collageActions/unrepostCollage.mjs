@@ -1,47 +1,41 @@
-import { Collage, User } from "../../../../models/index.mjs";
+import { User, Collage } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
+import { findCollageById } from "../../../../utils/auth.mjs";
 
 const unrepostCollage = async (_, { collageId }, { user }) => {
   try {
     isUser(user);
 
-    const collage = await Collage.findById(collageId);
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
-
-    // Check if the user has already reposted the collage
-    const existingRepost = await User.findOne({
-      _id: user._id,
-      repostedCollages: collageId,
-    });
-
-    if (!existingRepost) {
-      throw new Error("Collage already reposted by the user.");
-    }
+    // Verify the collage exists
+    await findCollageById(collageId);
 
     // Remove the collage from the user's repostedCollages
-    await User.findByIdAndUpdate(
+    const updatedUser = await User.findByIdAndUpdate(
       user._id,
       { $pull: { repostedCollages: collageId } },
       { new: true }
     );
 
     // Remove the user from the collage's reposts
-    await Collage.findByIdAndUpdate(
+    const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
       { $pull: { reposts: user._id } },
       { new: true }
     );
 
+    // Check if both updates were successful
+    if (!updatedUser || !updatedCollage) {
+      throw new Error("Failed to unrepost collage. Please try again.");
+    }
+
     return {
       success: true,
-      message: "Collage un-reposted successfully.",
+      message: "Collage successfully unreposted.",
       action: "UNREPOST",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during un-reposting the collage.");
+    console.error(`Unrepost Collage Error: ${error.message}`);
+    throw new Error("An error occurred during unreposting the collage.");
   }
 };
 

@@ -1,6 +1,6 @@
 import * as userQueries from "./user/userQueries.mjs";
 import * as experienceQueries from "./experience/experienceQueries.mjs";
-import * as collageMutations from "./collage/collageMutations.mjs";
+import * as collageMutations from "./collage/collageQueries.mjs";
 import * as cameraQueries from "./camera/cameraQueries.mjs";
 import * as lifeListQueries from "./lifelist/lifeListQueries.mjs";
 import * as privacyGroupQueries from "./privacyGroup/privacyGroupQueries.mjs";

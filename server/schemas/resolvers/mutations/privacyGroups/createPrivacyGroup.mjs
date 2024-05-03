@@ -5,9 +5,8 @@ const createPrivacyGroup = async (_, { groupName, userIds }, { user }) => {
   try {
     isUser(user);
 
-    // Check for duplicate user IDs in the userIds array
+    // Prevent duplicate user IDs
     const uniqueUserIds = [...new Set(userIds)];
-
     if (userIds.length !== uniqueUserIds.length) {
       throw new Error("Duplicate users found in the array.");
     }
@@ -19,26 +18,17 @@ const createPrivacyGroup = async (_, { groupName, userIds }, { user }) => {
       users: userIds,
     });
 
-    // Update the current user's privacyGroups field
-    const updatedUser = await User.findByIdAndUpdate(
+    // Link PrivacyGroup to the user's profile
+    await User.findByIdAndUpdate(
       user._id,
       { $push: { privacyGroups: newPrivacyGroup._id } },
       { new: true }
-    ).populate({
-      path: "privacyGroups",
-      populate: { path: "users", model: "User" },
-    });
+    );
 
-    // Populate the users field in the newPrivacyGroup
-    const populatedPrivacyGroup = await PrivacyGroup.populate(newPrivacyGroup, {
-      path: "users",
-      model: "User",
-    });
-
-    return populatedPrivacyGroup;
+    return await PrivacyGroup.populate(newPrivacyGroup, { path: "users" });
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during privacy group creation.");
+    throw new Error("Failed to create privacy group.");
   }
 };
 

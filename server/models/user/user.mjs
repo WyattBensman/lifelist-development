@@ -156,6 +156,15 @@ const userSchema = new Schema({
       default: false,
     },
   },
+  status: {
+    type: String,
+    enum: ["pending", "active", "expired"],
+    default: "pending",
+  },
+  expiryDate: {
+    type: Date,
+    default: () => new Date(+new Date() + 48 * 60 * 60 * 1000), // 48 hours from now
+  },
 });
 
 // Middleware for creating a LifeList when a new user is created

@@ -1,32 +1,28 @@
-import { Collage, User } from "../../../../models/index.mjs";
+import { Collage } from "../../../../models/index.mjs";
 import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
-const untagUsers = async (_, { collageId, userIdsToUntag }, { user }) => {
+const untagUsers = async (_, { collageId, userIds }, { user }) => {
   try {
     isUser(user);
     await isCurrentAuthor(user, collageId);
 
-    // Update tagged users for the collage
+    // Find the collage and remove tagged users
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $pull: { tagged: { $in: userIdsToUntag } } },
-      { new: true, runValidators: true }
-    ).populate({
-      path: "tagged",
-      select: "fullName profilePicture username",
-    });
-
-    // Remove the collage from the taggedCollages field for each untagged user
-    await User.updateMany(
-      { _id: { $in: userIdsToUntag } },
-      { $pull: { taggedCollages: collageId } }
+      { $pull: { tagged: { $in: userIds } } },
+      { new: true }
     );
 
+    // Check if the collage exists
+    if (!updatedCollage) {
+      throw new Error("Collage not found.");
+    }
+
+    // Return success message with the collage ID
     return {
       success: true,
       message: "Users untagged successfully",
       collageId: collageId,
-      taggedUsers: updatedCollage.tagged,
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

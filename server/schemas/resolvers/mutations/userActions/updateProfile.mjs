@@ -10,7 +10,7 @@ const updateProfile = async (
   try {
     isUser(user);
 
-    // Validate fName & lName
+    // Validate fullName
     if (!fullName) {
       throw new Error("Full name is required.");
     }

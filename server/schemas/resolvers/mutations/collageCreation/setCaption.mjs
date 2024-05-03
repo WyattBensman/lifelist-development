@@ -6,18 +6,23 @@ const setCaption = async (_, { collageId, caption }, { user }) => {
     isUser(user);
     await isCurrentAuthor(user, collageId);
 
-    // Update the collage with the provided title and caption
+    // Update the caption of the specified collage
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
       { caption },
       { new: true }
     );
 
+    // Check if the collage exists
+    if (!updatedCollage) {
+      throw new Error("Collage not found.");
+    }
+
+    // Return success message with the updated collage ID
     return {
       success: true,
       message: "Description added successfully",
       collageId: updatedCollage._id,
-      caption: updatedCollage.caption,
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

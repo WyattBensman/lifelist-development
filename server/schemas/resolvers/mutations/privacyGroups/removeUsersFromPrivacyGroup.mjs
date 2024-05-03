@@ -1,8 +1,5 @@
 import { PrivacyGroup } from "../../../../models/index.mjs";
-import {
-  isUser,
-  isCurrentPrivacyGroupAuthor,
-} from "../../../../utils/auth.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const removeUsersFromPrivacyGroup = async (
   _,
@@ -11,9 +8,8 @@ const removeUsersFromPrivacyGroup = async (
 ) => {
   try {
     isUser(user);
-    await isCurrentPrivacyGroupAuthor(user, privacyGroupId);
 
-    // Update the PrivacyGroup to remove users
+    // Remove specified users from the PrivacyGroup
     const updatedPrivacyGroup = await PrivacyGroup.findByIdAndUpdate(
       privacyGroupId,
       { $pullAll: { users: userIds } },
@@ -27,9 +23,7 @@ const removeUsersFromPrivacyGroup = async (
     return updatedPrivacyGroup;
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error(
-      "An error occurred during user removal from privacy group."
-    );
+    throw new Error("Failed to remove users from privacy group.");
   }
 };
 

@@ -6,24 +6,27 @@ const setAudience = async (_, { collageId, audience }, { user }) => {
     isUser(user);
     await isCurrentAuthor(user, collageId);
 
+    // Validate the audience value
+    const validAudiences = ["PUBLIC", "FRIENDS", "TAGGED", "PRIVACY_GROUP"];
+    if (!validAudiences.includes(audience)) {
+      throw new Error("Invalid audience type.");
+    }
+
+    // Update the audience field of the collage
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      {
-        $set: {
-          audience: audience.map(({ privacyGroupId }) => privacyGroupId),
-        },
-      },
-      { new: true, runValidators: true }
+      { audience },
+      { new: true }
     );
 
     return {
       success: true,
       message: "Audience set successfully",
-      collageId: collageId,
+      collageId: updatedCollage._id,
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred while setting the audience.");
+    throw new Error("An error occurred during audience set.");
   }
 };
 

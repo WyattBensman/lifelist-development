@@ -6,54 +6,47 @@ const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
   try {
     isUser(user);
 
-    // Check if any friend request already exists
-    const alreadyHasFriendRequest = await User.findOne({
-      _id: userIdToFollow,
-      "followerRequests.userId": user._id,
-    });
+    // Check for existing follow request or current following status
+    const targetUser = await User.findById(userIdToFollow);
+    if (!targetUser) {
+      throw new Error("User not found.");
+    }
 
-    // Check if user is already following
-    const isAlreadyFollowing = await User.findOne({
-      _id: user._id,
-      following: userIdToFollow,
-    });
+    const alreadyRequested = targetUser.followRequests.some((request) =>
+      request.userId.equals(user._id)
+    );
+    const isFollowing = targetUser.followers.includes(user._id);
 
-    if (alreadyHasFriendRequest || isAlreadyFollowing) {
+    if (alreadyRequested || isFollowing) {
       throw new Error(
-        "A friend request already exists, or user is already being followed."
+        "Follow request already sent or user is already followed."
       );
     }
 
-    // Update the user's followerRequests list
-    const updatedUser = await User.findByIdAndUpdate(
+    // Update the followRequests list of the target user
+    await User.findByIdAndUpdate(
       userIdToFollow,
       {
-        $addToSet: {
-          followRequests: {
-            userId: user._id,
-            status: "PENDING",
-          },
-        },
+        $addToSet: { followRequests: { userId: user._id, status: "PENDING" } },
       },
       { new: true }
     );
 
-    // Create a notification for the recipient
+    // Send a notification for the follow request
     await createNotification({
       recipientId: userIdToFollow,
       senderId: user._id,
-      type: "FRIEND_REQUEST",
-      message: `${user.fullName} sent you a friend request.`,
+      type: "FOLLOW_REQUEST",
+      message: `${user.fullName} has sent you a follow request.`,
     });
 
     return {
       success: true,
-      status: "PENDING",
-      message: "Follow request sent.",
+      message: "Follow request successfully sent.",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during sending follow request.");
+    console.error(`Send Follow Request Error: ${error.message}`);
+    throw new Error("Unable to send follow request due to a server error.");
   }
 };
 

@@ -1,43 +1,34 @@
-import { Collage, User } from "../../../../models/index.mjs";
 import {
-  isUser,
-  isCurrentAuthor,
-  findCollageById,
-} from "../../../../utils/auth.mjs";
+  Collage,
+  User,
+  Comment,
+  Notification,
+} from "../../../../models/index.mjs";
+import { isUser, isCurrentAuthor } from "../../../../utils/auth.mjs";
 
 const deleteCollage = async (_, { collageId }, { user }) => {
   try {
     isUser(user);
+    // Ensure the user is the author and the collage exists
     await isCurrentAuthor(user, collageId);
 
-    // Retrieve the collage document
-    const collage = await findCollageById(collageId);
-
-    // Remove the collage from the current user's collages
-    await User.findByIdAndUpdate(user._id, {
-      $pull: { collages: collageId },
-    });
-
-    // Remove the collage from the taggedCollages field of users who were tagged
+    // Remove collage from all users' lists and related data
     await User.updateMany(
-      { _id: { $in: collage.tagged } },
-      { $pull: { taggedCollages: collageId } }
+      {},
+      {
+        $pull: {
+          savedCollages: collageId,
+          likedCollages: collageId,
+          repostedCollages: collageId,
+          collages: collageId,
+          taggedCollages: collageId,
+        },
+      }
     );
 
-    // Remove the collage from the repostedCollages field of users who reposted it
-    await User.updateMany(
-      { _id: { $in: collage.reposts } },
-      { $pull: { repostedCollages: collageId } }
-    );
-
-    // Remove the collage from the savedCollages field of users who saved it
-    await User.updateMany(
-      { _id: { $in: collage.savedCollages } },
-      { $pull: { savedCollages: collageId } }
-    );
-
-    // Delete all comments associated with the collage
-    await Comment.deleteMany({ _id: { $in: collage.comments } });
+    // Delete all comments and notifications associated with the collage
+    await Comment.deleteMany({ collage: collageId });
+    await Notification.deleteMany({ collage: collageId });
 
     // Delete the collage
     await Collage.findByIdAndDelete(collageId);
@@ -45,11 +36,11 @@ const deleteCollage = async (_, { collageId }, { user }) => {
     return {
       success: true,
       message: "Collage successfully deleted.",
-      action: "DELETE",
+      action: "DELETE_COLLAGE",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred while deleting the collage.");
+    console.error(`Delete Collage Error: ${error.message}`);
+    throw new Error("An error occurred during collage deletion.");
   }
 };
 

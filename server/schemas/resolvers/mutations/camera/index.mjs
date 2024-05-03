@@ -1,19 +1,19 @@
-import addShotsToAlbum from "./addShotsToAlbum.mjs";
-import createAlbum from "./createAlbum.mjs";
-import deleteAlbum from "./deleteAlbum.mjs";
-import deleteShot from "./deleteShot.mjs";
-import editAlbum from "./editAlbum.mjs";
-import editShot from "./editShot.mjs";
 import removeShotsFromAlbum from "./removeShotsFromAlbum.mjs";
-import takeShot from "./takeShot.mjs";
+import editCameraShot from "./editCameraShot.mjs";
+import editCameraAlbum from "./editCameraAlbum.mjs";
+import deleteCameraShot from "./deleteCameraShot.mjs";
+import deleteCameraAlbum from "./deleteCameraAlbum.mjs";
+import createCameraShot from "./createCameraShot.mjs";
+import createCameraAlbum from "./createCameraAlbum.mjs";
+import addShotsToAlbum from "./addShotsToAlbum.mjs";
 
 export {
   addShotsToAlbum,
-  createAlbum,
-  deleteAlbum,
-  deleteShot,
-  editAlbum,
-  editShot,
+  createCameraAlbum,
+  createCameraShot,
+  deleteCameraAlbum,
+  deleteCameraShot,
+  editCameraAlbum,
+  editCameraShot,
   removeShotsFromAlbum,
-  takeShot,
 };

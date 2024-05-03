@@ -1,8 +1,5 @@
 import { PrivacyGroup } from "../../../../models/index.mjs";
-import {
-  isUser,
-  isCurrentPrivacyGroupAuthor,
-} from "../../../../utils/auth.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const addUsersToPrivacyGroup = async (
   _,
@@ -11,9 +8,8 @@ const addUsersToPrivacyGroup = async (
 ) => {
   try {
     isUser(user);
-    await isCurrentPrivacyGroupAuthor(user, privacyGroupId);
 
-    // Update the PrivacyGroup to add unique users using $addToSet
+    // Update PrivacyGroup to include new users
     const updatedPrivacyGroup = await PrivacyGroup.findByIdAndUpdate(
       privacyGroupId,
       { $addToSet: { users: { $each: userIds } } },
@@ -27,7 +23,7 @@ const addUsersToPrivacyGroup = async (
     return updatedPrivacyGroup;
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during user addition to privacy group.");
+    throw new Error("Failed to add users to privacy group.");
   }
 };
 

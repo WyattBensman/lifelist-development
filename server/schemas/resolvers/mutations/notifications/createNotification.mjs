@@ -8,6 +8,7 @@ const createNotification = async ({
   message,
 }) => {
   try {
+    // Create a new notification and save to database
     const newNotification = await Notification.create({
       recipient: recipientId,
       sender: senderId,
@@ -16,12 +17,10 @@ const createNotification = async ({
       message: message,
     });
 
-    // Update the recipient's notifications array
-    await User.findByIdAndUpdate(
-      recipientId,
-      { $addToSet: { notifications: newNotification._id } },
-      { new: true }
-    );
+    // Add this notification to the recipient's notification list
+    await User.findByIdAndUpdate(recipientId, {
+      $addToSet: { notifications: newNotification._id },
+    });
 
     return newNotification;
   } catch (error) {

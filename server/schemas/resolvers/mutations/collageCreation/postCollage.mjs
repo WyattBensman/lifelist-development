@@ -7,17 +7,7 @@ const postCollage = async (_, { collageId }, { user }) => {
     isUser(user);
     await isCurrentAuthor(user, collageId);
 
-    // Check if the collage is in the user's logbook
-    const isInLogbook = user.logbook.includes(collageId);
-
-    // Remove the collage from the user's logbook if it's present
-    if (isInLogbook) {
-      await User.findByIdAndUpdate(
-        user._id,
-        { $pull: { logbook: collageId } },
-        { new: true, runValidators: true }
-      );
-    }
+    const currentUser = User.findById(user_.id);
 
     // Update the collage's post status and createdAt
     const updatedCollage = await Collage.findByIdAndUpdate(
@@ -47,7 +37,7 @@ const postCollage = async (_, { collageId }, { user }) => {
         recipientId: taggedUserId,
         senderId: user._id,
         type: "TAG",
-        message: `Cody Maverick tagged you in a collage.`,
+        message: `${currentUser.fullName} tagged you in a collage.`,
       });
     }
 

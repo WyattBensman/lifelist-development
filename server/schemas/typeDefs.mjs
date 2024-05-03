@@ -29,12 +29,13 @@ type User {
   conversations: [Conversation]
   unreadMessagesCount: Int
   settings: UserSettings
-  flowpageLinks: [FlowpageLink]
   privacyGroups: [PrivacyGroup]
   blocked: [User]
   verified: Boolean
   emailVerification: VerificationStatus
   phoneVerification: VerificationStatus
+  status: String
+  expiryDate: Date
 }
 
   type Auth {
@@ -102,22 +103,6 @@ type User {
     REJECTED
   }
 
-  type FlowpageLink {
-    type: FlowpageLinkType
-    url: String
-  }
-
-  enum FlowpageLinkType {
-    INSTAGRAM
-    X
-    FACEBOOK
-    SNAPCHAT
-    YOUTUBE
-    TIKTOK
-    APPLE_MUSIC
-    SPOTIFY
-  }
-
   type DailyCameraShots {
     count: Int
     lastReset: Date
@@ -171,6 +156,11 @@ type User {
     ARTISTS
   }
 
+  type Coordinates {
+    latitude: Float
+    longitude: Float
+  }
+
   type Collage {
     _id: ID!
     author: User
@@ -181,10 +171,10 @@ type User {
     privacy: PrivacySetting
     privacyGroup: PrivacyGroup
     locations: [Location]
+    tagged: [User]
     likes: [User]
     reposts: [User]
     saves: [User]
-    tagged: [User]
     comments: [Comment]
     posted: Boolean
     archived: Boolean
@@ -204,6 +194,7 @@ type User {
     PUBLIC
     PRIVATE
     PRIVACY_GROUP
+    TAGGED
   }
 
   type Location {
@@ -278,7 +269,6 @@ type User {
     getSavedCollages: [Collage]
     getArchives: [Collage]
     getBlockedUsers: [User]
-    getFlowpageLinks(userId: ID!): [FlowpageLink]
     getUserProfileInformation: UserProfileInformation
     getUserContactInformation: UserContactInformation
     getUserIdentityInformation: UserIdentityInformation
@@ -293,7 +283,7 @@ type User {
     getUserLifeList(userId: ID!): LifeList
     getExperiencedList(lifeListId: ID!): [LifeListExperience]
     getWishListedList(lifeListId: ID!): [LifeListExperience]
-    getSingleExperience(lifeListId: ID!, experienceId: ID!): LifeListExperience
+    getLifeListExperience(lifeListId: ID!, experienceId: ID!): LifeListExperience
   
     # Collage Queries
     getCollageById(collageId: ID!): Collage
@@ -355,90 +345,93 @@ type User {
     comments: Int
   }
 
-  # WASTEEEEEE
-
-  input PrivacyGroupInput {
-    groupId: ID!
-  }
-  
-  input LocationInput {
-    name: String!
-    coordinates: CoordinatesInput!
-  }
-  
-  input CoordinatesInput {
-    latitude: Float
-    longitude: Float
-  }
-
-  input FlowpageLinkInput {
-    type: String
-    url: String
-  }
-
-  input LogbookInput {
-    title: String!
-    collageId: ID!
-    date: String
-    startDate: String
-    finishDate: String
-    month: String
-  }
-
-  # User Regristration Mutations
   type Mutation {
-    initializeRegristration(email: String, phoneNumber: String, birthday: Date): User
-    verification(userId: ID!, verificationCode: String!): User
-    resendVerificationCode(userId: ID!): User
-    setUsernameAndPassword(userId: ID!, username: String!, password: String!): User
-    setBasicInformation(userId: ID!, fullName: String!, gender: String!): Auth
-    setProfilePictureAndBio(userId: ID!, profilePicture: Upload, bio: String): User
-    createUser(
-      fullName: String
-      email: String
-      phoneNumber: String
-      password: String
-      username: String
-      gender: String
-      birthday: String
-    ): User
-  } 
-
-  # User Actions Mutations
-  type Mutation {
+    # User Authentication Mutations
     login(usernameOrEmailOrPhone: String!, password: String!): Auth
-    deleteUser(userId: ID!): MutationResponse
-    updatePassword(currentPassword: String!, newPassword: String!): MutationResponse
-    updateProfile(profilePicture: Upload, fullName: String, username: String, bio: String): UpdateProfileResponse
-    updateContact(email: String, phoneNumber: String): UpdateContactResponse
-    updateIdentity(gender: String, birthday: String): UpdateIdentityResponse
-    updateSettings(privacy: String, darkMode: Boolean, language: String, notifications: Boolean, postRepostToMainFeed: Boolean): UpdateSettingsResponse
-    updateFlowpageLinks(flowpageLinks: [FlowpageLinkInput]): [FlowpageLink]
-  }
+    initializeRegistration(email: String, phoneNumber: String, birthday: String!): AuthResponse!
+    setBasicInformation(fullName: String!, gender: String!): UserResponse!
+    setUsernameAndPassword(username: String!, password: String!): UserResponse!
+    setProfilePictureAndBio(profilePicture: Upload, bio: String): UserResponse!
 
-  # User Relations Mutations
-  type Mutation {
-    sendFollowRequest(userIdToFollow: ID!): FollowRequestResponse
-    unsendFollowRequest(userIdToUnfollow: ID!): User
-    acceptFollowRequest(userIdToAccept: ID!): FollowRequestResponse
-    denyFollowRequest(userIdToDeny: ID!): FollowRequestResponse
-    followUser(userIdToFollow: ID!): MutationResponse
-    unfollowUser(userIdToUnfollow: ID!): MutationResponse
-    blockUser(userIdToBlock: ID!): MutationResponse
-    unblockUser(userIdToUnblock: ID!): MutationResponse
-  }
+    # User Actions Mutations
+    updatePhoneNumber(phoneNumber: String!): UpdateEmailResponse!
+    updateEmail(email: String!): UpdatePhoneNumberResponse!
+    updatePassword(currentPassword: String!, newPassword: String!): UpdatePasswordResponse!
+    updateProfile(profilePicture: Upload, fullName: String, username: String, bio: String): UpdateProfileResponse!
+    updateIdentity(gender: String, birthday: String): UpdateIdentityResponse!
+    updateSettings(privacy: String, darkMode: Boolean, language: String, notifications: Boolean, postRepostToMainFeed: Boolean): UpdateSettingsResponse!
+    deleteUser(userId: ID!): StandardResponse
 
-  # Privacy Group Mutations
-  type Mutation {
+    # User Relations Mutations
+    followUser(userIdToFollow: ID!): StandardResponse!
+    unfollowUser(userIdToUnfollow: ID!): StandardResponse!
+    sendFollowRequest(userIdToFollow: ID!): StandardResponse!
+    unsendFollowRequest(userIdToUnfollow: ID!): StandardResponse!
+    acceptFollowRequest(userIdToAccept: ID!): StandardResponse!
+    denyFollowRequest(userIdToDeny: ID!): StandardResponse!
+    blockUser(userIdToBlock: ID!): StandardResponse!
+    unblockUser(userIdToUnblock: ID!): StandardResponse!
+
+    #Collage Creation Mutations
+    startCollage(images: [Upload]): CollageCreationResponse!
+    setCoverImage(collageId: ID!, selectedImage: String!): CollageCreationResponse!
+    setCaption(collageId: ID!, caption: String): CollageCreationResponse!
+    setLocation(collageId: ID!, locations: [LocationInput]): CollageCreationResponse!
+    setAudience(collageId: ID!, audience: PrivacySetting!): CollageCreationResponse!
+    tagUsers(collageId: ID!, userIds: [ID]): CollageCreationResponse!
+    untagUsers(collageId: ID!, userIds: [ID]): CollageCreationResponse!
+    postCollage(collageId: ID!): Collage
+
+    # Collage Actions Mutations
+    saveCollage(collageId: ID!): ActionResponse!
+    unsaveCollage(collageId: ID!): ActionResponse!
+    repostCollage(collageId: ID!): ActionResponse!
+    unrepostCollage(collageId: ID!): ActionResponse!
+    likeCollage(collageId: ID!): ActionResponse!
+    unlikeCollage(collageId: ID!): ActionResponse!
+    archiveCollage(collageId: ID!): ActionResponse!
+    unarchiveCollage(collageId: ID!): ActionResponse!
+    createComment(collageId: ID!, text: String!): ActionResponse!
+    editComment(collageId: ID!, commentId: ID!, newText: String!): ActionResponse!
+    deleteComment(collageId: ID!, commentId: ID!): ActionResponse!
+    deleteCollage(collageId: ID!): ActionResponse!
+    reportCollage(collageId: ID!, reason: ReportReason!): ActionResponse!
+    reportComment(commentId: ID!, reason: ReportReason!): ActionResponse!
+
+    # LifeList Mutations
+    addExperiencesToLifeList(lifeListId: ID!, experiences: [ExperienceInput]): LifeList
+    removeExperiencesFromLifeList(lifeListId: ID!, experienceIds: [ID]): LifeList
+    updateLifeListExperienceListStatus(lifeListExperienceId: ID!, newListStatus: String): LifeListExperience
+    addCollagesToLifeListExperience(lifeListExperienceId: ID!, collageIds: [ID]): LifeListExperience
+    addShotsToLifeListExperience(lifeListExperienceId: ID!, shotIds: [ID]): LifeListExperience
+    removeCollagesFromLifeListExperience(lifeListExperienceId: ID!, collageIds: [ID]): LifeListExperience
+    removeShotsFromLifeListExperience(lifeListExperienceId: ID!, shotIds: [ID]): LifeListExperience
+
+    # Camera Mutations
+    createCameraShot(authorId: ID!, image: Upload!, camera: CameraType, shotOrientation: ShotOrientation, dimensions: DimensionsInput): CameraShot
+    editCameraShot(shotId: ID!, camera: CameraType): CameraShot
+    deleteCameraShot(shotId: ID!): StandardResponse
+    createCameraAlbum(authorId: ID!, title: String!, description: String): CameraAlbum
+    editCameraAlbum(albumId: ID!, title: String, description: String): CameraAlbum
+    deleteCameraAlbum(albumId: ID!): StandardResponse
+    addShotsToAlbum(albumId: ID!, shotIds: [ID]): CameraAlbum
+    removeShotsFromAlbum(albumId: ID!, shotIds: [ID]): CameraAlbum
+
+    # Privacy Group Mutations
     createPrivacyGroup(groupName: String!, userIds: [ID]!): PrivacyGroup
     editPrivacyGroup(privacyGroupId: ID!, newGroupName: String!): PrivacyGroup
+    deletePrivacyGroup(privacyGroupId: ID!): [PrivacyGroup]
     addUsersToPrivacyGroup(privacyGroupId: ID!, userIds: [ID]!): PrivacyGroup
     removeUsersFromPrivacyGroup(privacyGroupId: ID!, userIds: [ID]!): PrivacyGroup
-    deletePrivacyGroup(privacyGroupId: ID!): [PrivacyGroup]
-  }
 
-  # Notification Mutations
-  type Mutation {
+    # Messaging Mutations
+    createConversation(recipientId: ID!, message: String): Conversation
+    sendMessage(conversationId: ID!, recipientId: ID, content: String): Conversation
+    deleteMessage(conversationId: ID!, messageId: ID!): Conversation
+    markConversationAsRead(conversationId: ID!): Conversation
+    deleteConversation(conversationId: ID!): [Conversation]
+
+    # Notification Mutations
     createNotification(
       recipientId: ID!
       senderId: ID!
@@ -446,231 +439,100 @@ type User {
       collageId: ID
       message: String
     ): Notification
-    deleteNotification(notificationId: ID!): [Notification]
-    markAllNotificationsAsSeen: MutationResponse
-    }
+    deleteNotification(notificationId: ID!): StandardResponse
+    markAllNotificationsAsSeen: StandardResponse
 
-    # Messaging Mutations
-    type Mutation {
-      createConversation(recipientId: ID!, message: String): Conversation
-      sendMessage(conversationId: ID!, recipientId: ID, content: String): Conversation
-      deleteMessage(conversationId: ID!, messageId: ID!): Conversation
-      markConversationAsRead(conversationId: ID!): Conversation
-      deleteConversation(conversationId: ID!): [Conversation]
-    }
+
+
+  }
+
+  # Mutation Responses
+  type StandardResponse {
+    success: Boolean!
+    message: String!
+  }
+
+  type ActionResponse {
+    success: Boolean!
+    message: String!
+    action: String
+  }
+
+  type AuthResponse {
+    success: Boolean!
+    message: String!
+    token: String
+    user: User
+  }
   
-    # LifeList Mutations
-    type Mutation {
-      addExperiencesToLifeList(lifeListId: ID!, experiences: [ExperienceInput]): LifeList
-      removeExperiencesFromLifeList(lifeListId: ID!, experienceIds: [ID]): LifeList
-      updateExperienceListStatus(lifeListId: ID!, experienceId: ID!, newListStatus: String!): LifeList
-      addCollagesToExperienceInLifeList(lifeListId: ID!, experienceId: ID!, collageIds: [ID]!): LifeList
-      removeCollagesFromExperienceInLifeList(lifeListId: ID!, experienceId: ID!, collageIds: [ID]!): LifeList
-    }
+  type UserResponse {
+    success: Boolean!
+    message: String!
+    user: User
+  }
 
-    # Collage Creation Mutations
-    type Mutation {
-      startCollage(images: [Upload]): StartCollageReponse
-      setCaption(collageId: ID!, caption: String): setCaptionReponse
-      addEntries(collageId: ID!, entries: [EntryInput]): AddEntriesResponse
-      addExperiences(collageId: ID!, experienceIds: [ID]): AddExperiencesResponse
-      setAudience(collageId: ID!, audience: [PrivacyGroupInput]): CollageCreationResponse
-      setLocation(collageId: ID!, locations: [LocationInput]): SetLocationResponse
-      setCoverImage(collageId: ID!, selectedImage: String!): SetCoverImageResponse
-      setDate(collageId: ID!, startDate: Date, finishDate: Date, month: MonthInput, date: Date): SetDateResponse
-      tagUsers(collageId: ID!, taggedUserIds: [ID]): TagUsersResponse
-      removeExperiences(collageId: ID!, experienceIds: [ID]!): AddExperiencesResponse
-      untagUsers(collageId: ID!, userIdsToUntag: [ID]): TagUsersResponse
-      addToLogbook(logbookInput: LogbookInput!): MutationResponse
-      postCollage(collageId: ID!): Collage
-    }
+  type CollageCreationResponse {
+    success: Boolean!
+    message: String!
+    collageId: ID!
+  }
 
-    # Collage Actions Mutations
-    type Mutation {
-      createComment(collageId: ID!, text: String!): CommentResponse
-      deleteComment(collageId: ID!, commentId: ID!): CommentResponse
-      editComment(collageId: ID!, commentId: ID!, newText: String!): CommentResponse
-      reportCollage(collageId: ID!, reason: ReportReason!): MutationSuccessMessage
-      reportComment(commentId: ID!, reason: ReportReason!): MutationSuccessMessage
-      repostCollage(collageId: ID!): MutationResponse
-      saveCollage(collageId: ID!): MutationResponse
-      unrepostCollage(collageId: ID!): MutationResponse
-      unsaveCollage(collageId: ID!): MutationResponse
-      deleteCollage(collageId: ID!): MutationResponse
-      archiveCollage(collageId: ID!): MutationResponse
-      unarchiveCollage(collageId: ID!): MutationResponse
-    }
+  type UpdateEmailResponse {
+    success: Boolean!
+    message: String!
+    email: String
+  }
+  
+  type UpdatePhoneNumberResponse {
+    success: Boolean!
+    message: String!
+    phoneNumber: String
+  }
+  
+  type UpdatePasswordResponse {
+    success: Boolean!
+    message: String!
+  }
+  
+  type UpdateProfileResponse {
+    profilePicture: String
+    fullName: String
+    username: String
+    bio: String
+  }
+  
+  type UpdateIdentityResponse {
+    gender: String
+    birthday: String
+  }
+  
+  type UpdateSettingsResponse {
+    privacy: Boolean
+    darkMode: Boolean
+    language: String
+    notifications: Boolean
+    postRepostToMainFeed: Boolean
+  }
 
-    # Camera Mutations
-    type Mutation {
-      addShotsToAlbum(albumId: ID!, shotIds: [ID!]!): CameraAlbum
-      createAlbum(title: String!, description: String): CameraAlbum
-      deleteAlbum(albumId: ID!): String
-      deleteShot(shotId: ID!): String
-      editAlbum(albumId: ID!, title: String, description: String): CameraAlbum
-      editShot(shotId: ID!, orientation: String, filter: Boolean): CameraShot
-      removeShotsFromAlbum(albumId: ID!, shotIds: [ID!]!): CameraAlbum
-      takeShot(filter: Boolean, shotOrientation: String): CameraShot
-    }
+  input ExperienceInput {
+    experienceId: ID!
+    list: String!
+  }
 
-    # Logbook Mutations
-    type Mutation {
-      createUpcomingExperience(title: String!, date: String, startDate: String, endDate: String, month: String): LogbookMutationResponse
-      editLogbookItem(logbookItemId: ID!, title: String, date: String, startDate: String, endDate: String, month: String): LogbookMutationResponse
-      deleteLogbookItem(logbookItemId: ID!): LogbookMutationResponse
-    }
+  input DimensionsInput {
+    width: Int
+    height: Int
+  }
 
-    type MutationResponse {
-      success: Boolean!
-      message: String
-      action: String
-    }
-
-    type MutationResult {
-      message: String
-    }
-
-    type MutationSuccessMessage {
-      success: Boolean!
-      message: String
-    }
-
-    type UpdateContactResponse {
-      email: String
-      phoneNumber: String
-    }
-
-    type UpdateIdentityResponse {
-      gender: String
-      birthday: String
-    }
-
-    type UpdateProfileResponse {
-      profilePicture: String
-      fullName: String
-      username: String
-      bio: String
-    }
-
-    type UpdateSettingsResponse {
-      privacy: String
-      darkMode: Boolean
-      language: String
-      notifications: Boolean
-      postRepostToMainFeed: Boolean
-    }
-
-    type FollowRequestResponse {
-      success: Boolean
-      status: FollowRequestStatus
-      message: String
-      followRequests: [FollowRequest!]
-    }
-
-    type CollageCreationResponse {
-      success: Boolean
-      message: String
-      collageId: ID
-    }
-
-    type StartCollageReponse {
-      success: Boolean
-      message: String
-      collageId: ID
-      images: [String]
-    }
-
-    type setCaptionReponse {
-      success: Boolean
-      message: String
-      collageId: ID
-      caption: String
-    }
-
-    type AddEntriesResponse {
-      success: Boolean
-      message: String
-      collageId: ID
-      entries: [Entry]
-    }
-
-    type AddExperiencesResponse {
-      success: Boolean
-      message: String
-      collageId: ID
-      experiences: [ExperienceType]
-    }
-
-    type ExperienceType {
-      title: String
-      image: String
-      location: String
-      category: String
-    }
-
-    type SetDateResponse {
-      success: Boolean
-      message: String
-      collageId: ID
-      startDate: Date
-      finishDate: Date
-      date: Date
-      month: Month
-    }
-
-    type SetLocationResponse {
-      success: Boolean
-      message: String
-      collageId: ID
-      locations: [Location]
-    }
-
-    type SetCoverImageResponse {
-      success: Boolean!
-      message: String!
-      collageId: ID
-      selectedImage: String
-    }
-
-    type TagUsersResponse {
-      success: Boolean
-      message: String
-      collageId: ID
-      taggedUsers: [User]
-    }
-
-    type CommentResponse {
-      success: Boolean!
-      message: String!
-      comments: [Comment]
-    }
-
-    input DateInput {
-      startDate: Date
-      finishDate: Date
-      month: MonthInput
-      date: Date
-    }
-    
-    input MonthInput {
-      name: String
-      year: Int
-    }
-
-    input ExperienceInput {
-      experience: ID!
-      list: String!
-    }
-
-    type LogbookMutationResponse {
-      success: Boolean
-      message: String
-      action: String
-      logbook: [LogbookItem]
-    }
-    
-    
-
-    `;
+  input LocationInput {
+    name: String
+    coordinates: CoordinatesInput
+  }
+  
+  input CoordinatesInput {
+    latitude: Float
+    longitude: Float
+  }
+  `;
 
 export default typeDefs;

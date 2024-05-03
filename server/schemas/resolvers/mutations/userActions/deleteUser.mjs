@@ -8,7 +8,6 @@ import {
   LifeList,
   PrivacyGroup,
   Message,
-  LogbookItem,
 } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
@@ -24,9 +23,6 @@ const deleteUser = async (_, __, { user }) => {
       console.error("User not found.");
       throw new Error("User not found.");
     }
-
-    // Delete all associated logbook items
-    await LogbookItem.deleteMany({ author: user._id });
 
     // Delete the user's lifelist
     await LifeList.deleteOne({ author: user._id });

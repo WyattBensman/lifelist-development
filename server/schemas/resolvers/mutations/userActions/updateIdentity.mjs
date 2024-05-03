@@ -21,7 +21,7 @@ const updateIdentity = async (_, { gender, birthday }, { user }) => {
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during identity information update");
+    throw new Error("An error occurred during identity information update.");
   }
 };
 

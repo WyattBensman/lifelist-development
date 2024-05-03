@@ -1,5 +1,5 @@
-import { LifeList } from "../../../../models/index.mjs";
-import { isUser, isCurrentLifeListAuthor } from "../../../../utils/auth.mjs";
+import { LifeList, LifeListExperience } from "../../../../models/index.mjs";
+import { isLifeListAuthor } from "../../../../utils/auth.mjs";
 
 const addExperiencesToLifeList = async (
   _,
@@ -7,39 +7,29 @@ const addExperiencesToLifeList = async (
   { user }
 ) => {
   try {
-    isUser(user);
-    await isCurrentLifeListAuthor(user, lifeListId);
+    // Verify if the user is authorized to modify the specified LifeList
+    await isLifeListAuthor(user, lifeListId);
 
+    // Create LifeListExperience documents for each experience provided
+    const lifeListExperiences = await Promise.all(
+      experiences.map((exp) =>
+        LifeListExperience.create({
+          lifeList: lifeListId,
+          experience: exp.experienceId,
+          list: exp.list,
+        })
+      )
+    );
+
+    // Fetch the LifeList and append the new experiences
     const lifeList = await LifeList.findById(lifeListId);
-
-    // Loop through the experiences and add them to the LifeList
-    experiences.forEach(async (exp) => {
-      const { experience, list } = exp;
-
-      const isExperienceAlreadyAdded = lifeList.experiences.some(
-        (existingExp) => existingExp.experience.toString() === experience
-      );
-
-      if (!isExperienceAlreadyAdded) {
-        // Create a new experience entry
-        const newExperience = {
-          experience,
-          list,
-        };
-
-        // Add the experience to the LifeList
-        lifeList.experiences.push(newExperience);
-      } else {
-        console.error(`Error: ${experience} is already in the LifeList.`);
-      }
-    });
-
+    lifeList.experiences.push(...lifeListExperiences.map((exp) => exp._id));
     await lifeList.save();
 
-    return LifeList.findById(lifeListId).populate("experiences.experience");
+    return lifeList; // Return the updated LifeList
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during adding experience to life list.");
+    console.error(`Error adding experiences to LifeList: ${error.message}`);
+    throw new Error("Failed to add experiences to LifeList.");
   }
 };
 

@@ -1,40 +1,29 @@
-import { CameraAlbum, CameraShot } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils/auth.mjs";
+import { CameraAlbum } from "../../../../models/index.mjs";
 
 const addShotsToAlbum = async (_, { albumId, shotIds }, { user }) => {
   try {
-    isUser(user);
-
-    // Check if the user owns the album
-    const album = await CameraAlbum.findOne({
-      _id: albumId,
-      author: user.id,
-    });
-
+    // Fetch the album and ensure it exists and belongs to the user
+    const album = await CameraAlbum.findById(albumId);
     if (!album) {
-      throw new Error("Album not found or user does not own the album.");
+      throw new Error("Camera album not found.");
+    }
+    if (album.author.toString() !== user._id.toString()) {
+      throw new Error("Not authorized to add shots to this album.");
     }
 
-    // Check if the shots belong to the user
-    const userShots = await CameraShot.find({
-      _id: { $in: shotIds },
-      author: user.id,
-    });
+    // Add new shot IDs to the album's shots array using $addToSet to prevent duplicates
+    const updatedAlbum = await CameraAlbum.findByIdAndUpdate(
+      albumId,
+      {
+        $addToSet: { shots: { $each: shotIds } },
+      },
+      { new: true }
+    ).populate("shots"); // Optionally populate 'shots' to return detailed info
 
-    if (userShots.length !== shotIds.length) {
-      throw new Error(
-        "One or more shots not found or user does not own the shots."
-      );
-    }
-
-    // Add the shots to the album
-    album.shots = [...new Set([...album.shots, ...shotIds])];
-    await album.save();
-
-    return album;
+    return updatedAlbum;
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred while adding the shots to the album.");
+    console.error("Error adding shots to album:", error);
+    throw new Error("Failed to add shots to album.");
   }
 };
 

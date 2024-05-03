@@ -1,39 +1,33 @@
-import { Collage, User } from "../../../../models/index.mjs";
+import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
+import { findCollageById } from "../../../../utils/auth.mjs";
 import createNotification from "../notifications/createNotification.mjs";
 
 const repostCollage = async (_, { collageId }, { user }) => {
   try {
     isUser(user);
 
-    const collage = await Collage.findById(collageId);
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
+    // Verify the collage exists
+    const collage = await findCollageById(collageId);
 
-    // Check if the user has already reposted the collage
-    const existingRepost = await User.findOne({
-      _id: user._id,
-      repostedCollages: collageId,
-    });
-
-    if (existingRepost) {
-      throw new Error("Collage already reposted by the user.");
-    }
-
-    // Add the collage to the user's repostedCollages
-    await User.findByIdAndUpdate(
+    // Add the collage to the user's repostedCollages and update the collage's reposts
+    const updatedUser = await User.findByIdAndUpdate(
       user._id,
-      { $push: { repostedCollages: collageId } },
+      { $addToSet: { repostedCollages: collageId } },
       { new: true }
     );
 
     // Add the user to the collage's reposts
-    await Collage.findByIdAndUpdate(
+    const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $push: { reposts: user._id } },
+      { $addToSet: { reposts: user._id } },
       { new: true }
     );
+
+    // Check if both updates were successful
+    if (!updatedUser || !updatedCollage) {
+      throw new Error("Failed to repost collage. Please try again.");
+    }
 
     // Create a notification for the original author of the collage
     await createNotification({
@@ -41,16 +35,16 @@ const repostCollage = async (_, { collageId }, { user }) => {
       senderId: user._id,
       type: "COLLAGE_REPOST",
       collageId: collageId,
-      message: `${user.fullName}reposted your collage.`,
+      message: `${user.fullName} reposted your collage.`,
     });
 
     return {
       success: true,
-      message: "Collage reposted successfully.",
+      message: "Collage successfully reposted.",
       action: "REPOST",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error(`Repost Collage Error: ${error.message}`);
     throw new Error("An error occurred during reposting the collage.");
   }
 };

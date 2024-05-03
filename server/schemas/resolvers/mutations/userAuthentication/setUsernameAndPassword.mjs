@@ -1,6 +1,8 @@
 import { User } from "../../../../models/index.mjs";
 
 const setUsernameAndPassword = async (_, { userId, username, password }) => {
+  isUser(user);
+
   // Input validation
   if (!username) {
     throw new Error("Username is required.");
@@ -28,11 +30,21 @@ const setUsernameAndPassword = async (_, { userId, username, password }) => {
       {
         username,
         password,
+        status: "active",
+        expiryDate: null,
       },
       { new: true, runValidators: true }
     );
 
-    return updatedUser;
+    if (!updatedUser) {
+      throw new Error("User not found.");
+    }
+
+    return {
+      success: true,
+      message: "Username and password successfully updated.",
+      user: updatedUser,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during registration.");

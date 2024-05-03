@@ -83,6 +83,14 @@ export const isCurrentPrivacyGroupAuthor = async (user, privacyGroupId) => {
   }
 };
 
+export const isLifeListAuthor = async (user, lifeListId) => {
+  ensureAuthenticatedUser(user);
+  const lifeList = await LifeList.findById(lifeListId);
+  if (!lifeList || user._id.toString() !== lifeList.author.toString()) {
+    throw new AuthenticationError("Not authorized to perform this action");
+  }
+};
+
 export const findCollageById = async (collageId) => {
   const collage = await Collage.findById(collageId);
   if (!collage) {

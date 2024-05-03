@@ -1,15 +1,13 @@
-import initializeRegristration from "./initializeRegristration.mjs";
-import resendVerificationCode from "./resendVerification.mjs";
+import login from "./login.mjs";
+import initializeRegistration from "./initializeRegistration.mjs";
 import setBasicInformation from "./setBasicInformation.mjs";
 import setProfilePictureAndBio from "./setProfilePictureAndBio.mjs";
 import setUsernameAndPassword from "./setUsernameAndPassword.mjs";
-import verification from "./verification.mjs";
 
 export {
-  initializeRegristration,
-  resendVerificationCode,
+  login,
+  initializeRegistration,
   setBasicInformation,
   setProfilePictureAndBio,
   setUsernameAndPassword,
-  verification,
 };

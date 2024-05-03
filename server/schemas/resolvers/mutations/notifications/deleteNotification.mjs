@@ -5,30 +5,26 @@ const deleteNotification = async (_, { notificationId }, { user }) => {
   try {
     isUser(user);
 
-    // Remove the notification from the user's notifications array
-    const updatedUser = await User.findByIdAndUpdate(
-      user._id,
-      { $pull: { notifications: notificationId } },
-      { new: true }
-    ).populate("notifications");
+    // Remove notification from the user's notifications list
+    await User.findByIdAndUpdate(user._id, {
+      $pull: { notifications: notificationId },
+    });
 
-    if (!updatedUser) {
-      throw new Error(`User with ID ${user._id} not found.`);
-    }
-
-    // Delete the notification itself
+    // Delete the notification from the database
     const deletedNotification = await Notification.findByIdAndDelete(
       notificationId
     );
-
     if (!deletedNotification) {
       throw new Error(`Notification with ID ${notificationId} not found.`);
     }
 
-    return updatedUser.notifications;
+    return {
+      success: true,
+      message: "Notification deleted successfully.",
+    };
   } catch (error) {
     console.error(`Error deleting notification: ${error.message}`);
-    throw new Error("An error occurred during notification deletion.");
+    throw new Error("Failed to delete notification.");
   }
 };
 

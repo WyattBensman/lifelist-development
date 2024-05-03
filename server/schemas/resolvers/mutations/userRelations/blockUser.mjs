@@ -5,21 +5,22 @@ const blockUser = async (_, { userIdToBlock }, { user }) => {
   try {
     isUser(user);
 
-    const existingBlockedUser = await User.findOne({
+    // Check if the user is already blocked
+    const isAlreadyBlocked = await User.exists({
       _id: user._id,
       blocked: userIdToBlock,
     });
 
-    if (existingBlockedUser) {
+    if (isAlreadyBlocked) {
       return {
         success: false,
         message: "User is already blocked.",
       };
     }
 
-    // Block the user
-    const updatedUser = await User.findByIdAndUpdate(
-      user_id,
+    // Updates to block the user and remove from followers and following lists
+    await User.findByIdAndUpdate(
+      user._id,
       {
         $push: { blocked: userIdToBlock },
         $pull: { followers: userIdToBlock, following: userIdToBlock },
@@ -27,13 +28,13 @@ const blockUser = async (_, { userIdToBlock }, { user }) => {
       { new: true, runValidators: true }
     );
 
-    // Unfollow the blocked user
+    // Ensure mutual unfollowing
     await User.findByIdAndUpdate(
       userIdToBlock,
       {
         $pull: {
-          followers: user_id,
-          following: user_id,
+          followers: user._id,
+          following: user._id,
         },
       },
       { new: true, runValidators: true }
@@ -41,12 +42,11 @@ const blockUser = async (_, { userIdToBlock }, { user }) => {
 
     return {
       success: true,
-      message: "User blocked successfully.",
-      action: "BLOCK",
+      message: "User successfully blocked.",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during user blocking.");
+    console.error(`Block User Error: ${error.message}`);
+    throw new Error("Unable to complete block action due to a server error.");
   }
 };
 

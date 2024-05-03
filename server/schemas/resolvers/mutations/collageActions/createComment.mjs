@@ -5,32 +5,38 @@ import createNotification from "../notifications/createNotification.mjs";
 const createComment = async (_, { collageId, text }, { user }) => {
   try {
     isUser(user);
-    const collage = await findCollageById(collageId);
 
+    // Verify the collage exists
+    await findCollageById(collageId);
+
+    // Create a new comment and add it to the database
     const newComment = await Comment.create({
       author: user._id,
       text,
       createdAt: new Date(),
     });
 
+    // Update the collage's comment list
     await Collage.findByIdAndUpdate(collageId, {
-      $addToSet: { comments: newComment },
+      $addToSet: { comments: newComment._id },
     });
 
+    // Send notification to the collage author
     await createNotification({
       recipientId: collage.author,
       senderId: user._id,
       type: "COMMENT",
-      collageId: collageId,
-      message: `${user._id} commented on your collage.`,
+      collageId,
+      message: `${user.fullName} commented on your collage.`,
     });
 
     return {
       success: true,
-      message: "Comment created successfully",
+      message: "Comment successfully created.",
+      action: "CREATE_COMMENT",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error(`Create Comment Error: ${error.message}`);
     throw new Error("An error occurred during comment creation.");
   }
 };

@@ -1,8 +1,5 @@
 import { PrivacyGroup } from "../../../../models/index.mjs";
-import {
-  isUser,
-  isCurrentPrivacyGroupAuthor,
-} from "../../../../utils/auth.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const editPrivacyGroup = async (
   _,
@@ -11,9 +8,8 @@ const editPrivacyGroup = async (
 ) => {
   try {
     isUser(user);
-    await isCurrentPrivacyGroupAuthor(user, privacyGroupId);
 
-    // Update the PrivacyGroup's groupName using findByIdAndUpdate
+    // Update the groupName of the specified PrivacyGroup
     const updatedPrivacyGroup = await PrivacyGroup.findByIdAndUpdate(
       privacyGroupId,
       { $set: { groupName: newGroupName } },
@@ -27,7 +23,7 @@ const editPrivacyGroup = async (
     return updatedPrivacyGroup;
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during privacy group editing.");
+    throw new Error("Failed to edit privacy group.");
   }
 };
 

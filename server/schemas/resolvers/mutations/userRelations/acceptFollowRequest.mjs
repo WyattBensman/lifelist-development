@@ -6,60 +6,48 @@ const acceptFollowRequest = async (_, { userIdToAccept }, { user }) => {
   try {
     isUser(user);
 
-    const session = await mongoose.startSession();
-    session.startTransaction();
-
+    // Add the current user to the 'following' list of the user they want to accept
     const newFollower = await User.findByIdAndUpdate(
       userIdToAccept,
       { $addToSet: { following: user._id } },
-      { new: true, session }
+      { new: true }
     );
     if (!newFollower) throw new Error("User to accept not found.");
 
+    // Add the user to accept to the 'followers' list of the current user and remove from followRequests
     const acceptor = await User.findByIdAndUpdate(
       user._id,
       {
         $addToSet: { followers: userIdToAccept },
         $pull: { followRequests: { userId: userIdToAccept } },
       },
-      { new: true, session }
+      { new: true }
     );
-    if (!acceptor) throw new Error("Acceptor user not found.");
+    if (!acceptor) throw new Error("Current user's document not found.");
 
     // Notify the user whose follow request was accepted
-    await createNotification(
-      {
-        recipientId: userIdToAccept,
-        senderId: user._id,
-        type: "FOLLOW_ACCEPTED",
-        message: `${user.username} has accepted your follow request.`,
-      },
-      session
-    );
+    await createNotification({
+      recipientId: userIdToAccept,
+      senderId: user._id,
+      type: "FOLLOW_ACCEPTED",
+      message: `${user.fullName} has successfully accepted your follow request.`,
+    });
 
-    // Notify the acceptor that they have a new follower
-    await createNotification(
-      {
-        recipientId: user._id,
-        senderId: userIdToAccept,
-        type: "NEW_FOLLOWER",
-        message: `${newFollower.username} is now following you.`,
-      },
-      session
-    );
-
-    await session.commitTransaction();
-    session.endSession();
+    // Notify the current user that they have a new follower
+    await createNotification({
+      recipientId: user._id,
+      senderId: userIdToAccept,
+      type: "NEW_FOLLOWER",
+      message: `${newFollower.fullName} is now following you.`,
+    });
 
     return {
       success: true,
-      message: "Follow request accepted.",
+      message: "Follow request successfully accepted.",
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);
     throw new Error("An error occurred during accepting follow request.");
-  } finally {
-    session.endSession();
   }
 };
 

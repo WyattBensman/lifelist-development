@@ -5,14 +5,14 @@ const unfollowUser = async (_, { userIdToUnfollow }, { user }) => {
   try {
     isUser(user);
 
-    // Update the user's following list
-    const updatedUser = await User.findByIdAndUpdate(
+    // Removes the user from the current user's following list
+    await User.findByIdAndUpdate(
       user._id,
       { $pull: { following: userIdToUnfollow } },
       { new: true }
     );
 
-    // Update the unfollowed user's followers list
+    // Removes the current user from the unfollowed user's followers list
     await User.findByIdAndUpdate(
       userIdToUnfollow,
       { $pull: { followers: user._id } },
@@ -21,12 +21,13 @@ const unfollowUser = async (_, { userIdToUnfollow }, { user }) => {
 
     return {
       success: true,
-      message: "User followed successfully.",
-      action: "UNFOLLOW",
+      message: "User unfollowed successfully.",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during unfollow action.");
+    console.error(`Unfollow User Error: ${error.message}`);
+    throw new Error(
+      "Unable to complete unfollow action due to a server error."
+    );
   }
 };
 

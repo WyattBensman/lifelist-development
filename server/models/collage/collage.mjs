@@ -40,7 +40,7 @@ const collageSchema = new Schema({
   },
   privacy: {
     type: String,
-    enum: ["PUBLIC", "PRIVATE", "PRIVACY_GROUP"],
+    enum: ["PUBLIC", "PRIVATE", "PRIVACY_GROUP", "TAGGED"],
     default: "PUBLIC",
   },
   privacyGroup: {

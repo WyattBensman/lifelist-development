@@ -5,8 +5,8 @@ const unblockUser = async (_, { userIdToUnblock }, { user }) => {
   try {
     isUser(user);
 
-    // Unblock the user
-    const updatedUser = await User.findByIdAndUpdate(
+    // Attempt to unblock the user by removing them from the blocked list
+    await User.findByIdAndUpdate(
       user._id,
       { $pull: { blocked: userIdToUnblock } },
       { new: true, runValidators: true }
@@ -14,12 +14,11 @@ const unblockUser = async (_, { userIdToUnblock }, { user }) => {
 
     return {
       success: true,
-      message: "User unblocked successfully.",
-      action: "UNBLOCK",
+      message: "User successfully unblocked.",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during user unblocking.");
+    console.error(`Unblock User Error: ${error.message}`);
+    throw new Error("Unable to complete unblock action due to a server error.");
   }
 };
 

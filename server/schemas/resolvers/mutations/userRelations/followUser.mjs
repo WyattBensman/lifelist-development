@@ -6,14 +6,14 @@ const followUser = async (_, { userIdToFollow }, { user }) => {
   try {
     isUser(user);
 
-    // Update the user's following list
-    const updatedUser = await User.findByIdAndUpdate(
+    // Updates current user's following list to include the new user
+    await User.findByIdAndUpdate(
       user._id,
       { $addToSet: { following: userIdToFollow } },
       { new: true }
     );
 
-    // Update the followed user's followers list
+    // Updates the followed user's followers list to include the current user
     await User.findByIdAndUpdate(
       userIdToFollow,
       { $addToSet: { followers: user._id } },
@@ -30,12 +30,11 @@ const followUser = async (_, { userIdToFollow }, { user }) => {
 
     return {
       success: true,
-      message: "User followed successfully.",
-      action: "FOLLOW",
+      message: "User successfully followed.",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during follow action.");
+    console.error(`Follow User Error: ${error.message}`);
+    throw new Error("Unable to complete follow action due to a server error.");
   }
 };
 

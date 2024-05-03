@@ -8,42 +8,40 @@ const startCollage = async (_, { images }, { user }) => {
 
     // Validate that at least one image is provided
     if (!images || images.length === 0) {
-      throw new Error("At least one image is required.");
+      throw new Error("At least one image is required to create a collage.");
     }
 
-    // Validate the number of images (up to 14 allowed)
-    if (images.length > 14) {
-      throw new Error("Up to 14 images are allowed per collage.");
+    // Validate the number of images (1 to 12 allowed)
+    if (images.length > 12) {
+      throw new Error("A collage can have at most 12 images.");
     }
 
-    // Use uploadMultipleImages Util to handle file upload
+    // Upload the images and get their URLs
     const uploadDir = "./uploads";
-    const imagePaths = await uploadMultipleImages(images, uploadDir);
+    const imageUrls = await uploadMultipleImages(images, uploadDir);
 
+    // Create a new collage document
     const newCollage = await Collage.create({
       author: user._id,
-      images: imagePaths,
+      images: imageUrls,
     });
 
-    // Obtain the _id of the newCollage
-    const collageId = newCollage._id;
-
-    // Update the user's collages array
+    // Update the user's collages array with the new collage ID
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
-      { $push: { collages: collageId } },
+      { $push: { collages: newCollage._id } },
       { new: true }
     );
 
+    // Return success message along with the collage ID
     return {
       success: true,
-      message: "Images added successfully",
-      collageId: collageId,
-      images: newCollage.images,
+      message: "Collage created successfully.",
+      collageId: newCollage._id,
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during collage creation start.");
+    console.error(`Error creating collage: ${error.message}`);
+    throw new Error("Failed to create collage.");
   }
 };
 

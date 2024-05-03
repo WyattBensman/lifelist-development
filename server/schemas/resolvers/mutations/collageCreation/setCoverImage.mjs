@@ -1,10 +1,9 @@
-import { Collage, User } from "../../../../models/index.mjs";
+import { Collage } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 const setCoverImage = async (_, { collageId, selectedImage }, { user }) => {
   try {
     isUser(user);
-    await isCurrentAuthor(user, collageId);
 
     // Check if the selected image exists in the collage's images array
     const collage = await Collage.findById(collageId);
@@ -19,7 +18,6 @@ const setCoverImage = async (_, { collageId, selectedImage }, { user }) => {
       success: true,
       message: "Cover image set successfully",
       collageId: collageId,
-      selectedImage: selectedImage,
     };
   } catch (error) {
     console.error(`Error: ${error.message}`);

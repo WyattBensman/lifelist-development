@@ -1,18 +1,15 @@
-import { Collage } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils/auth.mjs";
+import { isUser, findCollageById } from "../../../../utils/auth.mjs";
 
 const reportCollage = async (_, { collageId, reason }, { user }) => {
   try {
     isUser(user);
 
-    const collage = await Collage.findById(collageId);
-    if (!collage) {
-      throw new Error("Collage not found.");
-    }
+    // Verify the collage exists
+    const collage = await findCollageById(collageId);
 
     // Check if the reporter has already reported the collage
     const alreadyReported = collage.reports.some(
-      (report) => report.reporter.toString() === user._id
+      (report) => report.reporter.toString() === user._id.toString()
     );
     if (alreadyReported) {
       throw new Error("You have already reported this collage.");
@@ -24,10 +21,11 @@ const reportCollage = async (_, { collageId, reason }, { user }) => {
 
     return {
       success: true,
-      message: "Collage reported successfully.",
+      message: "Collage successfully reported.",
+      action: "REPORT_COLLAGE",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error(`Report Collage Error: ${error.message}`);
     throw new Error("An error occurred during collage reporting.");
   }
 };

@@ -1,21 +1,18 @@
-import { Comment } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils/auth.mjs";
+import { isUser, findCommentById } from "../../../../utils/auth.mjs";
 
 const reportComment = async (_, { commentId, reason }, { user }) => {
   try {
     isUser(user);
 
-    const comment = await Comment.findById(commentId);
-    if (!comment) {
-      throw new Error("Comment not found");
-    }
+    // Verify the comment exists
+    const comment = await findCommentById(commentId);
 
     // Check if the reporter has already reported the comment
     const alreadyReported = comment.reports.some(
-      (report) => report.reporter.toString() === user._id
+      (report) => report.reporter.toString() === user._id.toString()
     );
     if (alreadyReported) {
-      throw new Error("You have already reported this comment");
+      throw new Error("You have already reported this comment.");
     }
 
     // Update the reports field of the comment with the new report
@@ -24,10 +21,11 @@ const reportComment = async (_, { commentId, reason }, { user }) => {
 
     return {
       success: true,
-      message: "Comment reported successfully.",
+      message: "Comment successfully reported.",
+      action: "REPORT_COMMENT",
     };
   } catch (error) {
-    console.error(`Error: ${error.message}`);
+    console.error(`Report Comment Error: ${error.message}`);
     throw new Error("An error occurred during comment reporting.");
   }
 };
