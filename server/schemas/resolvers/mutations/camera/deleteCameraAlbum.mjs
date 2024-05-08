@@ -1,7 +1,10 @@
 import { CameraAlbum, User } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const deleteCameraAlbum = async (_, { albumId }, { user }) => {
   try {
+    isUser(user);
+
     // Retrieve the album from the database
     const album = await CameraAlbum.findById(albumId);
     if (!album) {

@@ -38,7 +38,6 @@ const userSchema = new Schema({
   // Contact Information
   email: {
     type: String,
-    unique: true,
     trim: true,
     lowercase: true,
     match: [emailRegex, "Please enter a valid email address."],
@@ -46,7 +45,6 @@ const userSchema = new Schema({
   phoneNumber: {
     type: String,
     trim: true,
-    unique: true,
     match: [
       phoneNumberRegex,
       "Phone number must be exactly 10 digits without any symbols or spaces.",

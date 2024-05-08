@@ -17,7 +17,7 @@ const createComment = async (_, { collageId, text }, { user }) => {
     });
 
     // Update the collage's comment list
-    await Collage.findByIdAndUpdate(collageId, {
+    const collage = await Collage.findByIdAndUpdate(collageId, {
       $addToSet: { comments: newComment._id },
     });
 
@@ -33,7 +33,7 @@ const createComment = async (_, { collageId, text }, { user }) => {
     return {
       success: true,
       message: "Comment successfully created.",
-      action: "CREATE_COMMENT",
+      action: "COMMENT",
     };
   } catch (error) {
     console.error(`Create Comment Error: ${error.message}`);

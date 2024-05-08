@@ -1,4 +1,5 @@
 import { CameraAlbum } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const editCameraAlbum = async (
   _,
@@ -6,6 +7,8 @@ const editCameraAlbum = async (
   { user }
 ) => {
   try {
+    isUser(user);
+
     const updates = {};
     if (title) updates.title = title;
     if (description) updates.description = description;

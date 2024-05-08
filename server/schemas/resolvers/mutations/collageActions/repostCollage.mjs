@@ -1,4 +1,4 @@
-import { User } from "../../../../models/index.mjs";
+import { User, Collage } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 import { findCollageById } from "../../../../utils/auth.mjs";
 import createNotification from "../notifications/createNotification.mjs";

@@ -18,6 +18,11 @@ const untagUsers = async (_, { collageId, userIds }, { user }) => {
       throw new Error("Collage not found.");
     }
 
+    await User.updateMany(
+      { _id: { $in: userIds } },
+      { $pull: { taggedCollages: collageId } }
+    );
+
     // Return success message with the collage ID
     return {
       success: true,

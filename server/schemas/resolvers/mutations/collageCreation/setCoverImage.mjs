@@ -4,12 +4,7 @@ import { isUser } from "../../../../utils/auth.mjs";
 const setCoverImage = async (_, { collageId, selectedImage }, { user }) => {
   try {
     isUser(user);
-
-    // Check if the selected image exists in the collage's images array
-    const collage = await Collage.findById(collageId);
-    if (!collage.images.includes(selectedImage)) {
-      throw new Error("Selected image not found in the collage.");
-    }
+    await isCurrentAuthor(user, collageId);
 
     // Update the coverImage field
     await Collage.findByIdAndUpdate(collageId, { coverImage: selectedImage });

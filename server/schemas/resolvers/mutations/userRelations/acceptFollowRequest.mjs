@@ -37,7 +37,7 @@ const acceptFollowRequest = async (_, { userIdToAccept }, { user }) => {
     await createNotification({
       recipientId: user._id,
       senderId: userIdToAccept,
-      type: "NEW_FOLLOWER",
+      type: "FOLLOW",
       message: `${newFollower.fullName} is now following you.`,
     });
 

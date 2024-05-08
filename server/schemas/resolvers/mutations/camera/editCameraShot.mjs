@@ -1,8 +1,11 @@
 import { applyCameraEffects } from "../../../../utils/applyCameraEffects.mjs";
 import { CameraShot } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const editCameraShot = async (_, { shotId, camera }, { user }) => {
   try {
+    isUser(user);
+
     const shot = await CameraShot.findById(shotId);
     if (!shot) {
       throw new Error("Camera shot not found.");

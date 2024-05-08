@@ -1,11 +1,6 @@
-import { Comment } from "../../../../models/index.mjs";
-import {
-  isUser,
-  findCollageById,
-  findCommentById,
-} from "../../../../utils/auth.mjs";
+import { isUser, findCommentById } from "../../../../utils/auth.mjs";
 
-const editComment = async (_, { collageId, commentId, newText }, { user }) => {
+const editComment = async (_, { commentId, newText }, { user }) => {
   try {
     isUser(user);
 

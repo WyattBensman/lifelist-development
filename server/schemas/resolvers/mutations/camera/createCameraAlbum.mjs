@@ -1,21 +1,20 @@
 import { CameraAlbum, User } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
-const createCameraAlbum = async (
-  _,
-  { authorId, title, description },
-  { user }
-) => {
+const createCameraAlbum = async (_, { title, description }, { user }) => {
   try {
+    isUser(user);
+
     const newAlbum = new CameraAlbum({
-      author: authorId,
+      author: user._id,
       title,
       description,
-      shots: [], // Initialize with an empty array
+      shots: [],
     });
     await newAlbum.save();
 
     // Update the User model to include the new album in their cameraAlbums field
-    await User.findByIdAndUpdate(authorId, {
+    await User.findByIdAndUpdate(user._id, {
       $push: { cameraAlbums: newAlbum._id },
     });
 

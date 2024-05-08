@@ -10,6 +10,8 @@ import unsaveCollage from "./unsaveCollage.mjs";
 import deleteCollage from "./deleteCollage.mjs";
 import archiveCollage from "./archiveCollage.mjs";
 import unarchiveCollage from "./unarchiveCollage.mjs";
+import likeCollage from "./likeCollage.mjs";
+import unlikeCollage from "./unlikeCollage.mjs";
 
 export {
   createComment,
@@ -24,4 +26,6 @@ export {
   deleteCollage,
   archiveCollage,
   unarchiveCollage,
+  likeCollage,
+  unlikeCollage,
 };

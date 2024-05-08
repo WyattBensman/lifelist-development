@@ -1,6 +1,6 @@
 import { User } from "../../../../models/index.mjs";
 
-const setUsernameAndPassword = async (_, { userId, username, password }) => {
+const setUsernameAndPassword = async (_, { username, password }, { user }) => {
   isUser(user);
 
   // Input validation
@@ -24,21 +24,20 @@ const setUsernameAndPassword = async (_, { userId, username, password }) => {
       );
     }
 
-    // Update user information
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        username,
-        password,
-        status: "active",
-        expiryDate: null,
-      },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedUser) {
+    // Retrieve the user
+    let userToUpdate = await User.findById(user._id);
+    if (!userToUpdate) {
       throw new Error("User not found.");
     }
+
+    // Set new values
+    userToUpdate.username = username;
+    userToUpdate.password = password;
+    userToUpdate.status = "active";
+    userToUpdate.expiryDate = null;
+
+    // Save the user
+    const updatedUser = await userToUpdate.save();
 
     return {
       success: true,

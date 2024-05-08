@@ -7,7 +7,7 @@ const setProfilePictureAndBio = async (
   { profilePicture, bio },
   { user }
 ) => {
-  isUser(user); // Verifies the user is authenticated
+  isUser(user);
 
   try {
     let fileUrl = user.profilePicture; // Default to the existing profile picture

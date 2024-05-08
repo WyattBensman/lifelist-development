@@ -10,7 +10,7 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
     let conversation = await Conversation.findOneAndUpdate(
       { participants: { $all: [user._id, recipientId] } },
       {},
-      { new: true, upsert: true, populate: "messages" }
+      { new: true, populate: "messages" }
     );
 
     if (!conversation) {

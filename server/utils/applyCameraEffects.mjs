@@ -8,11 +8,16 @@ export async function applyCameraEffects(imagePath, cameraType) {
       case "FUJI":
         await image.contrast(0.1).sepia();
         break;
+
       case "DISPOSABLE":
-        await image.blur(1).noise(10);
+        // Convert image to black and white using greyscale
+        await image.greyscale(); // Apply greyscale filter
         break;
+
       case "POLAROID":
-        await image.contrast(0.25).vignette(0.15, 60);
+        // Apply a contrast and simulate a vignette effect manually
+        await image.contrast(0.25); // Increase the contrast
+        await image.circle(); // This might not be exactly vignette but gives a rounded corner effect
         break;
       case "STANDARD":
         // No effect for the standard camera

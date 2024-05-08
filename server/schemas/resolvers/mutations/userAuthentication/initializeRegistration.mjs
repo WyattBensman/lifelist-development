@@ -15,12 +15,19 @@ const initializeRegistration = async (_, { email, phoneNumber, birthday }) => {
       throw new Error("Birthday is required for registration.");
     }
 
-    // Check for existing user with the same email or phone number
-    const existingUser = await User.findOne({
-      $or: [{ email: email }, { phoneNumber: phoneNumber }],
-    });
+    let existingUser = null; // Declare outside to ensure scope visibility
 
-    // If an existing user is found, inform the potential new user
+    // Check if phoneNumber is provided and non-null
+    if (phoneNumber) {
+      existingUser = await User.findOne({ phoneNumber: phoneNumber });
+    }
+
+    // Check if email is provided and non-null, and no existing user was found from phoneNumber
+    if (!existingUser && email) {
+      existingUser = await User.findOne({ email: email.toLowerCase() }); // Also ensure email is processed in lowercase for consistency
+    }
+
+    // If an existing user is found with either email or phoneNumber, throw an error
     if (existingUser) {
       throw new Error(
         "An account with this email or phone number already exists."

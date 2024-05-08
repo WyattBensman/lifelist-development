@@ -16,8 +16,8 @@ import typeDefs from "./schemas/typeDefs.mjs";
 import resolvers from "./schemas/resolvers.mjs";
 
 // Scheduled tasks
-import { cleanupExpiredRegistrations } from "./tasks/cleanupExpiredRegistrations.mjs";
 import { resetCameraShots } from "./tasks/resetCameraShots.mjs";
+import { cleanupExpiredRegistrations } from "./tasks/cleanupExpiredRegistrations.mjs";
 
 // Initialize environment variables
 dotenv.config();

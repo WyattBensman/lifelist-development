@@ -15,7 +15,9 @@ const unsaveCollage = async (_, { collageId }, { user }) => {
     });
 
     // Remove user from collage's saved users
-    await Collage.findByIdAndUpdate(collageId, { $pull: { saves: user._id } });
+    await Collage.findByIdAndUpdate(collageId, {
+      $pull: { saves: user._id },
+    });
 
     return {
       success: true,

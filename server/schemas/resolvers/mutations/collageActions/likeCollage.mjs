@@ -1,13 +1,14 @@
 import { User, Collage } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 import { findCollageById } from "../../../../utils/auth.mjs";
+import createNotification from "../notifications/createNotification.mjs";
 
 const likeCollage = async (_, { collageId }, { user }) => {
   try {
     isUser(user);
 
     // Verify the collage exists
-    await findCollageById(collageId);
+    const collage = await findCollageById(collageId);
 
     // Update user's liked collages to prevent duplicates
     const updatedUser = await User.findByIdAndUpdate(
@@ -27,6 +28,15 @@ const likeCollage = async (_, { collageId }, { user }) => {
     if (!updatedUser || !updatedCollage) {
       throw new Error("Failed to like collage. Please try again.");
     }
+
+    // Create a notification for the original author of the collage
+    await createNotification({
+      recipientId: collage.author,
+      senderId: user._id,
+      type: "COLLAGE_LIKE",
+      collageId: collageId,
+      message: `${user.fullName} liked your collage.`,
+    });
 
     return {
       success: true,

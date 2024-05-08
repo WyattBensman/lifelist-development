@@ -30,6 +30,18 @@ const deleteCollage = async (_, { collageId }, { user }) => {
     await Comment.deleteMany({ collage: collageId });
     await Notification.deleteMany({ collage: collageId });
 
+    // Delete the image files associated with the collage
+    if (collage.images && collage.images.length > 0) {
+      collage.images.forEach((imagePath) => {
+        const fullPath = path.join(imagePath); // Ensure this path is correct
+        fs.unlink(fullPath, (err) => {
+          if (err) {
+            console.error("Failed to delete image file:", err);
+          }
+        });
+      });
+    }
+
     // Delete the collage
     await Collage.findByIdAndDelete(collageId);
 

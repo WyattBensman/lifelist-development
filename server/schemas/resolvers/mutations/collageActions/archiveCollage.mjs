@@ -4,6 +4,7 @@ import { isUser, findCollageById } from "../../../../utils/auth.mjs";
 const archiveCollage = async (_, { collageId }, { user }) => {
   try {
     isUser(user);
+    await isCurrentAuthor(user, collageId);
 
     // Verify the collage exists
     await findCollageById(collageId);

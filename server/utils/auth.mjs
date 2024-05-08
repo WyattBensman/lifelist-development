@@ -2,7 +2,7 @@ import jwt from "jsonwebtoken";
 import { promisify } from "util";
 import { GraphQLError } from "graphql";
 import dotenv from "dotenv";
-import { Collage, LifeList, PrivacyGroup } from "../models/index.mjs";
+import { Collage, LifeList, PrivacyGroup, Comment } from "../models/index.mjs";
 dotenv.config();
 
 const expiration = "365d";

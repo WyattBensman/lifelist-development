@@ -5,7 +5,7 @@ import {
   findCollageById,
 } from "../../../../utils/auth.mjs";
 
-const deleteComment = async (_, { collageId, commentId }, { user }) => {
+const deleteComment = async (_, { commentId, collageId }, { user }) => {
   try {
     isUser(user);
 

@@ -3,7 +3,6 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const updateEmail = async (_, { email }, { user }) => {
   try {
-    // Ensure the user is authenticated
     isUser(user);
 
     // Update the user's email address

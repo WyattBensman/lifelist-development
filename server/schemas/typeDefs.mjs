@@ -85,6 +85,7 @@ type User {
 
   enum NotificationType {
     FOLLOW_REQUEST
+    FOLLOW_ACCEPTED
     FOLLOW
     COLLAGE_REPOST
     COMMENT
@@ -354,8 +355,8 @@ type User {
     setProfilePictureAndBio(profilePicture: Upload, bio: String): UserResponse!
 
     # User Actions Mutations
-    updatePhoneNumber(phoneNumber: String!): UpdateEmailResponse!
-    updateEmail(email: String!): UpdatePhoneNumberResponse!
+    updatePhoneNumber(phoneNumber: String!): UpdatePhoneNumberResponse!
+    updateEmail(email: String!): UpdateEmailResponse!
     updatePassword(currentPassword: String!, newPassword: String!): UpdatePasswordResponse!
     updateProfile(profilePicture: Upload, fullName: String, username: String, bio: String): UpdateProfileResponse!
     updateIdentity(gender: String, birthday: String): UpdateIdentityResponse!
@@ -387,12 +388,12 @@ type User {
     unsaveCollage(collageId: ID!): ActionResponse!
     repostCollage(collageId: ID!): ActionResponse!
     unrepostCollage(collageId: ID!): ActionResponse!
-    likeCollage(collageId: ID!): ActionResponse!
+    likeCollage(collageId: ID!): ActionResponse
     unlikeCollage(collageId: ID!): ActionResponse!
     archiveCollage(collageId: ID!): ActionResponse!
     unarchiveCollage(collageId: ID!): ActionResponse!
     createComment(collageId: ID!, text: String!): ActionResponse!
-    editComment(collageId: ID!, commentId: ID!, newText: String!): ActionResponse!
+    editComment(commentId: ID!, newText: String!): ActionResponse!
     deleteComment(collageId: ID!, commentId: ID!): ActionResponse!
     deleteCollage(collageId: ID!): ActionResponse!
     reportCollage(collageId: ID!, reason: ReportReason!): ActionResponse!
@@ -408,10 +409,10 @@ type User {
     removeShotsFromLifeListExperience(lifeListExperienceId: ID!, shotIds: [ID]): LifeListExperience
 
     # Camera Mutations
-    createCameraShot(authorId: ID!, image: Upload!, camera: CameraType, shotOrientation: ShotOrientation, dimensions: DimensionsInput): CameraShot
+    createCameraShot(image: Upload!, camera: CameraType, shotOrientation: ShotOrientation, dimensions: DimensionsInput): CameraShot
     editCameraShot(shotId: ID!, camera: CameraType): CameraShot
     deleteCameraShot(shotId: ID!): StandardResponse
-    createCameraAlbum(authorId: ID!, title: String!, description: String): CameraAlbum
+    createCameraAlbum(title: String!, description: String): CameraAlbum
     editCameraAlbum(albumId: ID!, title: String, description: String): CameraAlbum
     deleteCameraAlbum(albumId: ID!): StandardResponse
     addShotsToAlbum(albumId: ID!, shotIds: [ID]): CameraAlbum
@@ -507,7 +508,7 @@ type User {
   }
   
   type UpdateSettingsResponse {
-    privacy: Boolean
+    privacy: String
     darkMode: Boolean
     language: String
     notifications: Boolean

@@ -1,7 +1,10 @@
 import { CameraAlbum } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const removeShotsFromAlbum = async (_, { albumId, shotIds }, { user }) => {
   try {
+    isUser(user);
+
     // Fetch the album and ensure it exists and belongs to the user
     const album = await CameraAlbum.findById(albumId);
     if (!album) {
@@ -18,7 +21,7 @@ const removeShotsFromAlbum = async (_, { albumId, shotIds }, { user }) => {
         $pullAll: { shots: shotIds },
       },
       { new: true }
-    ).populate("shots"); // Optionally populate 'shots' to return detailed info
+    ).populate("shots");
 
     return updatedAlbum;
   } catch (error) {
