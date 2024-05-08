@@ -106,5 +106,6 @@ export const getUserIdentityInformation = async (_, __, { user }) => {
 
 export const getUserSettingsInformation = async (_, __, { user }) => {
   isUser(user);
-  return User.findById(user._id, "settings").exec();
+  const userData = await User.findById(user._id).exec();
+  return userData.settings;
 };

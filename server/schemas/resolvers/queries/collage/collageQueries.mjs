@@ -5,7 +5,7 @@ export const getCollageById = async (_, { collageId }) => {
   const collage = await Collage.findById(collageId)
     .populate({
       path: "author",
-      select: "username fullName",
+      select: "username fullName profilePicture",
     })
     .exec();
   if (!collage) throw new Error("Collage not found.");

@@ -3,7 +3,7 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 export const getDailyCameraShotsLeft = async (_, __, { user }) => {
   isUser(user);
-  const currentUser = await User.findById(user.id)
+  const currentUser = await User.findById(user._id)
     .populate("developingCameraShots")
     .exec();
   if (!currentUser) throw new Error("User not found.");
@@ -17,7 +17,7 @@ export const getDailyCameraShotsLeft = async (_, __, { user }) => {
 
 export const getAllCameraAlbums = async (_, __, { user }) => {
   isUser(user);
-  const currentUser = await User.findById(user.id)
+  const currentUser = await User.findById(user._id)
     .populate("cameraAlbums")
     .exec();
   if (!currentUser) throw new Error("User not found.");
@@ -34,7 +34,7 @@ export const getCameraAlbum = async (_, { albumId }) => {
 
 export const getAllCameraShots = async (_, __, { user }) => {
   isUser(user);
-  const currentUser = await User.findById(user.id)
+  const currentUser = await User.findById(user._id)
     .populate("cameraShots")
     .exec();
   if (!currentUser) throw new Error("User not found.");
@@ -49,7 +49,7 @@ export const getCameraShot = async (_, { shotId }) => {
 
 export const getDevelopingCameraShots = async (_, __, { user }) => {
   isUser(user);
-  const currentUser = await User.findById(user.id)
+  const currentUser = await User.findById(user._id)
     .populate("developingCameraShots")
     .exec();
   if (!currentUser) throw new Error("User not found.");

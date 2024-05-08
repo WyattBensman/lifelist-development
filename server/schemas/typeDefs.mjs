@@ -284,7 +284,7 @@ type User {
     getUserLifeList(userId: ID!): LifeList
     getExperiencedList(lifeListId: ID!): [LifeListExperience]
     getWishListedList(lifeListId: ID!): [LifeListExperience]
-    getLifeListExperience(lifeListId: ID!, experienceId: ID!): LifeListExperience
+    getLifeListExperience(experienceId: ID!): LifeListExperience
   
     # Collage Queries
     getCollageById(collageId: ID!): Collage

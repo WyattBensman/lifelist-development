@@ -1,11 +1,19 @@
-import { LifeList } from "../../../../models/index.mjs";
+import { LifeList, LifeListExperience } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 export const getCurrentUserLifeList = async (_, __, { user }) => {
   isUser(user);
 
-  const lifeList = await LifeList.findOne({ author: user._id })
-    .populate("experiences")
+  const lifeList = await LifeList.findOne({
+    author: user._id,
+  })
+    .populate({
+      path: "experiences",
+      populate: {
+        path: "experience",
+        select: "title image",
+      },
+    })
     .exec();
   if (!lifeList) throw new Error("LifeList not found for the current user.");
   return lifeList;
@@ -15,7 +23,13 @@ export const getUserLifeList = async (_, { userId }, { user }) => {
   isUser(user);
 
   const lifeList = await LifeList.findOne({ author: userId })
-    .populate("experiences")
+    .populate({
+      path: "experiences",
+      populate: {
+        path: "experience",
+        select: "title image",
+      },
+    })
     .exec();
   if (!lifeList) throw new Error("LifeList not found for the specified user.");
   return lifeList;
@@ -49,7 +63,8 @@ export const getWishListedList = async (_, { lifeListId }) => {
 
 export const getLifeListExperience = async (_, { experienceId }) => {
   const experience = await LifeListExperience.findById(experienceId)
-    .populate("experience")
+    .populate("associatedShots") // populating camera shots
+    .populate("associatedCollages") // populating collages
     .exec();
   if (!experience) throw new Error("LifeList experience not found.");
   return experience;
