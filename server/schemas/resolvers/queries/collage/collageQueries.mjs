@@ -5,7 +5,7 @@ export const getCollageById = async (_, { collageId }) => {
   const collage = await Collage.findById(collageId)
     .populate({
       path: "author",
-      select: "username fullName profilePicture",
+      select: "_id username fullName profilePicture",
     })
     .exec();
   if (!collage) throw new Error("Collage not found.");
@@ -19,7 +19,7 @@ export const getComments = async (_, { collageId }, { user }) => {
       path: "comments",
       populate: {
         path: "author",
-        select: "username fullName profilePicture",
+        select: "_id username fullName profilePicture",
       },
     })
     .exec();
@@ -32,7 +32,7 @@ export const getTaggedUsers = async (_, { collageId }, { user }) => {
   const collage = await Collage.findById(collageId)
     .populate({
       path: "tagged",
-      select: "username fullName profilePicture",
+      select: "_id username fullName profilePicture",
     })
     .exec();
   if (!collage) throw new Error("Collage not found.");

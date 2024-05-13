@@ -11,7 +11,7 @@ export const getCurrentUserLifeList = async (_, __, { user }) => {
       path: "experiences",
       populate: {
         path: "experience",
-        select: "title image",
+        select: "_id title image category",
       },
     })
     .exec();
@@ -27,7 +27,7 @@ export const getUserLifeList = async (_, { userId }, { user }) => {
       path: "experiences",
       populate: {
         path: "experience",
-        select: "title image",
+        select: "_id title image category",
       },
     })
     .exec();
@@ -43,7 +43,10 @@ export const getExperiencedList = async (_, { lifeListId }) => {
     lifeList: lifeList._id,
     list: "EXPERIENCED",
   })
-    .populate("experience")
+    .populate({
+      path: "experience",
+      select: "_id image title category", // Only select specific fields
+    })
     .exec();
   return experiencedList;
 };
@@ -56,15 +59,28 @@ export const getWishListedList = async (_, { lifeListId }) => {
     lifeList: lifeList._id,
     list: "WISHLISTED",
   })
-    .populate("experience")
+    .populate({
+      path: "experience",
+      select: "_id image title category", // Only select specific fields
+    })
     .exec();
   return wishListedList;
 };
 
 export const getLifeListExperience = async (_, { experienceId }) => {
   const experience = await LifeListExperience.findById(experienceId)
-    .populate("associatedShots") // populating camera shots
-    .populate("associatedCollages") // populating collages
+    .populate({
+      path: "associatedShots.shot",
+      select: "_id image",
+    })
+    .populate({
+      path: "associatedCollages",
+      select: "_id coverImage", // Only select specific fields
+    })
+    .populate({
+      path: "experience",
+      select: "_id image title category", // Only select specific fields
+    })
     .exec();
   if (!experience) throw new Error("LifeList experience not found.");
   return experience;

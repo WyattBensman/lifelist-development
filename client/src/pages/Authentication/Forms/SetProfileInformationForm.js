@@ -4,9 +4,11 @@ import {
   layoutStyles,
   authenticationStyles,
 } from "../../../styles";
-import SolidButton from "../../../components/SolidButton";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import { useMutation } from "@apollo/client";
+import { SET_PROFILE_INFORMATION } from "../../../utils/mutations/index.js";
+import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 
 export default function SetProfileInformationForm() {
   const navigation = useNavigation();
@@ -14,6 +16,40 @@ export default function SetProfileInformationForm() {
   const [fullName, setFullName] = useState("");
   const [gender, setGender] = useState("");
   const [bio, setBio] = useState("");
+
+  const [setProfileInformation, { loading }] = useMutation(
+    SET_PROFILE_INFORMATION,
+    {
+      onCompleted: (data) => {
+        if (data.setProfileInformation.success) {
+          Alert.alert("Success", "Profile updated successfully.");
+          navigation.navigate("'MainFeed'"); // Specify the next screen to navigate
+        }
+      },
+      onError: (error) => {
+        Alert.alert("Update Failed", error.message);
+      },
+    }
+  );
+
+  const handleUpdateProfile = () => {
+    if (!fullName || !gender) {
+      Alert.alert("Error", "Full name and gender are required.");
+      return;
+    }
+
+    setProfileInformation({
+      variables: {
+        fullName,
+        gender,
+        bio,
+        profilePicture,
+      },
+    });
+  };
+
+  const isFormComplete =
+    fullName.trim() && gender.trim() && profilePicture.trim();
 
   return (
     <View style={[formStyles.formContainer, layoutStyles.marginTopXs]}>
@@ -38,9 +74,10 @@ export default function SetProfileInformationForm() {
       />
       <Text style={[formStyles.label, formStyles.inputSpacer]}>Bio</Text>
       <TextInput style={formStyles.input} onChangeText={setBio} value={bio} />
-      <SolidButton
+      <ButtonSolid
         text={"Create Account"}
-        backgroundColor={"#ececec"}
+        textColor={isFormComplete ? "#FFFFFF" : "#000000"}
+        backgroundColor={isFormComplete ? "#6AB952" : "#ececec"}
         marginTop={12}
         onPress={() => navigation.navigate("SetProfileInformation")}
       />

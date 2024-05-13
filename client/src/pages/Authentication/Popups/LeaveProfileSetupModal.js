@@ -6,17 +6,40 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { BlurView } from "expo-blur";
-import SolidButton from "../../../components/SolidButton";
 import CloseButton from "../../../icons/Universal/CloseButton";
 import { modalStyles as styles } from "../../../styles/ModalStyling";
-import OutlinedButton from "../../../components/OutlinedButton";
+import { useMutation } from "@apollo/client";
+import { DELETE_USER } from "../../../utils/mutations/userActionsMutations.js";
+import ButtonSolid from "../../../components/Buttons/ButtonSolid.js";
+import ButtonOutline from "../../../components/Buttons/ButtonOutline.js";
 
-export default function LeavePofileSetupModal({
+export default function LeaveProfileSetupModal({
   modalVisible,
   setModalVisible,
+  navigation,
 }) {
+  const [deleteUser, { loading }] = useMutation(DELETE_USER, {
+    onCompleted: (data) => {
+      if (data.deleteUser.success) {
+        console.log("Okay");
+        setModalVisible(false); // Close modal after deletion
+        navigation.goBack();
+      } else {
+        Alert.alert("Error", data.deleteUser.message);
+      }
+    },
+    onError: (err) => {
+      Alert.alert("Deletion Error", err.message);
+    },
+  });
+
+  const handleDeleteUser = () => {
+    deleteUser();
+  };
+
   return (
     <View style={styles.centeredView}>
       <Modal
@@ -50,14 +73,15 @@ export default function LeavePofileSetupModal({
                 </Text>
                 <View style={styles.actionButtons}>
                   <View style={{ flex: 1, marginRight: 4 }}>
-                    <OutlinedButton
+                    <ButtonOutline
                       borderColor={"red"}
                       textColor={"red"}
                       text={"Exit Setup"}
+                      onPress={handleDeleteUser}
                     />
                   </View>
                   <View style={{ flex: 1, marginLeft: 4 }}>
-                    <SolidButton
+                    <ButtonSolid
                       backgroundColor={"#f4f4f4"}
                       text={"Go Back"}
                       textColor={"#000000"}

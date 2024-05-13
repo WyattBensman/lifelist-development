@@ -6,7 +6,6 @@ import UserRelations from "../pages/Profile/Screens/UserRelations";
 import EditProfile from "../pages/Profile/Screens/EditProfile";
 import Saved from "../pages/Profile/Screens/Saved";
 import Archived from "../pages/Profile/Screens/Archived";
-import EditFlowPage from "../pages/Profile/Screens/EditFlowPage";
 import BlockedUsers from "../pages/Profile/Screens/BlockedUsers";
 import PrivacyGroups from "../pages/Profile/Screens/PrivacyGroups";
 import PrivacyGroup from "../pages/Profile/Screens/PrivacyGroup";
@@ -55,11 +54,6 @@ export default function ProfileStack() {
       <Stack.Screen
         name="Archived"
         component={Archived}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="EditFlowPage"
-        component={EditFlowPage}
         options={{ headerShown: false }}
       />
       <Stack.Screen

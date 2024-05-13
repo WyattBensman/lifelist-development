@@ -36,6 +36,7 @@ type User {
   phoneVerification: VerificationStatus
   status: String
   expiryDate: Date
+  isProfileComplete: Boolean
 }
 
   type Auth {
@@ -125,13 +126,18 @@ type User {
     lifeList: LifeList
     experience: Experience
     list: LifeListListEnum
-    associatedShots: [CameraShot]
+    associatedShots: [CameraShotInfo]
     associatedCollages: [Collage]
   }
   
   enum LifeListListEnum {
     EXPERIENCED
     WISHLISTED
+  }
+
+  type CameraShotInfo {
+    shot: CameraShot
+    isHidden: Boolean
   }
 
   type Experience {
@@ -274,6 +280,7 @@ type User {
     getUserContactInformation: UserContactInformation
     getUserIdentityInformation: UserIdentityInformation
     getUserSettingsInformation: UserSettingsInformation
+    getUserIsProfileComplete: Boolean
   
     # Privacy Group Queries
     getAllPrivacyGroups: [PrivacyGroup]
@@ -351,8 +358,9 @@ type User {
     login(usernameOrEmailOrPhone: String!, password: String!): Auth
     initializeRegistration(email: String, phoneNumber: String, birthday: String!): AuthResponse!
     setBasicInformation(fullName: String!, gender: String!): UserResponse!
-    setUsernameAndPassword(username: String!, password: String!): UserResponse!
+    setLoginInformation(username: String!, password: String!): UserResponse!
     setProfilePictureAndBio(profilePicture: Upload, bio: String): UserResponse!
+    setProfileInformation(fullName: String!, gender: String!, profilePicture: Upload, bio: String): UserResponse!
 
     # User Actions Mutations
     updatePhoneNumber(phoneNumber: String!): UpdatePhoneNumberResponse!

@@ -108,30 +108,6 @@ const userSchema = new Schema({
       postRepostToMainFeed: true,
     },
   },
-  flowpageLinks: {
-    type: [
-      {
-        linkType: {
-          type: String,
-          enum: [
-            "INSTAGRAM",
-            "X",
-            "FACEBOOK",
-            "SNAPCHAT",
-            "YOUTUBE",
-            "TIKTOK",
-            "APPLE_MUSIC",
-            "SPOTIFY",
-          ],
-        },
-        url: { type: String, trim: true },
-      },
-    ],
-    validate: [
-      (array) => array.length <= 8,
-      "Cannot have more than 8 Flow Page Links.",
-    ],
-  },
   privacyGroups: [{ type: Schema.Types.ObjectId, ref: "PrivacyGroup" }],
   blocked: [{ type: Schema.Types.ObjectId, ref: "User" }],
 
@@ -163,6 +139,7 @@ const userSchema = new Schema({
     type: Date,
     default: () => new Date(+new Date() + 48 * 60 * 60 * 1000), // 48 hours from now
   },
+  isProfileComplete: { type: Boolean, default: false },
 });
 
 // Middleware for creating a LifeList when a new user is created
@@ -177,6 +154,20 @@ userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
+  next();
+});
+
+// Pre-save middleware to update the isProfileComplete field
+userSchema.pre("save", function (next) {
+  // Check all required fields to determine if the profile is complete
+  this.isProfileComplete =
+    (this.email || this.phoneNumber) && // At least one contact method must be filled
+    this.username &&
+    this.password &&
+    this.fullName &&
+    this.gender;
+
+  // Proceed to the next middleware or save operation
   next();
 });
 

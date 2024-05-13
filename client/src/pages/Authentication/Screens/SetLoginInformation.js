@@ -1,19 +1,32 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import { layoutStyles, authenticationStyles } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import SetLoginInformationForm from "../Forms/SetLoginInformationForm";
 import NextPageArrowIcon from "../../../icons/Universal/NextPageArrowIcon";
 import HeaderStack from "../../../components/Headers/HeaderStack";
+import { useState } from "react";
+import LeaveProfileSetupModal from "../Popups/LeaveProfileSetupModal";
+import BackArrowIcon from "../Icons/BackArrowIcon";
 
 export default function SetLoginInformation() {
   const navigation = useNavigation();
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
-        arrow={<BackArrowIcon navigation={navigation} />}
-        button1={<NextPageArrowIcon color={"#d4d4d4"} />}
+        arrow={
+          <Pressable onPress={() => setModalVisible(true)}>
+            <BackArrowIcon />
+          </Pressable>
+        }
+        button1={
+          <NextPageArrowIcon
+            color={"#d4d4d4"}
+            navigateTo={"SetProfileInformation"}
+            navigation={navigation}
+          />
+        }
       />
       <View style={authenticationStyles.formContainer}>
         <Image
@@ -24,33 +37,12 @@ export default function SetLoginInformation() {
         <Text style={authenticationStyles.header}>Set Login Information</Text>
         <Text style={authenticationStyles.subheader}>Step 1 of 2</Text>
         <SetLoginInformationForm />
+        <LeaveProfileSetupModal
+          modalVisible={modalVisible}
+          setModalVisible={setModalVisible}
+          navigation={navigation}
+        />
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  contentContainer: {
-    flex: 1,
-    justifyContent: "space-between",
-    marginTop: 16,
-    margin: 32,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "600",
-    textAlign: "center",
-  },
-  subheader: {
-    fontWeight: "500",
-    textAlign: "center",
-    fontStyle: "italic",
-    color: "#6AB952",
-    marginBottom: 16,
-    marginTop: 6,
-  },
-  smallText: {
-    fontSize: 10,
-    textAlign: "center",
-  },
-});

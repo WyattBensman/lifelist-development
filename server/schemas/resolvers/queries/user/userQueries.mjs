@@ -2,11 +2,18 @@ import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 export const getUserProfileById = async (_, { userId }) => {
-  const foundUser = await User.findById(userId)
-    .populate("collages", "_id coverImage")
-    .exec();
-  if (!foundUser) throw new Error("User not found.");
-  return foundUser;
+  try {
+    const foundUser = await User.findById(userId)
+      .populate("collages", "_id coverImage")
+      .populate("notifications", "_id read")
+      .exec();
+    if (!foundUser) {
+      throw new Error("User not found.");
+    }
+    return foundUser;
+  } catch (error) {
+    throw new Error("Database error: " + error.message);
+  }
 };
 
 export const getFollowers = async (_, { userId }, { user }) => {
@@ -19,8 +26,8 @@ export const getFollowers = async (_, { userId }, { user }) => {
 };
 
 export const getFollowing = async (_, { userId }, { user }) => {
-  isUser(user);
-  const foundUser = await User.findById(userId)
+  /* isUser(user); */
+  const foundUser = await User.findById("663a3129e0ffbeff092b81d4")
     .populate("following", "_id username fullName profilePicture")
     .exec();
   if (!foundUser) throw new Error("User not found.");
@@ -108,4 +115,13 @@ export const getUserSettingsInformation = async (_, __, { user }) => {
   isUser(user);
   const userData = await User.findById(user._id).exec();
   return userData.settings;
+};
+
+export const getUserIsProfileComplete = async (_, __, { user }) => {
+  isUser(user);
+
+  const foundUser = await User.findById(user._id);
+  if (!foundUser) throw new Error("User not found.");
+
+  return { isProfileComplete: foundUser.isProfileComplete };
 };

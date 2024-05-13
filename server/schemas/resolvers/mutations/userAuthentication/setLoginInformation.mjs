@@ -1,6 +1,7 @@
 import { User } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
-const setUsernameAndPassword = async (_, { username, password }, { user }) => {
+const setLoginInformation = async (_, { username, password }, { user }) => {
   isUser(user);
 
   // Input validation
@@ -50,4 +51,4 @@ const setUsernameAndPassword = async (_, { username, password }, { user }) => {
   }
 };
 
-export default setUsernameAndPassword;
+export default setLoginInformation;

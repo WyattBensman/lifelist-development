@@ -6,6 +6,7 @@ import path from "path";
 import schedule from "node-schedule";
 import dotenv from "dotenv";
 import * as url from "url";
+import cors from "cors";
 
 // Configuration and utilities
 import { authMiddleware } from "./utils/auth.mjs";
@@ -38,6 +39,12 @@ app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 12 }));
 
 // Static directory setup
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+
+/* app.use(
+  cors({
+    origin: ["http://192.168.1.205:8081", "exp://192.168.1.205:8081"],
+  })
+); */
 
 const startServer = async () => {
   await server.start();

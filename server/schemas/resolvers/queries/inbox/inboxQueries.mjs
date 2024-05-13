@@ -15,7 +15,7 @@ export const getUserConversations = async (_, __, { user }) => {
       populate: {
         path: "sender",
         model: "User",
-        select: "username fullName profilePicture",
+        select: "_id username fullName profilePicture",
       },
     })
     .exec();
@@ -60,7 +60,7 @@ export const getUserNotifications = async (_, __, { user }) => {
       populate: {
         path: "sender",
         model: "User",
-        select: "username fullName profilePicture",
+        select: "_id username fullName profilePicture",
       },
     })
     .exec();
@@ -73,7 +73,7 @@ export const getUserFollowRequest = async (_, __, { user }) => {
   const foundUser = await User.findById(user._id)
     .populate({
       path: "followRequests.userId",
-      select: "username fullName profilePicture",
+      select: "_id username fullName profilePicture",
     })
     .exec();
   if (!foundUser) throw new Error("User not found for the provided ID.");

@@ -1,0 +1,178 @@
+import { gql } from "@apollo/client";
+
+export const GET_USER_PROFILE = gql`
+  query GetUserProfileById($userId: ID!) {
+    getUserProfileById(userId: $userId) {
+      _id
+      fullName
+      username
+      bio
+      profilePicture
+      collages {
+        _id
+        coverImage
+      }
+      notifications {
+        _id
+        read
+      }
+      followers {
+        _id
+      }
+      following {
+        _id
+      }
+      isProfileComplete
+    }
+  }
+`;
+
+// Followers
+export const GET_FOLLOWERS = gql`
+  query GetFollowers($userId: ID!) {
+    getFollowers(userId: $userId) {
+      _id
+      username
+      fullName
+      profilePicture
+    }
+  }
+`;
+
+// Following
+export const GET_FOLLOWING = gql`
+  query GetFollowing($userId: ID!) {
+    getFollowing(userId: $userId) {
+      _id
+      username
+      fullName
+      profilePicture
+    }
+  }
+`;
+
+// User Collages
+export const GET_USER_COLLAGES = gql`
+  query GetUserCollages($userId: ID!) {
+    getUserCollages(userId: $userId) {
+      _id
+      coverImage
+    }
+  }
+`;
+
+// User's Reposted Collages
+export const GET_REPOSTED_COLLAGES = gql`
+  query GetRepostedCollages($userId: ID!) {
+    getRepostedCollages(userId: $userId) {
+      _id
+      coverImage
+    }
+  }
+`;
+
+// User's Tagged Collages
+export const GET_TAGGED_COLLAGES = gql`
+  query GetTaggedCollages($userId: ID!) {
+    getTaggedCollages(userId: $userId) {
+      _id
+      coverImage
+    }
+  }
+`;
+
+// User's Liked Collages
+export const GET_LIKED_COLLAGES = gql`
+  query GetLikedCollages {
+    getLikedCollages {
+      _id
+      coverImage
+    }
+  }
+`;
+
+// User's Saved Collages
+export const GET_SAVED_COLLAGES = gql`
+  query GetSavedCollages {
+    getSavedCollages {
+      _id
+      coverImage
+    }
+  }
+`;
+
+// User's Archived Collages
+export const GET_ARCHIVES = gql`
+  query GetArchives {
+    getArchives {
+      _id
+      coverImage
+    }
+  }
+`;
+
+// Blocked Users
+export const GET_BLOCKED_USERS = gql`
+  query GetBlockedUsers {
+    getBlockedUsers {
+      _id
+      username
+      fullName
+      profilePicture
+    }
+  }
+`;
+
+// User Profile Information
+export const GET_USER_PROFILE_INFORMATION = gql`
+  query GetUserProfileInformation {
+    getUserProfileInformation {
+      profilePicture
+      fullName
+      username
+      bio
+    }
+  }
+`;
+
+// User Contact Information
+export const GET_USER_CONTACT_INFORMATION = gql`
+  query GetUserContactInformation {
+    getUserContactInformation {
+      email
+      phoneNumber
+    }
+  }
+`;
+
+// User Identity Information
+export const GET_USER_IDENTITY_INFORMATION = gql`
+  query GetUserIdentityInformation {
+    getUserIdentityInformation {
+      birthday
+      gender
+    }
+  }
+`;
+
+// User Settings Information
+export const GET_USER_SETTINGS_INFORMATION = gql`
+  query GetUserSettingsInformation {
+    getUserSettingsInformation {
+      privacy
+      darkMode
+      language
+      notifications
+      postRepostToMainFeed
+    }
+  }
+`;
+
+// Check if Profile is Complete
+export const IS_PROFILE_COMPLETE = gql`
+  query GetUserIsProfileComplete {
+    getUserIsProfileComplete {
+      isProfileComplete
+    }
+  }
+`;

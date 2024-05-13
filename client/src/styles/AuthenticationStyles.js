@@ -37,6 +37,7 @@ export const authenticationStyles = StyleSheet.create({
     width: 40,
     height: 40,
     alignSelf: "center",
+    marginBottom: 8,
   },
   profilePictureContainer: {
     height: 75,

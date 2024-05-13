@@ -18,68 +18,66 @@ export default function NavigationTab() {
   const { isTabBarVisible } = useNavigationContext();
 
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        barStyle={{
-          backgroundColor: "#262828",
-          height: isTabBarVisible ? 75 : 0,
-          borderTopLeftRadius: 20,
-          borderTopRightRadius: 20,
-          overflow: "hidden",
-          display: isTabBarVisible ? "flex" : "none",
+    <Tab.Navigator
+      barStyle={{
+        backgroundColor: "#262828",
+        height: isTabBarVisible ? 75 : 0,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        overflow: "hidden",
+        display: isTabBarVisible ? "flex" : "none",
+      }}
+    >
+      <Tab.Screen
+        name="MainFeed"
+        component={MainFeedStack}
+        options={{
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon focused={focused} color={color} routeName="Home" />
+          ),
+          tabBarLabel: () => null,
         }}
-      >
-        <Tab.Screen
-          name="MainFeed"
-          component={MainFeedStack}
-          options={{
-            tabBarIcon: ({ focused, color }) => (
-              <TabIcon focused={focused} color={color} routeName="Home" />
-            ),
-            tabBarLabel: () => null,
-          }}
-        />
-        <Tab.Screen
-          name="Explore"
-          component={ExploreStack}
-          options={{
-            tabBarIcon: ({ focused, color }) => (
-              <TabIcon focused={focused} color={color} routeName="Explore" />
-            ),
-            tabBarLabel: () => null,
-          }}
-        />
-        <Tab.Screen
-          name="Camera"
-          component={CameraHome}
-          options={{
-            tabBarIcon: ({ focused, color }) => (
-              <TabIcon focused={focused} color={color} routeName="Camera" />
-            ),
-            tabBarLabel: () => null,
-          }}
-        />
-        <Tab.Screen
-          name="LifeList"
-          component={LifeListStack}
-          options={{
-            tabBarIcon: ({ focused, color }) => (
-              <TabIcon focused={focused} color={color} routeName="LifeList" />
-            ),
-            tabBarLabel: () => null,
-          }}
-        />
-        <Tab.Screen
-          name="Profile"
-          component={ProfileStack}
-          options={{
-            tabBarIcon: ({ focused, color }) => (
-              <TabIcon focused={focused} color={color} routeName="Profile" />
-            ),
-            tabBarLabel: () => null,
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+      />
+      <Tab.Screen
+        name="Explore"
+        component={ExploreStack}
+        options={{
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon focused={focused} color={color} routeName="Explore" />
+          ),
+          tabBarLabel: () => null,
+        }}
+      />
+      <Tab.Screen
+        name="Camera"
+        component={CameraHome}
+        options={{
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon focused={focused} color={color} routeName="Camera" />
+          ),
+          tabBarLabel: () => null,
+        }}
+      />
+      <Tab.Screen
+        name="LifeList"
+        component={LifeListStack}
+        options={{
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon focused={focused} color={color} routeName="LifeList" />
+          ),
+          tabBarLabel: () => null,
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileStack}
+        options={{
+          tabBarIcon: ({ focused, color }) => (
+            <TabIcon focused={focused} color={color} routeName="Profile" />
+          ),
+          tabBarLabel: () => null,
+        }}
+      />
+    </Tab.Navigator>
   );
 }

@@ -4,7 +4,7 @@ export const formStyles = StyleSheet.create({
   formContainer: {
     flex: 1,
     marginVertical: 24,
-    marginHorizontal: 20,
+    marginHorizontal: 16,
   },
   inputContainer: {
     marginBottom: 16,

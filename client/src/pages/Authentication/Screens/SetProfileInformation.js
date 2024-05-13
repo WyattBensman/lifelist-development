@@ -11,10 +11,7 @@ export default function SetProfileInformation() {
 
   return (
     <View style={layoutStyles.wrapper}>
-      <HeaderStack
-        arrow={<BackArrowIcon navigation={navigation} />}
-        button1={<NextPageArrowIcon color={"#d4d4d4"} />}
-      />
+      <HeaderStack arrow={<BackArrowIcon navigation={navigation} />} />
       <View style={authenticationStyles.formContainer}>
         <Image
           source={require("../../../../public/branding/lifelist-logo.png")}
