@@ -447,12 +447,9 @@ type User {
       type: String!
       collageId: ID
       message: String
-    ): Notification
+    ): StandardResponse
     deleteNotification(notificationId: ID!): StandardResponse
     markAllNotificationsAsSeen: StandardResponse
-
-
-
   }
 
   # Mutation Responses

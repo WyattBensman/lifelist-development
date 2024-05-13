@@ -12,14 +12,17 @@ const postCollage = async (_, { collageId }, { user }) => {
     // Update the collage's post status and createdAt
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      {
-        $set: {
-          posted: true,
-          createdAt: new Date(),
-        },
-      },
+      { $set: { posted: true, createdAt: new Date() } },
       { new: true, runValidators: true }
-    );
+    )
+      .populate({
+        path: "author",
+        select: "_id username fullName profilePicture",
+      })
+      .populate({
+        path: "privacyGroup",
+        populate: { path: "users", select: "_id username fullName" },
+      });
 
     // Send notifications to tagged users
     const taggedUserIds = updatedCollage.tagged.map(

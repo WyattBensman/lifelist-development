@@ -22,7 +22,10 @@ const createNotification = async ({
       $addToSet: { notifications: newNotification._id },
     });
 
-    return newNotification;
+    return {
+      success: true,
+      message: "Notification created successfully.",
+    };
   } catch (error) {
     console.error(`Error creating notification: ${error.message}`);
     throw new Error("Failed to create notification.");
