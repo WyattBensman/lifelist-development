@@ -1,37 +1,13 @@
-import { View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import LifeListLogo from "../Icons/LifeListLogo";
 import CreateCollageIcon from "../Icons/CreateCollageIcon";
 import InboxIcon from "../Icons/InboxIcon";
 import { layoutStyles } from "../../../styles";
-import { useNavigation } from "@react-navigation/native";
 import HeaderMain from "../../../components/Headers/HeaderMain";
-import AuthService from "../../../utils/AuthService";
-import { useEffect, useState } from "react";
-import { useQuery } from "@apollo/client";
-import { GET_USER_PROFILE } from "../../../utils/queries/userQueries";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function MainFeed() {
-  const navigation = useNavigation();
-  /*   const [userId, setUserId] = useState(null);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      const userData = await AuthService.getUser();
-      setUserId(userData.id);
-    };
-
-    fetchUser();
-  }, []);
-
-  console.log(userId); */
-  userId = "663a3129e0ffbeff092b81d4";
-
-  const { data, loading, error } = useQuery(GET_USER_PROFILE, {
-    variables: { userId: userId },
-    skip: !userId, // Skip the query if userId is not yet set
-  });
-
-  console.log(data, loading, error);
+  const { logout } = useAuth();
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -40,6 +16,9 @@ export default function MainFeed() {
         icon1={<CreateCollageIcon />}
         icon3={<InboxIcon />}
       />
+      <Pressable onPress={logout}>
+        <Text style={{ margin: 20 }}>Logout</Text>
+      </Pressable>
     </View>
   );
 }

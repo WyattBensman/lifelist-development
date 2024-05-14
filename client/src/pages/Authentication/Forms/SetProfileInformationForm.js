@@ -1,63 +1,76 @@
-import { Image, Text, TextInput, View } from "react-native";
-import {
-  formStyles,
-  layoutStyles,
-  authenticationStyles,
-} from "../../../styles";
+import { Image, Text, TextInput, View, Alert } from "react-native";
+import { formStyles, layoutStyles } from "../../../styles";
+import * as ImagePicker from "expo-image-picker";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import { useMutation } from "@apollo/client";
 import { SET_PROFILE_INFORMATION } from "../../../utils/mutations/index.js";
-import ButtonSolid from "../../../components/Buttons/ButtonSolid";
+import { useAuth } from "../../../contexts/AuthContext.js";
 
 export default function SetProfileInformationForm() {
   const navigation = useNavigation();
-  const [profilePicture, setProfilePicture] = useState("");
+  const { setIsAuthenticated, setRegistrationComplete } = useAuth();
+  const [image, setImage] = useState(null);
   const [fullName, setFullName] = useState("");
   const [gender, setGender] = useState("");
   const [bio, setBio] = useState("");
 
-  const [setProfileInformation, { loading }] = useMutation(
+  const [setProfileInformation, { loading, error }] = useMutation(
     SET_PROFILE_INFORMATION,
     {
       onCompleted: (data) => {
         if (data.setProfileInformation.success) {
-          Alert.alert("Success", "Profile updated successfully.");
-          navigation.navigate("'MainFeed'"); // Specify the next screen to navigate
+          setIsAuthenticated(true); // Mark the user as fully authenticated
+          setRegistrationComplete(true); // Indicate that registration is complete
+        } else {
+          Alert.alert("Error", data.setProfileInformation.message);
         }
       },
-      onError: (error) => {
-        Alert.alert("Update Failed", error.message);
-      },
+      onError: (err) => Alert.alert("Error", err.message),
     }
   );
 
-  const handleUpdateProfile = () => {
-    if (!fullName || !gender) {
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (!fullName.trim() || !gender.trim()) {
       Alert.alert("Error", "Full name and gender are required.");
       return;
     }
 
-    setProfileInformation({
-      variables: {
-        fullName,
-        gender,
-        bio,
-        profilePicture,
-      },
-    });
+    const variables = {
+      profilePicture: image,
+      fullName,
+      gender,
+      bio,
+    };
+    setProfileInformation({ variables });
   };
 
-  const isFormComplete =
-    fullName.trim() && gender.trim() && profilePicture.trim();
+  const isFormComplete = fullName.trim() && gender.trim();
 
   return (
     <View style={[formStyles.formContainer, layoutStyles.marginTopXs]}>
       <View style={[layoutStyles.marginBtmMd, { alignSelf: "center" }]}>
-        <Image
-          source={require("../../../../public/images/wyattbensman.png")}
-          style={authenticationStyles.profilePictureContainer}
-        />
+        <ButtonSolid onPress={pickImage} text="Pick an image" />
+        {image && (
+          <Image
+            source={{ uri: image }}
+            style={authenticationStyles.profilePictureContainer}
+          />
+        )}
         <Text style={layoutStyles.marginTopXs}>Set Profile Picture</Text>
       </View>
       <Text style={formStyles.label}>Full Name</Text>
@@ -79,7 +92,7 @@ export default function SetProfileInformationForm() {
         textColor={isFormComplete ? "#FFFFFF" : "#000000"}
         backgroundColor={isFormComplete ? "#6AB952" : "#ececec"}
         marginTop={12}
-        onPress={() => navigation.navigate("SetProfileInformation")}
+        onPress={handleSubmit}
       />
     </View>
   );

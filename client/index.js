@@ -4,7 +4,7 @@ import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
 import formDataAppendFile from "apollo-upload-client/formDataAppendFile.mjs";
 import isExtractableFile from "apollo-upload-client/isExtractableFile.mjs";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as SecureStore from "expo-secure-store";
 
 // Check if in a development environment and load error messages
 if (process.env.NODE_ENV !== "production") {
@@ -19,7 +19,9 @@ const uploadLink = createUploadLink({
 });
 
 const authLink = setContext(async (_, { headers }) => {
-  const token = await AsyncStorage.getItem("id_token");
+  console.log("Setting Apollo Client Auth Headers...");
+  const token = await SecureStore.getItemAsync("authToken");
+  console.log("Apollo Client Auth Headers Setting with Token:", token);
   return {
     headers: {
       ...headers,

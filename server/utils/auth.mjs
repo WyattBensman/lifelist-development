@@ -18,22 +18,21 @@ export const AuthenticationError = new GraphQLError(
   }
 );
 
-export const authMiddleware = async function ({ req }) {
-  let token = req.body.token || req.query.token || req.headers.authorization;
-  if (req.headers.authorization) {
-    const parts = req.headers.authorization.split(" ");
-    token = parts.length === 2 ? parts[1].trim() : null;
-  }
-
+export const authMiddleware = async function (req) {
+  let token =
+    req.headers.authorization?.split(" ")[1] ||
+    req.body.token ||
+    req.query.token;
   if (!token) {
     return req;
   }
 
   try {
-    const { data } = await verifyToken(token, secret, { maxAge: expiration });
-    req.user = data;
+    const decoded = await verifyToken(token, secret, { maxAge: expiration });
+    req.user = decoded.id; // Assuming the token contains a user ID at 'id'
   } catch (error) {
-    console.log(`Invalid token: ${error.message}`);
+    console.error(`Invalid token: ${error.message}`);
+    req.user = null;
   }
 
   return req;
@@ -106,3 +105,24 @@ export const findCommentById = async (commentId) => {
   }
   return comment;
 };
+
+/* export const authMiddleware = async function ({ req }) {
+  let token = req.body.token || req.query.token || req.headers.authorization;
+  if (req.headers.authorization) {
+    const parts = req.headers.authorization.split(" ");
+    token = parts.length === 2 ? parts[1].trim() : null;
+  }
+
+  if (!token) {
+    return req;
+  }
+
+  try {
+    const { data } = await verifyToken(token, secret, { maxAge: expiration });
+    req.user = data;
+  } catch (error) {
+    console.log(`Invalid token: ${error.message}`);
+  }
+
+  return req;
+}; */

@@ -2,6 +2,7 @@ import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 const setLoginInformation = async (_, { username, password }, { user }) => {
+  console.log("Context User ID:", user);
   isUser(user);
 
   // Input validation
@@ -14,6 +15,7 @@ const setLoginInformation = async (_, { username, password }, { user }) => {
   }
 
   try {
+    console.log("Context User ID:", user);
     // Check if the username is already taken
     const existingUser = await User.findOne({
       username: username.toLowerCase(),
@@ -26,7 +28,7 @@ const setLoginInformation = async (_, { username, password }, { user }) => {
     }
 
     // Retrieve the user
-    let userToUpdate = await User.findById(user._id);
+    let userToUpdate = await User.findById(user);
     if (!userToUpdate) {
       throw new Error("User not found.");
     }

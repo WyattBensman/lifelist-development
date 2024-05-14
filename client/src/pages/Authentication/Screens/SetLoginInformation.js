@@ -12,11 +12,15 @@ export default function SetLoginInformation() {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
 
+  const handleGoBack = () => {
+    setModalVisible(true); // Show modal when trying to go back
+  };
+
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
         arrow={
-          <Pressable onPress={() => setModalVisible(true)}>
+          <Pressable onPress={handleGoBack}>
             <BackArrowIcon />
           </Pressable>
         }

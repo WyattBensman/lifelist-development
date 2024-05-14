@@ -3,7 +3,6 @@ import { layoutStyles, authenticationStyles } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import SetProfileInformationForm from "../Forms/SetProfileInformationForm";
-import NextPageArrowIcon from "../../../icons/Universal/NextPageArrowIcon";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 
 export default function SetProfileInformation() {

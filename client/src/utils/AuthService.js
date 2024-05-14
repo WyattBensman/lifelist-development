@@ -7,16 +7,21 @@ global.atob = atob;
 class AuthService {
   // Store the token upon login
   async saveToken(token) {
-    await SecureStore.setItemAsync("authToken", token);
+    console.log("Saving Token...");
+    return SecureStore.setItemAsync("authToken", token);
   }
 
   // Retrieve the token from storage
   async getToken() {
-    return await SecureStore.getItemAsync("authToken");
+    console.log("Retrieving Token...");
+    const token = await SecureStore.getItemAsync("authToken");
+    console.log("Retrieved Token:", token);
+    return token;
   }
 
   // Remove the token and handle logout
   async logout() {
+    console.log("Logging out, clearing token...");
     await SecureStore.deleteItemAsync("authToken");
   }
 
@@ -42,6 +47,14 @@ class AuthService {
       console.error("Failed to decode token", error);
       return true;
     }
+  }
+
+  async saveRegistrationProgress(progress) {
+    await SecureStore.setItemAsync("registrationProgress", progress);
+  }
+
+  async getRegistrationProgress() {
+    return await SecureStore.getItemAsync("registrationProgress");
   }
 }
 

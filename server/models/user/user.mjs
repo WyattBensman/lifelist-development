@@ -25,6 +25,7 @@ const userSchema = new Schema({
     minlength: [5, "Username must be at least 5 characters long."],
     maxlength: [24, "Username must not exceed 24 characters."],
     lowercase: true,
+    trim: true,
     match: [
       usernameRegex,
       "Username must start with two alphabetic characters and may include numbers, dots, underscores, or dashes.",

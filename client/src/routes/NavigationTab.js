@@ -1,7 +1,6 @@
-import { NavigationContainer } from "@react-navigation/native";
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { useTheme } from "react-native-paper";
-import { useNavigationContext } from "../utils/NavigationContext";
+import { useNavigationContext } from "../contexts/NavigationContext";
 
 import MainFeedStack from "./MainFeedStack";
 import CameraHome from "../pages/Camera/Screens/CameraHome";

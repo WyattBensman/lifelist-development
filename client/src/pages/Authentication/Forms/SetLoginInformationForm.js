@@ -2,41 +2,47 @@ import { Text, TextInput, View, Alert } from "react-native";
 import { formStyles } from "../../../styles";
 import { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import ButtonSolid from "../../../components/Buttons/ButtonSolid.js";
 import { useMutation } from "@apollo/client";
 import { SET_LOGIN_INFORMATION } from "../../../utils/mutations/index.js";
-import ButtonSolid from "../../../components/Buttons/ButtonSolid.js";
+import { useAuth } from "../../../contexts/AuthContext.js";
 
 export default function SetLoginInformationForm() {
   const navigation = useNavigation();
+  const { setRegistrationProgress } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [setLoginInformation, { data, loading, error }] = useMutation(
+  const [setLoginInformation, { loading, error }] = useMutation(
     SET_LOGIN_INFORMATION,
     {
       onCompleted: (data) => {
         if (data.setLoginInformation.success) {
-          navigation.navigate("SetProfileInformation"); // Navigate on successful update
+          setRegistrationProgress("profile");
+          navigation.navigate("SetProfileInformation");
         } else {
-          Alert.alert("Update Failed", data.setLoginInformation.message);
+          alert(data.setLoginInformation.message);
         }
       },
-      onError: (err) => {
-        Alert.alert("Registration Error", err.message);
-      },
+      onError: (err) => alert(err.message),
     }
   );
 
   const handleSubmit = () => {
-    if (!username || !password || !confirmPassword) {
-      Alert.alert("Error", "All fields are required.");
+    const trimmedUsername = username.trim();
+    setUsername(trimmedUsername);
+
+    if (!trimmedUsername || !password || !confirmPassword) {
+      alert("All fields are required!");
       return;
     }
+
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match.");
+      alert("Passwords do not match!");
       return;
     }
+
     setLoginInformation({ variables: { username, password } });
   };
 

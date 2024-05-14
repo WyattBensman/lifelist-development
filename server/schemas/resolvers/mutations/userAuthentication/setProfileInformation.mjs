@@ -30,7 +30,7 @@ const setProfileInformation = async (
 
     // Update the user's profile information
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       {
         profilePicture: fileUrl,
         bio,

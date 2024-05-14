@@ -32,6 +32,14 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   uploads: false, // Ensure file uploads are handled by graphql-upload
+  context: async ({ req }) => {
+    // Ensure the authMiddleware processes the request and augments it with the user
+    await authMiddleware(req);
+    // Log the context information
+    console.log("Context User:", req.user);
+    // Now the request object will have the user attached to it
+    return { user: req.user };
+  },
 });
 
 // Middleware for file uploads
@@ -40,11 +48,11 @@ app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 12 }));
 // Static directory setup
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
-/* app.use(
+app.use(
   cors({
     origin: ["http://192.168.1.205:8081", "exp://192.168.1.205:8081"],
   })
-); */
+);
 
 const startServer = async () => {
   await server.start();
@@ -52,7 +60,6 @@ const startServer = async () => {
   server.applyMiddleware({
     app,
     path: "/graphql",
-    context: authMiddleware,
   });
 
   if (process.env.NODE_ENV === "production") {
