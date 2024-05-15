@@ -3,7 +3,7 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const updateSettings = async (
   _,
-  { privacy, darkMode, language, notifications, postRepostToMainFeed },
+  { isProfilePrivate, darkMode, language, notifications, postRepostToMainFeed },
   { user }
 ) => {
   try {
@@ -14,7 +14,7 @@ const updateSettings = async (
       user._id,
       {
         settings: {
-          privacy,
+          isProfilePrivate,
           darkMode,
           language,
           notifications,
@@ -25,7 +25,7 @@ const updateSettings = async (
     );
 
     return {
-      privacy: updatedUser.settings.privacy,
+      isProfilePrivate: updatedUser.settings.isProfilePrivate,
       darkMode: updatedUser.settings.darkMode,
       language: updatedUser.settings.language,
       notifications: updatedUser.settings.notifications,

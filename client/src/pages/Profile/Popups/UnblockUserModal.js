@@ -29,38 +29,32 @@ export default function UnblockUserModal({ modalVisible, onClose, onUnblock }) {
           reducedTransparencyFallbackColor="black"
         >
           <View style={styles.centeredView}>
-            <KeyboardAvoidingView
-              style={styles.fullWidth}
-              behavior={Platform.OS === "ios" ? "padding" : "height"}
-              keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-            >
-              <View style={styles.modalView}>
-                <Pressable style={[styles.buttonClose]} onPress={onClose}>
-                  <CloseButton />
-                </Pressable>
-                <Text style={[styles.modalHeader, { textAlign: "center" }]}>
-                  Are you sure you want to unblock this user?
-                </Text>
-                <View style={styles.actionButtons}>
-                  <View style={{ flex: 1, marginRight: 4 }}>
-                    <OutlinedButton
-                      borderColor={"red"}
-                      textColor={"red"}
-                      text={"Unblock User"}
-                      onPress={onUnblock}
-                    />
-                  </View>
-                  <View style={{ flex: 1, marginLeft: 4 }}>
-                    <SolidButton
-                      backgroundColor={"#f4f4f4"}
-                      text={"Discard"}
-                      textColor={"#000000"}
-                      onPress={onClose}
-                    />
-                  </View>
+            <View style={styles.modalView}>
+              <Pressable style={[styles.buttonClose]} onPress={onClose}>
+                <CloseButton />
+              </Pressable>
+              <Text style={[styles.modalHeader, { textAlign: "center" }]}>
+                Are you sure you want to unblock this user?
+              </Text>
+              <View style={styles.actionButtons}>
+                <View style={{ flex: 1, marginRight: 4 }}>
+                  <OutlinedButton
+                    borderColor={"red"}
+                    textColor={"red"}
+                    text={"Unblock User"}
+                    onPress={onUnblock}
+                  />
+                </View>
+                <View style={{ flex: 1, marginLeft: 4 }}>
+                  <SolidButton
+                    backgroundColor={"#f4f4f4"}
+                    text={"Discard"}
+                    textColor={"#000000"}
+                    onPress={onClose}
+                  />
                 </View>
               </View>
-            </KeyboardAvoidingView>
+            </View>
           </View>
         </BlurView>
       </Modal>

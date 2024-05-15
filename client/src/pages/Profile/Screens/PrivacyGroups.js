@@ -1,4 +1,4 @@
-import { Pressable, Text, View } from "react-native";
+import { FlatList, Pressable, Text, View } from "react-native";
 import { layoutStyles } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
 import { useState } from "react";
@@ -7,10 +7,17 @@ import SolidButton from "../../../components/SolidButton";
 import ToggleEditPrivacyGroupIcon from "../Icons/ToggleEditPrivacyGroupIcon";
 import PrivacyGroupCard from "../Cards/PrivacyGroupCard";
 import HeaderStack from "../../../components/Headers/HeaderStack";
+import { GET_ALL_PRIVACY_GROUPS } from "../../../utils/queries/privacyGroupQueries";
+import { useQuery } from "@apollo/client";
 
 export default function PrivacyGroups() {
   const navigation = useNavigation();
   const [isEditMode, setIsEditMode] = useState(false);
+  const { data, loading, error } = useQuery(GET_ALL_PRIVACY_GROUPS);
+
+  const renderPrivacyGroupCard = ({ item }) => (
+    <PrivacyGroupCard isEditMode={isEditMode} privacyGroup={item} />
+  );
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -28,12 +35,13 @@ export default function PrivacyGroups() {
         }
       />
       <View style={layoutStyles.contentContainer}>
-        <View style={layoutStyles.marginBtmXs}>
-          <SolidButton text={"Create New Group"} backgroundColor={"#ececec"} />
-        </View>
-        <PrivacyGroupCard isEditMode={isEditMode} />
-        <PrivacyGroupCard isEditMode={isEditMode} />
-        <PrivacyGroupCard isEditMode={isEditMode} />
+        {/* NEED TO CREATE THE CREATE PRIVACY GROUP PAGE */}
+        <SolidButton text={"Create New Group"} backgroundColor={"#ececec"} />
+        <FlatList
+          data={data?.getAllPrivacyGroups}
+          renderItem={renderPrivacyGroupCard}
+          keyExtractor={(item) => item._id.toString()}
+        />
       </View>
     </View>
   );

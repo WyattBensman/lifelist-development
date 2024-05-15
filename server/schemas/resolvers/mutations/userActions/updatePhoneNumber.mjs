@@ -1,5 +1,5 @@
 import { User } from "../../../../models/index.mjs";
-import { isUser, AuthenticationError } from "../../../../utils/auth.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const updatePhoneNumber = async (_, { phoneNumber }, { user }) => {
   try {

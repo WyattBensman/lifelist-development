@@ -70,20 +70,20 @@ export const UPDATE_IDENTITY = gql`
 // Update user's settings
 export const UPDATE_SETTINGS = gql`
   mutation UpdateSettings(
-    $privacy: String
+    $isProfilePrivate: Boolean
     $darkMode: Boolean
     $language: String
     $notifications: Boolean
     $postRepostToMainFeed: Boolean
   ) {
     updateSettings(
-      privacy: $privacy
+      isProfilePrivate: $isProfilePrivate
       darkMode: $darkMode
       language: $language
       notifications: $notifications
       postRepostToMainFeed: $postRepostToMainFeed
     ) {
-      privacy
+      isProfilePrivate
       darkMode
       language
       notifications

@@ -1,16 +1,86 @@
 import { Text, TextInput, View } from "react-native";
 import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BottomContainer from "../../../../components/BottomContainer";
 import SolidButton from "../../../../components/SolidButton";
 import OutlinedButton from "../../../../components/OutlinedButton";
+import { useMutation } from "@apollo/client";
+import {
+  UPDATE_EMAIL,
+  UPDATE_PHONE_NUMBER,
+  UPDATE_PASSWORD,
+} from "../../../../utils/mutations";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 export default function EditContact() {
-  const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const { currentUser, updateCurrentUser } = useAuth();
+  const [email, setEmail] = useState(currentUser.email || "");
+  const [phoneNumber, setPhoneNumber] = useState(currentUser.phoneNumber || "");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [changesMade, setChangesMade] = useState(false);
+
+  // Define mutations
+  const [updateEmailMutation] = useMutation(UPDATE_EMAIL);
+  const [updatePhoneNumberMutation] = useMutation(UPDATE_PHONE_NUMBER);
+  const [updatePasswordMutation] = useMutation(UPDATE_PASSWORD);
+
+  useEffect(() => {
+    const passwordFieldsFilled =
+      currentPassword !== "" &&
+      newPassword !== "" &&
+      confirmNewPassword !== "" &&
+      newPassword === confirmNewPassword;
+    setChangesMade(
+      email !== currentUser.email ||
+        phoneNumber !== currentUser.phoneNumber ||
+        passwordFieldsFilled
+    );
+  }, [
+    email,
+    phoneNumber,
+    currentPassword,
+    newPassword,
+    confirmNewPassword,
+    currentUser,
+  ]);
+
+  const handleUpdateContact = async () => {
+    try {
+      if (email !== currentUser.email && email !== "") {
+        const { data } = await updateEmailMutation({ variables: { email } });
+        updateCurrentUser({ email: data.updateEmail.email });
+      }
+      if (phoneNumber !== currentUser.phoneNumber && phoneNumber !== "") {
+        const { data } = await updatePhoneNumberMutation({
+          variables: { phoneNumber },
+        });
+        updateCurrentUser({ phoneNumber: data.updatePhoneNumber.phoneNumber });
+      }
+      if (
+        currentPassword &&
+        newPassword &&
+        newPassword === confirmNewPassword
+      ) {
+        await updatePasswordMutation({
+          variables: { currentPassword, newPassword },
+        });
+      }
+      // Show success message or update UI accordingly
+    } catch (error) {
+      console.error("Failed to update contact information", error);
+    }
+  };
+
+  const discardChanges = () => {
+    setEmail(currentUser.email || "");
+    setPhoneNumber(currentUser.phoneNumber || "");
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmNewPassword("");
+    setChangesMade(false);
+  };
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -22,7 +92,7 @@ export default function EditContact() {
             value={email}
             onChangeText={setEmail}
             style={formStyles.input}
-          ></TextInput>
+          />
         </View>
         <View style={formStyles.inputContainer}>
           <Text style={layoutStyles.marginBtmTy}>Phone Number</Text>
@@ -30,7 +100,7 @@ export default function EditContact() {
             value={phoneNumber}
             onChangeText={setPhoneNumber}
             style={formStyles.input}
-          ></TextInput>
+          />
         </View>
         <Text style={[headerStyles.headerMedium, layoutStyles.marginTopXs]}>
           Change Password
@@ -41,7 +111,8 @@ export default function EditContact() {
             value={currentPassword}
             onChangeText={setCurrentPassword}
             style={formStyles.input}
-          ></TextInput>
+            secureTextEntry
+          />
         </View>
         <View style={formStyles.inputContainer}>
           <Text style={layoutStyles.marginBtmTy}>New Password</Text>
@@ -49,7 +120,8 @@ export default function EditContact() {
             value={newPassword}
             onChangeText={setNewPassword}
             style={formStyles.input}
-          ></TextInput>
+            secureTextEntry
+          />
         </View>
         <View style={formStyles.inputContainer}>
           <Text style={layoutStyles.marginBtmTy}>Confirm New Password</Text>
@@ -57,21 +129,29 @@ export default function EditContact() {
             value={confirmNewPassword}
             onChangeText={setConfirmNewPassword}
             style={formStyles.input}
-          ></TextInput>
-        </View>
-      </View>
-      {/* <BottomContainer
-        topButton={
-          <SolidButton
-            backgroundColor={"#d4d4d4"}
-            text={"Save Changes"}
-            textColor={"#ffffff"}
+            secureTextEntry
           />
-        }
-        bottomButton={
-          <OutlinedButton borderColor={"#d4d4d4"} text={"Discard"} />
-        }
-      /> */}
+        </View>
+        {changesMade && (
+          <BottomContainer
+            topButton={
+              <SolidButton
+                backgroundColor={"#6AB952"}
+                text={"Save Changes"}
+                textColor={"#ffffff"}
+                onPress={handleUpdateContact}
+              />
+            }
+            bottomButton={
+              <OutlinedButton
+                borderColor={"#d4d4d4"}
+                text={"Discard"}
+                onPress={discardChanges}
+              />
+            }
+          />
+        )}
+      </View>
     </View>
   );
 }

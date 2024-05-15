@@ -1,18 +1,75 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BottomContainer from "../../../../components/BottomContainer";
 import SolidButton from "../../../../components/SolidButton";
 import OutlinedButton from "../../../../components/OutlinedButton";
 import ForwardArrowIcon from "../../../../icons/Universal/ForwardArrowIcon";
 import GlobalSwitch from "../../../../components/Switch";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../../../../contexts/AuthContext";
+import { useMutation } from "@apollo/client";
+import { UPDATE_SETTINGS } from "../../../../utils/mutations";
 
 export default function EditSettings() {
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [isRepostToMainFeed, setIsRepostToMainFeed] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const navigation = useNavigation();
+  const { currentUser, updateCurrentUser } = useAuth();
+
+  // Initialize state with current user settings
+  const [isPrivate, setIsPrivate] = useState(
+    currentUser.settings.isProfilePrivate
+  );
+  const [isDarkMode, setIsDarkMode] = useState(currentUser.settings.darkMode);
+  const [language, setLanguage] = useState(currentUser.settings.language);
+  const [notifications, setNotifications] = useState(
+    currentUser.settings.notifications
+  );
+  const [changesMade, setChangesMade] = useState(false);
+
+  const [updateSettingsMutation] = useMutation(UPDATE_SETTINGS);
+
+  useEffect(() => {
+    setChangesMade(
+      isPrivate !== currentUser.settings.isProfilePrivate ||
+        isDarkMode !== currentUser.settings.darkMode ||
+        language !== currentUser.settings.language ||
+        notifications !== currentUser.settings.notifications
+    );
+  }, [isPrivate, isDarkMode, language, notifications, currentUser]);
+
+  const saveChanges = async () => {
+    try {
+      const { data } = await updateSettingsMutation({
+        variables: {
+          isProfilePrivate: isPrivate,
+          darkMode: isDarkMode,
+          language: language,
+          notifications: notifications,
+        },
+      });
+
+      updateCurrentUser({
+        settings: {
+          isProfilePrivate: data.updateSettings.isProfilePrivate,
+          darkMode: data.updateSettings.darkMode,
+          language: data.updateSettings.language,
+          notifications: data.updateSettings.notifications,
+        },
+      });
+
+      setChangesMade(false);
+    } catch (error) {
+      console.error("Failed to update settings", error);
+    }
+  };
+
+  const discardChanges = () => {
+    setIsPrivate(currentUser.settings.isProfilePrivate);
+    setIsDarkMode(currentUser.settings.darkMode);
+    setLanguage(currentUser.settings.language);
+    setNotifications(currentUser.settings.notifications);
+    setChangesMade(false);
+  };
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -29,10 +86,13 @@ export default function EditSettings() {
           <Text>Blocked Users</Text>
           <ForwardArrowIcon />
         </Pressable>
-        <View style={layoutStyles.flex}>
+        <Pressable
+          style={layoutStyles.flex}
+          onPress={() => navigation.navigate("PrivacyGroups")}
+        >
           <Text>Privacy Groups</Text>
           <ForwardArrowIcon />
-        </View>
+        </Pressable>
         <Text style={[headerStyles.headerMedium, layoutStyles.marginTopLg]}>
           General Settings
         </Text>
@@ -41,62 +101,41 @@ export default function EditSettings() {
             <Text>Dark Mode</Text>
             <GlobalSwitch isOn={isDarkMode} onToggle={setIsDarkMode} />
           </View>
-          <View style={[layoutStyles.flex, layoutStyles.marginBtmLg]}>
+          <Pressable
+            style={[layoutStyles.flex, layoutStyles.marginBtmLg]}
+            onPress={() => navigation.navigate("Notifications")}
+          >
             <Text>Notifications</Text>
             <ForwardArrowIcon />
-          </View>
-          <View style={layoutStyles.flex}>
+          </Pressable>
+          <Pressable
+            style={layoutStyles.flex}
+            onPress={() => navigation.navigate("Language")}
+          >
             <Text>Language</Text>
             <ForwardArrowIcon />
-          </View>
+          </Pressable>
         </View>
       </View>
-      {/* <BottomContainer
-        topButton={
-          <SolidButton
-            backgroundColor={"#d4d4d4"}
-            text={"Save Changes"}
-            textColor={"#ffffff"}
-          />
-        }
-        bottomButton={
-          <OutlinedButton borderColor={"#d4d4d4"} text={"Discard"} />
-        }
-      /> */}
+      {changesMade && (
+        <BottomContainer
+          topButton={
+            <SolidButton
+              backgroundColor={"#6AB952"}
+              text={"Save Changes"}
+              textColor={"#ffffff"}
+              onPress={saveChanges}
+            />
+          }
+          bottomButton={
+            <OutlinedButton
+              borderColor={"#d4d4d4"}
+              text={"Discard"}
+              onPress={discardChanges}
+            />
+          }
+        />
+      )}
     </View>
   );
 }
-
-{
-  /*           <View style={[layoutStyles.flex, { borderWidth: 1 }]}>
-            <Text>Post Repost to Main Feed</Text>
-            <GlobalSwitch
-              isOn={isRepostToMainFeed}
-              onToggle={setIsRepostToMainFeed}
-            />
-          </View> */
-}
-
-const styles = StyleSheet.create({
-  inputContainer: {
-    marginBottom: 16,
-  },
-  inputLabel: {
-    marginBottom: 4,
-    fontWeight: "500",
-  },
-  inputSpacer: {
-    marginVertical: 4,
-    paddingVertical: 4,
-  },
-  input: {
-    height: 40,
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 4,
-    borderColor: "#D4D4D4",
-  },
-  switchStyle: {
-    transform: [{ scale: 0.7 }],
-  },
-});

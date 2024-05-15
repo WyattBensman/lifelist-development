@@ -4,30 +4,26 @@ import { cardStyles, layoutStyles } from "../../../styles";
 import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 import UnblockUserModal from "../Popups/UnblockUserModal";
 
-export default function BlockedUserCard() {
+export default function BlockedUserCard({
+  userId,
+  fullName,
+  username,
+  profilePicture,
+  onUnblock,
+}) {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
-  };
-
-  const unblockUser = () => {
-    console.log("User has been unblocked!");
-    setModalVisible(false);
-  };
+  const toggleModal = () => setModalVisible(!modalVisible);
 
   return (
     <View style={layoutStyles.wrapper}>
       <View style={cardStyles.userCardContainer}>
         <View style={layoutStyles.flexRowSpace}>
-          <Image
-            source={require("../../../../public/images/wyattbensman.png")}
-            style={cardStyles.imageMd}
-          />
+          <Image source={{ uri: profilePicture }} style={cardStyles.imageMd} />
           <View>
-            <Text style={cardStyles.primaryText}>Wyatt Bensman</Text>
+            <Text style={cardStyles.primaryText}>{fullName}</Text>
             <Text style={[cardStyles.secondaryText, , { marginTop: 2 }]}>
-              @wyattbensman
+              @{username}
             </Text>
           </View>
         </View>
@@ -42,7 +38,7 @@ export default function BlockedUserCard() {
       <UnblockUserModal
         modalVisible={modalVisible}
         onClose={toggleModal}
-        onUnblock={unblockUser}
+        onUnblock={() => onUnblock(userId)}
       />
     </View>
   );

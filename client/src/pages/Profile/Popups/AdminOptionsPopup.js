@@ -11,6 +11,7 @@ import InviteFriends from "../Icons/PopupIcons/InviteFriends";
 import About from "../Icons/PopupIcons/About";
 import Settings from "../Icons/PopupIcons/Settings";
 import Support from "../Icons/PopupIcons/Support";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function AdminOptionsPopup({
   visible,
@@ -21,6 +22,7 @@ export default function AdminOptionsPopup({
     navigation.navigate(screen, params);
     onRequestClose();
   };
+  const { logout, currentUser } = useAuth();
 
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={540}>
@@ -113,9 +115,12 @@ export default function AdminOptionsPopup({
           </View>
           <ForwardArrowIcon />
         </View>
-        <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
+        <Pressable
+          onPress={logout}
+          style={[popupStyles.cardContainer, layoutStyles.flex]}
+        >
           <Text style={[popupStyles.spacer, { color: "red" }]}>Sign Out</Text>
-        </View>
+        </Pressable>
       </View>
     </BottomPopup>
   );

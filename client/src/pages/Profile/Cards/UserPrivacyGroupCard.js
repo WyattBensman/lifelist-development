@@ -1,10 +1,15 @@
-import { Image, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import { cardStyles, layoutStyles } from "../../../styles";
 import { useState } from "react";
 import CheckedBoxIcon from "../../../icons/Universal/CheckedBoxIcon";
 import UncheckedBoxIcon from "../../../icons/Universal/UncheckedBoxIcon";
 
-export default function UserPrivacyGroupCard({ isEditMode }) {
+export default function UserPrivacyGroupCard({
+  isEditMode,
+  fullName,
+  username,
+  profilePicture,
+}) {
   const [isChecked, setIsChecked] = useState(false);
 
   const handleCheckedToggle = () => {
@@ -14,14 +19,11 @@ export default function UserPrivacyGroupCard({ isEditMode }) {
   return (
     <View style={cardStyles.userCardContainer}>
       <View style={layoutStyles.flexRowSpace}>
-        <Image
-          source={require("../../../../public/images/wyattbensman.png")}
-          style={cardStyles.imageMd}
-        />
+        <Image source={{ uri: profilePicture }} style={cardStyles.imageMd} />
         <View>
-          <Text style={cardStyles.primaryText}>Wyatt Bensman</Text>
+          <Text style={cardStyles.primaryText}>{fullName}</Text>
           <Text style={[cardStyles.secondaryText, , { marginTop: 2 }]}>
-            @wyattbensman
+            @{username}
           </Text>
         </View>
       </View>

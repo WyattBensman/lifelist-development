@@ -7,20 +7,104 @@ import {
   Text,
   TextInput,
   View,
+  Button,
+  Pressable,
 } from "react-native";
 import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
-import { useState } from "react";
-import ForwardArrowIcon from "../../../../icons/Universal/ForwardArrowIcon";
+import { useState, useEffect } from "react";
 import BottomButtonContainer from "../../../../components/Containers/BottomButtonContainer";
 import SolidButton from "../../../../components/SolidButton";
 import OutlinedButton from "../../../../components/OutlinedButton";
+import { useAuth } from "../../../../contexts/AuthContext";
+import { useMutation } from "@apollo/client";
+import * as ImagePicker from "expo-image-picker";
+import { UPDATE_PROFILE, UPDATE_IDENTITY } from "../../../../utils/mutations";
 
 export default function EditProfileTab() {
-  const [fullName, setFullName] = useState("");
-  const [username, setUsername] = useState("");
-  const [bio, setBio] = useState("");
-  const [birthday, setBirthday] = useState("");
-  const [gender, setGender] = useState("");
+  const { currentUser, updateCurrentUser } = useAuth();
+  const [changesMade, setChangesMade] = useState(false);
+
+  const [fullName, setFullName] = useState(currentUser.fullName || "");
+  const [username, setUsername] = useState(currentUser.username || "");
+  const [bio, setBio] = useState(currentUser.bio || "");
+  const [birthday, setBirthday] = useState(currentUser.birthday || "");
+  const [gender, setGender] = useState(currentUser.gender || "");
+  const [profilePicture, setProfilePicture] = useState(
+    currentUser.profilePicture || ""
+  );
+
+  const [updateProfileMutation] = useMutation(UPDATE_PROFILE);
+  const [updateIdentityMutation] = useMutation(UPDATE_IDENTITY);
+
+  useEffect(() => {
+    setChangesMade(
+      fullName !== currentUser.fullName ||
+        username !== currentUser.username ||
+        bio !== currentUser.bio ||
+        birthday !== currentUser.birthday ||
+        gender !== currentUser.gender ||
+        profilePicture !== currentUser.profilePicture
+    );
+  }, [fullName, username, bio, birthday, gender, profilePicture, currentUser]);
+
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 4],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setProfilePicture(result.uri);
+    }
+  };
+
+  const saveChanges = async () => {
+    try {
+      const updateProfileVariables = { fullName, username, bio };
+
+      if (profilePicture !== currentUser.profilePicture) {
+        const photo = {
+          uri: profilePicture,
+          type: "image/jpeg",
+          name: "profile.jpg",
+        };
+        updateProfileVariables.profilePicture = photo;
+      }
+
+      const { data: profileData } = await updateProfileMutation({
+        variables: updateProfileVariables,
+      });
+
+      const { data: identityData } = await updateIdentityMutation({
+        variables: { gender, birthday },
+      });
+
+      updateCurrentUser({
+        profilePicture: profileData.updateProfile.profilePicture,
+        fullName: profileData.updateProfile.fullName,
+        username: profileData.updateProfile.username,
+        bio: profileData.updateProfile.bio,
+        gender: identityData.updateIdentity.gender,
+        birthday: identityData.updateIdentity.birthday,
+      });
+
+      setChangesMade(false);
+    } catch (error) {
+      console.error("Failed to update profile information", error);
+    }
+  };
+
+  const discardChanges = () => {
+    setFullName(currentUser.fullName || "");
+    setUsername(currentUser.username || "");
+    setBio(currentUser.bio || "");
+    setBirthday(currentUser.birthday || "");
+    setGender(currentUser.gender || "");
+    setProfilePicture(currentUser.profilePicture || "");
+    setChangesMade(false);
+  };
 
   return (
     <KeyboardAvoidingView
@@ -33,10 +117,14 @@ export default function EditProfileTab() {
       >
         <View style={[layoutStyles.marginBtmSm, { alignItems: "center" }]}>
           <Image
-            source={require("../../../../../public/images/wyattbensman.png")}
+            source={{ uri: profilePicture }}
             style={styles.profilePicture}
           />
-          <Text style={layoutStyles.marginTopXxs}>Change Profile Picture</Text>
+          <Pressable onPress={pickImage}>
+            <Text style={layoutStyles.marginTopXxs}>
+              Change Profile Picture
+            </Text>
+          </Pressable>
         </View>
         <View style={formStyles.inputContainer}>
           <Text style={layoutStyles.marginBtmTy}>Full Name</Text>
@@ -44,7 +132,7 @@ export default function EditProfileTab() {
             value={fullName}
             onChangeText={setFullName}
             style={formStyles.input}
-          ></TextInput>
+          />
         </View>
         <View style={formStyles.inputContainer}>
           <Text style={layoutStyles.marginBtmTy}>Username</Text>
@@ -52,7 +140,7 @@ export default function EditProfileTab() {
             value={username}
             onChangeText={setUsername}
             style={formStyles.input}
-          ></TextInput>
+          />
         </View>
         <View style={formStyles.inputContainer}>
           <Text style={layoutStyles.marginBtmTy}>Bio</Text>
@@ -60,12 +148,10 @@ export default function EditProfileTab() {
             value={bio}
             onChangeText={setBio}
             style={formStyles.input}
-          ></TextInput>
+            multiline={true}
+          />
         </View>
-        <View style={[layoutStyles.flex, layoutStyles.marginBtmMd]}>
-          <Text style={{ fontWeight: "500" }}>Flowpage</Text>
-          <ForwardArrowIcon />
-        </View>
+
         <Text style={[headerStyles.headerMedium, { marginTop: 8 }]}>
           Personal Information
         </Text>
@@ -75,7 +161,7 @@ export default function EditProfileTab() {
             value={birthday}
             onChangeText={setBirthday}
             style={formStyles.input}
-          ></TextInput>
+          />
         </View>
         <View style={formStyles.inputContainer}>
           <Text style={layoutStyles.marginBtmTy}>Gender</Text>
@@ -83,22 +169,28 @@ export default function EditProfileTab() {
             value={gender}
             onChangeText={setGender}
             style={formStyles.input}
-          ></TextInput>
+          />
         </View>
       </ScrollView>
-      {/* Only appears if a change was made */}
-      {/* <BottomButtonContainer
-        topButton={
-          <SolidButton
-            backgroundColor={"#d4d4d4"}
-            text={"Save Changes"}
-            textColor={"#ffffff"}
-          />
-        }
-        bottomButton={
-          <OutlinedButton borderColor={"#d4d4d4"} text={"Discard"} />
-        }
-      /> */}
+      {changesMade && (
+        <BottomButtonContainer
+          topButton={
+            <SolidButton
+              backgroundColor={"#6AB952"}
+              text={"Save Changes"}
+              textColor={"#ffffff"}
+              onPress={saveChanges}
+            />
+          }
+          bottomButton={
+            <OutlinedButton
+              borderColor={"#d4d4d4"}
+              text={"Discard"}
+              onPress={discardChanges}
+            />
+          }
+        />
+      )}
     </KeyboardAvoidingView>
   );
 }

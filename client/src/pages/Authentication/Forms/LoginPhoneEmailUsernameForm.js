@@ -13,8 +13,6 @@ export default function LoginPhoneEmailUsernameForm({ onLoginOption }) {
 
   const [loginUser, { loading, error }] = useMutation(LOGIN, {
     onCompleted: (data) => {
-      console.log("Login mutation completed, proceeding to save token");
-      console.log(data.login.token);
       login(data.login.token);
     },
     onError: (err) => {

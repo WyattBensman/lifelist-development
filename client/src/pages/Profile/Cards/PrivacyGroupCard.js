@@ -7,31 +7,22 @@ import OutlinedButton from "../../../components/OutlinedButton";
 import SolidButton from "../../../components/SolidButton";
 import DeletePrivacyGroupModal from "../Popups/DeletePrivacyGroupModal";
 
-export default function PrivacyGroupCard({ isEditMode }) {
+export default function PrivacyGroupCard({ isEditMode, privacyGroup }) {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
 
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
-  };
-
-  const handlePress = () => {
-    if (!isEditMode) {
-      navigation.navigate("PrivacyGroup");
-    }
-  };
+  const toggleModal = () => setModalVisible(!modalVisible);
 
   return (
-    <Pressable onPress={handlePress}>
+    <Pressable
+      onPress={() => !isEditMode && navigation.navigate("PrivacyGroup")}
+    >
       <View style={cardStyles.privacyGroupCard}>
         <View style={layoutStyles.flex}>
           <View>
-            <Text style={{ fontWeight: "500" }}>Cool Guys</Text>
-            <Text style={{ fontSize: 12, marginTop: 6 }}>
-              Wyatt Bensman, Eli Kuck, Carter Elliott
-            </Text>
-            <Text style={[styles.users, { fontStyle: "italic" }]}>
-              12 Members
+            <Text style={{ fontWeight: "500" }}>{privacyGroup.groupName}</Text>
+            <Text style={{ fontStyle: "italic", marginTop: 2 }}>
+              {privacyGroup.users.length} Members
             </Text>
           </View>
           {!isEditMode && <ForwardArrowIcon />}
@@ -72,3 +63,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
   },
 });
+
+{
+  /* <Pressable
+onPress={() =>
+  !isEditMode &&
+  navigation.navigate("PrivacyGroup", {
+    groupId: privacyGroup._id,
+  })
+}
+> */
+}
