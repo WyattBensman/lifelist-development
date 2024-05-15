@@ -15,7 +15,7 @@ type User {
   profilePicture: String
   followers: [User]
   following: [User]
-  followRequests: [FollowRequest]
+  followRequests: [User]
   lifeList: LifeList
   collages: [Collage]
   repostedCollages: [Collage]
@@ -36,7 +36,6 @@ type User {
   phoneVerification: VerificationStatus
   status: String
   expiryDate: Date
-  isProfileComplete: Boolean
 }
 
   type Auth {
@@ -45,7 +44,7 @@ type User {
   }
 
   type UserSettings {
-    privacy: String
+    isProfilePrivate: Boolean
     darkMode: Boolean
     language: String
     notifications: Boolean
@@ -92,17 +91,6 @@ type User {
     COMMENT
     TAG
     MESSAGE
-  }
-
-  type FollowRequest {
-    userId: User
-    status: FollowRequestStatus
-  }
-
-  enum FollowRequestStatus {
-    PENDING
-    ACCEPTED
-    REJECTED
   }
 
   type DailyCameraShots {
@@ -274,13 +262,12 @@ type User {
     getTaggedCollages(userId: ID!): [Collage]
     getLikedCollages: [Collage]
     getSavedCollages: [Collage]
-    getArchives: [Collage]
+    getArchivedCollages: [Collage]
     getBlockedUsers: [User]
     getUserProfileInformation: UserProfileInformation
     getUserContactInformation: UserContactInformation
     getUserIdentityInformation: UserIdentityInformation
     getUserSettingsInformation: UserSettingsInformation
-    getUserIsProfileComplete: Boolean
   
     # Privacy Group Queries
     getAllPrivacyGroups: [PrivacyGroup]
@@ -314,7 +301,7 @@ type User {
   
     # Notification Queries
     getUserNotifications: [Notification]
-    getUserFollowRequest: [FollowRequest]
+    getFollowRequests: [User]
   
     # Experience Queries
     getExperience(experienceId: ID!): Experience
@@ -339,7 +326,7 @@ type User {
   }
   
   type UserSettingsInformation {
-    privacy: String
+    isProfilePrivate: Boolean
     darkMode: Boolean
     language: String
     notifications: Boolean

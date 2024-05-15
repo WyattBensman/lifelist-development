@@ -7,15 +7,12 @@ global.atob = atob;
 class AuthService {
   // Store the token upon login
   async saveToken(token) {
-    console.log("Saving Token...");
-    return SecureStore.setItemAsync("authToken", token);
+    await SecureStore.setItemAsync("authToken", token);
   }
 
   // Retrieve the token from storage
   async getToken() {
-    console.log("Retrieving Token...");
     const token = await SecureStore.getItemAsync("authToken");
-    console.log("Retrieved Token:", token);
     return token;
   }
 
@@ -35,7 +32,8 @@ class AuthService {
   // Decode the token to get user data
   async getUser() {
     const token = await this.getToken();
-    return token ? jwtDecode(token) : null;
+    const decoded = token ? jwtDecode(token) : null;
+    return decoded ? decoded.id : null;
   }
 
   // Check if the token is expired

@@ -68,13 +68,10 @@ export const getUserNotifications = async (_, __, { user }) => {
   return foundUser.notifications || [];
 };
 
-export const getUserFollowRequest = async (_, __, { user }) => {
+export const getFollowRequests = async (_, __, { user }) => {
   isUser(user);
   const foundUser = await User.findById(user._id)
-    .populate({
-      path: "followRequests.userId",
-      select: "_id username fullName profilePicture",
-    })
+    .populate("followRequests", "_id username fullName profilePicture")
     .exec();
   if (!foundUser) throw new Error("User not found for the provided ID.");
   return foundUser.followRequests;

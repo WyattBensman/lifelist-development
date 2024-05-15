@@ -1,13 +1,12 @@
-import { View, StyleSheet } from "react-native";
+import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import UserRelationsNavigator from "../Navigators/UserRelationsNavigator";
-import StackHeader from "../../../components/StackHeader";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import SearchBar from "../../../components/SearchBar";
 import { layoutStyles } from "../../../styles";
-import { useNavigationContext } from "../../../utils/NavigationContext";
 import { useEffect } from "react";
 import HeaderStack from "../../../components/Headers/HeaderStack";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function UserRelations() {
   const navigation = useNavigation();
@@ -23,6 +22,7 @@ export default function UserRelations() {
       <HeaderStack
         title="User Relations"
         arrow={<BackArrowIcon navigation={navigation} />}
+        hasBorder={false}
       />
       <View style={[layoutStyles.marginXs, { marginBottom: 0 }]}>
         <SearchBar />

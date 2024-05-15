@@ -1,5 +1,5 @@
-import React from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
+import { useNavigation } from "@react-navigation/native";
 import Collages from "../Screens/Collages";
 import Reposts from "../Screens/Reposts";
 import WorldMap from "../Screens/WorldMap";
@@ -7,7 +7,6 @@ import CollagesIcon from "../Icons/CollagesIcon";
 import MapIcon from "../Icons/MapIcon";
 import LifeListIcon from "../Icons/LifeListIcon";
 import RepostsIcon from "../Icons/RepostsIcon";
-import { useNavigation } from "@react-navigation/native";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -26,12 +25,6 @@ export default function ProfileNavigator({ onTabChange }) {
         tabBarIndicatorStyle: {
           backgroundColor: "#6AB952", // Indicator color
         },
-        tabBarLabelStyle: {
-          textTransform: "none",
-          fontSize: 15,
-          marginBottom: 10, // Adjust text position
-        },
-        scrollEnabled: true, // Enable scrolling for more tabs
       }}
     >
       <Tab.Screen

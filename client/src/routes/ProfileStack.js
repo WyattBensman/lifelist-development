@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Profile from "../pages/Profile/Screens/Profile";
+import AdminProfile from "../pages/Profile/Screens/AdminProfile";
 import WorldMap from "../pages/Profile/Screens/WorldMap";
 import ViewLifeList from "../pages/Profile/Screens/ViewLifeList";
 import UserRelations from "../pages/Profile/Screens/UserRelations";
@@ -22,8 +22,8 @@ export default function ProfileStack() {
       }}
     >
       <Stack.Screen
-        name="Profile"
-        component={Profile}
+        name="AdminProfile"
+        component={AdminProfile}
         options={{ headerShown: false }}
       />
       <Stack.Screen

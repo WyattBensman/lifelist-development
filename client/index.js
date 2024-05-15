@@ -19,9 +19,7 @@ const uploadLink = createUploadLink({
 });
 
 const authLink = setContext(async (_, { headers }) => {
-  console.log("Setting Apollo Client Auth Headers...");
   const token = await SecureStore.getItemAsync("authToken");
-  console.log("Apollo Client Auth Headers Setting with Token:", token);
   return {
     headers: {
       ...headers,

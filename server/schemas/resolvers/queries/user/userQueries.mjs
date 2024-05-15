@@ -1,7 +1,7 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const getUserProfileById = async (_, { userId }) => {
+export const getUserProfileById = async (_, { userId }, { user }) => {
   try {
     const foundUser = await User.findById(userId)
       .populate("collages", "_id coverImage")
@@ -19,16 +19,24 @@ export const getUserProfileById = async (_, { userId }) => {
 export const getFollowers = async (_, { userId }, { user }) => {
   isUser(user);
   const foundUser = await User.findById(userId)
-    .populate("followers", "_id username fullName profilePicture")
+    .populate({
+      path: "followers",
+      select: "_id username fullName profilePicture settings followRequests",
+      populate: { path: "settings" },
+    })
     .exec();
   if (!foundUser) throw new Error("User not found.");
   return foundUser.followers;
 };
 
 export const getFollowing = async (_, { userId }, { user }) => {
-  /* isUser(user); */
-  const foundUser = await User.findById("663a3129e0ffbeff092b81d4")
-    .populate("following", "_id username fullName profilePicture")
+  isUser(user);
+  const foundUser = await User.findById(userId)
+    .populate({
+      path: "following",
+      select: "_id username fullName profilePicture settings followRequests",
+      populate: { path: "settings" },
+    })
     .exec();
   if (!foundUser) throw new Error("User not found.");
   return foundUser.following;
@@ -78,7 +86,7 @@ export const getSavedCollages = async (_, __, { user }) => {
   return foundUser.savedCollages;
 };
 
-export const getArchives = async (_, __, { user }) => {
+export const getArchivedCollages = async (_, __, { user }) => {
   isUser(user);
   const foundUser = await User.findById(user._id)
     .populate("archivedCollages", "_id coverImage")
@@ -115,13 +123,4 @@ export const getUserSettingsInformation = async (_, __, { user }) => {
   isUser(user);
   const userData = await User.findById(user._id).exec();
   return userData.settings;
-};
-
-export const getUserIsProfileComplete = async (_, __, { user }) => {
-  isUser(user);
-
-  const foundUser = await User.findById(user._id);
-  if (!foundUser) throw new Error("User not found.");
-
-  return { isProfileComplete: foundUser.isProfileComplete };
 };

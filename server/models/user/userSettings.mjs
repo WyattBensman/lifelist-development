@@ -1,10 +1,9 @@
 import { Schema } from "mongoose";
 
 const userSettingsSchema = new Schema({
-  privacy: {
-    type: String,
-    enum: ["PUBLIC", "PRIVATE"],
-    default: "PUBLIC",
+  isProfilePrivate: {
+    type: Boolean,
+    default: false,
   },
   darkMode: {
     type: Boolean,

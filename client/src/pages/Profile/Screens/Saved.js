@@ -1,30 +1,33 @@
-import { Dimensions, View } from "react-native";
+import { Dimensions, FlatList, Image, View } from "react-native";
 import { layoutStyles } from "../../../styles";
-import StackHeader from "../../../components/StackHeader";
+import HeaderStack from "../../../components/Headers/HeaderStack";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigation } from "@react-navigation/native";
+import { useQuery } from "@apollo/client";
+import { GET_SAVED_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
-
-const screenWidth = Dimensions.get("window").width;
-const totalMarginPerImage = 1;
-const imageWidth = (screenWidth - totalMarginPerImage * 3 * 4) / 3;
 
 export default function Saved() {
   const navigation = useNavigation();
+  const { data, loading, error } = useQuery(GET_SAVED_COLLAGES);
+
+  const renderCollageItem = ({ item }) => (
+    <CollageCard path={item.coverImage} />
+  );
 
   return (
     <View styles={layoutStyles.container}>
-      <StackHeader
+      <HeaderStack
         title={"Saved"}
         arrow={<BackArrowIcon navigation={navigation} />}
       />
-      <View style={layoutStyles.containerTab}>
-        <View style={layoutStyles.flexRowWrap}>
-          <CollageCard width={imageWidth} />
-          <CollageCard width={imageWidth} />
-          <CollageCard width={imageWidth} />
-          <CollageCard width={imageWidth} />
-        </View>
+      <View>
+        <FlatList
+          data={data?.getSavedCollages}
+          renderItem={renderCollageItem}
+          keyExtractor={(item) => item._id.toString()}
+          numColumns={3}
+        />
       </View>
     </View>
   );

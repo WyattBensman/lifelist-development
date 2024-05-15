@@ -2,24 +2,23 @@ import { Image, Text, View } from "react-native";
 import { cardStyles, layoutStyles } from "../../../styles";
 import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 
-export default function UserRelationsCard() {
+export default function UserRelationsCard({ user, action }) {
   return (
     <View style={cardStyles.userCardContainer}>
       <View style={layoutStyles.flexRowSpace}>
         <Image
-          source={require("../../../../public/images/wyattbensman.png")}
+          source={{ uri: user.profilePicture }}
           style={cardStyles.imageMd}
         />
         <View>
-          <Text style={cardStyles.primaryText}>Wyatt Bensman</Text>
+          <Text style={cardStyles.primaryText}>{user.fullName}</Text>
           <Text style={[cardStyles.secondaryText, , { marginTop: 2 }]}>
-            @wyattbensman
+            @{user.username}
           </Text>
         </View>
       </View>
-      {/* NEED THIS TO EITHER BE FOLLOW OR FOLLOWING CONTAINER & TEXT */}
       <View style={layoutStyles.marginRightMd}>
-        <ButtonSmall text={"Follow"} backgroundColor={"#ececec"} />
+        <ButtonSmall text={action} backgroundColor={"#ececec"} />
       </View>
     </View>
   );

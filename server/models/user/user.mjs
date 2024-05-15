@@ -65,16 +65,7 @@ const userSchema = new Schema({
   // User Relations
   followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   following: [{ type: Schema.Types.ObjectId, ref: "User" }],
-  followRequests: [
-    {
-      userId: { type: Schema.Types.ObjectId, ref: "User" },
-      status: {
-        type: String,
-        enum: ["PENDING", "ACCEPTED", "REJECTED"],
-        default: "PENDING",
-      },
-    },
-  ],
+  followRequests: [{ type: Schema.Types.ObjectId, ref: "User" }],
 
   // Content
   lifeList: { type: Schema.Types.ObjectId, ref: "LifeList" },
@@ -102,7 +93,7 @@ const userSchema = new Schema({
   settings: {
     type: userSettingsSchema,
     default: {
-      privacy: "PUBLIC",
+      isProfilePrivate: false,
       darkMode: false,
       language: "EN",
       notifications: true,
@@ -140,7 +131,6 @@ const userSchema = new Schema({
     type: Date,
     default: () => new Date(+new Date() + 48 * 60 * 60 * 1000), // 48 hours from now
   },
-  isProfileComplete: { type: Boolean, default: false },
 });
 
 // Middleware for creating a LifeList when a new user is created

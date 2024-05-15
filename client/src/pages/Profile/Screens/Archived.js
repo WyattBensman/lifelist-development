@@ -1,27 +1,33 @@
-import { Dimensions, View } from "react-native";
+import { Dimensions, FlatList, Image, View } from "react-native";
 import { layoutStyles } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import HeaderStack from "../../../components/Headers/HeaderStack";
+import { useQuery } from "@apollo/client";
+import { GET_ARCHIVED_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
-
-const screenWidth = Dimensions.get("window").width;
-const totalMarginPerImage = 1;
-const imageWidth = (screenWidth - totalMarginPerImage * 3 * 4) / 3;
 
 export default function Archived() {
   const navigation = useNavigation();
+  const { data, loading, error } = useQuery(GET_ARCHIVED_COLLAGES);
+
+  const renderCollageItem = ({ item }) => (
+    <CollageCard path={item.coverImage} />
+  );
 
   return (
-    <View styles={layoutStyles.wrapper}>
+    <View styles={layoutStyles.container}>
       <HeaderStack
         title={"Archived"}
         arrow={<BackArrowIcon navigation={navigation} />}
       />
-      <View style={{ marginTop: 1 }}>
-        <View style={layoutStyles.flexRowWrap}>
-          <CollageCard width={imageWidth} />
-        </View>
+      <View>
+        <FlatList
+          data={data?.getArchivedCollages}
+          renderItem={renderCollageItem}
+          keyExtractor={(item) => item._id.toString()}
+          numColumns={3}
+        />
       </View>
     </View>
   );

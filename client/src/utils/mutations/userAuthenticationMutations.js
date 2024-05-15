@@ -61,3 +61,20 @@ export const SET_PROFILE_INFORMATION = gql`
     }
   }
 `;
+
+export const LOGIN = gql`
+  mutation Login($usernameOrEmailOrPhone: String!, $password: String!) {
+    login(
+      usernameOrEmailOrPhone: $usernameOrEmailOrPhone
+      password: $password
+    ) {
+      token
+      user {
+        _id
+        username
+        email
+        phoneNumber
+      }
+    }
+  }
+`;

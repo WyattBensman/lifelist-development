@@ -1,20 +1,29 @@
-import { Dimensions, View } from "react-native";
+import { FlatList, View } from "react-native";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useQuery } from "@apollo/client";
+import { GET_REPOSTED_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
-import { layoutStyles } from "../../../styles";
 
-const screenWidth = Dimensions.get("window").width;
-const totalMarginPerImage = 1;
-const imageWidth = (screenWidth - totalMarginPerImage * 3 * 4) / 3;
+export default function Collages() {
+  const { currentUser } = useAuth();
 
-export default function Reposts() {
+  const { data, loading, error } = useQuery(GET_REPOSTED_COLLAGES, {
+    variables: { userId: currentUser?._id },
+    skip: !currentUser?._id,
+  });
+
+  const renderCollageItem = ({ item }) => (
+    <CollageCard path={item.coverImage} />
+  );
+
   return (
-    <View style={layoutStyles.containerTab}>
-      <View style={layoutStyles.flexRowWrap}>
-        <CollageCard width={imageWidth} />
-        <CollageCard width={imageWidth} />
-        <CollageCard width={imageWidth} />
-        <CollageCard width={imageWidth} />
-      </View>
+    <View>
+      <FlatList
+        data={data?.getRepostedCollages}
+        renderItem={renderCollageItem}
+        keyExtractor={(item) => item._id.toString()}
+        numColumns={3}
+      />
     </View>
   );
 }

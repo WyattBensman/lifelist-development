@@ -1,17 +1,29 @@
-import { Image, StyleSheet } from "react-native";
+import { Image, StyleSheet, View, Dimensions } from "react-native";
 
-export default function CollageCard({ width }) {
+const screenWidth = Dimensions.get("window").width;
+const totalMarginPerImage = 1;
+const imageWidth = (screenWidth - totalMarginPerImage * 3 * 4) / 3;
+const baseURL = "http://localhost:3001";
+
+export default function CollageCard({ path }) {
   return (
-    <Image
-      source={require("../../../../public/images/jackson-hole-01.png")}
-      style={[styles.image, { width: width }]}
-    />
+    <View style={styles.container}>
+      <Image
+        source={{ uri: `${baseURL}${path}` }}
+        style={styles.image}
+        resizeMode="cover"
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    width: imageWidth,
+    height: imageWidth,
+  },
   image: {
-    aspectRatio: 1,
-    margin: 1,
+    width: "100%",
+    height: "100%",
   },
 });

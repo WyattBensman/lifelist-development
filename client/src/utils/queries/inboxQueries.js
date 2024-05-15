@@ -78,18 +78,14 @@ export const GET_USER_NOTIFICATIONS = gql`
   }
 `;
 
-// Fetch all follow requests for the user
-export const GET_USER_FOLLOW_REQUESTS = gql`
-  query GetUserFollowRequests {
-    getUserFollowRequests {
+// Follow Request
+export const GET_FOLLOW_REQUESTS = gql`
+  query GetFollowRequests {
+    getFollowRequests {
       _id
-      status
-      userId {
-        _id
-        username
-        fullName
-        profilePicture
-      }
+      username
+      fullName
+      profilePicture
     }
   }
 `;

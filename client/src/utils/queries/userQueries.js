@@ -22,7 +22,6 @@ export const GET_USER_PROFILE = gql`
       following {
         _id
       }
-      isProfileComplete
     }
   }
 `;
@@ -35,6 +34,12 @@ export const GET_FOLLOWERS = gql`
       username
       fullName
       profilePicture
+      settings {
+        isProfilePrivate
+      }
+      followRequests {
+        _id
+      }
     }
   }
 `;
@@ -47,6 +52,12 @@ export const GET_FOLLOWING = gql`
       username
       fullName
       profilePicture
+      settings {
+        isProfilePrivate
+      }
+      followRequests {
+        _id
+      }
     }
   }
 `;
@@ -102,9 +113,9 @@ export const GET_SAVED_COLLAGES = gql`
 `;
 
 // User's Archived Collages
-export const GET_ARCHIVES = gql`
-  query GetArchives {
-    getArchives {
+export const GET_ARCHIVED_COLLAGES = gql`
+  query GetArchivedCollages {
+    getArchivedCollages {
       _id
       coverImage
     }
@@ -159,20 +170,11 @@ export const GET_USER_IDENTITY_INFORMATION = gql`
 export const GET_USER_SETTINGS_INFORMATION = gql`
   query GetUserSettingsInformation {
     getUserSettingsInformation {
-      privacy
+      isProfilePrivate
       darkMode
       language
       notifications
       postRepostToMainFeed
-    }
-  }
-`;
-
-// Check if Profile is Complete
-export const IS_PROFILE_COMPLETE = gql`
-  query GetUserIsProfileComplete {
-    getUserIsProfileComplete {
-      isProfileComplete
     }
   }
 `;

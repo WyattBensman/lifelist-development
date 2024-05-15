@@ -15,11 +15,17 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [registrationProgress, setRegistrationProgress] = useState("");
   const [registrationComplete, setRegistrationComplete] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     const checkAuthStatus = async () => {
       const isLoggedIn = await AuthService.loggedIn();
       setIsAuthenticated(isLoggedIn);
+
+      if (isLoggedIn) {
+        const userData = await AuthService.getUser(); // Fetch user details if logged in
+        setCurrentUser(userData);
+      }
 
       const progress = await AuthService.getRegistrationProgress();
       setRegistrationProgress(progress || "initial");
@@ -29,14 +35,20 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (token) => {
-    await AuthService.saveToken(token);
+    console.log("Login started");
+    await AuthService.saveToken(token); // Wait for the token to be saved
+
+    console.log("Token storage complete, setting isAuthenticated");
     setIsAuthenticated(true);
-    // Optional: set registration progress if needed
+
+    const userData = await AuthService.getUser();
+    setCurrentUser(userData); // Update user details in context
   };
 
   const logout = async () => {
     await AuthService.logout();
     setIsAuthenticated(false);
+    setCurrentUser(null); // Clear user details on logout
     setRegistrationProgress(""); // Reset registration progress if applicable
 
     // Reset navigation state to ensure user can't go back
@@ -51,14 +63,16 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
+        login,
+        logout,
         isAuthenticated,
         setIsAuthenticated,
-        logout,
         registrationProgress,
         setRegistrationProgress,
         registrationComplete,
         setRegistrationComplete,
         navigationRef,
+        currentUser,
       }}
     >
       {children}

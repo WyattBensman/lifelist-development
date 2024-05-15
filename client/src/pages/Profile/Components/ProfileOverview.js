@@ -3,14 +3,14 @@ import ButtonSkinny from "../../../components/ButtonSkinny";
 import { useNavigation } from "@react-navigation/native";
 import { layoutStyles } from "../../../styles";
 
-export default function ProfileOverview() {
+export default function ProfileOverview({ currentUser }) {
   const navigation = useNavigation();
 
   return (
     <View style={[layoutStyles.marginMd, layoutStyles.marginBtmXs]}>
       <View style={[layoutStyles.flex, { height: 100 }]}>
         <Image
-          source={require("../../../../public/images/wyattbensman.png")}
+          source={{ uri: currentUser.profilePicture }}
           style={styles.profilePicture}
         />
         <View style={styles.rightContainer}>
@@ -18,7 +18,9 @@ export default function ProfileOverview() {
             style={[layoutStyles.flexSpaceBetween, layoutStyles.marginHorSm]}
           >
             <View style={styles.col}>
-              <Text style={{ fontWeight: "700" }}>17</Text>
+              <Text style={{ fontWeight: "700" }}>
+                {currentUser.collages.length}
+              </Text>
               <Text style={{ fontSize: 12 }}>Collages</Text>
             </View>
             <Pressable
@@ -27,7 +29,9 @@ export default function ProfileOverview() {
                 navigation.navigate("UserRelations", { screen: "Followers" })
               }
             >
-              <Text style={{ fontWeight: "700" }}>851</Text>
+              <Text style={{ fontWeight: "700" }}>
+                {currentUser.followers.length}
+              </Text>
               <Text style={{ fontSize: 12 }}>Followers</Text>
             </Pressable>
             <Pressable
@@ -36,7 +40,9 @@ export default function ProfileOverview() {
                 navigation.navigate("UserRelations", { screen: "Following" })
               }
             >
-              <Text style={{ fontWeight: "700" }}>322</Text>
+              <Text style={{ fontWeight: "700" }}>
+                {currentUser.following.length}
+              </Text>
               <Text style={{ fontSize: 12 }}>Following</Text>
             </Pressable>
           </View>
@@ -49,10 +55,8 @@ export default function ProfileOverview() {
         </View>
       </View>
       <View style={layoutStyles.marginTopXs}>
-        <Text style={{ fontWeight: "500" }}>@wyattbensman</Text>
-        <Text style={layoutStyles.marginTopXxs}>
-          Hey how are ya? I guess this is my bio?
-        </Text>
+        <Text style={{ fontWeight: "500" }}>{currentUser.username}</Text>
+        <Text style={layoutStyles.marginTopXxs}>{currentUser.bio}</Text>
       </View>
     </View>
   );
