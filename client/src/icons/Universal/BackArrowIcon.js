@@ -1,7 +1,7 @@
 import { Pressable } from "react-native";
 import Svg, { Path, G } from "react-native-svg";
 
-export default function BackArrowIcon({ navigation }) {
+export default function BackArrowIcon({ navigation, color }) {
   return (
     <Pressable onPress={() => navigation.goBack()} style={{ width: 15 }}>
       <Svg
@@ -14,7 +14,7 @@ export default function BackArrowIcon({ navigation }) {
       >
         <G
           transform="translate(0.000000,176.000000) scale(0.100000,-0.100000)"
-          fill="#000000"
+          fill={color ? color : "#000000"}
           stroke="none"
         >
           <Path

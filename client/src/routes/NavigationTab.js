@@ -3,11 +3,11 @@ import { useTheme } from "react-native-paper";
 import { useNavigationContext } from "../contexts/NavigationContext";
 
 import MainFeedStack from "./MainFeedStack";
-import CameraHome from "../pages/Camera/Screens/CameraHome";
 import ExploreStack from "./ExploreStack";
 import LifeListStack from "./LifeListStack";
 import ProfileStack from "./ProfileStack";
 import TabIcon from "../icons/NavigationBar/TabIcon";
+import CameraStack from "./CameraStack";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -49,7 +49,7 @@ export default function NavigationTab() {
       />
       <Tab.Screen
         name="Camera"
-        component={CameraHome}
+        component={CameraStack}
         options={{
           tabBarIcon: ({ focused, color }) => (
             <TabIcon focused={focused} color={color} routeName="Camera" />

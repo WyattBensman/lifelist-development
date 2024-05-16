@@ -37,7 +37,5 @@ export const resetCameraShots = () => {
     }
   );
 
-  return job; // Return the job for external control if needed
+  return job;
 };
-
-// To start the job, you would need to call resetCameraShots().start() somewhere in your application setup

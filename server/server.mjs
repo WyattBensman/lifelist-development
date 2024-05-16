@@ -36,7 +36,7 @@ const server = new ApolloServer({
     // Ensure the authMiddleware processes the request and augments it with the user
     await authMiddleware(req);
     // Log the context information
-    console.log("Context User:", req.user);
+    /* console.log("Context User:", req.user); */
     // Now the request object will have the user attached to it
     return { user: req.user };
   },

@@ -2,10 +2,8 @@ import { Schema, model } from "mongoose";
 
 // Dimension options based on aspect ratios
 const DIMENSION_OPTIONS = {
-  THREETWO: { width: 1200, height: 800 }, // 3:2 aspect ratio
-  TWOTHREE: { width: 800, height: 1200 }, // 2:3 aspect ratio
-  SIXNINE: { width: 800, height: 1400 }, // 16:9 aspect ratio
-  NINESIX: { width: 1400, height: 800 }, // 9:16 aspect ratio
+  THREETWO: { width: 2400, height: 1600 }, // 3:2 aspect ratio
+  TWOTHREE: { width: 1600, height: 2400 }, // 2:3 aspect ratio
 };
 
 const cameraShotSchema = new Schema({
@@ -37,8 +35,22 @@ const cameraShotSchema = new Schema({
       width: Number,
       height: Number,
     },
-    default: () => DIMENSION_OPTIONS.TWOTHREE,
+    default: function () {
+      return this.shotOrientation === "VERTICAL"
+        ? DIMENSION_OPTIONS.TWOTHREE
+        : DIMENSION_OPTIONS.THREETWO;
+    },
   },
+});
+
+// Pre-save middleware to set the dimensions based on shotOrientation
+cameraShotSchema.pre("save", function (next) {
+  if (this.shotOrientation === "VERTICAL") {
+    this.dimensions = DIMENSION_OPTIONS.TWOTHREE;
+  } else if (this.shotOrientation === "HORIZONTAL") {
+    this.dimensions = DIMENSION_OPTIONS.THREETWO;
+  }
+  next();
 });
 
 const CameraShot = model("CameraShot", cameraShotSchema);

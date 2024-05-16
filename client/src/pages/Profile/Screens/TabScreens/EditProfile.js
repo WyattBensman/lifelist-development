@@ -7,7 +7,6 @@ import {
   Text,
   TextInput,
   View,
-  Button,
   Pressable,
 } from "react-native";
 import { formStyles, headerStyles, layoutStyles } from "../../../../styles";

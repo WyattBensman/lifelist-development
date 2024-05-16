@@ -219,6 +219,7 @@ type User {
   type CameraAlbum {
     _id: ID!
     author: User
+    coverImage: String
     title: String
     description: String
     shots: [CameraShot]
@@ -404,7 +405,7 @@ type User {
     removeShotsFromLifeListExperience(lifeListExperienceId: ID!, shotIds: [ID]): LifeListExperience
 
     # Camera Mutations
-    createCameraShot(image: Upload!, camera: CameraType, shotOrientation: ShotOrientation, dimensions: DimensionsInput): CameraShot
+    createCameraShot(image: Upload!, camera: CameraType, shotOrientation: ShotOrientation): StandardResponse
     editCameraShot(shotId: ID!, camera: CameraType): CameraShot
     deleteCameraShot(shotId: ID!): StandardResponse
     createCameraAlbum(title: String!, description: String): CameraAlbum

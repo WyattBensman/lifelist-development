@@ -6,23 +6,14 @@ export const CREATE_CAMERA_SHOT = gql`
     $image: Upload!
     $camera: CameraType!
     $shotOrientation: ShotOrientation!
-    $dimensions: DimensionsInput!
   ) {
     createCameraShot(
       image: $image
       camera: $camera
       shotOrientation: $shotOrientation
-      dimensions: $dimensions
     ) {
-      _id
-      image
-      camera
-      shotOrientation
-      dimensions {
-        width
-        height
-      }
-      capturedAt
+      success
+      message
     }
   }
 `;

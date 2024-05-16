@@ -5,20 +5,20 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const createCameraShot = async (
   _,
-  { image, camera, shotOrientation, dimensions },
+  { image, camera, shotOrientation },
   { user }
 ) => {
   try {
     isUser(user);
 
     // Ensure the uploads directory exists
-    const uploadDir = "./uploads";
+    const uploadDir = "/uploads";
 
     // Save the uploaded image file
     const filePath = await uploadSingleImage(image.file, uploadDir);
 
     // Construct the URL to access the uploaded image
-    const baseUrl = process.env.API_URL || "http://localhost:3000"; // Adjust according to your environment variable
+    const baseUrl = process.env.API_URL || "http://localhost:3001"; // Adjust according to your environment variable
     const fileUrl = `${baseUrl}/uploads/${filePath.split("/").pop()}`;
 
     // Apply camera effects
@@ -27,19 +27,21 @@ const createCameraShot = async (
     // Create the new CameraShot
     const newShot = new CameraShot({
       author: user._id,
-      image: filePath,
+      image: fileUrl, // Use the URL to access the uploaded image
       camera,
       shotOrientation,
-      dimensions: dimensions,
     });
     await newShot.save();
 
     // Update the User model to include the new camera shot in their cameraShots field
     await User.findByIdAndUpdate(user._id, {
-      $addToSet: { cameraShots: newShot._id },
+      $addToSet: { developingCameraShots: newShot._id },
     });
 
-    return newShot;
+    return {
+      success: true,
+      message: "Added to developing shots.",
+    };
   } catch (error) {
     console.error("Error creating camera shot:", error);
     throw new Error("Failed to create camera shot.");

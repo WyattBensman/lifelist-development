@@ -14,6 +14,7 @@ export const GET_ALL_CAMERA_ALBUMS = gql`
       _id
       title
       description
+      coverImage
       shots {
         _id
         image

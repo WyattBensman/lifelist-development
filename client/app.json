@@ -24,6 +24,16 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-secure-store"]
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow LifeList to access your camera",
+          "microphonePermission": "Allow LifeList to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ]
+    ]
   }
 }
