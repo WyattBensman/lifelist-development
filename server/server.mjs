@@ -48,11 +48,19 @@ app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 12 }));
 // Static directory setup
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
+// HOME ACCESS
 app.use(
   cors({
     origin: ["http://192.168.1.205:8081", "exp://192.168.1.205:8081"],
   })
 );
+
+// SPARKMAN WHARF ACCESS
+/* app.use(
+  cors({
+    origin: ["http://100.66.6.237:8081", "exp://100.66.6.237:8081"],
+  })
+); */
 
 const startServer = async () => {
   await server.start();

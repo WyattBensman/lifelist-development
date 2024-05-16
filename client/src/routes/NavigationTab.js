@@ -58,7 +58,7 @@ export default function NavigationTab() {
         }}
       />
       <Tab.Screen
-        name="LifeList"
+        name="LifeListAdmin"
         component={LifeListStack}
         options={{
           tabBarIcon: ({ focused, color }) => (

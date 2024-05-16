@@ -1,5 +1,4 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { Text } from "react-native";
 import EditContact from "../Screens/TabScreens/EditContact";
 import EditSettings from "../Screens/TabScreens/EditSettings";
 import EditProfile from "../Screens/TabScreens/EditProfile";

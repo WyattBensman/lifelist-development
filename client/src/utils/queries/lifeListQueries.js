@@ -26,7 +26,7 @@ export const GET_CURRENT_USER_LIFELIST = gql`
 
 export const GET_USER_LIFELIST = gql`
   query GetUserLifeList($userId: ID!) {
-    getCurrentUserLifeList {
+    getUserLifeList(userId: $userId) {
       _id
       experiences {
         _id
@@ -35,7 +35,10 @@ export const GET_USER_LIFELIST = gql`
           _id
         }
         associatedShots {
-          _id
+          isHidden
+          shot {
+            _id
+          }
         }
         experience {
           _id

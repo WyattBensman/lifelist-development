@@ -1,20 +1,25 @@
 import { Image, StyleSheet, Text, View } from "react-native";
-import { cardStyles, layoutStyles } from "../../../styles";
-import PinIcon from "../Icons/PinIcon";
+import { cardStyles } from "../../../styles";
+import { capitalizeText, truncateText } from "../../../utils/utils";
 
-export default function ExperienceCard() {
+const baseURL = "http://localhost:3001";
+
+export default function ExperienceCard({ experience }) {
+  const imageUrl = `${baseURL}${experience.image}`;
+  const truncatedTitle = truncateText(experience.title, 20);
+  const capitalizedCategory = capitalizeText(experience.category);
+
   return (
     <View style={cardStyles.experienceCardContainerLg}>
       <Image
-        source={require("../../../../public/images/jackson-hole-01.png")}
+        source={{
+          uri: imageUrl,
+        }}
         style={cardStyles.imageExperienceLg}
       />
       <View style={cardStyles.leftSpacer}>
-        <Text>Jackson Hole</Text>
-        <View style={layoutStyles.flexRow}>
-          <PinIcon />
-          <Text style={cardStyles.secondaryText}>Wyoming</Text>
-        </View>
+        <Text>{truncatedTitle}</Text>
+        <Text style={cardStyles.secondaryText}>{capitalizedCategory}</Text>
       </View>
     </View>
   );

@@ -12,11 +12,19 @@ if (process.env.NODE_ENV !== "production") {
   loadErrorMessages();
 }
 
+// HOME ACCESS
 const uploadLink = createUploadLink({
   uri: "http://192.168.1.205:3001/graphql",
   formDataAppendFile,
   isExtractableFile,
 });
+
+// SPARKMAN WHARF ACCESS
+/* const uploadLink = createUploadLink({
+  uri: "http://100.66.6.237:3001/graphql",
+  formDataAppendFile,
+  isExtractableFile,
+}); */
 
 const authLink = setContext(async (_, { headers }) => {
   const token = await SecureStore.getItemAsync("authToken");

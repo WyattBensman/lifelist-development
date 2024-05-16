@@ -163,6 +163,10 @@ export const layoutStyles = StyleSheet.create({
   paddingTopSm: {
     paddingTop: 12,
   },
+  /* PADDING LEFT */
+  paddingLeftXxs: {
+    paddingLeft: 6,
+  },
   /* IDK WHAT THIS GUY IS DOING */
   marginVertLg: {
     marginVertical: 16,
