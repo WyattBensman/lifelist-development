@@ -11,7 +11,7 @@ export default function DevelopingGalleryIcon() {
       preserveAspectRatio="xMidYMid meet"
     >
       <G
-        transform="translate(0.000000,112.000000) scale(0.100000,-0.100000)"
+        transform="translate(0.000000,109.000000) scale(0.100000,-0.100000)"
         fill="#ffffff"
         stroke="none"
       >

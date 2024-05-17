@@ -1,26 +1,39 @@
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+import { useMutation } from "@apollo/client";
+import { LinearGradient } from "expo-linear-gradient";
 import CameraGalleryIcon from "../Icons/CameraGalleryIcon";
 import DevelopingGalleryIcon from "../Icons/DevelopingGalleryIcon";
 import { useNavigation } from "@react-navigation/native";
-import { useMutation } from "@apollo/client";
 import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
 
-export default function Footer({ cameraRef }) {
+export default function Footer({
+  cameraRef,
+  shotOrientation,
+  rotation,
+  cameraType,
+}) {
   const navigation = useNavigation();
   const [createCameraShot] = useMutation(CREATE_CAMERA_SHOT);
 
-  const takePicture = async () => {
+  const handleTakePhoto = async () => {
     if (cameraRef.current) {
-      const photo = await cameraRef.current.takePictureAsync();
-      createCameraShot({
-        variables: {
-          image: photo.uri,
-          camera: "STANDARD", // You can customize this as per your requirement
-          shotOrientation:
-            photo.width > photo.height ? "HORIZONTAL" : "VERTICAL",
-        },
-      });
+      try {
+        const photo = await cameraRef.current.takePictureAsync();
+        const result = await createCameraShot({
+          variables: {
+            image: photo.uri,
+            camera: cameraType,
+            shotOrientation,
+          },
+        });
+        if (result.data.createCameraShot.success) {
+          console.log("Photo taken and saved successfully");
+        } else {
+          console.log("Failed to save photo");
+        }
+      } catch (error) {
+        console.error("Error taking photo:", error);
+      }
     }
   };
 
@@ -28,25 +41,34 @@ export default function Footer({ cameraRef }) {
     <View style={styles.wrapper}>
       <View style={styles.circleBackground} />
       <View style={styles.container}>
-        <Pressable
-          onPress={() => navigation.navigate("CameraRoll")}
-          style={[styles.iconContainer, { marginTop: 1, zIndex: 1 }]}
-        >
-          <CameraGalleryIcon />
-          <Text style={[styles.iconText, { marginTop: 2 }]}>Camera Roll</Text>
-        </Pressable>
-        <Pressable onPress={takePicture} style={styles.circleContainer}>
-          <View style={styles.circleOutline}>
-            <View style={styles.circle} />
-          </View>
-        </Pressable>
-        <Pressable
-          onPress={() => navigation.navigate("DevelopingRoll")}
-          style={styles.iconContainer}
-        >
-          <DevelopingGalleryIcon />
-          <Text style={styles.iconText}>Developing</Text>
-        </Pressable>
+        <Animated.View style={{ transform: [{ rotate: rotation }], zIndex: 1 }}>
+          <Pressable
+            onPress={() => navigation.navigate("CameraRoll")}
+            style={[styles.iconContainer, { marginTop: 1 }]}
+          >
+            <CameraGalleryIcon />
+            <Text style={[styles.iconText, { marginTop: 3 }]}>Gallery</Text>
+          </Pressable>
+        </Animated.View>
+        <View style={styles.circleContainer}>
+          <Pressable onPress={handleTakePhoto}>
+            <LinearGradient
+              colors={["#6AB952", "#5FC4ED"]}
+              style={styles.circleOutline}
+            >
+              <View style={styles.circle} />
+            </LinearGradient>
+          </Pressable>
+        </View>
+        <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+          <Pressable
+            onPress={() => navigation.navigate("DevelopingRoll")}
+            style={styles.iconContainer}
+          >
+            <DevelopingGalleryIcon />
+            <Text style={styles.iconText}>Developing</Text>
+          </Pressable>
+        </Animated.View>
       </View>
     </View>
   );
@@ -60,7 +82,7 @@ const styles = StyleSheet.create({
   },
   circleBackground: {
     position: "absolute",
-    bottom: 7,
+    bottom: 12,
     width: 100,
     height: 100,
     borderRadius: 200,
@@ -71,12 +93,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     zIndex: 1,
     width: "100%",
   },
   iconContainer: {
     alignItems: "center",
+    justifyContent: "center",
+    paddingBottom: 8,
+    height: 75,
+    width: 75,
   },
   iconText: {
     color: "#fff",
@@ -93,19 +119,16 @@ const styles = StyleSheet.create({
     marginTop: -45,
   },
   circleOutline: {
-    width: 65,
-    height: 65,
-    borderRadius: 32.5,
-    borderWidth: 3,
-    borderColor: "#6AB952",
+    width: 72,
+    height: 72,
+    borderRadius: 50,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#262828",
   },
   circle: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: 60,
+    height: 60,
+    borderRadius: 50,
     backgroundColor: "#d4d4d4",
   },
 });

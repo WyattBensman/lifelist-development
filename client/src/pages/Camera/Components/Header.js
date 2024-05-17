@@ -1,44 +1,67 @@
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { layoutStyles } from "../../../styles/LayoutStyles";
 import { useNavigation } from "@react-navigation/native";
 import ExitIcon from "../Icons/ExitIcon";
 import FlashOutlineIcon from "../Icons/FlashOutlineIcon";
-import FlashSolidIcon from "../Icons/FlashSolidIcon"; // Assuming you have this icon
+import FlashSolidIcon from "../Icons/FlashSolidIcon";
 import FlipCameraIcon from "../Icons/FlipCameraIcon";
 import RotateCameraIcon from "../Icons/RotateCameraIcon";
 import DownArrowIcon from "../Icons/DownArrowIcon";
-import { Camera } from "expo-camera";
 
 const IconFiller = () => <View style={{ width: 35, height: 35 }} />;
 
-export default function Header({ flash, setFlash, type, setType }) {
+export default function Header({
+  toggleFlash,
+  toggleCameraFacing,
+  toggleShotOrientation,
+  flash,
+  rotation,
+  cameraType,
+  onSelectCameraType,
+}) {
   const navigation = useNavigation();
+  const [showOptions, setShowOptions] = useState(false);
+  const rotateArrowAnim = useRef(new Animated.Value(0)).current;
+  const heightAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(rotateArrowAnim, {
+      toValue: showOptions ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+
+    Animated.timing(heightAnim, {
+      toValue: showOptions ? 45 : 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }, [showOptions]);
+
+  const rotateArrow = rotateArrowAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "-180deg"],
+  });
 
   const handleExit = () => {
-    navigation.goBack(); // Navigate back to the previous screen
+    navigation.goBack();
   };
 
-  const toggleFlash = () => {
-    setFlash(
-      flash === Camera.Constants.FlashMode.off
-        ? Camera.Constants.FlashMode.on
-        : Camera.Constants.FlashMode.off
-    );
+  const handleToggleOptions = () => {
+    setShowOptions((prev) => !prev);
   };
 
-  const toggleCameraType = () => {
-    setType(
-      type === Camera.Constants.Type.back
-        ? Camera.Constants.Type.front
-        : Camera.Constants.Type.back
-    );
+  const handleSelectOption = (type) => {
+    onSelectCameraType(type);
+    setShowOptions(false);
   };
 
   return (
-    <View style={[styles.mainContainer, styles.border]}>
+    <View
+      style={[styles.mainContainer, showOptions && styles.expandedContainer]}
+    >
       <View style={styles.contentContainer}>
-        {/* Left Container */}
         <View style={styles.sideContainer}>
           <Pressable onPress={handleExit}>
             <ExitIcon />
@@ -46,37 +69,78 @@ export default function Header({ flash, setFlash, type, setType }) {
           <IconFiller />
         </View>
 
-        {/* Right Container */}
         <View style={[styles.sideContainer, styles.rightContainer]}>
-          <Pressable onPress={toggleFlash}>
-            {flash === Camera.Constants.FlashMode.off ? (
-              <FlashOutlineIcon />
-            ) : (
-              <FlashSolidIcon />
-            )}
-          </Pressable>
-          <View style={styles.iconGap}>
-            <Pressable onPress={toggleCameraType}>
-              <FlipCameraIcon />
-            </Pressable>
-          </View>
-          <View style={styles.iconGap}>
-            <RotateCameraIcon />
-          </View>
+          {!showOptions && (
+            <>
+              <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+                <Pressable onPress={toggleFlash}>
+                  {flash === "off" ? <FlashOutlineIcon /> : <FlashSolidIcon />}
+                </Pressable>
+              </Animated.View>
+              <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+                <Pressable onPress={toggleCameraFacing} style={styles.iconGap}>
+                  <FlipCameraIcon />
+                </Pressable>
+              </Animated.View>
+              <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+                <Pressable
+                  onPress={toggleShotOrientation}
+                  style={styles.iconGap}
+                >
+                  <RotateCameraIcon />
+                </Pressable>
+              </Animated.View>
+            </>
+          )}
         </View>
 
-        {/* Title Container - Absolutely positioned */}
         <View style={[styles.titleContainer, layoutStyles.flexRow]}>
-          <Text
-            style={{ fontWeight: "700", fontSize: 12, color: "#ffffff" }}
-            numberOfLines={1}
-            ellipsizeMode="tail"
+          <Pressable
+            onPress={handleToggleOptions}
+            style={styles.titlePressable}
           >
-            Disposable
-          </Text>
-          <DownArrowIcon />
+            <Text style={styles.header} numberOfLines={1} ellipsizeMode="tail">
+              {cameraType}
+            </Text>
+            <Animated.View style={{ transform: [{ rotate: rotateArrow }] }}>
+              <DownArrowIcon />
+            </Animated.View>
+          </Pressable>
         </View>
       </View>
+      <Animated.View style={[styles.animatedContainer, { height: heightAnim }]}>
+        {showOptions && (
+          <View style={styles.optionsContainer}>
+            <Text
+              style={[
+                styles.option,
+                cameraType === "Disposable" && styles.selectedOption,
+              ]}
+              onPress={() => handleSelectOption("Disposable")}
+            >
+              Disposable
+            </Text>
+            <Text
+              style={[
+                styles.option,
+                cameraType === "Fuji" && styles.selectedOption,
+              ]}
+              onPress={() => handleSelectOption("Fuji")}
+            >
+              Fuji
+            </Text>
+            <Text
+              style={[
+                styles.option,
+                cameraType === "Polaroid" && styles.selectedOption,
+              ]}
+              onPress={() => handleSelectOption("Polaroid")}
+            >
+              Polaroid
+            </Text>
+          </View>
+        )}
+      </Animated.View>
     </View>
   );
 }
@@ -84,12 +148,8 @@ export default function Header({ flash, setFlash, type, setType }) {
 const styles = StyleSheet.create({
   mainContainer: {
     paddingTop: 60,
-    paddingBottom: 2,
+    paddingBottom: 10,
     backgroundColor: "#262828",
-  },
-  border: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#D4D4D4",
   },
   contentContainer: {
     marginHorizontal: 20,
@@ -115,13 +175,31 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  titlePressable: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   header: {
     fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "Helvetica",
-    color: "#6AB952",
+    fontWeight: "700",
+    color: "#ffffff",
   },
   iconGap: {
-    marginLeft: 16,
+    marginLeft: 20,
+  },
+  expandedContainer: {
+    paddingBottom: 12,
+  },
+  optionsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 16,
+  },
+  option: {
+    color: "#ffffff",
+    paddingVertical: 5,
+  },
+  selectedOption: {
+    color: "#5FC4ED", // Green color for selected option
   },
 });
