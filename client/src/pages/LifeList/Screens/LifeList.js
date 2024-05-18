@@ -13,6 +13,7 @@ import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import HeaderMain from "../../../components/Headers/HeaderMain";
 import EditLifeListIcon from "../Icons/EditLifeListIcon";
+import SymbolButton from "../../../icons/SymbolButton";
 
 export default function LifeList() {
   const { currentUser } = useAuth();
@@ -43,11 +44,20 @@ export default function LifeList() {
             titleComponent={
               <Text style={headerStyles.headerHeavy}>My LifeList</Text>
             }
-            icon1={<SearchIcon />}
-            icon2=<EditLifeListIcon onPress={() => setModalVisible(true)} />
-            icon3={
-              <ListViewIcon onPress={() => navigation.navigate("Listview")} />
+            icon1={
+              <SymbolButton
+                name="magnifyingglass"
+                style={{ height: 22, width: 22 }}
+              />
             }
+            icon2={
+              <SymbolButton
+                name="line.3.horizontal"
+                onPress={() => navigation.navigate("Listview")}
+                style={{ height: 20, width: 20 }}
+              />
+            }
+            icon3={<SymbolButton name="ellipsis.circle" />}
           />
         ) : (
           <HeaderStack
