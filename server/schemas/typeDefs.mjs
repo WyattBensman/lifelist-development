@@ -408,7 +408,7 @@ type User {
     createCameraShot(image: Upload!, camera: CameraType, shotOrientation: ShotOrientation): StandardResponse
     editCameraShot(shotId: ID!, camera: CameraType): CameraShot
     deleteCameraShot(shotId: ID!): StandardResponse
-    createCameraAlbum(title: String!, description: String): CameraAlbum
+    createCameraAlbum(title: String!, description: String, shots: [ID]): CameraAlbum
     editCameraAlbum(albumId: ID!, title: String, description: String): CameraAlbum
     deleteCameraAlbum(albumId: ID!): StandardResponse
     addShotsToAlbum(albumId: ID!, shotIds: [ID]): CameraAlbum

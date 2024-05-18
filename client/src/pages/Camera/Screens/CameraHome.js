@@ -102,7 +102,6 @@ export default function CameraHome() {
           <View style={styles.innerCornerBottomRight} />
         </View>
       </View>
-
       <Footer
         cameraRef={cameraRef}
         shotOrientation={shotOrientation}

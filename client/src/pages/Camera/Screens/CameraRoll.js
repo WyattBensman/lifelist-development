@@ -11,9 +11,12 @@ import {
 } from "../../../utils/queries/cameraQueries";
 import AlbumCard from "../Cards/AlbumCard";
 import ShotCard from "../Cards/ShotCard";
+import SymbolButton from "../../../icons/SymbolButton";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function CameraRoll() {
   const navigation = useNavigation();
+  const { currentUser } = useAuth();
 
   const {
     data: albumsData,
@@ -26,20 +29,28 @@ export default function CameraRoll() {
     error: shotsError,
   } = useQuery(GET_ALL_CAMERA_SHOTS);
 
-  console.log(shotsData);
-
   if (albumsLoading || shotsLoading) return <Text>Loading...</Text>;
   if (albumsError) return <Text>Error: {albumsError.message}</Text>;
   if (shotsError) return <Text>Error: {shotsError.message}</Text>;
 
-  const renderAlbum = ({ item }) => <AlbumCard album={item} />;
-  const renderShot = ({ item }) => <ShotCard shot={item} />;
+  const renderAlbum = ({ item }) => (
+    <AlbumCard album={item} navigation={navigation} />
+  );
+  const renderShot = ({ item }) => (
+    <ShotCard shot={item} navigation={navigation} />
+  );
 
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
         title={"Camera Roll"}
         arrow={<BackArrowIcon navigation={navigation} />}
+        button1={
+          <SymbolButton
+            name="plus.square"
+            onPress={() => navigation.navigate("CreateAlbum")}
+          />
+        }
       />
       <View style={[layoutStyles.marginTopSm, layoutStyles.paddingLeftXxs]}>
         <Text style={headerStyles.headerMedium}>Albums</Text>

@@ -44,8 +44,12 @@ export const DELETE_CAMERA_SHOT = gql`
 
 // Create a camera album
 export const CREATE_CAMERA_ALBUM = gql`
-  mutation CreateCameraAlbum($title: String!, $description: String) {
-    createCameraAlbum(title: $title, description: $description) {
+  mutation CreateCameraAlbum(
+    $title: String!
+    $description: String
+    $shots: [ID]
+  ) {
+    createCameraAlbum(title: $title, description: $description, shots: $shots) {
       _id
       title
       description

@@ -200,6 +200,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   selectedOption: {
-    color: "#5FC4ED", // Green color for selected option
+    color: "#5FC4ED",
   },
 });

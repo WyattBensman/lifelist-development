@@ -1,13 +1,16 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import { layoutStyles } from "../../../styles";
 
-export default function AlbumCard({ album }) {
+export default function AlbumCard({ album, navigation }) {
   return (
-    <View style={layoutStyles.marginRightMd}>
+    <Pressable
+      style={layoutStyles.marginRightMd}
+      onPress={() => navigation.navigate("ViewAlbum", { albumId: album._id })}
+    >
       <Image source={{ uri: album.coverImage }} style={styles.albumImage} />
       <Text style={styles.albumTitle}>{album.title}</Text>
       <Text style={styles.albumCount}>{album.shotsCount} shots</Text>
-    </View>
+    </Pressable>
   );
 }
 

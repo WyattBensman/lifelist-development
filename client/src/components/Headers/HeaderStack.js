@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from "react-native";
+import React, { useRef, useEffect } from "react";
+import { StyleSheet, Text, View, Animated } from "react-native";
 
 const IconFiller = () => <View style={{ width: 35, height: 35 }} />;
 
@@ -8,31 +9,51 @@ export default function HeaderStack({
   button1,
   button2,
   hasBorder = true,
+  dropdownVisible = false,
+  dropdownContent = null,
 }) {
-  return (
-    <View style={[styles.mainContainer, hasBorder && styles.border]}>
-      <View style={styles.contentContainer}>
-        {/* Left Container */}
-        <View style={styles.sideContainer}>
-          {arrow ? arrow : <IconFiller />}
-        </View>
+  const dropdownHeight = useRef(new Animated.Value(0)).current;
 
-        {/* Right Container */}
-        <View style={[styles.sideContainer, styles.rightContainer]}>
-          {button2 && <View style={styles.iconSpacing}>{button2}</View>}
-          {button1 && (
-            <View style={[styles.iconSpacing, button2 && styles.iconGap]}>
-              {button1}
+  useEffect(() => {
+    Animated.timing(dropdownHeight, {
+      toValue: dropdownVisible ? 80 : 0, // Adjust the height as needed
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  }, [dropdownVisible]);
+
+  return (
+    <View>
+      <View style={[styles.mainContainer, hasBorder && styles.border]}>
+        <View style={styles.contentContainer}>
+          <View style={styles.sideContainer}>
+            {arrow ? arrow : <IconFiller />}
+          </View>
+          <View style={[styles.sideContainer, styles.rightContainer]}>
+            {button2 && <View style={styles.iconSpacing}>{button2}</View>}
+            {button1 && (
+              <View style={[styles.iconSpacing, button2 && styles.iconGap]}>
+                {button1}
+              </View>
+            )}
+          </View>
+          {!dropdownVisible && (
+            <View style={styles.titleContainer}>
+              <Text
+                style={styles.header}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {title}
+              </Text>
             </View>
           )}
         </View>
-
-        {/* Title Container - Absolutely positioned */}
-        <View style={styles.titleContainer}>
-          <Text style={styles.header} numberOfLines={1} ellipsizeMode="tail">
-            {title}
-          </Text>
-        </View>
+        <Animated.View
+          style={[styles.dropdownContainer, { height: dropdownHeight }]}
+        >
+          {dropdownVisible && dropdownContent}
+        </Animated.View>
       </View>
     </View>
   );
@@ -83,5 +104,9 @@ const styles = StyleSheet.create({
   },
   iconGap: {
     marginLeft: 16,
+  },
+  dropdownContainer: {
+    overflow: "hidden",
+    backgroundColor: "#fff",
   },
 });

@@ -5,6 +5,8 @@ import CameraGalleryIcon from "../Icons/CameraGalleryIcon";
 import DevelopingGalleryIcon from "../Icons/DevelopingGalleryIcon";
 import { useNavigation } from "@react-navigation/native";
 import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
+import { useAuth } from "../../../contexts/AuthContext";
+import SymbolButton from "../../../icons/SymbolButton";
 
 export default function Footer({
   cameraRef,
@@ -13,6 +15,7 @@ export default function Footer({
   cameraType,
 }) {
   const navigation = useNavigation();
+  const { updateCurrentUser } = useAuth();
   const [createCameraShot] = useMutation(CREATE_CAMERA_SHOT);
 
   const handleTakePhoto = async () => {
@@ -28,6 +31,7 @@ export default function Footer({
         });
         if (result.data.createCameraShot.success) {
           console.log("Photo taken and saved successfully");
+          updateCurrentUser(result.data.createCameraShot.user);
         } else {
           console.log("Failed to save photo");
         }
@@ -37,17 +41,28 @@ export default function Footer({
     }
   };
 
+  const navigateToCameraRoll = () => {
+    navigation.navigate("CameraRoll");
+  };
+  const navigateToDevelopingRoll = () => {
+    navigation.navigate("DevelopingRoll");
+  };
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.circleBackground} />
       <View style={styles.container}>
         <Animated.View style={{ transform: [{ rotate: rotation }], zIndex: 1 }}>
           <Pressable
-            onPress={() => navigation.navigate("CameraRoll")}
-            style={[styles.iconContainer, { marginTop: 1 }]}
+            onPress={navigateToCameraRoll}
+            style={styles.iconContainer}
           >
-            <CameraGalleryIcon />
-            <Text style={[styles.iconText, { marginTop: 3 }]}>Gallery</Text>
+            <SymbolButton
+              name="photo.stack"
+              tintColor="#ffffff"
+              onPress={navigateToCameraRoll}
+            />
+            <Text style={styles.iconText}>Gallery</Text>
           </Pressable>
         </Animated.View>
         <View style={styles.circleContainer}>
@@ -62,10 +77,14 @@ export default function Footer({
         </View>
         <Animated.View style={{ transform: [{ rotate: rotation }] }}>
           <Pressable
-            onPress={() => navigation.navigate("DevelopingRoll")}
+            onPress={navigateToDevelopingRoll}
             style={styles.iconContainer}
           >
-            <DevelopingGalleryIcon />
+            <SymbolButton
+              name="film.stack"
+              tintColor="#ffffff"
+              onPress={navigateToDevelopingRoll}
+            />
             <Text style={styles.iconText}>Developing</Text>
           </Pressable>
         </Animated.View>
@@ -82,31 +101,31 @@ const styles = StyleSheet.create({
   },
   circleBackground: {
     position: "absolute",
-    bottom: 12,
+    bottom: 19,
     width: 100,
     height: 100,
     borderRadius: 200,
     backgroundColor: "#262828",
   },
   container: {
-    height: 90,
+    height: 100,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 24,
+    paddingHorizontal: 32,
     zIndex: 1,
     width: "100%",
   },
   iconContainer: {
     alignItems: "center",
     justifyContent: "center",
-    paddingBottom: 8,
-    height: 75,
     width: 75,
+    height: 75,
   },
   iconText: {
     color: "#fff",
     fontSize: 12,
+    marginTop: 1,
   },
   circleContainer: {
     position: "absolute",

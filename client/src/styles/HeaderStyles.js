@@ -11,4 +11,8 @@ export const headerStyles = StyleSheet.create({
     fontWeight: "500",
     marginBottom: 12,
   },
+  headerStandard: {
+    fontSize: 16,
+    marginBottom: 12,
+  },
 });

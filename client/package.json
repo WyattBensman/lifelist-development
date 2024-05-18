@@ -24,9 +24,12 @@
     "expo": "~51.0.5",
     "expo-blur": "~13.0.2",
     "expo-camera": "~15.0.8",
+    "expo-checkbox": "^3.0.0",
     "expo-image-picker": "~15.0.5",
+    "expo-linear-gradient": "~13.0.2",
     "expo-secure-store": "~13.0.1",
     "expo-status-bar": "~1.12.1",
+    "expo-symbols": "^0.1.4",
     "graphql": "^15.8.0",
     "jwt-decode": "^4.0.0",
     "react": "18.2.0",
@@ -41,8 +44,7 @@
     "react-native-screens": "3.31.1",
     "react-native-svg": "15.2.0",
     "react-native-tab-view": "^3.5.2",
-    "react-native-vector-icons": "^10.0.3",
-    "expo-linear-gradient": "~13.0.2"
+    "react-native-vector-icons": "^10.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0"

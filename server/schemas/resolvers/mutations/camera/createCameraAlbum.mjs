@@ -1,7 +1,11 @@
 import { CameraAlbum, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-const createCameraAlbum = async (_, { title, description }, { user }) => {
+const createCameraAlbum = async (
+  _,
+  { title, description, shots },
+  { user }
+) => {
   try {
     isUser(user);
 
@@ -9,7 +13,8 @@ const createCameraAlbum = async (_, { title, description }, { user }) => {
       author: user._id,
       title,
       description,
-      shots: [],
+      shots,
+      coverImage: shots.length > 0 ? shots[0] : null,
     });
     await newAlbum.save();
 

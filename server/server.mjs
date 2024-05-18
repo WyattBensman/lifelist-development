@@ -49,11 +49,11 @@ app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 12 }));
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
 // HOME ACCESS
-app.use(
+/* app.use(
   cors({
     origin: ["http://192.168.1.205:8081", "exp://192.168.1.205:8081"],
   })
-);
+); */
 
 // SPARKMAN WHARF ACCESS
 /* app.use(
