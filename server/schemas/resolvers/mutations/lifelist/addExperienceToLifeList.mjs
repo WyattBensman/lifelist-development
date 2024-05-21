@@ -23,10 +23,14 @@ const addExperienceToLifeList = async (
       throw new Error("LifeList not found.");
     }
 
+    console.log(lifeList);
+
     // Check if the experience is already in the LifeList
     const existingExperienceIds = new Set(
       lifeList.experiences.map((exp) => exp.experience.toString())
     );
+
+    console.log(existingExperienceIds);
 
     if (existingExperienceIds.has(experienceId)) {
       throw new Error("Experience is already in the LifeList.");
@@ -40,12 +44,22 @@ const addExperienceToLifeList = async (
       _id: { $in: associatedCollages },
     });
 
+    console.log(validAssociatedShots);
+
+    // Transform associatedShots to include isHidden property set to true by default
+    const transformedAssociatedShots = validAssociatedShots.map((shot) => ({
+      shot: shot._id,
+      isHidden: false,
+    }));
+
+    console.log(transformedAssociatedShots);
+
     // Create a new LifeListExperience document
     const lifeListExperience = await LifeListExperience.create({
       lifeList: lifeListId,
       experience: experienceId,
       list,
-      associatedShots: validAssociatedShots.map((shot) => shot._id),
+      associatedShots: transformedAssociatedShots,
       associatedCollages: validAssociatedCollages.map((collage) => collage._id),
     });
 

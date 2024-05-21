@@ -33,11 +33,13 @@ export const GET_USER_LIFELIST = gql`
         list
         associatedCollages {
           _id
+          coverImage
         }
         associatedShots {
           isHidden
           shot {
             _id
+            image
           }
         }
         experience {

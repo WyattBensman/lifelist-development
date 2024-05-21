@@ -9,7 +9,6 @@ import BlockedUsers from "../pages/Profile/Screens/BlockedUsers";
 import PrivacyGroups from "../pages/Profile/Screens/PrivacyGroups";
 import PrivacyGroup from "../pages/Profile/Screens/PrivacyGroup";
 import Profile from "../pages/Profile/Screens/Profile";
-import { useAuth } from "../contexts/AuthContext";
 
 const Stack = createNativeStackNavigator();
 

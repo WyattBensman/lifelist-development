@@ -15,6 +15,7 @@ export default function ListViewNavigator({
   viewType,
   editMode,
   searchQuery,
+  navigation,
 }) {
   return (
     <Tab.Navigator
@@ -46,6 +47,7 @@ export default function ListViewNavigator({
             viewType={viewType}
             editMode={editMode}
             searchQuery={searchQuery}
+            navigation={navigation}
           />
         )}
       </Tab.Screen>
@@ -69,6 +71,7 @@ export default function ListViewNavigator({
               viewType={viewType}
               editMode={editMode}
               searchQuery={searchQuery}
+              navigation={navigation}
             />
           )}
         </Tab.Screen>

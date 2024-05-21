@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useFocusEffect } from "@react-navigation/native";
 import { layoutStyles } from "../../../styles";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import ListViewNavigator from "../Navigation/ListViewNavigator";
@@ -10,7 +10,8 @@ import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
 import { useAuth } from "../../../contexts/AuthContext";
 import SymbolButton from "../../../icons/SymbolButton";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
-import EditBottomContainer from "../Components/EditBottomContainer";
+import LoadingScreen from "../../Loading/LoadingScreen";
+import SymbolButtonSm from "../../../icons/SymbolButtonSm";
 
 export default function ListView({ navigation }) {
   const route = useRoute();
@@ -21,7 +22,7 @@ export default function ListView({ navigation }) {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { currentUser } = useAuth();
-  const { data, loading, error } = useQuery(GET_USER_LIFELIST, {
+  const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
     variables: { userId: currentUser._id },
   });
 
@@ -36,6 +37,16 @@ export default function ListView({ navigation }) {
     }
   }, [route.params?.editMode]);
 
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
+
+  useEffect(() => {
+    refetch();
+  }, [viewType, refetch]);
+
   const toggleEditMode = () => {
     setEditMode(!editMode);
   };
@@ -44,7 +55,17 @@ export default function ListView({ navigation }) {
     setViewType(type);
   };
 
-  if (loading) return <Text>Loading...</Text>;
+  const handleBackPress = () => {
+    if (editMode && route.params?.fromScreen === "LifeList") {
+      navigation.navigate("LifeList");
+    } else if (editMode) {
+      setEditMode(false);
+    } else {
+      navigation.goBack();
+    }
+  };
+
+  if (loading) return <LoadingScreen />;
   if (error) return <Text>Error: {error.message}</Text>;
 
   const lifeList = data.getUserLifeList;
@@ -52,13 +73,19 @@ export default function ListView({ navigation }) {
   return (
     <View style={layoutStyles.container}>
       <HeaderSearchBar
-        arrowIcon={!editMode && <BackArrowIcon navigation={navigation} />}
+        arrowIcon={
+          <SymbolButtonSm
+            name="chevron.backward"
+            onPress={handleBackPress}
+            style={{ height: 20, width: 14 }}
+          />
+        }
         icon1={
           !editMode && (
             <SymbolButton
               name="square.and.pencil"
               style={{ marginBottom: 3 }}
-              onPress={() => setEditMode(!editMode)}
+              onPress={toggleEditMode}
             />
           )
         }
@@ -107,8 +134,8 @@ export default function ListView({ navigation }) {
         viewType={viewType}
         editMode={editMode}
         searchQuery={searchQuery}
+        navigation={navigation}
       />
-      {editMode && <EditBottomContainer toggleEditMode={toggleEditMode} />}
     </View>
   );
 }

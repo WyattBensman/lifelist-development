@@ -20,7 +20,7 @@ export const getCurrentUserLifeList = async (_, __, { user }) => {
 };
 
 export const getUserLifeList = async (_, { userId }, { user }) => {
-  isUser(user);
+  /* isUser(user); */
 
   const lifeList = await LifeList.findOne({ author: userId })
     .populate({
@@ -32,11 +32,11 @@ export const getUserLifeList = async (_, { userId }, { user }) => {
         },
         {
           path: "associatedCollages",
-          select: "_id",
+          select: "_id coverImage",
         },
         {
           path: "associatedShots.shot",
-          select: "_id",
+          select: "_id image",
         },
       ],
     })

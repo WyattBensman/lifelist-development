@@ -16,7 +16,6 @@ export default function NavigationTab() {
   const theme = useTheme();
   theme.colors.secondaryContainer = "";
   const { isTabBarVisible } = useNavigationContext();
-  const { currentUser } = useAuth();
 
   return (
     <Tab.Navigator

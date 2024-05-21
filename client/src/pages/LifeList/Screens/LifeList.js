@@ -28,6 +28,10 @@ export default function LifeList() {
   useFocusEffect(
     useCallback(() => {
       refetch();
+      return () => {
+        // Set dropdownVisible to false when the screen loses focus
+        setDropdownVisible(false);
+      };
     }, [refetch])
   );
 
@@ -58,7 +62,11 @@ export default function LifeList() {
         icon: "square.and.pencil",
         label: "Edit Experiences",
         style: { marginBottom: 3, height: 26 },
-        onPress: () => console.log("Edit List"),
+        onPress: () =>
+          navigation.navigate("ListView", {
+            editMode: true,
+            fromScreen: "LifeList",
+          }),
       },
     ],
     [navigation]

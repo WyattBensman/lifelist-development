@@ -22,7 +22,7 @@ const lifeListExperienceSchema = new Schema({
       },
       isHidden: {
         type: Boolean,
-        default: false, // default to not hidden
+        default: false,
       },
     },
   ],

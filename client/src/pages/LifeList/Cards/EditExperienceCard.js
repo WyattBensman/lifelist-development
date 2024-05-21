@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,42 +7,90 @@ import {
   Pressable,
   FlatList,
 } from "react-native";
+import { useMutation } from "@apollo/client";
 import { cardStyles } from "../../../styles";
+import {
+  UPDATE_LIFELIST_EXPERIENCE_LIST_STATUS,
+  UPDATE_ASSOCIATED_SHOTS,
+  UPDATE_ASSOCIATED_COLLAGES,
+} from "../../../utils/mutations";
+import { truncateText } from "../../../utils/utils";
 
 const baseURL = "http://localhost:3001";
 
-export default function AddExperienceCard({
-  experience,
-  onListSelect,
-  onUpdateShots,
-  onUpdateCollages,
-}) {
+export default function EditExperienceCard({ experience, navigation }) {
   const [listStatus, setListStatus] = useState(experience.list);
-
+  const { _id, associatedShots, associatedCollages } = experience;
   const imageUrl = `${baseURL}${experience.experience.image}`;
   const { title, category } = experience.experience;
-  const associatedShots = experience.associatedShots;
-  const associatedCollages = experience.associatedCollages;
+  const truncatedTitle = truncateText(title, 30);
 
-  const handleSelectList = (list) => {
+  const [updateListStatus] = useMutation(
+    UPDATE_LIFELIST_EXPERIENCE_LIST_STATUS
+  );
+  const [updateShots] = useMutation(UPDATE_ASSOCIATED_SHOTS);
+  const [updateCollages] = useMutation(UPDATE_ASSOCIATED_COLLAGES);
+
+  const handleSelectList = async (list) => {
     setListStatus(list);
-    onListSelect(experience.experience._id, list); // Update parent component's state
+    try {
+      await updateListStatus({
+        variables: {
+          lifeListExperienceId: _id,
+          newListStatus: list,
+        },
+      });
+    } catch (error) {
+      console.error("Failed to update list status:", error);
+    }
   };
 
   const handleManageShots = () => {
-    onUpdateShots(experience.experience._id, associatedShots);
+    navigation.navigate("UpdateShots", {
+      experienceId: _id,
+      associatedShots,
+    });
   };
 
   const handleManageCollages = () => {
-    onUpdateCollages(experience.experience._id, associatedCollages);
+    navigation.navigate("UpdateCollages", {
+      experienceId: _id,
+      associatedCollages,
+    });
+  };
+
+  const handleUpdateShots = async (newShots) => {
+    try {
+      await updateShots({
+        variables: {
+          lifeListExperienceId: _id,
+          shotIds: newShots.map((shot) => shot._id),
+        },
+      });
+    } catch (error) {
+      console.error("Failed to update associated shots:", error);
+    }
+  };
+
+  const handleUpdateCollages = async (newCollages) => {
+    try {
+      await updateCollages({
+        variables: {
+          lifeListExperienceId: _id,
+          collageIds: newCollages.map((collage) => collage._id),
+        },
+      });
+    } catch (error) {
+      console.error("Failed to update associated collages:", error);
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.topRow}>
         <Image source={{ uri: imageUrl }} style={cardStyles.imageLg} />
-        <View style={styles.infoContainer}>
-          <Text style={styles.title}>{title}</Text>
+        <View>
+          <Text style={styles.title}>{truncatedTitle}</Text>
           <Text style={styles.category}>{category}</Text>
           <View style={styles.buttonsContainer}>
             <Pressable
@@ -91,11 +139,11 @@ export default function AddExperienceCard({
               data={associatedShots}
               renderItem={({ item }) => (
                 <Image
-                  source={{ uri: `${baseURL}${item.image}` }}
+                  source={{ uri: `${baseURL}${item.shot.image}` }}
                   style={styles.shotImage}
                 />
               )}
-              keyExtractor={(item) => item._id}
+              keyExtractor={(item) => item.shot._id}
             />
           )}
         </View>
@@ -143,10 +191,10 @@ const styles = StyleSheet.create({
   topRow: {
     flexDirection: "row",
   },
-  infoContainer: {
+  /* infoContainer: {
     flex: 1,
     marginLeft: 15,
-  },
+  }, */
   title: {
     fontSize: 16,
     fontWeight: "bold",

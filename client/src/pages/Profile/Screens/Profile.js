@@ -16,7 +16,7 @@ export default function Profile() {
   const navigation = useNavigation();
   const { currentUser } = useAuth();
   const route = useRoute();
-  const { userId } = route.params;
+  const { userId } = route.params || currentUser._id;
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
 
   const { data, loading, error } = useQuery(GET_USER_PROFILE, {
