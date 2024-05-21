@@ -19,6 +19,13 @@ const uploadLink = createUploadLink({
   isExtractableFile,
 });
 
+// POOL ACCESS
+/* const uploadLink = createUploadLink({
+  uri: "http://10.5.50.98:3001/graphql",
+  formDataAppendFile,
+  isExtractableFile,
+}); */
+
 // SPARKMAN WHARF ACCESS
 /* const uploadLink = createUploadLink({
   uri: "http://100.66.6.237:3001/graphql",

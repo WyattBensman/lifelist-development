@@ -60,6 +60,12 @@ export const cardStyles = StyleSheet.create({
     borderRadius: 4,
     marginRight: 6,
   },
+  imageLg: {
+    height: 90,
+    width: 90,
+    borderRadius: 4,
+    marginRight: 8,
+  },
   imageExperienceMd: {
     height: 170,
     width: "100%",

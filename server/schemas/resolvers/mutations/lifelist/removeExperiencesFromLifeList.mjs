@@ -8,7 +8,7 @@ const removeExperiencesFromLifeList = async (
 ) => {
   try {
     // Ensure the user is authorized to modify the LifeList
-    await isLifeListAuthor(user, lifeListId);
+    /* await isLifeListAuthor(user, lifeListId); */
 
     // Delete the specified LifeListExperience documents
     await LifeListExperience.deleteMany({ _id: { $in: experienceIds } });
@@ -20,7 +20,10 @@ const removeExperiencesFromLifeList = async (
     );
     await lifeList.save();
 
-    return lifeList; // Return the modified LifeList
+    return {
+      success: true,
+      message: "Experiences successfully removed",
+    };
   } catch (error) {
     console.error(`Error removing experiences from LifeList: ${error.message}`);
     throw new Error("Failed to remove experiences from LifeList.");

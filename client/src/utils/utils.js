@@ -11,3 +11,10 @@ export const capitalizeText = (text) => {
   }
   return text.toUpperCase();
 };
+
+export const capitalizeTextNoSlice = (text) => {
+  if (text.length > 1) {
+    return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+  }
+  return text.toUpperCase();
+};

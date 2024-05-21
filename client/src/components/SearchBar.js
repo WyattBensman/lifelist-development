@@ -1,17 +1,15 @@
 import React, { useState } from "react";
-import { View, TextInput, StyleSheet, Platform } from "react-native";
+import { View, TextInput, StyleSheet } from "react-native";
 import SearchIcon from "../pages/Inbox/Icons/SearchIcon";
 
-export default function SearchBar({ style }) {
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const handleSearch = () => {
-    console.log("Searching for:", searchQuery);
-    // Implement your search logic here
-  };
-
+export default function SearchBar({
+  searchQuery,
+  setSearchQuery,
+  handleSearch,
+  onFocusChange,
+}) {
   return (
-    <View style={[styles.container, style]}>
+    <View style={styles.container}>
       <SearchIcon />
       <TextInput
         style={styles.input}
@@ -19,6 +17,8 @@ export default function SearchBar({ style }) {
         value={searchQuery}
         onChangeText={setSearchQuery}
         onSubmitEditing={handleSearch}
+        onFocus={() => onFocusChange(true)}
+        onBlur={() => onFocusChange(false)}
       />
     </View>
   );
@@ -26,6 +26,7 @@ export default function SearchBar({ style }) {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     height: 35,
     flexDirection: "row",
     alignItems: "center",

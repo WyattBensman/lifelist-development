@@ -1,24 +1,24 @@
+import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useEffect, useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import { layoutStyles } from "../../../styles";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
-import EditLifeListIcon from "../Icons/EditLifeListIcon";
-import SaveDiscardContainer from "../Popups/SaveDiscardContainer";
-import ActionModal from "../Popups/ActionsModal";
 import ListViewNavigator from "../Navigation/ListViewNavigator";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useQuery } from "@apollo/client";
 import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
 import { useAuth } from "../../../contexts/AuthContext";
+import SymbolButton from "../../../icons/SymbolButton";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
+import EditBottomContainer from "../Components/EditBottomContainer";
 
 export default function ListView({ navigation }) {
   const route = useRoute();
   const { setIsTabBarVisible } = useNavigationContext();
   const [editMode, setEditMode] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
   const [viewType, setViewType] = useState("EXPERIENCED");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { currentUser } = useAuth();
   const { data, loading, error } = useQuery(GET_USER_LIFELIST, {
@@ -40,10 +40,6 @@ export default function ListView({ navigation }) {
     setEditMode(!editMode);
   };
 
-  const toggleModal = () => {
-    setModalVisible(!modalVisible);
-  };
-
   const handleViewTypeChange = (type) => {
     setViewType(type);
   };
@@ -59,10 +55,18 @@ export default function ListView({ navigation }) {
         arrowIcon={!editMode && <BackArrowIcon navigation={navigation} />}
         icon1={
           !editMode && (
-            <EditLifeListIcon onPress={() => setEditMode(!editMode)} />
+            <SymbolButton
+              name="square.and.pencil"
+              style={{ marginBottom: 3 }}
+              onPress={() => setEditMode(!editMode)}
+            />
           )
         }
         hasBorder={false}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        isSearchFocused={isSearchFocused}
+        onSearchFocusChange={setIsSearchFocused}
       />
       <View style={[layoutStyles.flex, styles.buttonContainer]}>
         <Pressable
@@ -102,25 +106,17 @@ export default function ListView({ navigation }) {
         lifeList={lifeList}
         viewType={viewType}
         editMode={editMode}
+        searchQuery={searchQuery}
       />
-      {editMode && <SaveDiscardContainer toggleEditMode={toggleEditMode} />}
+      {editMode && <EditBottomContainer toggleEditMode={toggleEditMode} />}
     </View>
   );
 }
 
-{
-  /*       <ActionModal
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        onEditExperiences={() => {
-          setModalVisible(false);
-          setEditMode(true);
-        }}
-      /> */
-}
-
 const styles = StyleSheet.create({
   buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginHorizontal: 24,
     marginTop: 12,
   },

@@ -7,6 +7,7 @@ import Media from "../pages/CreateCollage/Screens/Media";
 import Summary from "../pages/CreateCollage/Screens/Summary";
 import Overview from "../pages/CreateCollage/Screens/Overview";
 import Preview from "../pages/CreateCollage/Screens/Preview";
+import ProfileStack from "./ProfileStack";
 
 const Stack = createNativeStackNavigator();
 

@@ -23,38 +23,32 @@ export default function HeaderStack({
   }, [dropdownVisible]);
 
   return (
-    <View>
-      <View style={[styles.mainContainer, hasBorder && styles.border]}>
-        <View style={styles.contentContainer}>
-          <View style={styles.sideContainer}>
-            {arrow ? arrow : <IconFiller />}
-          </View>
-          <View style={[styles.sideContainer, styles.rightContainer]}>
-            {button2 && <View style={styles.iconSpacing}>{button2}</View>}
-            {button1 && (
-              <View style={[styles.iconSpacing, button2 && styles.iconGap]}>
-                {button1}
-              </View>
-            )}
-          </View>
-          {!dropdownVisible && (
-            <View style={styles.titleContainer}>
-              <Text
-                style={styles.header}
-                numberOfLines={1}
-                ellipsizeMode="tail"
-              >
-                {title}
-              </Text>
+    <View style={[styles.mainContainer, hasBorder && styles.border]}>
+      <View style={styles.contentContainer}>
+        <View style={styles.sideContainer}>
+          {arrow ? arrow : <IconFiller />}
+        </View>
+        <View style={[styles.sideContainer, styles.rightContainer]}>
+          {button2 && <View style={styles.iconSpacing}>{button2}</View>}
+          {button1 && (
+            <View style={[styles.iconSpacing, button2 && styles.iconGap]}>
+              {button1}
             </View>
           )}
         </View>
-        <Animated.View
-          style={[styles.dropdownContainer, { height: dropdownHeight }]}
-        >
-          {dropdownVisible && dropdownContent}
-        </Animated.View>
+        {!dropdownVisible && (
+          <View style={styles.titleContainer}>
+            <Text style={styles.header} numberOfLines={1} ellipsizeMode="tail">
+              {title}
+            </Text>
+          </View>
+        )}
       </View>
+      <Animated.View
+        style={[styles.dropdownContainer, { height: dropdownHeight }]}
+      >
+        {dropdownVisible && dropdownContent}
+      </Animated.View>
     </View>
   );
 }

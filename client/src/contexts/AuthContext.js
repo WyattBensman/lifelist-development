@@ -61,6 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateCurrentUser = (updatedFields) => {
+    console.log("Updating Current User....");
     setCurrentUser((prevUser) => ({
       ...prevUser,
       ...updatedFields,

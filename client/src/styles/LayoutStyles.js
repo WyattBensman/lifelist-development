@@ -42,6 +42,10 @@ export const layoutStyles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  flexRowJustify: {
+    flexDirection: "row",
+    justifyContent: "center",
+  },
   flexSpaceBetween: {
     flexDirection: "row",
     justifyContent: "space-between",

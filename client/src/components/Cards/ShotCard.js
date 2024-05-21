@@ -15,10 +15,16 @@ export default function ShotCard({
 }) {
   const imageUrl = `${baseURL}${shot.image}`;
 
+  const handlePress = () => {
+    if (isSelected !== undefined && onCheckboxToggle) {
+      onCheckboxToggle(shot._id);
+    } else {
+      navigation.navigate("ViewShot", { imageUrl: shot.image });
+    }
+  };
+
   return (
-    <Pressable
-      onPress={() => navigation.navigate("ViewShot", { imageUrl: shot.image })}
-    >
+    <Pressable onPress={handlePress}>
       <View style={styles.shotContainer}>
         <Image source={{ uri: imageUrl }} style={styles.shotImage} />
         {isSelected !== undefined && onCheckboxToggle && (

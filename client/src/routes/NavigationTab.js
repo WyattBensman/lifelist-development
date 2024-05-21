@@ -1,13 +1,14 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { useTheme } from "react-native-paper";
 import { useNavigationContext } from "../contexts/NavigationContext";
+import { useAuth } from "../contexts/AuthContext";
 
 import MainFeedStack from "./MainFeedStack";
 import ExploreStack from "./ExploreStack";
 import LifeListStack from "./LifeListStack";
-import ProfileStack from "./ProfileStack";
 import TabIcon from "../icons/NavigationBar/TabIcon";
 import CameraStack from "./CameraStack";
+import ProfileStack from "./ProfileStack";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -15,6 +16,7 @@ export default function NavigationTab() {
   const theme = useTheme();
   theme.colors.secondaryContainer = "";
   const { isTabBarVisible } = useNavigationContext();
+  const { currentUser } = useAuth();
 
   return (
     <Tab.Navigator

@@ -4,6 +4,11 @@ import CategoryExperiences from "../Screens/TabScreens/CategoryExperiences";
 
 const Tab = createMaterialTopTabNavigator();
 
+const getLabelWidth = (label) => {
+  const length = label.length;
+  return Math.max(50, length * 3); // Adjust to fit your text width
+};
+
 export default function CategoryNavigator({ lifeList }) {
   return (
     <Tab.Navigator
@@ -16,7 +21,7 @@ export default function CategoryNavigator({ lifeList }) {
           height: 42.5,
         },
         tabBarIndicatorStyle: {
-          backgroundColor: "#6AB952", // Indicator color
+          backgroundColor: "#6AB952",
         },
         tabBarLabelStyle: {
           fontSize: 14,
@@ -24,52 +29,34 @@ export default function CategoryNavigator({ lifeList }) {
         },
         tabBarScrollEnabled: true,
         tabBarItemStyle: ({ route }) => ({
-          width: getLabelWidth(route.name) + 10, // Adjust width based on text length
+          width: getLabelWidth(route.name) + 10,
         }),
       }}
     >
       <Tab.Screen name="All">
         {() => <AllExperiences lifeList={lifeList} />}
       </Tab.Screen>
-      <Tab.Screen name="Attractions">
-        {() => (
-          <CategoryExperiences lifeList={lifeList} category="ATTRACTIONS" />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Destinations">
-        {() => (
-          <CategoryExperiences lifeList={lifeList} category="DESTINATIONS" />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Events">
-        {() => <CategoryExperiences lifeList={lifeList} category="EVENTS" />}
-      </Tab.Screen>
-      <Tab.Screen name="Courses">
-        {() => <CategoryExperiences lifeList={lifeList} category="COURSES" />}
-      </Tab.Screen>
-      <Tab.Screen name="Venues">
-        {() => <CategoryExperiences lifeList={lifeList} category="VENUES" />}
-      </Tab.Screen>
-      <Tab.Screen name="Festivals">
-        {() => <CategoryExperiences lifeList={lifeList} category="FESTIVALS" />}
-      </Tab.Screen>
-      <Tab.Screen name="Hikes and Trails">
-        {() => (
-          <CategoryExperiences
-            lifeList={lifeList}
-            category="HIKES_AND_TRAILS"
-          />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Resorts">
-        {() => <CategoryExperiences lifeList={lifeList} category="RESORTS" />}
-      </Tab.Screen>
-      <Tab.Screen name="Concerts">
-        {() => <CategoryExperiences lifeList={lifeList} category="CONCERTS" />}
-      </Tab.Screen>
-      <Tab.Screen name="Artists">
-        {() => <CategoryExperiences lifeList={lifeList} category="ARTISTS" />}
-      </Tab.Screen>
+      {[
+        "Attractions",
+        "Destinations",
+        "Events",
+        "Courses",
+        "Venues",
+        "Festivals",
+        "Hikes and Trails",
+        "Resorts",
+        "Concerts",
+        "Artists",
+      ].map((category) => (
+        <Tab.Screen key={category} name={category}>
+          {() => (
+            <CategoryExperiences
+              lifeList={lifeList}
+              category={category.toUpperCase().replace(/ /g, "_")}
+            />
+          )}
+        </Tab.Screen>
+      ))}
     </Tab.Navigator>
   );
 }

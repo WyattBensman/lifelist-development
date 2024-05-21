@@ -5,8 +5,10 @@ import { layoutStyles } from "../../../styles/LayoutStyles";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
+import { useNavigation } from "@react-navigation/native";
 
 export default function CameraHome() {
+  const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
   const [facing, setFacing] = useState("back");
   const [flash, setFlash] = useState("off");

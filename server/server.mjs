@@ -55,6 +55,13 @@ app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
   })
 ); */
 
+// POOL ACCESS
+/* app.use(
+  cors({
+    origin: ["http://10.5.50.98:8081", "exp://10.5.50.98:8081"],
+  })
+); */
+
 // SPARKMAN WHARF ACCESS
 /* app.use(
   cors({

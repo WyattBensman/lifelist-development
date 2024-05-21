@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet } from "react-native";
 import { SymbolView } from "expo-symbols";
 
-export default function SymbolButton({ name, onPress, style, tintColor }) {
+export default function SymbolButtonSm({ name, onPress, style, tintColor }) {
   return (
     <Pressable onPress={onPress}>
       <SymbolView
@@ -16,7 +16,7 @@ export default function SymbolButton({ name, onPress, style, tintColor }) {
 
 const styles = StyleSheet.create({
   symbol: {
-    width: 28,
-    height: 28,
+    width: 20,
+    height: 20,
   },
 });

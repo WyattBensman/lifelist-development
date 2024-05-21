@@ -5,10 +5,21 @@ import CategoryExperiencesList from "../Screens/TabScreens/CategoryExperiencesLi
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function ListViewNavigator({ lifeList, viewType, editMode }) {
+const getLabelWidth = (label) => {
+  const length = label.length;
+  return Math.max(50, length * 7); // Adjust to fit your text width
+};
+
+export default function ListViewNavigator({
+  lifeList,
+  viewType,
+  editMode,
+  searchQuery,
+}) {
   return (
     <Tab.Navigator
       screenOptions={{
+        swipeEnabled: false,
         tabBarActiveTintColor: "#000000",
         tabBarInactiveTintColor: "#d4d4d4",
         tabBarStyle: {
@@ -16,13 +27,16 @@ export default function ListViewNavigator({ lifeList, viewType, editMode }) {
           height: 42.5,
         },
         tabBarIndicatorStyle: {
-          backgroundColor: "#6AB952", // Indicator color
+          backgroundColor: "#6AB952",
         },
         tabBarLabelStyle: {
           fontSize: 14,
           textTransform: "capitalize",
         },
         tabBarScrollEnabled: true,
+        tabBarItemStyle: ({ route }) => ({
+          width: getLabelWidth(route.name) + 10,
+        }),
       }}
     >
       <Tab.Screen name="All">
@@ -31,109 +45,34 @@ export default function ListViewNavigator({ lifeList, viewType, editMode }) {
             lifeList={lifeList}
             viewType={viewType}
             editMode={editMode}
+            searchQuery={searchQuery}
           />
         )}
       </Tab.Screen>
-      <Tab.Screen name="Attractions">
-        {() => (
-          <CategoryExperiencesList
-            lifeList={lifeList}
-            category="ATTRACTIONS"
-            viewType={viewType}
-            editMode={editMode}
-          />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Destinations">
-        {() => (
-          <CategoryExperiencesList
-            lifeList={lifeList}
-            category="DESTINATIONS"
-            viewType={viewType}
-            editMode={editMode}
-          />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Events">
-        {() => (
-          <CategoryExperiencesList
-            lifeList={lifeList}
-            category="EVENTS"
-            viewType={viewType}
-            editMode={editMode}
-          />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Courses">
-        {() => (
-          <CategoryExperiencesList
-            lifeList={lifeList}
-            category="COURSES"
-            viewType={viewType}
-            editMode={editMode}
-          />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Venues">
-        {() => (
-          <CategoryExperiencesList
-            lifeList={lifeList}
-            category="VENUES"
-            viewType={viewType}
-            editMode={editMode}
-          />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Festivals">
-        {() => (
-          <CategoryExperiencesList
-            lifeList={lifeList}
-            category="FESTIVALS"
-            viewType={viewType}
-            editMode={editMode}
-          />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Hikes and Trails">
-        {() => (
-          <CategoryExperiencesList
-            lifeList={lifeList}
-            category="HIKES_AND_TRAILS"
-            viewType={viewType}
-            editMode={editMode}
-          />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Resorts">
-        {() => (
-          <CategoryExperiencesList
-            lifeList={lifeList}
-            category="RESORTS"
-            viewType={viewType}
-            editMode={editMode}
-          />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Concerts">
-        {() => (
-          <CategoryExperiencesList
-            lifeList={lifeList}
-            category="CONCERTS"
-            viewType={viewType}
-            editMode={editMode}
-          />
-        )}
-      </Tab.Screen>
-      <Tab.Screen name="Artists">
-        {() => (
-          <CategoryExperiencesList
-            lifeList={lifeList}
-            category="ARTISTS"
-            viewType={viewType}
-            editMode={editMode}
-          />
-        )}
-      </Tab.Screen>
+      {[
+        "Attractions",
+        "Destinations",
+        "Events",
+        "Courses",
+        "Venues",
+        "Festivals",
+        "Hikes and Trails",
+        "Resorts",
+        "Concerts",
+        "Artists",
+      ].map((category) => (
+        <Tab.Screen key={category} name={category}>
+          {() => (
+            <CategoryExperiencesList
+              lifeList={lifeList}
+              category={category.toUpperCase().replace(/ /g, "_")}
+              viewType={viewType}
+              editMode={editMode}
+              searchQuery={searchQuery}
+            />
+          )}
+        </Tab.Screen>
+      ))}
     </Tab.Navigator>
   );
 }

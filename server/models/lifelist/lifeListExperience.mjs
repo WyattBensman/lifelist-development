@@ -13,7 +13,6 @@ const lifeListExperienceSchema = new Schema({
   list: {
     type: String,
     enum: ["EXPERIENCED", "WISHLISTED"],
-    required: true,
   },
   associatedShots: [
     {

@@ -20,3 +20,14 @@ export const GET_EXPERIENCE = gql`
     }
   }
 `;
+
+export const GET_ALL_EXPERIENCES = gql`
+  query GetAllExperiences {
+    getAllExperiences {
+      _id
+      title
+      image
+      category
+    }
+  }
+`;

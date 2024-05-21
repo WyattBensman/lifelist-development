@@ -118,3 +118,40 @@ export const GET_LIFELIST_EXPERIENCE = gql`
     }
   }
 `;
+
+export const GET_LIFELIST_EXPERIENCES_BY_EXPERIENCE_IDS = gql`
+  query GetLifeListExperiencesByExperienceIds(
+    $lifeListId: ID!
+    $experienceIds: [ID]
+  ) {
+    getLifeListExperiencesByExperienceIds(
+      lifeListId: $lifeListId
+      experienceIds: $experienceIds
+    ) {
+      _id
+      lifeList {
+        _id
+      }
+      experience {
+        _id
+        title
+        image
+        category
+      }
+      list
+      associatedShots {
+        shot {
+          _id
+          image
+          capturedAt
+        }
+        isHidden
+      }
+      associatedCollages {
+        _id
+        coverImage
+        createdAt
+      }
+    }
+  }
+`;

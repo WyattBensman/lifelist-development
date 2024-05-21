@@ -96,3 +96,31 @@ export const getLifeListExperience = async (_, { experienceId }) => {
   if (!experience) throw new Error("LifeList experience not found.");
   return experience;
 };
+
+export const getLifeListExperiencesByExperienceIds = async (
+  _,
+  { lifeListId, experienceIds }
+) => {
+  try {
+    const lifeListExperiences = await LifeListExperience.find({
+      lifeList: lifeListId,
+      experience: { $in: experienceIds },
+    })
+      .populate({
+        path: "experience",
+        select: "_id title image category",
+      })
+      .populate({
+        path: "associatedShots.shot",
+        select: "_id image capturedAt",
+      })
+      .populate({
+        path: "associatedCollages",
+        select: "_id coverImage createdAt",
+      });
+
+    return lifeListExperiences;
+  } catch (error) {
+    throw new Error("Error fetching LifeListExperiences: " + error.message);
+  }
+};

@@ -8,7 +8,7 @@ import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import SymbolButton from "../../../icons/SymbolButton";
 import ShotCard from "../Cards/ShotCard";
 import { GET_CAMERA_ALBUM } from "../../../utils/queries/cameraQueries";
-import SymbolButtonLg from "../../../icons/SymbolButtonLg";
+import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
 
 export default function ViewAlbum() {
   const navigation = useNavigation();
@@ -31,31 +31,23 @@ export default function ViewAlbum() {
     setDropdownVisible(!dropdownVisible);
   };
 
-  const dropdownContent = (
-    <View style={styles.dropdownContainer}>
-      <Pressable
-        style={styles.dropdownItemContainer}
-        onPress={() => console.log("Add Shots to Album")}
-      >
-        <SymbolButtonLg name="plus.square" />
-        <Text style={styles.dropdownItem}>Add Shots</Text>
-      </Pressable>
-      <Pressable
-        style={styles.dropdownItemContainer}
-        onPress={() => console.log("Add Shots to Album")}
-      >
-        <SymbolButtonLg name="minus.square" />
-        <Text style={styles.dropdownItem}>Remove Shots</Text>
-      </Pressable>
-      <Pressable
-        style={styles.dropdownItemContainer}
-        onPress={() => console.log("Add Shots to Album")}
-      >
-        <SymbolButtonLg name="trash.square" />
-        <Text style={styles.dropdownItem}>Delete Album</Text>
-      </Pressable>
-    </View>
-  );
+  const dropdownItems = [
+    {
+      icon: "plus.square",
+      label: "Add Shots",
+      onPress: () => console.log("Add Shots to Album"),
+    },
+    {
+      icon: "minus.square",
+      label: "Remove Shots",
+      onPress: () => console.log("Remove Shots from Album"),
+    },
+    {
+      icon: "trash.square",
+      label: "Delete Album",
+      onPress: () => console.log("Delete Album"),
+    },
+  ];
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -69,7 +61,7 @@ export default function ViewAlbum() {
           />
         }
         dropdownVisible={dropdownVisible}
-        dropdownContent={dropdownContent}
+        dropdownContent={<DropdownMenu items={dropdownItems} />}
       />
       <FlatList
         data={album.shots}
@@ -80,21 +72,3 @@ export default function ViewAlbum() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  dropdownContainer: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    marginHorizontal: 32,
-    marginTop: 16,
-  },
-  dropdownItemContainer: {
-    flexDirection: "column",
-    alignItems: "center",
-    width: 100,
-  },
-  dropdownItem: {
-    padding: 4,
-    fontSize: 12,
-  },
-});

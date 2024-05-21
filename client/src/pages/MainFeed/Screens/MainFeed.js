@@ -5,9 +5,15 @@ import InboxIcon from "../Icons/InboxIcon";
 import { layoutStyles } from "../../../styles";
 import HeaderMain from "../../../components/Headers/HeaderMain";
 import { useAuth } from "../../../contexts/AuthContext";
+import { useNavigation } from "@react-navigation/native";
 
 export default function MainFeed() {
   const { logout, currentUser } = useAuth();
+  const navigation = useNavigation();
+
+  const navigateToUserProfile = () => {
+    navigation.navigate("Profile", { userId: "663a3133e0ffbeff092b81db" });
+  };
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -22,25 +28,10 @@ export default function MainFeed() {
       {/* Display User Information */}
       <Text>{`Full Name: ${currentUser?.fullName}`}</Text>
       <Text>{`Username: ${currentUser?.username}`}</Text>
+      {/* Navigating to a specific user's profile */}
+      <Pressable onPress={navigateToUserProfile}>
+        <Text style={{ color: "blue", margin: 20 }}>Go to User Profile</Text>
+      </Pressable>
     </View>
   );
 }
-
-/* const [userId, setUserId] = useState(null);
-
-// Fetch user ID and decode token for user data
-useEffect(() => {
-  const fetchUserData = async () => {
-    const userData = await AuthService.getUser();
-    setUserId(userData?._id);
-  };
-  fetchUserData();
-}, []);
-
-// Use the Apollo useQuery hook to fetch the user's profile
-const { data, loading, error } = useQuery(GET_USER_PROFILE, {
-  variables: { userId },
-});
-
-// Destructure data for easy access
-const { fullName, username } = data?.getUserProfileById || {}; */

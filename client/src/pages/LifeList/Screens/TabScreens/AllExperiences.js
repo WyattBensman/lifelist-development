@@ -1,22 +1,27 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Text, View, FlatList } from "react-native";
 import { headerStyles, layoutStyles } from "../../../../styles";
 import ExperienceCard from "../../Cards/ExperienceCard";
 
+const sortByTitle = (a, b) =>
+  a.experience.title.localeCompare(b.experience.title);
+
 export default function AllExperiences({ lifeList }) {
-  const sortByTitle = (a, b) => {
-    if (a.experience.title < b.experience.title) return -1;
-    if (a.experience.title > b.experience.title) return 1;
-    return 0;
-  };
+  const experiencedList = useMemo(
+    () =>
+      lifeList.experiences
+        .filter((exp) => exp.list === "EXPERIENCED")
+        .sort(sortByTitle),
+    [lifeList.experiences]
+  );
 
-  const experiencedList = lifeList.experiences
-    .filter((exp) => exp.list === "EXPERIENCED")
-    .sort(sortByTitle);
-
-  const wishListedList = lifeList.experiences
-    .filter((exp) => exp.list === "WISHLISTED")
-    .sort(sortByTitle);
+  const wishListedList = useMemo(
+    () =>
+      lifeList.experiences
+        .filter((exp) => exp.list === "WISHLISTED")
+        .sort(sortByTitle),
+    [lifeList.experiences]
+  );
 
   const renderExperience = ({ item }) => (
     <ExperienceCard experience={item.experience} />

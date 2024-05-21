@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { View, Text } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import ActionModal from "../Popups/ActionsModal";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
-import SearchIcon from "../Icons/SearchIcon";
-import ListViewIcon from "../Icons/ListViewIcon";
 import { headerStyles, layoutStyles } from "../../../styles";
 import CategoryNavigator from "../Navigation/CategoryNavigator";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -12,18 +9,27 @@ import { useQuery } from "@apollo/client";
 import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import HeaderMain from "../../../components/Headers/HeaderMain";
-import EditLifeListIcon from "../Icons/EditLifeListIcon";
 import SymbolButton from "../../../icons/SymbolButton";
+import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
+import SearchBar from "../../../components/SearchBar";
 
 export default function LifeList() {
   const { currentUser } = useAuth();
   const navigation = useNavigation();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [searchBarVisible, setSearchBarVisible] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(""); // Add search query state
 
-  const { data, loading, error } = useQuery(GET_USER_LIFELIST, {
+  const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
     variables: { userId: currentUser._id },
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   useEffect(() => {
     if (data) {
@@ -31,48 +37,82 @@ export default function LifeList() {
     }
   }, [data]);
 
+  const lifeList = data?.getUserLifeList || { experiences: [] };
+
+  // Filter experiences based on search query
+  const filteredExperiences = useMemo(() => {
+    if (!searchQuery) return lifeList.experiences;
+    return lifeList.experiences.filter((exp) =>
+      exp.experience.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery, lifeList.experiences]);
+
+  const dropdownItems = useMemo(
+    () => [
+      {
+        icon: "plus.square",
+        label: "Add Experiences",
+        onPress: () => navigation.navigate("AddExperiences"),
+      },
+      {
+        icon: "square.and.pencil",
+        label: "Edit Experiences",
+        style: { marginBottom: 3, height: 26 },
+        onPress: () => console.log("Edit List"),
+      },
+    ],
+    [navigation]
+  );
+
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
 
-  const lifeList = data.getUserLifeList;
-
   return (
-    <>
-      <View style={layoutStyles.wrapper}>
-        {isAdmin ? (
-          <HeaderMain
-            titleComponent={
-              <Text style={headerStyles.headerHeavy}>My LifeList</Text>
-            }
-            icon1={
-              <SymbolButton
-                name="magnifyingglass"
-                style={{ height: 22, width: 22 }}
-              />
-            }
-            icon2={
-              <SymbolButton
-                name="line.3.horizontal"
-                onPress={() => navigation.navigate("Listview")}
-                style={{ height: 20, width: 20 }}
-              />
-            }
-            icon3={<SymbolButton name="ellipsis.circle" />}
-          />
-        ) : (
-          <HeaderStack
-            arrow={<BackArrowIcon />}
-            title={"LifeList"}
-            button1={<ListViewIcon />}
-            button2={<SearchIcon />}
-          />
-        )}
-        <CategoryNavigator lifeList={lifeList} />
-        <ActionModal
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
+    <View style={layoutStyles.wrapper}>
+      {searchBarVisible && (
+        <SearchBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSearch={() => setSearchBarVisible(false)}
         />
-      </View>
-    </>
+      )}
+      {isAdmin ? (
+        <HeaderMain
+          titleComponent={
+            <Text style={headerStyles.headerHeavy}>My LifeList</Text>
+          }
+          icon1={
+            <SymbolButton
+              name="line.3.horizontal"
+              style={{ height: 22, width: 22 }}
+              onPress={() => navigation.navigate("ListView")}
+            />
+          }
+          icon2={
+            <SymbolButton
+              name={
+                !dropdownVisible ? "ellipsis.circle" : "ellipsis.circle.fill"
+              }
+              onPress={() => setDropdownVisible(!dropdownVisible)}
+            />
+          }
+          dropdownVisible={dropdownVisible}
+          dropdownContent={<DropdownMenu items={dropdownItems} />}
+        />
+      ) : (
+        <HeaderStack
+          arrow={<BackArrowIcon />}
+          title={"LifeList"}
+          button1={
+            <SymbolButton
+              name="magnifyingglass"
+              onPress={() => setSearchBarVisible(!searchBarVisible)} // Toggle search bar visibility
+            />
+          }
+          button2={<SymbolButton name="line.3.horizontal" />}
+        />
+      )}
+      <CategoryNavigator lifeList={{ experiences: filteredExperiences }} />
+    </View>
   );
 }

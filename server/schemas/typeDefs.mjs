@@ -280,6 +280,7 @@ type User {
     getExperiencedList(lifeListId: ID!): [LifeListExperience]
     getWishListedList(lifeListId: ID!): [LifeListExperience]
     getLifeListExperience(experienceId: ID!): LifeListExperience
+    getLifeListExperiencesByExperienceIds(lifeListId: ID!, experienceIds: [ID]): [LifeListExperience]
   
     # Collage Queries
     getCollageById(collageId: ID!): Collage
@@ -306,6 +307,7 @@ type User {
   
     # Experience Queries
     getExperience(experienceId: ID!): Experience
+    getAllExperiences: [Experience]
   }
 
   # Query Responses
@@ -396,13 +398,21 @@ type User {
     reportComment(commentId: ID!, reason: ReportReason!): ActionResponse!
 
     # LifeList Mutations
-    addExperiencesToLifeList(lifeListId: ID!, experiences: [ExperienceInput]): LifeList
-    removeExperiencesFromLifeList(lifeListId: ID!, experienceIds: [ID]): LifeList
-    updateLifeListExperienceListStatus(lifeListExperienceId: ID!, newListStatus: String): LifeListExperience
+    addExperienceToLifeList(
+      lifeListId: ID!
+      experienceId: ID!
+      list: String!
+      associatedShots: [ID]
+      associatedCollages: [ID]
+    ): StandardResponse
+    removeExperiencesFromLifeList(lifeListId: ID!, experienceIds: [ID]): StandardResponse
+    updateLifeListExperienceListStatus(lifeListExperienceId: ID!, newListStatus: String!): StandardResponse
     addCollagesToLifeListExperience(lifeListExperienceId: ID!, collageIds: [ID]): LifeListExperience
     addShotsToLifeListExperience(lifeListExperienceId: ID!, shotIds: [ID]): LifeListExperience
     removeCollagesFromLifeListExperience(lifeListExperienceId: ID!, collageIds: [ID]): LifeListExperience
     removeShotsFromLifeListExperience(lifeListExperienceId: ID!, shotIds: [ID]): LifeListExperience
+    updateAssociatedShots(lifeListExperienceId: ID!, shotIds: [ID]): StandardResponse
+    updateAssociatedCollages(lifeListExperienceId: ID!, collageIds: [ID]): StandardResponse
 
     # Camera Mutations
     createCameraShot(image: Upload!, camera: CameraType, shotOrientation: ShotOrientation): StandardResponse
@@ -508,11 +518,6 @@ type User {
     postRepostToMainFeed: Boolean
   }
 
-  input ExperienceInput {
-    experienceId: ID!
-    list: String!
-  }
-
   input DimensionsInput {
     width: Int
     height: Int
@@ -527,6 +532,14 @@ type User {
     latitude: Float
     longitude: Float
   }
+
+  input ExperienceInput {
+    experienceId: ID!
+    list: LifeListListEnum!
+    associatedShots: [ID]
+    associatedCollages: [ID]
+  }
+  
   `;
 
 export default typeDefs;

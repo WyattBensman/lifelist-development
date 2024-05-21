@@ -18,7 +18,10 @@ const updateLifeListExperienceListStatus = async (
     lifeListExperience.list = newListStatus;
     await lifeListExperience.save();
 
-    return lifeListExperience; // Return the updated LifeListExperience
+    return {
+      success: true,
+      message: "LifeListExperience list status updated successfully",
+    };
   } catch (error) {
     console.error(
       `Error updating LifeListExperience list status: ${error.message}`
