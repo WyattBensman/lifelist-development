@@ -7,6 +7,7 @@ import schedule from "node-schedule";
 import dotenv from "dotenv";
 import * as url from "url";
 import cors from "cors";
+import fs from "fs";
 
 // Configuration and utilities
 import { authMiddleware } from "./utils/auth.mjs";
@@ -33,11 +34,7 @@ const server = new ApolloServer({
   resolvers,
   uploads: false, // Ensure file uploads are handled by graphql-upload
   context: async ({ req }) => {
-    // Ensure the authMiddleware processes the request and augments it with the user
     await authMiddleware(req);
-    // Log the context information
-    /* console.log("Context User:", req.user); */
-    // Now the request object will have the user attached to it
     return { user: req.user };
   },
 });
@@ -45,8 +42,29 @@ const server = new ApolloServer({
 // Middleware for file uploads
 app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 12 }));
 
+// Directory paths
+const uploadDir = path.join(__dirname, "/uploads");
+console.log(`Upload Directory Path: ${uploadDir}`);
+
+// Verify if the directory exists and is writable
+try {
+  if (!fs.existsSync(uploadDir)) {
+    console.log("Upload directory does not exist. Creating directory...");
+    fs.mkdirSync(uploadDir, { recursive: true });
+    console.log("Upload directory created.");
+  } else {
+    console.log("Upload directory exists.");
+  }
+
+  // Check if the directory is writable
+  fs.accessSync(uploadDir, fs.constants.W_OK);
+  console.log("Upload directory is writable.");
+} catch (error) {
+  console.error(`Directory access error: ${error.message}`);
+}
+
 // Static directory setup
-app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+app.use("/uploads", express.static(uploadDir));
 
 // HOME ACCESS
 app.use(
