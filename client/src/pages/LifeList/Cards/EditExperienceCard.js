@@ -22,8 +22,8 @@ export default function EditExperienceCard({ experience, navigation }) {
   const [listStatus, setListStatus] = useState(experience.list);
   const { _id, associatedShots, associatedCollages } = experience;
   const imageUrl = `${baseURL}${experience.experience.image}`;
-  const { title, category } = experience.experience;
-  const truncatedTitle = truncateText(title, 30);
+  const { title } = experience.experience;
+  const truncatedTitle = truncateText(title, 24);
 
   const [updateListStatus] = useMutation(
     UPDATE_LIFELIST_EXPERIENCE_LIST_STATUS
@@ -91,7 +91,6 @@ export default function EditExperienceCard({ experience, navigation }) {
         <Image source={{ uri: imageUrl }} style={cardStyles.imageLg} />
         <View>
           <Text style={styles.title}>{truncatedTitle}</Text>
-          <Text style={styles.category}>{category}</Text>
           <View style={styles.buttonsContainer}>
             <Pressable
               style={[
@@ -186,15 +185,15 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "column",
     marginBottom: 24,
+    padding: 16,
     position: "relative",
+    borderWidth: 1,
+    borderRadius: 4,
+    borderColor: "#d4d4d4",
   },
   topRow: {
     flexDirection: "row",
   },
-  /* infoContainer: {
-    flex: 1,
-    marginLeft: 15,
-  }, */
   title: {
     fontSize: 16,
     fontWeight: "bold",
@@ -206,6 +205,7 @@ const styles = StyleSheet.create({
   buttonsContainer: {
     flexDirection: "row",
     paddingTop: 4,
+    marginTop: 8,
   },
   button: {
     borderWidth: 1,
@@ -251,8 +251,8 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
   },
   shotImage: {
-    width: 40,
-    height: 40,
-    marginRight: 8,
+    width: 24,
+    height: 24,
+    marginRight: 4,
   },
 });

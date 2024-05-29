@@ -1,8 +1,6 @@
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { useMutation } from "@apollo/client";
 import { LinearGradient } from "expo-linear-gradient";
-import CameraGalleryIcon from "../Icons/CameraGalleryIcon";
-import DevelopingGalleryIcon from "../Icons/DevelopingGalleryIcon";
 import { useNavigation } from "@react-navigation/native";
 import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
 import { useAuth } from "../../../contexts/AuthContext";

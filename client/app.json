@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "LifeList-Development",
-    "slug": "client",
+    "name": "LifeList",
+    "slug": "lifelist",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/lifelist-icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/lifelist-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

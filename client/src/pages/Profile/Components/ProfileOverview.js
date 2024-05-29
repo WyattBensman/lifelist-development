@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 import ButtonSkinny from "../../../components/ButtonSkinny";
 import { useNavigation } from "@react-navigation/native";
@@ -11,13 +12,19 @@ import {
   UNSEND_FOLLOW_REQUEST,
 } from "../../../utils/mutations/userRelationsMutations";
 
-export default function ProfileOverview({ profile, isAdminView }) {
+export default function ProfileOverview({
+  profile,
+  isAdminView,
+  isAdminScreen,
+}) {
   const navigation = useNavigation();
   const { currentUser, updateCurrentUser } = useAuth();
   const [followUser] = useMutation(FOLLOW_USER);
   const [unfollowUser] = useMutation(UNFOLLOW_USER);
   const [sendFollowRequest] = useMutation(SEND_FOLLOW_REQUEST);
   const [unsendFollowRequest] = useMutation(UNSEND_FOLLOW_REQUEST);
+
+  const userId = profile._id;
 
   const isFollowing = currentUser.following?.includes(profile._id);
   const isPendingRequest = currentUser.pendingFollowRequests?.includes(
@@ -42,7 +49,7 @@ export default function ProfileOverview({ profile, isAdminView }) {
   };
 
   const handleUnfollow = async () => {
-    await unfollowUser({ variables: { userIdToUnfollow: profile._id } });
+    await unfollowUser({ variables: { userId: profile._id } });
     updateCurrentUser({
       following: currentUser.following.filter(
         (userId) => userId !== profile._id
@@ -79,7 +86,18 @@ export default function ProfileOverview({ profile, isAdminView }) {
             <Pressable
               style={styles.col}
               onPress={() =>
-                navigation.navigate("UserRelations", { screen: "Followers" })
+                isAdminScreen
+                  ? navigation.navigate("ProfileStack", {
+                      screen: "UserRelations",
+                      params: {
+                        screen: "Followers",
+                        params: { userId: profile._id },
+                      },
+                    })
+                  : navigation.navigate("UserRelations", {
+                      screen: "Followers",
+                      params: { userId: profile._id },
+                    })
               }
             >
               <Text style={{ fontWeight: "700" }}>
@@ -90,7 +108,18 @@ export default function ProfileOverview({ profile, isAdminView }) {
             <Pressable
               style={styles.col}
               onPress={() =>
-                navigation.navigate("UserRelations", { screen: "Following" })
+                isAdminScreen
+                  ? navigation.navigate("ProfileStack", {
+                      screen: "UserRelations",
+                      params: {
+                        screen: "Following",
+                        params: { userId: profile._id },
+                      },
+                    })
+                  : navigation.navigate("UserRelations", {
+                      screen: "Following",
+                      params: { userId: profile._id },
+                    })
               }
             >
               <Text style={{ fontWeight: "700" }}>
@@ -109,12 +138,13 @@ export default function ProfileOverview({ profile, isAdminView }) {
           ) : (
             <>
               {isFollowing ? (
-                <>
+                <View style={styles.buttonRow}>
                   <ButtonSkinny
                     onPress={handleUnfollow}
                     text="Following"
                     backgroundColor="#ececec"
-                    textColor="#262828"
+                    textColor="#6AB952"
+                    style={{ flex: 1, marginRight: 4 }}
                   />
                   <ButtonSkinny
                     onPress={() =>
@@ -123,8 +153,9 @@ export default function ProfileOverview({ profile, isAdminView }) {
                     text="Message"
                     backgroundColor="#ececec"
                     textColor="#262828"
+                    style={{ flex: 1, marginLeft: 4 }}
                   />
-                </>
+                </View>
               ) : isPendingRequest ? (
                 <ButtonSkinny
                   onPress={handleUnsendRequest}
@@ -167,5 +198,14 @@ const styles = StyleSheet.create({
     height: 100,
     width: 100,
     borderRadius: 8,
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  messageButton: {
+    marginLeft: 8,
   },
 });

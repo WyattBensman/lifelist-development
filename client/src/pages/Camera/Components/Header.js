@@ -45,6 +45,7 @@ export default function Header({
   });
 
   const handleExit = () => {
+    console.log("Exit");
     navigation.goBack();
   };
 
@@ -63,8 +64,8 @@ export default function Header({
     >
       <View style={styles.contentContainer}>
         <View style={styles.sideContainer}>
-          <Pressable onPress={handleExit}>
-            <ExitIcon />
+          <Pressable onPress={handleExit} style={{ zIndex: 1 }}>
+            <ExitIcon handleExit={handleExit} />
           </Pressable>
           <IconFiller />
         </View>

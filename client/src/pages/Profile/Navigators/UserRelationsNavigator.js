@@ -4,7 +4,7 @@ import Following from "../Screens/TabScreens/Following";
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function UserRelationsNavigator() {
+export default function UserRelationsNavigator({ userId }) {
   return (
     <Tab.Navigator
       initialRouteName="Followers"
@@ -24,8 +24,12 @@ export default function UserRelationsNavigator() {
         },
       }}
     >
-      <Tab.Screen name="Followers" component={Followers} />
-      <Tab.Screen name="Following" component={Following} />
+      <Tab.Screen name="Followers">
+        {() => <Followers userId={userId} />}
+      </Tab.Screen>
+      <Tab.Screen name="Following">
+        {() => <Following userId={userId} />}
+      </Tab.Screen>
     </Tab.Navigator>
   );
 }

@@ -1,16 +1,17 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { useNavigation } from "@react-navigation/native";
 import Collages from "../Screens/Collages";
-import Reposts from "../Screens/Reposts";
 import WorldMap from "../Screens/WorldMap";
 import CollagesIcon from "../Icons/CollagesIcon";
 import MapIcon from "../Icons/MapIcon";
 import LifeListIcon from "../Icons/LifeListIcon";
 import RepostsIcon from "../Icons/RepostsIcon";
+import LifeList from "../../LifeList/Screens/LifeList";
+import Reposts from "../Screens/Reposts";
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function ProfileNavigator({ onTabChange }) {
+export default function ProfileNavigator({ onTabChange, userId, isAdmin }) {
   const navigation = useNavigation();
 
   return (
@@ -29,7 +30,6 @@ export default function ProfileNavigator({ onTabChange }) {
     >
       <Tab.Screen
         name="Collages"
-        component={Collages}
         options={{
           tabBarLabel: ({ focused }) => (
             <CollagesIcon color={focused ? "#000000" : "#d4d4d4"} />
@@ -38,10 +38,11 @@ export default function ProfileNavigator({ onTabChange }) {
         listeners={{
           focus: () => onTabChange && onTabChange("Collages"),
         }}
-      />
+      >
+        {() => <Collages userId={userId} />}
+      </Tab.Screen>
       <Tab.Screen
         name="Reposts"
-        component={Reposts}
         options={{
           tabBarLabel: ({ focused }) => (
             <RepostsIcon color={focused ? "#000000" : "#d4d4d4"} />
@@ -50,10 +51,12 @@ export default function ProfileNavigator({ onTabChange }) {
         listeners={{
           focus: () => onTabChange && onTabChange("Reposts"),
         }}
-      />
+      >
+        {() => <Reposts userId={userId} />}
+      </Tab.Screen>
       <Tab.Screen
         name="LifeList"
-        component={Collages}
+        component={LifeList}
         options={{
           tabBarLabel: ({ focused }) => (
             <LifeListIcon color={focused ? "#000000" : "#d4d4d4"} />
@@ -62,8 +65,12 @@ export default function ProfileNavigator({ onTabChange }) {
         listeners={{
           focus: () => onTabChange && onTabChange("LifeList"),
           tabPress: (e) => {
-            e.preventDefault(); // Prevent default tab press behavior
-            navigation.navigate("ViewLifeList"); // Navigate using stack
+            e.preventDefault();
+            if (isAdmin) {
+              navigation.navigate("AdminLifeListStack");
+            } else {
+              navigation.navigate("LifeListStack", { userId });
+            }
           },
         }}
       />

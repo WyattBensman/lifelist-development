@@ -1,15 +1,11 @@
 import { FlatList, View } from "react-native";
-import { useAuth } from "../../../contexts/AuthContext";
 import { useQuery } from "@apollo/client";
 import { GET_USER_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
 
-export default function Collages() {
-  const { currentUser } = useAuth();
-
+export default function Collages({ userId }) {
   const { data, loading, error } = useQuery(GET_USER_COLLAGES, {
-    variables: { userId: currentUser?._id },
-    skip: !currentUser?._id,
+    variables: { userId },
   });
 
   const renderCollageItem = ({ item }) => (

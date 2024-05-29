@@ -14,7 +14,7 @@ import {
 export default function Following({ userId }) {
   const { currentUser } = useAuth();
   const { data, loading, error } = useQuery(GET_FOLLOWING, {
-    variables: { userId: currentUser?._id },
+    variables: { userId },
   });
 
   // Mutations

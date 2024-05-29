@@ -1,4 +1,4 @@
-import { FlatList } from "react-native";
+import { FlatList, Alert } from "react-native";
 import UserRelationsCard from "../../Cards/UserRelationsCard";
 import { layoutStyles } from "../../../../styles";
 import { useMutation, useQuery } from "@apollo/client";
@@ -13,8 +13,9 @@ import {
 
 export default function Followers({ userId }) {
   const { currentUser } = useAuth();
+
   const { data, loading, error } = useQuery(GET_FOLLOWERS, {
-    variables: { userId: currentUser?._id },
+    variables: { userId },
   });
 
   // Mutations

@@ -1,14 +1,13 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { useTheme } from "react-native-paper";
 import { useNavigationContext } from "../contexts/NavigationContext";
-import { useAuth } from "../contexts/AuthContext";
 
 import MainFeedStack from "./MainFeedStack";
 import ExploreStack from "./ExploreStack";
-import LifeListStack from "./LifeListStack";
 import TabIcon from "../icons/NavigationBar/TabIcon";
 import CameraStack from "./CameraStack";
-import ProfileStack from "./ProfileStack";
+import AdminProfileStack from "./AdminProfileStack";
+import AdminLifeListStack from "./AdminLifeListStack";
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -59,8 +58,8 @@ export default function NavigationTab() {
         }}
       />
       <Tab.Screen
-        name="LifeListAdmin"
-        component={LifeListStack}
+        name="AdminLifeListStack"
+        component={AdminLifeListStack}
         options={{
           tabBarIcon: ({ focused, color }) => (
             <TabIcon focused={focused} color={color} routeName="LifeList" />
@@ -69,8 +68,8 @@ export default function NavigationTab() {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={ProfileStack}
+        name="AdminProfileStack"
+        component={AdminProfileStack}
         options={{
           tabBarIcon: ({ focused, color }) => (
             <TabIcon focused={focused} color={color} routeName="Profile" />

@@ -61,6 +61,11 @@ export default function MainFeedStack() {
         component={Preview}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="ProfileStack"
+        component={ProfileStack}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }

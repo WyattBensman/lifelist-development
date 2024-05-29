@@ -13,18 +13,25 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 // HOME ACCESS
-/* const uploadLink = createUploadLink({
+const uploadLink = createUploadLink({
   uri: "http://192.168.1.205:3001/graphql",
+  formDataAppendFile,
+  isExtractableFile,
+});
+
+// MIDDLE POOL ACCESS
+/* const uploadLink = createUploadLink({
+  uri: "http://192.168.1.79:3001/graphql",
   formDataAppendFile,
   isExtractableFile,
 }); */
 
 // POOL ACCESS
-const uploadLink = createUploadLink({
+/* const uploadLink = createUploadLink({
   uri: "http://10.5.50.98:3001/graphql",
   formDataAppendFile,
   isExtractableFile,
-});
+}); */
 
 // SPARKMAN WHARF ACCESS
 /* const uploadLink = createUploadLink({

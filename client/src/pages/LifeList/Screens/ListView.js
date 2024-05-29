@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useRoute, useFocusEffect } from "@react-navigation/native";
 import { layoutStyles } from "../../../styles";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import ListViewNavigator from "../Navigation/ListViewNavigator";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useQuery } from "@apollo/client";
@@ -22,8 +21,11 @@ export default function ListView({ navigation }) {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { currentUser } = useAuth();
+  const lifeList = route.params?.lifeList || { experiences: [] }; // Use the passed data
+
   const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
     variables: { userId: currentUser._id },
+    skip: !!route.params?.lifeList, // Skip fetching if data is passed
   });
 
   useEffect(() => {
@@ -56,8 +58,8 @@ export default function ListView({ navigation }) {
   };
 
   const handleBackPress = () => {
-    if (editMode && route.params?.fromScreen === "LifeList") {
-      navigation.navigate("LifeList");
+    if (editMode && route.params?.fromScreen === "AdminLifeList") {
+      navigation.navigate("AdminLifeList");
     } else if (editMode) {
       setEditMode(false);
     } else {
@@ -68,7 +70,7 @@ export default function ListView({ navigation }) {
   if (loading) return <LoadingScreen />;
   if (error) return <Text>Error: {error.message}</Text>;
 
-  const lifeList = data.getUserLifeList;
+  const lifeListData = route.params?.lifeList || data.getUserLifeList;
 
   return (
     <View style={layoutStyles.container}>
@@ -130,7 +132,7 @@ export default function ListView({ navigation }) {
         </Pressable>
       </View>
       <ListViewNavigator
-        lifeList={lifeList}
+        lifeList={lifeListData}
         viewType={viewType}
         editMode={editMode}
         searchQuery={searchQuery}
