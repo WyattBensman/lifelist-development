@@ -2,7 +2,7 @@ import User from "./user/user.mjs";
 import PrivacyGroup from "./user/privacyGroup.mjs";
 import Experience from "./experience/experience.mjs";
 import LifeList from "./lifelist/lifeList.mjs";
-import LifeListExperience from "./lifelist/lifeListExperience.mjs";
+import LifeListExperience from "./lifelist/lifelistExperience.mjs";
 import Collage from "./collage/collage.mjs";
 import Comment from "./collage/comment.mjs";
 import CameraShot from "./camera/cameraShot.mjs";
