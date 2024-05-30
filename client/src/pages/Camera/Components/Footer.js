@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { useMutation } from "@apollo/client";
 import { LinearGradient } from "expo-linear-gradient";
@@ -5,6 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
 import { useAuth } from "../../../contexts/AuthContext";
 import SymbolButton from "../../../icons/SymbolButton";
+import * as FileSystem from "expo-file-system";
 
 export default function Footer({
   cameraRef,
@@ -20,13 +22,17 @@ export default function Footer({
     if (cameraRef.current) {
       try {
         const photo = await cameraRef.current.takePictureAsync();
+        console.log(`Photo: ${photo}`);
+        const file = await convertToFile(photo.uri, "photo.jpg");
+        console.log(`File: ${file}`);
         const result = await createCameraShot({
           variables: {
-            image: photo.uri,
+            image: file,
             camera: cameraType,
             shotOrientation,
           },
         });
+        console.log(`Result: ${result}`);
         if (result.data.createCameraShot.success) {
           console.log("Photo taken and saved successfully");
           updateCurrentUser(result.data.createCameraShot.user);
@@ -37,6 +43,17 @@ export default function Footer({
         console.error("Error taking photo:", error);
       }
     }
+  };
+
+  const convertToFile = async (uri, filename) => {
+    const file = await FileSystem.readAsStringAsync(uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    return {
+      uri,
+      name: filename,
+      type: "image/jpeg",
+    };
   };
 
   const navigateToCameraRoll = () => {

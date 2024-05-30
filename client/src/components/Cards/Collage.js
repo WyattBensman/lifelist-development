@@ -1,7 +1,10 @@
-import { Text, View, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet, Pressable, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { layoutStyles } from "../../styles";
-import SymbolButton from "../../icons/SymbolButton";
+import SymbolButtonAction from "../../icons/SymbolButtonAction";
+import TaggedUsersIcon from "../../icons/TaggedUsersIcon";
+import Icon from "../../icons/Icon";
+import { iconStyles } from "../../styles/iconStyles";
 
 export default function Collage() {
   const navigation = useNavigation();
@@ -15,78 +18,138 @@ export default function Collage() {
 
   return (
     <View style={layoutStyles.wrapper}>
-      {/* Grey Box with 2:3 Aspect Ratio */}
-      <View style={styles.greyBox}></View>
-      <View style={styles.bottomContainer}>
+      <View style={styles.imageContainer}>
+        <Image
+          style={styles.image}
+          source={{
+            uri: "http://localhost:3001/uploads/abby-bar-post.png",
+          }}
+        />
         <View style={styles.topContainer}>
-          {/* MAKE THIS VIEW NAVIGATE TO THE USER'S PROFILE */}
-          <Pressable onPress={handlePress}>
-            <View>
-              <Text style={styles.fullName}>Full Name</Text>
-              <Text style={styles.postDate}>May 21st, 2024</Text>
-            </View>
-          </Pressable>
-          {/* COLLAGE ACTIONS */}
-          <View style={styles.actionContainer}>
-            <SymbolButton name="heart" />
-            <View style={styles.iconSpacer}>
-              <SymbolButton name="bubble" />
-            </View>
-            <View style={styles.iconSpacer}>
-              <SymbolButton name="repeat" />
-            </View>
-            <View style={styles.iconSpacer}>
-              <SymbolButton name="bookmark" />
+          <View style={styles.topLeftContainer}>
+            <Image
+              style={styles.profilePicture}
+              source={{
+                uri: "http://localhost:3001/uploads/abby-barr-profile-picture.png",
+              }}
+            />
+            <View style={styles.userInfo}>
+              <Text style={styles.fullName}>Abby Barr</Text>
+              <Text style={styles.location}>Kauai, Hawaii</Text>
             </View>
           </View>
+          <Icon
+            name="ellipsis"
+            style={iconStyles.collageEllipsis}
+            tintColor={"#ffffff"}
+          />
         </View>
-        <Text style={styles.bio}>
-          Hey you there what are you up to today? Hey Hey
+        <View style={styles.actionContainer}>
+          <Icon name="heart" style={iconStyles.heart} tintColor={"#ffffff"} />
+          <Icon
+            name="repeat"
+            style={iconStyles.repeat}
+            spacer={16}
+            tintColor={"#ffffff"}
+          />
+          <Icon
+            name="bookmark"
+            style={iconStyles.bookmark}
+            spacer={16}
+            tintColor={"#ffffff"}
+          />
+          <Icon
+            name="tag"
+            style={iconStyles.tag}
+            spacer={16}
+            tintColor={"#ffffff"}
+          />
+        </View>
+      </View>
+      <View style={styles.bottomContainer}>
+        <Text style={styles.caption}>
+          <Text style={styles.username}>abbybar </Text>
+          caption caption caption caption caption caption caption caption
+          caption caption caption caption caption caption caption
         </Text>
-        <Text style={styles.viewComments}>View Comments</Text>
+        <View style={styles.bottomTextContainer}>
+          <Text style={styles.postDate}>May 21st, 2024</Text>
+          <Text style={styles.viewComments}>Add Comment (17)</Text>
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  greyBox: {
-    width: "100%", // This makes the box take the full width of its parent
-    aspectRatio: 2 / 3,
-    backgroundColor: "#d4d4d4", // 2:3 aspect ratio // Grey background color
+  imageContainer: {
+    position: "relative",
   },
-  bottomContainer: {
-    marginTop: 4,
-    marginHorizontal: 16,
+  image: {
+    width: "100%", // Full width of the parent
+    aspectRatio: 2 / 3, // 2:3 aspect ratio
+    backgroundColor: "#d4d4d4", // Grey background color as a fallback
   },
   topContainer: {
-    flexDirection: "row", // Set row direction
-    justifyContent: "space-between", // Space between elements
-    alignItems: "center", // Align items in the center vertically
+    position: "absolute",
+    top: 16,
+    left: 16,
+    right: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  topLeftContainer: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   profilePicture: {
-    height: 25,
-    width: 25,
-    backgroundColor: "#d4d4d4",
+    height: 36,
+    width: 36,
+    borderRadius: 4,
+    borderColor: "#ffffff",
+    borderWidth: 1.5,
+    marginRight: 6,
   },
   fullName: {
     fontWeight: "600",
+    color: "#fff",
+  },
+  username: {
+    fontWeight: "600",
+  },
+  location: {
+    fontSize: 12,
+    color: "#fff",
+  },
+  actionContainer: {
+    position: "absolute",
+    bottom: 12,
+    alignSelf: "center",
+    flexDirection: "row",
+    backgroundColor: "rgba(38, 40, 40, 0.4)",
+    borderRadius: 8,
+    paddingHorizontal: 12,
+  },
+  iconSpacer: {
+    marginLeft: 8,
+  },
+  bottomContainer: {
+    marginTop: 6,
+    marginHorizontal: 16,
+  },
+  bottomTextContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 6,
   },
   postDate: {
     fontSize: 12,
     color: "#d4d4d4",
   },
-  actionContainer: {
-    flexDirection: "row",
-  },
-  bio: {
-    marginTop: 4,
-  },
   viewComments: {
-    marginTop: 4,
     color: "#d4d4d4",
-  },
-  iconSpacer: {
-    marginLeft: 4,
+    fontSize: 12,
   },
 });

@@ -1,7 +1,6 @@
 import { applyCameraEffects } from "../../../../utils/applyCameraEffects.mjs";
 import { uploadSingleImage } from "../../../../utils/uploadImages.mjs";
 import { CameraShot, User } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils/auth.mjs";
 import path from "path";
 import * as url from "url";
 
@@ -13,20 +12,15 @@ const createCameraShot = async (
   { user }
 ) => {
   try {
-    /* isUser(user); */
-
-    // Ensure the uploads directory exists
-    const uploadDir = path.join(__dirname, "../../uploads");
-
-    console.log(`Upload Dir: ${uploadDir}`);
-    console.log(`Image File: ${image.file}`);
+    // Ensure the uploads directory exists in the root
+    const uploadDir = path.join(__dirname, "../../../../uploads");
 
     // Save the uploaded image file
     const filePath = await uploadSingleImage(image.file, uploadDir);
 
     // Construct the URL to access the uploaded image
-    const baseUrl = process.env.API_URL || "http://localhost:3001"; // Adjust according to your environment variable
-    const fileUrl = `${baseUrl}/uploads/${filePath.split("/").pop()}`;
+    const baseUrl = process.env.API_URL || "http://localhost:3001";
+    const fileUrl = `${baseUrl}/uploads/${path.basename(filePath)}`;
 
     // Apply camera effects
     await applyCameraEffects(filePath, camera);
@@ -34,7 +28,7 @@ const createCameraShot = async (
     // Create the new CameraShot
     const newShot = new CameraShot({
       author: "663a3129e0ffbeff092b81d4",
-      image: fileUrl, // Use the URL to access the uploaded image
+      image: fileUrl,
       camera,
       shotOrientation,
     });

@@ -1,20 +1,34 @@
 import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
 import { useTheme } from "react-native-paper";
 import { useNavigationContext } from "../contexts/NavigationContext";
-
 import MainFeedStack from "./MainFeedStack";
 import ExploreStack from "./ExploreStack";
 import TabIcon from "../icons/NavigationBar/TabIcon";
 import CameraStack from "./CameraStack";
 import AdminProfileStack from "./AdminProfileStack";
 import AdminLifeListStack from "./AdminLifeListStack";
+import { useNavigationState } from "@react-navigation/native";
+import { useEffect } from "react";
 
 const Tab = createMaterialBottomTabNavigator();
 
 export default function NavigationTab() {
   const theme = useTheme();
   theme.colors.secondaryContainer = "";
-  const { isTabBarVisible } = useNavigationContext();
+  const { isTabBarVisible, setIsTabBarVisible } = useNavigationContext();
+
+  const state = useNavigationState((state) => state);
+
+  useEffect(() => {
+    if (state?.routes) {
+      const currentRouteName = state.routes[state.index]?.name;
+      if (currentRouteName === "Camera") {
+        setIsTabBarVisible(false);
+      } else {
+        setIsTabBarVisible(true);
+      }
+    }
+  }, [state, setIsTabBarVisible]);
 
   return (
     <Tab.Navigator

@@ -6,42 +6,22 @@ import path from "path";
 export const uploadSingleImage = async (image, uploadDir) => {
   try {
     const { createReadStream, filename } = await image;
-    console.log(`Create Read Stream: ${createReadStream}`);
-    console.log(`Filename: ${filename}`);
     const uniqueFilename = `${uuidv4()}-${sanitizeFilename(filename)}`;
-    console.log(`Unique Filename: ${uniqueFilename}`);
 
-    console.log(`Upload Dir: ${uploadDir}`);
     const filePath = path.join(uploadDir, uniqueFilename);
-    console.log(`File Path: ${filePath}`);
 
     // Ensure the uploads directory exists
     if (!fs.existsSync(uploadDir)) {
-      console.log(`Directory does not exist. Creating directory: ${uploadDir}`);
       fs.mkdirSync(uploadDir, { recursive: true });
-      console.log(`Directory created: ${uploadDir}`);
-    } else {
-      console.log(`Directory exists: ${uploadDir}`);
     }
 
     const stream = createReadStream();
     const writeStream = fs.createWriteStream(filePath);
 
-    console.log("Starting to write the file...");
     await new Promise((resolve, reject) => {
-      stream
-        .pipe(writeStream)
-        .on("finish", () => {
-          console.log("File write finished successfully.");
-          resolve();
-        })
-        .on("error", (error) => {
-          console.error(`Error during file write: ${error.message}`);
-          reject(error);
-        });
+      stream.pipe(writeStream).on("finish", resolve).on("error", reject);
     });
 
-    console.log(`File successfully saved at: ${filePath}`);
     return filePath;
   } catch (error) {
     console.error(`Error during single image upload: ${error.message}`);

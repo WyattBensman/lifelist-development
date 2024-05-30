@@ -48,6 +48,8 @@ export default function ProfileOverview({
     }
   };
 
+  console.log(profile.profilePicture);
+
   const handleUnfollow = async () => {
     await unfollowUser({ variables: { userId: profile._id } });
     updateCurrentUser({

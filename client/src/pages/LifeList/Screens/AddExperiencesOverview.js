@@ -59,7 +59,7 @@ export default function AddExperiencesOverview() {
 
       const updatedUser = await refetchUserProfile(); // Fetch updated user data
       updateCurrentUser(updatedUser.data.getUserProfileById); // Update current user in AuthContext
-      navigation.navigate("LifeList");
+      navigation.navigate("AdminLifeList");
     } catch (error) {
       console.error("Error adding experiences:", error);
     }

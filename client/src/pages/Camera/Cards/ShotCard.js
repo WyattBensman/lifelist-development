@@ -14,6 +14,7 @@ export default function ShotCard({
   navigation,
 }) {
   const imageUrl = `${baseURL}${shot.image}`;
+  console.log(imageUrl);
 
   return (
     <Pressable

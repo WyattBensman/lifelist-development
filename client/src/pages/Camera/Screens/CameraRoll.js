@@ -13,6 +13,7 @@ import AlbumCard from "../Cards/AlbumCard";
 import ShotCard from "../Cards/ShotCard";
 import SymbolButton from "../../../icons/SymbolButton";
 import { useAuth } from "../../../contexts/AuthContext";
+import groupShotsByDate from "../../../utils/groupShotsByDate";
 
 export default function CameraRoll() {
   const navigation = useNavigation();
@@ -33,12 +34,51 @@ export default function CameraRoll() {
   if (albumsError) return <Text>Error: {albumsError.message}</Text>;
   if (shotsError) return <Text>Error: {shotsError.message}</Text>;
 
+  const groupedShots = groupShotsByDate(shotsData.getAllCameraShots);
+
   const renderAlbum = ({ item }) => (
     <AlbumCard album={item} navigation={navigation} />
   );
+
   const renderShot = ({ item }) => (
     <ShotCard shot={item} navigation={navigation} />
   );
+
+  const renderGroupedShots = () => {
+    const sections = [];
+
+    if (groupedShots["Yesterday"].length > 0) {
+      sections.push({ title: "Yesterday", data: groupedShots["Yesterday"] });
+    }
+
+    if (groupedShots["Within the past week"].length > 0) {
+      sections.push({
+        title: "Within the past week",
+        data: groupedShots["Within the past week"],
+      });
+    }
+
+    Object.keys(groupedShots["Older"]).forEach((month) => {
+      sections.push({ title: month, data: groupedShots["Older"][month] });
+    });
+
+    return sections.map((section, index) => (
+      <View key={index} style={layoutStyles.marginTopMd}>
+        <Text style={headerStyles.headerMedium}>Camera Shots</Text>
+        <Text style={{ marginBottom: 8, color: "#d4d4d4" }}>
+          {section.title}
+        </Text>
+        <FlatList
+          data={section.data}
+          renderItem={renderShot}
+          keyExtractor={(item) => item._id}
+          numColumns={3}
+          showsVerticalScrollIndicator={false}
+          style={layoutStyles.paddingLeftXxs}
+        />
+      </View>
+    ));
+  };
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -62,17 +102,7 @@ export default function CameraRoll() {
           showsHorizontalScrollIndicator={false}
           style={layoutStyles.paddingLeftXxs}
         />
-        <Text style={[headerStyles.headerMedium, layoutStyles.marginTopMd]}>
-          Shots
-        </Text>
-        <FlatList
-          data={shotsData.getAllCameraShots}
-          renderItem={renderShot}
-          keyExtractor={(item) => item._id}
-          numColumns={3}
-          showsVerticalScrollIndicator={false}
-          style={layoutStyles.paddingLeftXxs}
-        />
+        {renderGroupedShots()}
       </View>
     </View>
   );

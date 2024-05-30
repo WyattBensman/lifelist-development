@@ -45,7 +45,6 @@ export default function Header({
   });
 
   const handleExit = () => {
-    console.log("Exit");
     navigation.goBack();
   };
 
@@ -83,14 +82,14 @@ export default function Header({
                   <FlipCameraIcon />
                 </Pressable>
               </Animated.View>
-              <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+              {/* <Animated.View style={{ transform: [{ rotate: rotation }] }}>
                 <Pressable
                   onPress={toggleShotOrientation}
                   style={styles.iconGap}
                 >
                   <RotateCameraIcon />
                 </Pressable>
-              </Animated.View>
+              </Animated.View> */}
             </>
           )}
         </View>
