@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server/server.mjs",
-    "develop": "concurrently \"cd server && npm run start\" \"cd client && npm start\"",
+    "develop": "cd client && npm start",
     "install": "cd server && npm i && cd ../client && npm i",
     "heroku-postbuild": "echo 'Skipping build step for client directory'"
   },

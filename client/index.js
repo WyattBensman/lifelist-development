@@ -12,12 +12,22 @@ if (process.env.NODE_ENV !== "production") {
   loadErrorMessages();
 }
 
-// HOME ACCESS
+// Use the Heroku server URL for production
 const uploadLink = createUploadLink({
-  uri: "http://192.168.1.205:3001/graphql",
+  uri:
+    process.env.NODE_ENV === "production"
+      ? "https://lifelist-server-6ad435fbc893.herokuapp.com/graphql"
+      : "http://192.168.1.205:3001/graphql", // Change this based on your local setup
   formDataAppendFile,
   isExtractableFile,
 });
+
+// HOME ACCESS
+/* const uploadLink = createUploadLink({
+  uri: "http://192.168.1.205:3001/graphql",
+  formDataAppendFile,
+  isExtractableFile,
+}); */
 
 // POOL ACCESS
 /* const uploadLink = createUploadLink({

@@ -66,12 +66,15 @@ try {
 // Static directory setup
 app.use("/uploads", express.static(uploadDir));
 
+// Universal CORS configuration
+app.use(cors());
+
 // HOME ACCESS
-app.use(
+/* app.use(
   cors({
     origin: ["http://192.168.1.205:8081", "exp://192.168.1.205:8081"],
   })
-);
+); */
 
 // MIDDLE POOL ACCESS
 /* app.use(
