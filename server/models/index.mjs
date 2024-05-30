@@ -1,7 +1,6 @@
 import User from "./user/user.mjs";
 import PrivacyGroup from "./user/privacyGroup.mjs";
 import Experience from "./experience/experience.mjs";
-import LifeList from "./lifelist/lifeList.mjs";
 import LifeListExperience from "./lifelist/lifeListExperience.mjs";
 import Collage from "./collage/collage.mjs";
 import Comment from "./collage/comment.mjs";
@@ -21,7 +20,6 @@ export {
   CameraShot,
   CameraAlbum,
   Comment,
-  LifeList,
   LifeListExperience,
   PrivacyGroup,
 };
