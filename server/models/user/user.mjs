@@ -200,5 +200,6 @@ userSchema.methods.isCorrectPassword = function (password) {
   return bcrypt.compare(password, this.password);
 };
 
-// Export User model
-export default model("User", userSchema);
+const User = model("User", userSchema);
+
+export default User;
