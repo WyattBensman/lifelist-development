@@ -102,13 +102,13 @@ const startServer = async () => {
     path: "/graphql",
   });
 
-  if (process.env.NODE_ENV === "production") {
+  /* if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../client/dist")));
     app.use("/images", express.static(path.join(__dirname, "/images")));
     app.get("*", (req, res) => {
       res.sendFile(path.join(__dirname, "../client/dist/index.html"));
     });
-  }
+  } */
 
   // Schedule jobs
   schedule.scheduleJob("0 0 * * *", cleanupExpiredRegistrations); // Runs daily at midnight
