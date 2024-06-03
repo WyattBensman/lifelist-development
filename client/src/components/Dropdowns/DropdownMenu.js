@@ -1,5 +1,5 @@
 import { View, Pressable, Text, StyleSheet } from "react-native";
-import SymbolButtonLg from "../../icons/SymbolButtonLg";
+import Icon from "../../icons/Icon";
 
 const DropdownMenu = ({ items }) => {
   return (
@@ -10,12 +10,13 @@ const DropdownMenu = ({ items }) => {
           style={styles.dropdownItemContainer}
           onPress={item.onPress}
         >
-          <SymbolButtonLg
+          <Icon
             name={item.icon}
             style={item.style}
             onPress={item.onPress}
+            tintColor={"#fff"}
           />
-          <Text style={styles.dropdownItem}>{item.label}</Text>
+          <Text style={styles.dropdownLabel}>{item.label}</Text>
         </Pressable>
       ))}
     </View>
@@ -26,16 +27,17 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     flexDirection: "row",
     justifyContent: "space-evenly",
-    marginTop: 16,
+    paddingTop: 16,
     zIndex: 1,
+    backgroundColor: "#0B0B0B",
   },
   dropdownItemContainer: {
     flexDirection: "column",
     alignItems: "center",
   },
-  dropdownItem: {
-    padding: 4,
+  dropdownLabel: {
     fontSize: 12,
+    color: "#fff",
   },
 });
 

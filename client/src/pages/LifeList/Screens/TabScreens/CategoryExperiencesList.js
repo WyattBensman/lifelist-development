@@ -33,13 +33,11 @@ export default function CategoryExperiencesList({
 
   return (
     <View style={layoutStyles.wrapper}>
-      <View style={layoutStyles.contentContainer}>
-        <FlatList
-          data={filteredList}
-          renderItem={renderExperience}
-          keyExtractor={(item) => item._id}
-        />
-      </View>
+      <FlatList
+        data={filteredList}
+        renderItem={renderExperience}
+        keyExtractor={(item) => item._id}
+      />
     </View>
   );
 }

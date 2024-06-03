@@ -4,6 +4,7 @@ import { popupStyles } from "./PopupStyles";
 import { formStyles } from "./FormStyles";
 import { cardStyles } from "./CardStyles";
 import { authenticationStyles } from "./AuthenticationStyles";
+import { iconStyles } from "./iconStyles";
 
 export {
   layoutStyles,
@@ -12,4 +13,5 @@ export {
   formStyles,
   cardStyles,
   authenticationStyles,
+  iconStyles,
 };

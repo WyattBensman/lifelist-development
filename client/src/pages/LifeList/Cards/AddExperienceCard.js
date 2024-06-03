@@ -8,8 +8,7 @@ import {
   FlatList,
 } from "react-native";
 import { cardStyles } from "../../../styles";
-
-const baseURL = "http://localhost:3001";
+import { BASE_URL } from "../../../utils/config";
 
 export default function AddExperienceCard({
   experience,
@@ -19,7 +18,7 @@ export default function AddExperienceCard({
 }) {
   const [listStatus, setListStatus] = useState(experience.list);
 
-  const imageUrl = `${baseURL}${experience.experience.image}`;
+  const imageUrl = `${BASE_URL}${experience.experience.image}`;
   const { title, category } = experience.experience;
   const associatedShots = experience.associatedShots;
   const associatedCollages = experience.associatedCollages;

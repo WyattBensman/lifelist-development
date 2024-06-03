@@ -12,12 +12,14 @@ if (process.env.NODE_ENV !== "production") {
   loadErrorMessages();
 }
 
-// Use the Heroku server URL for production
+// Use the Heroku server URL
+const graphqlUri = "https://lifelist-server-6ad435fbc893.herokuapp.com/graphql";
+
+console.log(`Environment: ${process.env.NODE_ENV}`);
+console.log(`GraphQL URI: ${graphqlUri}`);
+
 const uploadLink = createUploadLink({
-  uri:
-    process.env.NODE_ENV === "production"
-      ? "https://lifelist-server-6ad435fbc893.herokuapp.com/graphql"
-      : "http://192.168.1.205:3001/graphql", // Change this based on your local setup
+  uri: graphqlUri,
   formDataAppendFile,
   isExtractableFile,
 });

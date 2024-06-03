@@ -4,20 +4,15 @@ import CategoryExperiences from "../Screens/TabScreens/CategoryExperiences";
 
 const Tab = createMaterialTopTabNavigator();
 
-const getLabelWidth = (label) => {
-  const length = label.length;
-  return Math.max(50, length * 3); // Adjust to fit your text width
-};
-
 export default function CategoryNavigator({ lifeList }) {
   return (
     <Tab.Navigator
       screenOptions={{
         swipeEnabled: false,
-        tabBarActiveTintColor: "#000000",
+        tabBarActiveTintColor: "#fff",
         tabBarInactiveTintColor: "#d4d4d4",
         tabBarStyle: {
-          backgroundColor: "#ffffff",
+          backgroundColor: "#0B0B0B",
           height: 42.5,
         },
         tabBarIndicatorStyle: {
@@ -28,9 +23,6 @@ export default function CategoryNavigator({ lifeList }) {
           textTransform: "capitalize",
         },
         tabBarScrollEnabled: true,
-        tabBarItemStyle: ({ route }) => ({
-          width: getLabelWidth(route.name) + 10,
-        }),
       }}
     >
       <Tab.Screen name="All">

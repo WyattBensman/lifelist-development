@@ -5,8 +5,8 @@ export default function LifeListOutline() {
     <Svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width="37.500000pt"
-      height="37.500000pt"
+      width="33.500000pt"
+      height="33.500000pt"
       viewBox="0 0 160.000000 160.000000"
       preserveAspectRatio="xMidYMid meet"
     >

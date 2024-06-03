@@ -12,6 +12,6 @@ export default function CameraIcon() {
 
 const styles = StyleSheet.create({
   image: {
-    height: 24,
+    height: 23,
   },
 });

@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Image, Text, View, Pressable, StyleSheet } from "react-native";
 import { cardStyles, layoutStyles } from "../../../styles";
 import { truncateText, capitalizeText } from "../../../utils/utils";
+import { BASE_URL } from "../../../utils/config";
 import CheckBox from "expo-checkbox";
-
-const baseURL = "http://localhost:3001";
 
 export default function SearchItemCard({
   experience,
@@ -13,7 +12,7 @@ export default function SearchItemCard({
   isPreExisting,
 }) {
   const [isChecked, setIsChecked] = useState(isSelected);
-  const imageUrl = `${baseURL}${experience.image}`;
+  const imageUrl = `${BASE_URL}${experience.image}`;
   const truncatedTitle = truncateText(experience.title, 18);
   const capitalizedCategory = capitalizeText(experience.category);
 

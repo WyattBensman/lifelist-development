@@ -21,22 +21,23 @@ export default function AllExperiencesList({
     )
     .sort(sortByTitle);
 
-  const renderExperience = ({ item }) =>
+  const renderExperience = ({ item }) => (
+    <ListItemCard experience={item} editMode={editMode} />
+  );
+  /* const renderExperience = ({ item }) =>
     editMode ? (
       <EditExperienceCard experience={item} navigation={navigation} />
     ) : (
       <ListItemCard experience={item} />
-    );
+    ); */
 
   return (
     <View style={layoutStyles.wrapper}>
-      <View style={layoutStyles.contentContainer}>
-        <FlatList
-          data={filteredList}
-          renderItem={renderExperience}
-          keyExtractor={(item) => item._id}
-        />
-      </View>
+      <FlatList
+        data={filteredList}
+        renderItem={renderExperience}
+        keyExtractor={(item) => item._id}
+      />
     </View>
   );
 }

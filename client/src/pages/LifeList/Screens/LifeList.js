@@ -16,6 +16,8 @@ import HeaderMain from "../../../components/Headers/HeaderMain";
 import SymbolButton from "../../../icons/SymbolButton";
 import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
 import SearchBar from "../../../components/SearchBar";
+import Icon from "../../../icons/Icon";
+import { iconStyles } from "../../../styles/iconStyles";
 
 export default function LifeList({ route }) {
   const { currentUser } = useAuth();
@@ -95,9 +97,9 @@ export default function LifeList({ route }) {
             <Text style={headerStyles.headerHeavy}>My LifeList</Text>
           }
           icon1={
-            <SymbolButton
+            <Icon
               name="line.3.horizontal"
-              style={{ height: 22, width: 22 }}
+              style={iconStyles.list}
               onPress={() => navigation.navigate("ListView")}
             />
           }

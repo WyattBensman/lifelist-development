@@ -21,10 +21,10 @@ export default function ListViewNavigator({
     <Tab.Navigator
       screenOptions={{
         swipeEnabled: false,
-        tabBarActiveTintColor: "#000000",
+        tabBarActiveTintColor: "#fff",
         tabBarInactiveTintColor: "#d4d4d4",
         tabBarStyle: {
-          backgroundColor: "#ffffff",
+          backgroundColor: "#0b0b0b",
           height: 42.5,
         },
         tabBarIndicatorStyle: {

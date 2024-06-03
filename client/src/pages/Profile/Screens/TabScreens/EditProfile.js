@@ -18,6 +18,7 @@ import { useAuth } from "../../../../contexts/AuthContext";
 import { useMutation } from "@apollo/client";
 import * as ImagePicker from "expo-image-picker";
 import { UPDATE_PROFILE, UPDATE_IDENTITY } from "../../../../utils/mutations";
+import { BASE_URL } from "../../../../utils/config";
 
 export default function EditProfileTab() {
   const { currentUser, updateCurrentUser } = useAuth();
@@ -105,6 +106,9 @@ export default function EditProfileTab() {
     setChangesMade(false);
   };
 
+  const profilePictureUrl = `${BASE_URL}${profilePicture}`;
+  console.log(profilePictureUrl);
+
   return (
     <KeyboardAvoidingView
       style={layoutStyles.wrapper}
@@ -116,7 +120,7 @@ export default function EditProfileTab() {
       >
         <View style={[layoutStyles.marginBtmSm, { alignItems: "center" }]}>
           <Image
-            source={{ uri: profilePicture }}
+            source={{ uri: profilePictureUrl }}
             style={styles.profilePicture}
           />
           <Pressable onPress={pickImage}>

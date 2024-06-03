@@ -1,16 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useRoute, useFocusEffect } from "@react-navigation/native";
-import { layoutStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import ListViewNavigator from "../Navigation/ListViewNavigator";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useQuery } from "@apollo/client";
 import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
 import { useAuth } from "../../../contexts/AuthContext";
-import SymbolButton from "../../../icons/SymbolButton";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import SymbolButtonSm from "../../../icons/SymbolButtonSm";
+import Icon from "../../../icons/Icon";
 
 export default function ListView({ navigation }) {
   const route = useRoute();
@@ -79,15 +79,17 @@ export default function ListView({ navigation }) {
           <SymbolButtonSm
             name="chevron.backward"
             onPress={handleBackPress}
-            style={{ height: 20, width: 14 }}
+            style={{ height: 20, width: 14.61 }}
+            tintColor={"#fff"}
           />
         }
         icon1={
           !editMode && (
-            <SymbolButton
+            <Icon
               name="square.and.pencil"
-              style={{ marginBottom: 3 }}
+              style={iconStyles.squarePencilSm}
               onPress={toggleEditMode}
+              tintColor={"#fff"}
             />
           )
         }
@@ -101,14 +103,15 @@ export default function ListView({ navigation }) {
         <Pressable
           style={[
             styles.button,
-            viewType === "EXPERIENCED" && styles.selectedButton,
+            viewType === "EXPERIENCED" && styles.experiencedSelectedButton,
           ]}
           onPress={() => handleViewTypeChange("EXPERIENCED")}
         >
           <Text
             style={[
               styles.buttonText,
-              viewType === "EXPERIENCED" && styles.selectedButtonText,
+              viewType === "EXPERIENCED" &&
+                styles.experiencedSelectedButtonText,
             ]}
           >
             Experienced
@@ -117,14 +120,14 @@ export default function ListView({ navigation }) {
         <Pressable
           style={[
             styles.button,
-            viewType === "WISHLISTED" && styles.selectedButton,
+            viewType === "WISHLISTED" && styles.wishlistedSelectedButton,
           ]}
           onPress={() => handleViewTypeChange("WISHLISTED")}
         >
           <Text
             style={[
               styles.buttonText,
-              viewType === "WISHLISTED" && styles.selectedButtonText,
+              viewType === "WISHLISTED" && styles.wishlistedSelectedButtonText,
             ]}
           >
             Wish Listed
@@ -146,8 +149,9 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginHorizontal: 24,
-    marginTop: 12,
+    paddingHorizontal: 24,
+    paddingTop: 12,
+    backgroundColor: "#0b0b0b",
   },
   button: {
     borderWidth: 1,
@@ -158,12 +162,20 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     textAlign: "center",
+    color: "#fff",
   },
-  selectedButton: {
+  experiencedSelectedButton: {
     backgroundColor: "#6AB952",
     borderColor: "#6AB952",
   },
-  selectedButtonText: {
+  experiencedSelectedButtonText: {
+    color: "#fff",
+  },
+  wishlistedSelectedButton: {
+    backgroundColor: "#5FC4ED",
+    borderColor: "#5FC4ED",
+  },
+  wishlistedSelectedButtonText: {
     color: "#fff",
   },
 });

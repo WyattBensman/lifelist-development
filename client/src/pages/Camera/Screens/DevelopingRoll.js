@@ -15,6 +15,7 @@ import InformationIcon from "../Icons/InformationIcon";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
 import { GET_DEVELOPING_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
+import { BASE_URL } from "../../../utils/config";
 
 const { width } = Dimensions.get("window");
 const imageWidth = width / 2;
@@ -30,7 +31,10 @@ export default function DevelopingRoll() {
 
   const renderItem = ({ item }) => (
     <View style={styles.imageContainer}>
-      <Image source={{ uri: item.image }} style={styles.image} />
+      <Image
+        source={{ uri: `${BASE_URL}${item.image}` }}
+        style={styles.image}
+      />
       <BlurView intensity={8} style={styles.blurView} />
     </View>
   );

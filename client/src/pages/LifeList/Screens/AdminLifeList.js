@@ -12,6 +12,8 @@ import HeaderMain from "../../../components/Headers/HeaderMain";
 import SymbolButton from "../../../icons/SymbolButton";
 import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
 import SearchBar from "../../../components/SearchBar";
+import Icon from "../../../icons/Icon";
+import { iconStyles } from "../../../styles/iconStyles";
 
 export default function AdminLifeList() {
   const { currentUser } = useAuth();
@@ -55,13 +57,14 @@ export default function AdminLifeList() {
     () => [
       {
         icon: "plus.square",
+        style: iconStyles.plusSquare,
         label: "Add Experiences",
         onPress: () => navigation.navigate("AddExperiences"),
       },
       {
         icon: "square.and.pencil",
         label: "Edit Experiences",
-        style: { marginBottom: 3, height: 26 },
+        style: iconStyles.squarePencil,
         onPress: () =>
           navigation.navigate("LifeListStack", {
             screen: "ListView",
@@ -87,46 +90,33 @@ export default function AdminLifeList() {
           handleSearch={() => setSearchBarVisible(false)}
         />
       )}
-      {isAdmin ? (
-        <HeaderMain
-          titleComponent={
-            <Text style={headerStyles.headerHeavy}>My LifeList</Text>
-          }
-          icon1={
-            <SymbolButton
-              name="line.3.horizontal"
-              style={{ height: 22, width: 22 }}
-              onPress={() =>
-                navigation.navigate("LifeListStack", {
-                  screen: "ListView",
-                })
-              }
-            />
-          }
-          icon2={
-            <SymbolButton
-              name={
-                !dropdownVisible ? "ellipsis.circle" : "ellipsis.circle.fill"
-              }
-              onPress={() => setDropdownVisible(!dropdownVisible)}
-            />
-          }
-          dropdownVisible={dropdownVisible}
-          dropdownContent={<DropdownMenu items={dropdownItems} />}
-        />
-      ) : (
-        <HeaderStack
-          arrow={<BackArrowIcon />}
-          title={"LifeList"}
-          button1={
-            <SymbolButton
-              name="magnifyingglass"
-              onPress={() => setSearchBarVisible(!searchBarVisible)} // Toggle search bar visibility
-            />
-          }
-          button2={<SymbolButton name="line.3.horizontal" />}
-        />
-      )}
+      <HeaderMain
+        titleComponent={
+          <Text style={headerStyles.headerHeavy}>My LifeList</Text>
+        }
+        icon1={
+          <Icon
+            name="line.3.horizontal"
+            style={iconStyles.list}
+            onPress={() =>
+              navigation.navigate("LifeListStack", {
+                screen: "ListView",
+              })
+            }
+            tintColor={"#fff"}
+          />
+        }
+        icon2={
+          <Icon
+            name={!dropdownVisible ? "ellipsis.circle" : "ellipsis.circle.fill"}
+            style={iconStyles.ellipsisCircle}
+            onPress={() => setDropdownVisible(!dropdownVisible)}
+            tintColor={"#fff"}
+          />
+        }
+        dropdownVisible={dropdownVisible}
+        dropdownContent={<DropdownMenu items={dropdownItems} />}
+      />
       <CategoryNavigator lifeList={{ experiences: filteredExperiences }} />
     </View>
   );

@@ -15,13 +15,12 @@ import {
   UPDATE_ASSOCIATED_COLLAGES,
 } from "../../../utils/mutations";
 import { truncateText } from "../../../utils/utils";
-
-const baseURL = "http://localhost:3001";
+import { BASE_URL } from "../../../utils/config";
 
 export default function EditExperienceCard({ experience, navigation }) {
   const [listStatus, setListStatus] = useState(experience.list);
   const { _id, associatedShots, associatedCollages } = experience;
-  const imageUrl = `${baseURL}${experience.experience.image}`;
+  const imageUrl = `${BASE_URL}${experience.experience.image}`;
   const { title } = experience.experience;
   const truncatedTitle = truncateText(title, 24);
 
@@ -138,7 +137,7 @@ export default function EditExperienceCard({ experience, navigation }) {
               data={associatedShots}
               renderItem={({ item }) => (
                 <Image
-                  source={{ uri: `${baseURL}${item.shot.image}` }}
+                  source={{ uri: `${BASE_URL}${item.shot.image}` }}
                   style={styles.shotImage}
                 />
               )}
@@ -163,7 +162,7 @@ export default function EditExperienceCard({ experience, navigation }) {
               data={associatedCollages}
               renderItem={({ item }) => (
                 <Image
-                  source={{ uri: `${baseURL}${item.coverImage}` }}
+                  source={{ uri: `${BASE_URL}${item.coverImage}` }}
                   style={styles.shotImage}
                 />
               )}

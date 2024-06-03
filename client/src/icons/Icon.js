@@ -12,7 +12,7 @@ export default function Icon({ name, style, spacer, tintColor, onPress }) {
         name={name}
         style={style}
         type="monochrome"
-        tintColor={!tintColor ? "#262828" : tintColor}
+        tintColor={!tintColor ? "#fff" : tintColor}
       />
     </Pressable>
   );

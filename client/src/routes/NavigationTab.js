@@ -33,10 +33,8 @@ export default function NavigationTab() {
   return (
     <Tab.Navigator
       barStyle={{
-        backgroundColor: "#262828",
-        height: isTabBarVisible ? 75 : 0,
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
+        backgroundColor: "#111",
+        flex: isTabBarVisible ? 0.095 : 0,
         overflow: "hidden",
         display: isTabBarVisible ? "flex" : "none",
       }}

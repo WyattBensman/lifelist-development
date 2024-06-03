@@ -11,6 +11,7 @@ import {
   UNFOLLOW_USER,
   UNSEND_FOLLOW_REQUEST,
 } from "../../../utils/mutations/userRelationsMutations";
+import { BASE_URL } from "../../../utils/config";
 
 export default function ProfileOverview({
   profile,
@@ -48,8 +49,6 @@ export default function ProfileOverview({
     }
   };
 
-  console.log(profile.profilePicture);
-
   const handleUnfollow = async () => {
     await unfollowUser({ variables: { userId: profile._id } });
     updateCurrentUser({
@@ -68,11 +67,14 @@ export default function ProfileOverview({
     });
   };
 
+  // Construct the full URL for the profile picture
+  const profilePictureUrl = `${BASE_URL}${profile.profilePicture}`;
+
   return (
     <View style={[layoutStyles.marginMd, layoutStyles.marginBtmXs]}>
       <View style={[layoutStyles.flex, { height: 100 }]}>
         <Image
-          source={{ uri: profile.profilePicture }}
+          source={{ uri: profilePictureUrl }}
           style={styles.profilePicture}
         />
         <View style={styles.rightContainer}>

@@ -44,9 +44,10 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 60,
+    paddingTop: 60,
     paddingHorizontal: 20,
     paddingBottom: 10,
+    backgroundColor: "#0b0b0b",
   },
   border: {
     borderBottomWidth: 1,

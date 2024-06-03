@@ -1,21 +1,22 @@
 import React, { useState } from "react";
 import { Image, Text, View, Pressable, StyleSheet } from "react-native";
-import { cardStyles, layoutStyles } from "../../../styles";
+import { cardStyles, iconStyles, layoutStyles } from "../../../styles";
 import {
   truncateText,
   capitalizeText,
   capitalizeTextNoSlice,
 } from "../../../utils/utils";
-import SymbolButtonSm from "../../../icons/SymbolButtonSm";
-
-const baseURL = "http://localhost:3001";
+import { BASE_URL } from "../../../utils/config";
+import Icon from "../../../icons/Icon";
+import IconStatic from "../../../icons/IconStatic";
 
 export default function ListItemCard({ experience, editMode }) {
   const [isSelected, setIsSelected] = useState(false);
-  const imageUrl = `${baseURL}${experience.experience.image}`;
-  const truncatedTitle = truncateText(experience.experience.title, 18);
+  const imageUrl = `${BASE_URL}${experience.experience.image}`;
+  const truncatedTitle = truncateText(experience.experience.title, 40);
+  const truncatedShortTitle = truncateText(experience.experience.title, 20);
   const capitalizedCategory = capitalizeText(experience.experience.category);
-  const capitalizedList = capitalizeTextNoSlice(experience.list);
+  const experiencedText = capitalizeTextNoSlice(experience.list);
 
   const handlePress = () => {
     if (editMode) {
@@ -29,69 +30,178 @@ export default function ListItemCard({ experience, editMode }) {
       : styles.wishlistedText;
 
   return (
-    <Pressable
-      onPress={editMode ? handlePress : null}
-      style={[cardStyles.userCardContainer, isSelected && styles.selected]}
-    >
-      <View style={layoutStyles.flexRowSpace}>
-        <Image source={{ uri: imageUrl }} style={cardStyles.imageMd} />
-        <View>
-          <Text>{truncatedTitle}</Text>
-          <Text style={{ fontSize: 12, color: "#d4d4d4", marginTop: 2 }}>
-            {capitalizedCategory}
-          </Text>
-        </View>
-      </View>
-      {editMode && (
-        <View style={[layoutStyles.flexRowSpace, layoutStyles.marginRightMd]}>
-          <View style={[layoutStyles.flexRow, layoutStyles.marginRightMd]}>
-            <Text style={[{ marginRight: 4 }, listStyle]}>
-              {capitalizedList}
+    <View>
+      <Pressable
+        onPress={editMode ? handlePress : null}
+        style={[styles.listItemContainer, isSelected && styles.selected]}
+      >
+        <View style={styles.contentContainer}>
+          <Image source={{ uri: imageUrl }} style={cardStyles.imageMd} />
+          <View style={styles.textContainer}>
+            <Text style={{ color: "#fff", fontWeight: "600" }}>
+              {!editMode ? truncatedTitle : truncatedShortTitle}
             </Text>
-            <SymbolButtonSm
-              name="arrow.up.and.down"
-              style={{
-                height: 10,
-                width: 10,
-                marginTop: 4,
-                marginRight: 2,
-              }}
-              tintColor={"#d4d4d4"}
-            />
+
+            {!editMode && (
+              <Text style={{ fontSize: 12, color: "#98989F", marginTop: 2 }}>
+                {capitalizedCategory}
+              </Text>
+            )}
           </View>
-          <SymbolButtonSm
-            name="trash"
-            onPress={() => console.log("Delete item")}
+          <Icon
+            name="ellipsis"
+            tintColor={"#98989F"}
+            style={iconStyles.ellipsis}
           />
+          {editMode && (
+            <View style={styles.buttonContainer}>
+              <View
+                style={[
+                  styles.listButton,
+                  experience.list === "EXPERIENCED" && { borderColor: "#eee" },
+                  experience.list === "WISHLISTED" && { borderColor: "#eee" },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.buttonText,
+                    experience.list === "EXPERIENCED" && { color: "#6AB952" },
+                    experience.list === "WISHLISTED" && { color: "#5FC4ED" },
+                  ]}
+                >
+                  {experiencedText}
+                </Text>
+                <View>
+                  <IconStatic
+                    name="chevron.up"
+                    style={iconStyles.chevronDown}
+                    spacer={4}
+                  />
+                  <IconStatic
+                    name="chevron.down"
+                    style={[iconStyles.chevronDown, { marginTop: 0.75 }]}
+                    spacer={4}
+                  />
+                </View>
+              </View>
+              <View style={styles.button}>
+                <Text style={styles.buttonText}>More</Text>
+                <IconStatic
+                  name="chevron.down"
+                  style={iconStyles.chevronDown}
+                  spacer={4}
+                />
+              </View>
+              <View style={styles.iconContainer}>
+                <Icon
+                  name="trash"
+                  style={iconStyles.trash}
+                  tintColor="#d4d4d4"
+                />
+              </View>
+            </View>
+          )}
         </View>
-      )}
-    </Pressable>
+      </Pressable>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  selected: {
-    backgroundColor: "#f0f0f0",
-  },
-  experiencedText: {
-    color: "#6AB952",
-  },
-  wishlistedText: {
-    color: "#5FC4ED",
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 1,
-    borderRadius: 4,
-    borderColor: "#d4d4d4",
+  listItemContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    justifyContent: "center",
+    marginHorizontal: 4,
+    marginTop: 4,
+    flex: 1,
+    padding: 8,
+    backgroundColor: "#1C1C1E",
+    borderRadius: 8,
   },
-  checkboxChecked: {
-    backgroundColor: "#6AB952",
+  contentContainer: {
+    flexDirection: "row",
+    flex: 1,
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  checkboxUnchecked: {
-    backgroundColor: "#ffffff",
+  textContainer: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: "auto",
+  },
+  listButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 4,
+    marginLeft: 8,
+    borderWidth: 1,
+    borderColor: "transparent",
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: 63,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 4,
+    marginLeft: 8,
+    borderColor: "#eee",
+    borderWidth: 1,
+  },
+  buttonText: {
+    fontSize: 12,
+  },
+  actionsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginTop: 8,
+    marginRight: 16, // THIIS
+    marginLeft: 60, // THIS
+  },
+  labelSmall: {
+    fontSize: 12,
+    color: "#d4d4d4",
+    fontStyle: "italic",
+    marginTop: 4,
+  },
+  addAction: {
+    color: "#5FAF46",
+    fontSize: 12,
   },
 });
+
+<View>
+  <View style={styles.actionsContainer}>
+    <View>
+      <Text>Associated Shots</Text>
+      {/* {associatedShots.length === 0 ? (
+              <Text style={styles.labelSmall}>No Associated Shots</Text>
+            ) : (
+              <FlatList
+                horizontal
+                data={associatedShots}
+                renderItem={({ item }) => (
+                  <Image
+                    source={{ uri: `${BASE_URL}${item.shot.image}` }}
+                    style={styles.shotImage}
+                  />
+                )}
+                keyExtractor={(item) => item.shot._id}
+              />
+            )} */}
+    </View>
+    <Pressable>
+      <Text style={styles.addAction}>
+        {/* {associatedShots.length === 0 ? "Add Shots" : "Edit Shots"} */}
+        Add Shots
+      </Text>
+    </Pressable>
+  </View>
+</View>;

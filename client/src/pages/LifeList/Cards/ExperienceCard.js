@@ -1,53 +1,66 @@
-import { Image, StyleSheet, Text, View } from "react-native";
-import { cardStyles } from "../../../styles";
+import { Image, StyleSheet, Text, View, Dimensions } from "react-native";
 import { capitalizeText, truncateText } from "../../../utils/utils";
+import { BASE_URL } from "../../../utils/config";
 
-const baseURL = "http://localhost:3001";
+export default function ExperienceCard({ experience, associatedShots }) {
+  const screenWidth = Dimensions.get("window").width;
+  const cardWidth = screenWidth * 0.462;
+  const imageHeight = cardWidth * 1.29;
+  const cardHeight = imageHeight + 44;
 
-export default function ExperienceCard({ experience }) {
-  const imageUrl = `${baseURL}${experience.image}`;
+  const imageUrl = `${BASE_URL}${experience.image}`;
   const truncatedTitle = truncateText(experience.title, 20);
   const capitalizedCategory = capitalizeText(experience.category);
 
   return (
-    <View style={cardStyles.experienceCardContainerLg}>
+    <View
+      style={[
+        styles.cardContainer,
+        { width: cardWidth, height: cardHeight },
+        associatedShots && associatedShots.length > 0 && styles.cardShadow,
+      ]}
+    >
       <Image
         source={{
           uri: imageUrl,
         }}
-        style={cardStyles.imageExperienceLg}
+        style={[styles.image, { height: imageHeight }]}
       />
-      <View style={cardStyles.leftSpacer}>
-        <Text>{truncatedTitle}</Text>
-        <Text style={cardStyles.secondaryText}>{capitalizedCategory}</Text>
+      <View style={styles.spacer}>
+        <Text style={styles.title}>{truncatedTitle}</Text>
+        <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  largeCard: {
-    width: 165,
-    overflow: "hidden",
+  cardContainer: {
     marginRight: 6,
+    backgroundColor: "#1C1C1E",
+    borderRadius: 4,
+  },
+  cardShadow: {
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
   },
   image: {
-    height: 220,
     width: "100%",
-    borderRadius: 6,
+    borderRadius: 4,
   },
   title: {
-    marginTop: 2,
+    color: "#fff",
+    fontWeight: "600",
+    marginTop: 4,
   },
-  flex: {
-    flexDirection: "row",
-  },
-  description: {
+  secondaryText: {
     fontSize: 12,
-    marginTop: 2,
+    color: "#d4d4d4",
+    marginTop: 1.5,
   },
-  descriptionContainer: {
-    marginHorizontal: 5,
-    marginVertical: 4,
+  spacer: {
+    marginLeft: 8,
   },
 });

@@ -30,7 +30,10 @@ export default function CategoryExperiences({ lifeList, category }) {
   );
 
   const renderExperience = ({ item }) => (
-    <ExperienceCard experience={item.experience} />
+    <ExperienceCard
+      experience={item.experience}
+      associatedShots={item.associatedShots}
+    />
   );
 
   return (

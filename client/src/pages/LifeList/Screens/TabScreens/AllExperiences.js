@@ -24,7 +24,10 @@ export default function AllExperiences({ lifeList }) {
   );
 
   const renderExperience = ({ item }) => (
-    <ExperienceCard experience={item.experience} />
+    <ExperienceCard
+      experience={item.experience}
+      associatedShots={item.associatedShots}
+    />
   );
 
   return (
@@ -32,7 +35,7 @@ export default function AllExperiences({ lifeList }) {
       <Text
         style={[
           headerStyles.headerMedium,
-          layoutStyles.marginTopMd,
+          layoutStyles.marginTopXs,
           layoutStyles.paddingLeftXxs,
         ]}
       >

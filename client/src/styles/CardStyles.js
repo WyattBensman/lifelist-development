@@ -7,8 +7,6 @@ export const cardStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginHorizontal: 2,
-    marginBottom: 8,
   },
   logbookCardContainer: {
     flex: 1,

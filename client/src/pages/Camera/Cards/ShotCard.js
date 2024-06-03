@@ -1,11 +1,10 @@
 import { Dimensions, Image, StyleSheet, View, Pressable } from "react-native";
 import { Checkbox } from "expo-checkbox";
+import { BASE_URL } from "../../../utils/config";
 
 const { width } = Dimensions.get("window");
 const shotWidth = width / 3;
 const shotHeight = (shotWidth * 3) / 2;
-
-const baseURL = "http://localhost:3001";
 
 export default function ShotCard({
   shot,
@@ -13,7 +12,7 @@ export default function ShotCard({
   onCheckboxToggle,
   navigation,
 }) {
-  const imageUrl = `${baseURL}${shot.image}`;
+  const imageUrl = `${BASE_URL}${shot.image}`;
   console.log(imageUrl);
 
   return (
