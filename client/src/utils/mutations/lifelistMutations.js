@@ -21,7 +21,7 @@ export const ADD_EXPERIENCE_TO_LIFELIST = gql`
   }
 `;
 
-const REMOVE_EXPERIENCE_FROM_LIFELIST = gql`
+export const REMOVE_EXPERIENCE_FROM_LIFELIST = gql`
   mutation RemoveExperienceFromLifeList(
     $lifeListId: ID!
     $lifeListExperienceId: ID!

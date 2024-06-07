@@ -4,13 +4,15 @@ import { useRoute, useFocusEffect } from "@react-navigation/native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import ListViewNavigator from "../Navigation/ListViewNavigator";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
+import { REMOVE_EXPERIENCE_FROM_LIFELIST } from "../../../utils/mutations";
 import { useAuth } from "../../../contexts/AuthContext";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import SymbolButtonSm from "../../../icons/SymbolButtonSm";
 import Icon from "../../../icons/Icon";
+import DeleteConfirmation from "../Modals/DeleteConfirmation";
 
 export default function ListView({ navigation }) {
   const route = useRoute();
@@ -29,6 +31,11 @@ export default function ListView({ navigation }) {
     variables: { userId: currentUser._id },
     skip: !!route.params?.lifeList, // Skip fetching if data is passed
   });
+
+  const [removeExperience] = useMutation(REMOVE_EXPERIENCE_FROM_LIFELIST);
+
+  const [isModalVisible, setModalVisible] = useState(false);
+  const [selectedExperienceId, setSelectedExperienceId] = useState(null);
 
   useEffect(() => {
     setIsTabBarVisible(false);
@@ -75,12 +82,29 @@ export default function ListView({ navigation }) {
   };
 
   const handleDeleteExperience = (experienceId) => {
-    setLifeList((prevList) => ({
-      ...prevList,
-      experiences: prevList.experiences.filter(
-        (exp) => exp._id !== experienceId
-      ),
-    }));
+    setSelectedExperienceId(experienceId);
+    setModalVisible(true);
+  };
+
+  const confirmDeleteExperience = async () => {
+    try {
+      await removeExperience({
+        variables: {
+          lifeListId: lifeList._id,
+          lifeListExperienceId: selectedExperienceId,
+        },
+      });
+      setLifeList((prevList) => ({
+        ...prevList,
+        experiences: prevList.experiences.filter(
+          (exp) => exp._id !== selectedExperienceId
+        ),
+      }));
+    } catch (error) {
+      console.error("Failed to remove experience:", error);
+    } finally {
+      setModalVisible(false);
+    }
   };
 
   if (loading) return <LoadingScreen />;
@@ -154,7 +178,12 @@ export default function ListView({ navigation }) {
         editMode={editMode}
         searchQuery={searchQuery}
         navigation={navigation}
-        onDelete={handleDeleteExperience}
+        onDelete={handleDeleteExperience} // Ensure onDelete is passed
+      />
+      <DeleteConfirmation
+        visible={isModalVisible}
+        onConfirm={confirmDeleteExperience}
+        onCancel={() => setModalVisible(false)}
       />
     </View>
   );

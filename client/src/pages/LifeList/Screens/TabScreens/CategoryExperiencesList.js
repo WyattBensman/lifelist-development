@@ -13,7 +13,7 @@ export default function CategoryExperiencesList({
   viewType,
   editMode,
   searchQuery,
-  navigation,
+  onDelete,
 }) {
   const filteredList = lifeList.experiences
     .filter(
@@ -24,12 +24,9 @@ export default function CategoryExperiencesList({
     )
     .sort(sortByTitle);
 
-  const renderExperience = ({ item }) =>
-    editMode ? (
-      <EditExperienceCard experience={item} navigation={navigation} />
-    ) : (
-      <ListItemCard experience={item} />
-    );
+  const renderExperience = ({ item }) => (
+    <ListItemCard experience={item} editMode={editMode} onDelete={onDelete} />
+  );
 
   return (
     <View style={layoutStyles.wrapper}>

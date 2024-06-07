@@ -1,4 +1,3 @@
-// ListItemCard.js
 import React, { useState, useEffect, useRef } from "react";
 import {
   Image,
@@ -20,7 +19,7 @@ import {
 } from "../../../utils/mutations";
 import { useNavigation } from "@react-navigation/native";
 
-export default function ListItemCard({ experience, editMode }) {
+export default function ListItemCard({ experience, editMode, onDelete }) {
   const navigation = useNavigation();
   const [isSelected, setIsSelected] = useState(false);
   const [isEditMode, setIsEditMode] = useState(editMode);
@@ -130,6 +129,7 @@ export default function ListItemCard({ experience, editMode }) {
               name="trash"
               style={iconStyles.trashSm}
               tintColor={"#8A8A8E"}
+              onPress={() => onDelete(_id)}
             />
             <View style={styles.buttonsContainer}>
               <Pressable

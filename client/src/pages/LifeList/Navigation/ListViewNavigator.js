@@ -24,6 +24,7 @@ export default function ListViewNavigator({
   editMode,
   searchQuery,
   navigation,
+  onDelete,
 }) {
   const [activeTab, setActiveTab] = useState("All");
 
@@ -36,6 +37,7 @@ export default function ListViewNavigator({
           editMode={editMode}
           searchQuery={searchQuery}
           navigation={navigation}
+          onDelete={onDelete}
         />
       );
     } else {
@@ -47,6 +49,7 @@ export default function ListViewNavigator({
           editMode={editMode}
           searchQuery={searchQuery}
           navigation={navigation}
+          onDelete={onDelete}
         />
       );
     }

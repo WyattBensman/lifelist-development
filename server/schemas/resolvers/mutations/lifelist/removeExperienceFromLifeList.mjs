@@ -8,7 +8,7 @@ const removeExperienceFromLifeList = async (
 ) => {
   try {
     // Ensure the user is authenticated
-    /* isUser(user); */
+    isUser(user);
 
     // Remove the specified experience from the LifeListExperience collection
     await LifeListExperience.deleteOne({
@@ -33,14 +33,3 @@ const removeExperienceFromLifeList = async (
 };
 
 export default removeExperienceFromLifeList;
-
-// Find the LifeList by ID and ensure it belongs to the user
-/*     const lifeList = await LifeList.findOne({
-      _id: lifeListId,
-      author: "663a3129e0ffbeff092b81d4",
-    });
-    if (!lifeList) {
-      throw new Error(
-        "LifeList not found or you do not have permission to modify it."
-      );
-    } */

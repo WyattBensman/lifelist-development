@@ -11,6 +11,7 @@ export default function AllExperiencesList({
   viewType,
   editMode,
   searchQuery,
+  onDelete,
 }) {
   const filteredList = lifeList.experiences
     .filter((exp) => exp.list === viewType)
@@ -20,7 +21,7 @@ export default function AllExperiencesList({
     .sort(sortByTitle);
 
   const renderExperience = ({ item }) => (
-    <ListItemCard experience={item} editMode={editMode} />
+    <ListItemCard experience={item} editMode={editMode} onDelete={onDelete} />
   );
 
   return (
