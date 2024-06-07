@@ -1,7 +1,7 @@
 import { layoutStyles } from "./LayoutStyles";
 import { headerStyles } from "./HeaderStyles";
 import { popupStyles } from "./PopupStyles";
-import { formStyles } from "./FormStyles";
+import { formStyles } from "./formStyles";
 import { cardStyles } from "./CardStyles";
 import { authenticationStyles } from "./AuthenticationStyles";
 import { iconStyles } from "./iconStyles";

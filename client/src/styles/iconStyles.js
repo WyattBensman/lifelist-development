@@ -29,6 +29,10 @@ export const iconStyles = StyleSheet.create({
     width: 23,
     height: 8,
   },
+  plus: {
+    width: 10,
+    height: 9.8,
+  },
   // Header Icons
   list: {
     width: 22,
@@ -60,6 +64,10 @@ export const iconStyles = StyleSheet.create({
   trash: {
     width: 16.41,
     height: 20,
+  },
+  trashSm: {
+    width: 15,
+    height: 18.28,
   },
   chevronLeft: {
     width: 13.15,

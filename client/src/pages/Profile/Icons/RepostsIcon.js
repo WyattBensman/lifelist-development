@@ -6,8 +6,8 @@ export default function RepostsIcon({ color }) {
     <Svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width="27.00000pt"
-      height="27.00000pt"
+      width="22.00000pt"
+      height="22.00000pt"
       viewBox="0 0 88.000000 88.000000"
       preserveAspectRatio="xMidYMid meet"
       style={{ marginBottom: 2 }}

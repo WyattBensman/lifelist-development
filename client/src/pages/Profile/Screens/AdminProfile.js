@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+// AdminProfile.js
+import React, { useState } from "react";
 import { Text, View } from "react-native";
 import { headerStyles, layoutStyles } from "../../../styles";
 import HeaderMain from "../../../components/Headers/HeaderMain";
 import OptionsIcon from "../Icons/OptionsIcon";
 import ProfileOverview from "../Components/ProfileOverview";
-import ProfileNavigator from "../Navigators/ProfileNavigator";
+import CustomProfileNavigator from "../Navigators/CustomProfileNavigator";
 import AdminOptionsPopup from "../Popups/AdminOptionsPopup";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -43,7 +44,11 @@ export default function AdminProfile() {
         isAdminView={isAdminView}
         isAdminScreen={true}
       />
-      <ProfileNavigator userId={profile._id} isAdmin={true} />
+      <CustomProfileNavigator
+        userId={profile._id}
+        isAdmin={true}
+        navigation={navigation}
+      />
 
       <AdminOptionsPopup
         visible={optionsPopupVisible}

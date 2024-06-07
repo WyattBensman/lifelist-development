@@ -6,8 +6,8 @@ export default function CollagesIcon({ color }) {
     <Svg
       version="1.0"
       xmlns="http://www.w3.org/2000/svg"
-      width="22.000000pt"
-      height="22.000000pt"
+      width="18.000000pt"
+      height="18.000000pt"
       viewBox="0 0 80.000000 80.000000"
       preserveAspectRatio="xMidYMid meet"
       style={{ marginBottom: 2 }}

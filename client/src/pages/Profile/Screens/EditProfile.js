@@ -21,6 +21,7 @@ export default function EditProfile() {
       <HeaderStack
         arrow={<BackArrowIcon navigation={navigation} />}
         title={"Edit Profile"}
+        hasBorder={false}
       />
       <EditProfileNavigator />
     </View>

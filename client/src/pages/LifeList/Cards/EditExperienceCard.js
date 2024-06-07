@@ -51,13 +51,6 @@ export default function EditExperienceCard({ experience, navigation }) {
     });
   };
 
-  const handleManageCollages = () => {
-    navigation.navigate("UpdateCollages", {
-      experienceId: _id,
-      associatedCollages,
-    });
-  };
-
   const handleUpdateShots = async (newShots) => {
     try {
       await updateShots({
@@ -68,19 +61,6 @@ export default function EditExperienceCard({ experience, navigation }) {
       });
     } catch (error) {
       console.error("Failed to update associated shots:", error);
-    }
-  };
-
-  const handleUpdateCollages = async (newCollages) => {
-    try {
-      await updateCollages({
-        variables: {
-          lifeListExperienceId: _id,
-          collageIds: newCollages.map((collage) => collage._id),
-        },
-      });
-    } catch (error) {
-      console.error("Failed to update associated collages:", error);
     }
   };
 
@@ -148,31 +128,6 @@ export default function EditExperienceCard({ experience, navigation }) {
         <Pressable onPress={handleManageShots}>
           <Text style={styles.addAction}>
             {associatedShots.length === 0 ? "Add Shots" : "Edit Shots"}
-          </Text>
-        </Pressable>
-      </View>
-      <View style={styles.actionsContainer}>
-        <View>
-          <Text style={styles.label}>Associated Collages</Text>
-          {associatedCollages.length === 0 ? (
-            <Text style={styles.labelSmall}>No Associated Collages</Text>
-          ) : (
-            <FlatList
-              horizontal
-              data={associatedCollages}
-              renderItem={({ item }) => (
-                <Image
-                  source={{ uri: `${BASE_URL}${item.coverImage}` }}
-                  style={styles.shotImage}
-                />
-              )}
-              keyExtractor={(item) => item._id}
-            />
-          )}
-        </View>
-        <Pressable onPress={handleManageCollages}>
-          <Text style={styles.addAction}>
-            {associatedCollages.length === 0 ? "Add Collages" : "Edit Collages"}
           </Text>
         </Pressable>
       </View>

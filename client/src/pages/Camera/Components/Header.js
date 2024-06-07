@@ -114,27 +114,27 @@ export default function Header({
             <Text
               style={[
                 styles.option,
-                cameraType === "Disposable" && styles.selectedOption,
+                cameraType === "DISPOSABLE" && styles.selectedOption,
               ]}
-              onPress={() => handleSelectOption("Disposable")}
+              onPress={() => handleSelectOption("DISPOSABLE")}
             >
               Disposable
             </Text>
             <Text
               style={[
                 styles.option,
-                cameraType === "Fuji" && styles.selectedOption,
+                cameraType === "FUJI" && styles.selectedOption,
               ]}
-              onPress={() => handleSelectOption("Fuji")}
+              onPress={() => handleSelectOption("FUJI")}
             >
               Fuji
             </Text>
             <Text
               style={[
                 styles.option,
-                cameraType === "Polaroid" && styles.selectedOption,
+                cameraType === "POLAROID" && styles.selectedOption,
               ]}
-              onPress={() => handleSelectOption("Polaroid")}
+              onPress={() => handleSelectOption("POLAROID")}
             >
               Polaroid
             </Text>

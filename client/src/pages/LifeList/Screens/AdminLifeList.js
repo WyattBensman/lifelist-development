@@ -1,15 +1,13 @@
+// AdminLifeList.js
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { View, Text } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { headerStyles, layoutStyles } from "../../../styles";
-import CategoryNavigator from "../Navigation/CategoryNavigator";
+import NavigatorContainer from "../Navigation/NavigatorContainer";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useQuery } from "@apollo/client";
 import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
-import HeaderStack from "../../../components/Headers/HeaderStack";
 import HeaderMain from "../../../components/Headers/HeaderMain";
-import SymbolButton from "../../../icons/SymbolButton";
 import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
 import SearchBar from "../../../components/SearchBar";
 import Icon from "../../../icons/Icon";
@@ -92,7 +90,7 @@ export default function AdminLifeList() {
       )}
       <HeaderMain
         titleComponent={
-          <Text style={headerStyles.headerHeavy}>My LifeList</Text>
+          <Text style={[headerStyles.headerHeavy]}>My LifeList</Text>
         }
         icon1={
           <Icon
@@ -103,7 +101,6 @@ export default function AdminLifeList() {
                 screen: "ListView",
               })
             }
-            tintColor={"#fff"}
           />
         }
         icon2={
@@ -111,13 +108,15 @@ export default function AdminLifeList() {
             name={!dropdownVisible ? "ellipsis.circle" : "ellipsis.circle.fill"}
             style={iconStyles.ellipsisCircle}
             onPress={() => setDropdownVisible(!dropdownVisible)}
-            tintColor={"#fff"}
           />
         }
         dropdownVisible={dropdownVisible}
         dropdownContent={<DropdownMenu items={dropdownItems} />}
       />
-      <CategoryNavigator lifeList={{ experiences: filteredExperiences }} />
+      <NavigatorContainer
+        lifeList={{ experiences: filteredExperiences }}
+        navigation={navigation}
+      />
     </View>
   );
 }

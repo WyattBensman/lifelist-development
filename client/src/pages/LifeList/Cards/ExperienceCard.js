@@ -4,8 +4,8 @@ import { BASE_URL } from "../../../utils/config";
 
 export default function ExperienceCard({ experience, associatedShots }) {
   const screenWidth = Dimensions.get("window").width;
-  const cardWidth = screenWidth * 0.462;
-  const imageHeight = cardWidth * 1.29;
+  const cardWidth = screenWidth * 0.44;
+  const imageHeight = cardWidth * 1.35;
   const cardHeight = imageHeight + 44;
 
   const imageUrl = `${BASE_URL}${experience.image}`;
@@ -37,27 +37,25 @@ export default function ExperienceCard({ experience, associatedShots }) {
 const styles = StyleSheet.create({
   cardContainer: {
     marginRight: 6,
-    backgroundColor: "#1C1C1E",
+    backgroundColor: "#fff",
     borderRadius: 4,
-  },
-  cardShadow: {
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 2,
+    shadowOpacity: 0.075,
+    shadowRadius: 1,
   },
+  cardShadow: {},
   image: {
     width: "100%",
     borderRadius: 4,
   },
   title: {
-    color: "#fff",
     fontWeight: "600",
     marginTop: 4,
   },
   secondaryText: {
     fontSize: 12,
-    color: "#d4d4d4",
+    color: "#8A8A8E",
     marginTop: 1.5,
   },
   spacer: {

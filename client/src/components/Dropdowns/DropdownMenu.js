@@ -10,12 +10,7 @@ const DropdownMenu = ({ items }) => {
           style={styles.dropdownItemContainer}
           onPress={item.onPress}
         >
-          <Icon
-            name={item.icon}
-            style={item.style}
-            onPress={item.onPress}
-            tintColor={"#fff"}
-          />
+          <Icon name={item.icon} style={item.style} onPress={item.onPress} />
           <Text style={styles.dropdownLabel}>{item.label}</Text>
         </Pressable>
       ))}
@@ -29,7 +24,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     paddingTop: 16,
     zIndex: 1,
-    backgroundColor: "#0B0B0B",
+    backgroundColor: "#FBFBFE",
   },
   dropdownItemContainer: {
     flexDirection: "column",
@@ -37,7 +32,6 @@ const styles = StyleSheet.create({
   },
   dropdownLabel: {
     fontSize: 12,
-    color: "#fff",
   },
 });
 

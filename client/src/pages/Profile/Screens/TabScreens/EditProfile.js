@@ -107,7 +107,6 @@ export default function EditProfileTab() {
   };
 
   const profilePictureUrl = `${BASE_URL}${profilePicture}`;
-  console.log(profilePictureUrl);
 
   return (
     <KeyboardAvoidingView
@@ -118,60 +117,68 @@ export default function EditProfileTab() {
         style={formStyles.formContainer}
         keyboardDismissMode="on-drag"
       >
-        <View style={[layoutStyles.marginBtmSm, { alignItems: "center" }]}>
+        <Text style={headerStyles.headerMedium}>Profile Information</Text>
+        <View style={[layoutStyles.marginBtmSm, styles.profileContainer]}>
           <Image
             source={{ uri: profilePictureUrl }}
             style={styles.profilePicture}
           />
           <Pressable onPress={pickImage}>
-            <Text style={layoutStyles.marginTopXxs}>
-              Change Profile Picture
-            </Text>
+            <Text style={styles.changePictureText}>Change Profile Picture</Text>
           </Pressable>
         </View>
         <View style={formStyles.inputContainer}>
-          <Text style={layoutStyles.marginBtmTy}>Full Name</Text>
+          <Text style={formStyles.label}>Full Name</Text>
           <TextInput
             value={fullName}
             onChangeText={setFullName}
             style={formStyles.input}
+            placeholder="Enter your full name"
+            placeholderTextColor="#d4d4d4"
           />
         </View>
         <View style={formStyles.inputContainer}>
-          <Text style={layoutStyles.marginBtmTy}>Username</Text>
+          <Text style={formStyles.label}>Username</Text>
           <TextInput
             value={username}
             onChangeText={setUsername}
             style={formStyles.input}
+            placeholder="Enter your username"
+            placeholderTextColor="#d4d4d4"
           />
         </View>
         <View style={formStyles.inputContainer}>
-          <Text style={layoutStyles.marginBtmTy}>Bio</Text>
+          <Text style={formStyles.label}>Bio</Text>
           <TextInput
             value={bio}
             onChangeText={setBio}
             style={formStyles.input}
+            placeholder="Tell us about yourself"
+            placeholderTextColor="#d4d4d4"
             multiline={true}
           />
         </View>
-
-        <Text style={[headerStyles.headerMedium, { marginTop: 8 }]}>
+        <Text style={[headerStyles.headerMedium, { marginTop: 16 }]}>
           Personal Information
         </Text>
         <View style={formStyles.inputContainer}>
-          <Text style={layoutStyles.marginBtmTy}>Birthday</Text>
+          <Text style={formStyles.label}>Birthday</Text>
           <TextInput
             value={birthday}
             onChangeText={setBirthday}
             style={formStyles.input}
+            placeholder="YYYY-MM-DD"
+            placeholderTextColor="#d4d4d4"
           />
         </View>
         <View style={formStyles.inputContainer}>
-          <Text style={layoutStyles.marginBtmTy}>Gender</Text>
+          <Text style={formStyles.label}>Gender</Text>
           <TextInput
             value={gender}
             onChangeText={setGender}
             style={formStyles.input}
+            placeholder="Enter your gender"
+            placeholderTextColor="#d4d4d4"
           />
         </View>
       </ScrollView>
@@ -199,9 +206,21 @@ export default function EditProfileTab() {
 }
 
 const styles = StyleSheet.create({
+  profileContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
   profilePicture: {
-    height: 85,
-    width: 85,
+    height: 50,
+    width: 50,
     borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#d4d4d4",
+  },
+  changePictureText: {
+    marginLeft: 12,
+    color: "#6AB952",
+    fontWeight: "500",
   },
 });

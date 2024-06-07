@@ -4,15 +4,15 @@ import CategoryExperiences from "../Screens/TabScreens/CategoryExperiences";
 
 const Tab = createMaterialTopTabNavigator();
 
-export default function CategoryNavigator({ lifeList }) {
+export default function CategoryNavigator({ lifeList, navigation }) {
   return (
     <Tab.Navigator
       screenOptions={{
         swipeEnabled: false,
-        tabBarActiveTintColor: "#fff",
+        tabBarActiveTintColor: "#000",
         tabBarInactiveTintColor: "#d4d4d4",
         tabBarStyle: {
-          backgroundColor: "#0B0B0B",
+          backgroundColor: "#FBFBFE",
           height: 42.5,
         },
         tabBarIndicatorStyle: {
@@ -26,7 +26,7 @@ export default function CategoryNavigator({ lifeList }) {
       }}
     >
       <Tab.Screen name="All">
-        {() => <AllExperiences lifeList={lifeList} />}
+        {() => <AllExperiences lifeList={lifeList} navigation={navigation} />}
       </Tab.Screen>
       {[
         "Attractions",
@@ -45,6 +45,7 @@ export default function CategoryNavigator({ lifeList }) {
             <CategoryExperiences
               lifeList={lifeList}
               category={category.toUpperCase().replace(/ /g, "_")}
+              navigation={navigation}
             />
           )}
         </Tab.Screen>

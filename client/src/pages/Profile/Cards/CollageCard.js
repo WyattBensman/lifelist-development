@@ -2,8 +2,8 @@ import { Image, StyleSheet, View, Dimensions } from "react-native";
 import { BASE_URL } from "../../../utils/config";
 
 const screenWidth = Dimensions.get("window").width;
-const totalMarginPerImage = 1;
-const imageWidth = (screenWidth - totalMarginPerImage * 3 * 4) / 3;
+const spacing = 1.5;
+const imageWidth = (screenWidth - spacing * 2) / 3; // Adjusted to account for the spacing
 
 export default function CollageCard({ path }) {
   return (
@@ -21,6 +21,8 @@ const styles = StyleSheet.create({
   container: {
     width: imageWidth,
     height: imageWidth,
+    marginRight: spacing,
+    marginBottom: spacing,
   },
   image: {
     width: "100%",

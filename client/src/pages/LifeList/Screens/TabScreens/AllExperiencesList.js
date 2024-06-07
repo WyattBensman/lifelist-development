@@ -2,7 +2,6 @@ import React from "react";
 import { View, FlatList } from "react-native";
 import { layoutStyles } from "../../../../styles";
 import ListItemCard from "../../Cards/ListItemCard";
-import EditExperienceCard from "../../Cards/EditExperienceCard";
 
 const sortByTitle = (a, b) =>
   a.experience.title.localeCompare(b.experience.title);
@@ -12,7 +11,6 @@ export default function AllExperiencesList({
   viewType,
   editMode,
   searchQuery,
-  navigation,
 }) {
   const filteredList = lifeList.experiences
     .filter((exp) => exp.list === viewType)
@@ -24,12 +22,6 @@ export default function AllExperiencesList({
   const renderExperience = ({ item }) => (
     <ListItemCard experience={item} editMode={editMode} />
   );
-  /* const renderExperience = ({ item }) =>
-    editMode ? (
-      <EditExperienceCard experience={item} navigation={navigation} />
-    ) : (
-      <ListItemCard experience={item} />
-    ); */
 
   return (
     <View style={layoutStyles.wrapper}>

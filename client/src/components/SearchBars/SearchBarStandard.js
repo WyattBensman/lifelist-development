@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 import SearchIcon from "../../pages/Inbox/Icons/SearchIcon";
 
@@ -26,14 +25,13 @@ export default function SearchBarStandard({
 
 const styles = StyleSheet.create({
   container: {
-    width: "95%",
+    width: "100%",
     height: 35,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f4f4f4",
+    backgroundColor: "#EEEEEF",
     borderRadius: 8,
     paddingHorizontal: 10,
-    marginHorizontal: 5,
   },
   input: {
     flex: 1,
@@ -44,12 +42,3 @@ const styles = StyleSheet.create({
     padding: 5,
   },
 });
-
-{
-  /* <View
-        style={[
-          layoutStyles.marginSm,
-          { alignSelf: "center", marginBottom: 4 },
-        ]}
-      ></View> */
-}

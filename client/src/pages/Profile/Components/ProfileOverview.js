@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import ButtonSkinny from "../../../components/ButtonSkinny";
+import ButtonSkinny from "../../../components/Buttons/ButtonSkinny";
 import { useNavigation } from "@react-navigation/native";
 import { layoutStyles } from "../../../styles";
 import { useMutation } from "@apollo/client";
@@ -71,7 +70,13 @@ export default function ProfileOverview({
   const profilePictureUrl = `${BASE_URL}${profile.profilePicture}`;
 
   return (
-    <View style={[layoutStyles.marginMd, layoutStyles.marginBtmXs]}>
+    <View
+      style={[
+        layoutStyles.marginMd,
+        layoutStyles.marginBtmXs,
+        { marginBottom: 0 },
+      ]}
+    >
       <View style={[layoutStyles.flex, { height: 100 }]}>
         <Image
           source={{ uri: profilePictureUrl }}
@@ -79,7 +84,7 @@ export default function ProfileOverview({
         />
         <View style={styles.rightContainer}>
           <View
-            style={[layoutStyles.flexSpaceBetween, layoutStyles.marginHorSm]}
+            style={[layoutStyles.flexSpaceBetween, layoutStyles.marginHorMd]}
           >
             <View style={styles.col}>
               <Text style={{ fontWeight: "700" }}>
@@ -95,12 +100,15 @@ export default function ProfileOverview({
                       screen: "UserRelations",
                       params: {
                         screen: "Followers",
-                        params: { userId: profile._id },
+                        params: {
+                          userId: profile._id,
+                          initialTab: "Followers",
+                        },
                       },
                     })
                   : navigation.navigate("UserRelations", {
                       screen: "Followers",
-                      params: { userId: profile._id },
+                      params: { userId: profile._id, initialTab: "Followers" },
                     })
               }
             >
@@ -117,12 +125,15 @@ export default function ProfileOverview({
                       screen: "UserRelations",
                       params: {
                         screen: "Following",
-                        params: { userId: profile._id },
+                        params: {
+                          userId: profile._id,
+                          initialTab: "Following",
+                        },
                       },
                     })
                   : navigation.navigate("UserRelations", {
                       screen: "Following",
-                      params: { userId: profile._id },
+                      params: { userId: profile._id, initialTab: "Following" },
                     })
               }
             >
@@ -179,9 +190,9 @@ export default function ProfileOverview({
           )}
         </View>
       </View>
-      <View style={layoutStyles.marginTopXs}>
-        <Text style={{ fontWeight: "500" }}>{profile.username}</Text>
-        <Text style={layoutStyles.marginTopXxs}>{profile.bio}</Text>
+      <View style={[layoutStyles.marginTopXs, { marginTop: 6 }]}>
+        <Text style={{ fontWeight: "bold" }}>@{profile.username}</Text>
+        <Text style={{ marginTop: 2 }}>{profile.bio}</Text>
       </View>
     </View>
   );
@@ -191,7 +202,7 @@ const styles = StyleSheet.create({
   rightContainer: {
     flex: 1,
     marginHorizontal: 16,
-    paddingVertical: 8,
+    paddingVertical: 11,
     justifyContent: "space-between",
     height: "100%",
   },

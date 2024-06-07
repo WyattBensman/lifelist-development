@@ -87,7 +87,7 @@ export default function EditContact() {
       <View style={formStyles.formContainer}>
         <Text style={headerStyles.headerMedium}>Contact Information</Text>
         <View style={formStyles.inputContainer}>
-          <Text style={layoutStyles.marginBtmTy}>Email</Text>
+          <Text style={formStyles.label}>Email</Text>
           <TextInput
             value={email}
             onChangeText={setEmail}
@@ -95,7 +95,7 @@ export default function EditContact() {
           />
         </View>
         <View style={formStyles.inputContainer}>
-          <Text style={layoutStyles.marginBtmTy}>Phone Number</Text>
+          <Text style={formStyles.label}>Phone Number</Text>
           <TextInput
             value={phoneNumber}
             onChangeText={setPhoneNumber}
@@ -106,7 +106,7 @@ export default function EditContact() {
           Change Password
         </Text>
         <View style={formStyles.inputContainer}>
-          <Text style={layoutStyles.marginBtmTy}>Current Password</Text>
+          <Text style={formStyles.label}>Current Password</Text>
           <TextInput
             value={currentPassword}
             onChangeText={setCurrentPassword}
@@ -115,7 +115,7 @@ export default function EditContact() {
           />
         </View>
         <View style={formStyles.inputContainer}>
-          <Text style={layoutStyles.marginBtmTy}>New Password</Text>
+          <Text style={formStyles.label}>New Password</Text>
           <TextInput
             value={newPassword}
             onChangeText={setNewPassword}
@@ -124,7 +124,7 @@ export default function EditContact() {
           />
         </View>
         <View style={formStyles.inputContainer}>
-          <Text style={layoutStyles.marginBtmTy}>Confirm New Password</Text>
+          <Text style={formStyles.label}>Confirm New Password</Text>
           <TextInput
             value={confirmNewPassword}
             onChangeText={setConfirmNewPassword}

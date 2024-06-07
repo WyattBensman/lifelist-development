@@ -3,20 +3,21 @@ import { StyleSheet } from "react-native";
 export const formStyles = StyleSheet.create({
   formContainer: {
     flex: 1,
-    marginVertical: 24,
     marginHorizontal: 16,
   },
   inputContainer: {
     marginBottom: 16,
   },
   input: {
-    height: 36,
+    height: 40,
     borderWidth: 1,
     padding: 10,
-    borderRadius: 4,
+    borderRadius: 8,
     borderColor: "#D4D4D4",
+    backgroundColor: "#fff",
   },
   label: {
+    fontWeight: "500",
     marginBottom: 4,
   },
   inputSpacer: {
@@ -29,12 +30,5 @@ export const formStyles = StyleSheet.create({
   buttons: {
     flexDirection: "row",
     justifyContent: "space-between",
-  },
-  flowpageLinkPlaceholder: {
-    width: 17.5,
-    height: 17.5,
-    backgroundColor: "#ddd",
-    marginRight: 12,
-    borderRadius: 2,
   },
 });

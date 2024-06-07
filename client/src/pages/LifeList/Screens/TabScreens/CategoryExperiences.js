@@ -38,13 +38,7 @@ export default function CategoryExperiences({ lifeList, category }) {
 
   return (
     <View style={layoutStyles.wrapper}>
-      <Text
-        style={[
-          headerStyles.headerMedium,
-          layoutStyles.marginTopSm,
-          layoutStyles.paddingLeftXxs,
-        ]}
-      >
+      <Text style={[headerStyles.headerMedium, layoutStyles.paddingLeftXxs]}>
         Experienced
       </Text>
       <FlatList

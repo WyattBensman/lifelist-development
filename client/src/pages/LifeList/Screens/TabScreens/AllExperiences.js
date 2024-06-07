@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Text, View, FlatList } from "react-native";
+import { Text, View, FlatList, StyleSheet } from "react-native";
 import { headerStyles, layoutStyles } from "../../../../styles";
 import ExperienceCard from "../../Cards/ExperienceCard";
 
@@ -32,13 +32,7 @@ export default function AllExperiences({ lifeList }) {
 
   return (
     <View style={layoutStyles.wrapper}>
-      <Text
-        style={[
-          headerStyles.headerMedium,
-          layoutStyles.marginTopXs,
-          layoutStyles.paddingLeftXxs,
-        ]}
-      >
+      <Text style={[headerStyles.headerMedium, layoutStyles.paddingLeftXxs]}>
         Experienced
       </Text>
       <FlatList
@@ -63,3 +57,22 @@ export default function AllExperiences({ lifeList }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  navigatorContainer: {
+    flexDirection: "row",
+    marginLeft: 6,
+  },
+  navigatorButton: {
+    backgroundColor: "#ececec",
+    alignSelf: "flex-start",
+    marginTop: 12,
+    marginRight: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+  },
+  navigatorText: {
+    fontWeight: "500",
+  },
+});

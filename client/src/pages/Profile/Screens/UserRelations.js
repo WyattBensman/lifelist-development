@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import UserRelationsNavigator from "../Navigators/UserRelationsNavigator";
@@ -13,6 +13,8 @@ export default function UserRelations() {
   const route = useRoute();
   const { setIsTabBarVisible } = useNavigationContext();
   const userId = route.params?.params?.userId; // Get the userId from the route parameters
+  const initialTab = route.params?.params?.initialTab || "Followers"; // Get the initialTab from the route parameters
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setIsTabBarVisible(false);
@@ -26,15 +28,19 @@ export default function UserRelations() {
         arrow={<BackArrowIcon navigation={navigation} />}
         hasBorder={false}
       />
-      <View
-        style={[
-          layoutStyles.marginSm,
-          { alignSelf: "center", marginBottom: 4 },
-        ]}
-      >
-        <SearchBarStandard style={{ flex: 1 }} />
+      <View style={[layoutStyles.marginSm, { alignSelf: "center" }]}>
+        <SearchBarStandard
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSearch={() => {}}
+          onFocusChange={() => {}}
+        />
       </View>
-      <UserRelationsNavigator userId={userId} />
+      <UserRelationsNavigator
+        userId={userId}
+        searchQuery={searchQuery}
+        initialTab={initialTab}
+      />
     </View>
   );
 }

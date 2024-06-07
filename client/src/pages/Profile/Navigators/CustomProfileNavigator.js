@@ -1,27 +1,38 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import EditProfile from "../Screens/TabScreens/EditProfile";
-import EditContact from "../Screens/TabScreens/EditContact";
-import EditSettings from "../Screens/TabScreens/EditSettings";
+import Collages from "../Screens/Collages";
+import LifeList from "../../LifeList/Screens/LifeList";
+import Reposts from "../Screens/Reposts";
 
 const tabs = [
-  { name: "Profile", component: EditProfile },
-  { name: "Contact", component: EditContact },
-  { name: "Settings", component: EditSettings },
+  { name: "Collages", component: Collages },
+  { name: "Reposts", component: Reposts },
+  { name: "LifeList", component: LifeList },
 ];
 
-export default function EditProfileNavigator() {
-  const [activeTab, setActiveTab] = useState("Profile");
+export default function CustomProfileNavigator({
+  userId,
+  isAdmin,
+  navigation,
+}) {
+  const [activeTab, setActiveTab] = useState("Collages");
 
   const renderScreen = () => {
     const activeTabComponent = tabs.find(
       (tab) => tab.name === activeTab
     ).component;
-    return React.createElement(activeTabComponent);
+    return React.createElement(activeTabComponent, { userId });
   };
 
   const handleTabPress = (tabName) => {
     setActiveTab(tabName);
+    if (tabName === "LifeList") {
+      if (isAdmin) {
+        navigation.navigate("AdminLifeListStack");
+      } else {
+        navigation.navigate("LifeListStack", { userId });
+      }
+    }
   };
 
   return (
@@ -58,23 +69,18 @@ const styles = StyleSheet.create({
   },
   navigatorWrapper: {
     flexDirection: "row",
-    justifyContent: "center",
     backgroundColor: "#FBFBFE",
-    paddingBottom: 12,
-    paddingTop: 12,
-    marginBottom: 16,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#ececec",
+    marginTop: 16,
+    marginBottom: 8,
+    paddingHorizontal: 8,
   },
   navigatorButton: {
-    width: "26%",
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: 6, // spacing between buttons
-    backgroundColor: "#ececec",
+    marginRight: 12, // spacing between buttons
   },
   activeNavigatorButton: {
     backgroundColor: "#6AB95230",

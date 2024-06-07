@@ -1,22 +1,35 @@
 import { LifeList, LifeListExperience } from "../../../../models/index.mjs";
-import { isLifeListAuthor } from "../../../../utils/auth.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const removeExperiencesFromLifeList = async (
   _,
-  { lifeListId, experienceIds },
+  { lifeListId, lifeListExperienceIds },
   { user }
 ) => {
   try {
-    // Ensure the user is authorized to modify the LifeList
-    /* await isLifeListAuthor(user, lifeListId); */
+    // Ensure the user is authenticated
+    isUser(user);
 
-    // Delete the specified LifeListExperience documents
-    await LifeListExperience.deleteMany({ _id: { $in: experienceIds } });
+    // Find the LifeList by ID and ensure it belongs to the user
+    const lifeList = await LifeList.findOne({
+      _id: lifeListId,
+      author: user._id,
+    });
+    if (!lifeList) {
+      throw new Error(
+        "LifeList not found or you do not have permission to modify it."
+      );
+    }
 
-    // Update the LifeList to remove the deleted experiences
-    const lifeList = await LifeList.findById(lifeListId);
+    // Remove the specified experiences from the LifeList
+    await LifeListExperience.deleteMany({
+      _id: { $in: lifeListExperienceIds },
+      lifeList: lifeListId,
+    });
+
+    // Update the LifeList's experiences array
     lifeList.experiences = lifeList.experiences.filter(
-      (id) => !experienceIds.includes(id.toString())
+      (expId) => !lifeListExperienceIds.includes(expId.toString())
     );
     await lifeList.save();
 

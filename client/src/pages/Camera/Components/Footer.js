@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { useMutation } from "@apollo/client";
 import { LinearGradient } from "expo-linear-gradient";

@@ -18,15 +18,13 @@ export default function ButtonSmall({
 
 const styles = StyleSheet.create({
   buttonContainer: {
-    width: 75,
-    borderRadius: 4,
-    paddingVertical: 5,
-    marginHorizontal: 3,
+    borderRadius: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    backgroundColor: "#ececec",
   },
   buttonText: {
-    textAlign: "center",
     fontWeight: "500",
-    fontSize: 11,
-    color: "#f4f4f4",
+    fontSize: 12,
   },
 });

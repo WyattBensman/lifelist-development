@@ -1,3 +1,4 @@
+import React from "react";
 import { FlatList, Alert } from "react-native";
 import UserRelationsCard from "../../Cards/UserRelationsCard";
 import { layoutStyles } from "../../../../styles";
@@ -11,19 +12,17 @@ import {
   UNSEND_FOLLOW_REQUEST,
 } from "../../../../utils/mutations/userRelationsMutations";
 
-export default function Following({ userId }) {
+export default function Following({ userId, searchQuery }) {
   const { currentUser } = useAuth();
   const { data, loading, error } = useQuery(GET_FOLLOWING, {
     variables: { userId },
   });
 
-  // Mutations
   const [followUser] = useMutation(FOLLOW_USER);
   const [unfollowUser] = useMutation(UNFOLLOW_USER);
   const [sendFollowRequest] = useMutation(SEND_FOLLOW_REQUEST);
   const [unsendFollowRequest] = useMutation(UNSEND_FOLLOW_REQUEST);
 
-  // Handle action press based on user's privacy setting
   const handleActionPress = async (userId, action, isPrivate) => {
     try {
       if (action === "Follow") {
@@ -54,6 +53,10 @@ export default function Following({ userId }) {
     }
   };
 
+  const filteredFollowing = data?.getFollowing.filter((following) =>
+    following.fullName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const renderFollowingItem = ({ item }) => {
     let action = "Follow";
     if (currentUser.following.includes(item._id)) {
@@ -75,11 +78,10 @@ export default function Following({ userId }) {
 
   return (
     <FlatList
-      data={data?.getFollowing}
+      data={filteredFollowing}
       renderItem={renderFollowingItem}
       keyExtractor={(item) => item._id}
       style={layoutStyles.wrapper}
-      contentContainerStyle={layoutStyles.paddingTopXs}
     />
   );
 }

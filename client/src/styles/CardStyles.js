@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const cardStyles = StyleSheet.create({
   /* CARD CONTAINERS */
-  userCardContainer: {
+  contentContainer: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",

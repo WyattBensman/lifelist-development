@@ -85,16 +85,6 @@ export default function AddExperiencesOverview() {
     );
   };
 
-  const handleUpdateCollages = (experienceId, newCollages) => {
-    setExperiences((prevExperiences) =>
-      prevExperiences.map((exp) =>
-        exp.experience._id === experienceId
-          ? { ...exp, associatedCollages: newCollages }
-          : exp
-      )
-    );
-  };
-
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
@@ -134,16 +124,6 @@ export default function AddExperiencesOverview() {
                 navigation.navigate("ManageShots", {
                   experienceId: expId,
                   associatedShots: shots,
-                });
-              }}
-              onUpdateCollages={(expId, collages) => {
-                setUpdateCollagesCallback(
-                  () => (newCollages) =>
-                    handleUpdateCollages(expId, newCollages)
-                );
-                navigation.navigate("ManageCollages", {
-                  experienceId: expId,
-                  associatedCollages: collages,
                 });
               }}
             />

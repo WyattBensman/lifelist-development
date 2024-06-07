@@ -21,7 +21,9 @@ export default function ListView({ navigation }) {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { currentUser } = useAuth();
-  const lifeList = route.params?.lifeList || { experiences: [] }; // Use the passed data
+  const [lifeList, setLifeList] = useState(
+    route.params?.lifeList || { experiences: [] }
+  );
 
   const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
     variables: { userId: currentUser._id },
@@ -41,13 +43,17 @@ export default function ListView({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      refetch();
-    }, [refetch])
+      if (!route.params?.lifeList) {
+        refetch();
+      }
+    }, [refetch, route.params?.lifeList])
   );
 
   useEffect(() => {
-    refetch();
-  }, [viewType, refetch]);
+    if (data && !route.params?.lifeList) {
+      setLifeList(data.getUserLifeList);
+    }
+  }, [data, route.params?.lifeList]);
 
   const toggleEditMode = () => {
     setEditMode(!editMode);
@@ -55,6 +61,7 @@ export default function ListView({ navigation }) {
 
   const handleViewTypeChange = (type) => {
     setViewType(type);
+    refetch(); // Refetch data whenever viewType changes
   };
 
   const handleBackPress = () => {
@@ -67,20 +74,28 @@ export default function ListView({ navigation }) {
     }
   };
 
+  const handleDeleteExperience = (experienceId) => {
+    setLifeList((prevList) => ({
+      ...prevList,
+      experiences: prevList.experiences.filter(
+        (exp) => exp._id !== experienceId
+      ),
+    }));
+  };
+
   if (loading) return <LoadingScreen />;
   if (error) return <Text>Error: {error.message}</Text>;
 
-  const lifeListData = route.params?.lifeList || data.getUserLifeList;
+  const lifeListData = route.params?.lifeList || lifeList;
 
   return (
-    <View style={layoutStyles.container}>
+    <View style={layoutStyles.wrapper}>
       <HeaderSearchBar
         arrowIcon={
           <SymbolButtonSm
             name="chevron.backward"
             onPress={handleBackPress}
             style={{ height: 20, width: 14.61 }}
-            tintColor={"#fff"}
           />
         }
         icon1={
@@ -89,7 +104,6 @@ export default function ListView({ navigation }) {
               name="square.and.pencil"
               style={iconStyles.squarePencilSm}
               onPress={toggleEditMode}
-              tintColor={"#fff"}
             />
           )
         }
@@ -140,6 +154,7 @@ export default function ListView({ navigation }) {
         editMode={editMode}
         searchQuery={searchQuery}
         navigation={navigation}
+        onDelete={handleDeleteExperience}
       />
     </View>
   );
@@ -149,33 +164,34 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingTop: 12,
-    backgroundColor: "#0b0b0b",
+    paddingHorizontal: 32,
+    paddingVertical: 8,
+    backgroundColor: "#FBFBFE",
   },
   button: {
     borderWidth: 1,
     borderColor: "#ececec",
-    borderRadius: 4,
+    width: "45%",
+    borderRadius: 16,
     paddingVertical: 5,
-    width: 165,
+    alignItems: "center",
   },
   buttonText: {
     textAlign: "center",
-    color: "#fff",
+    color: "#000",
   },
   experiencedSelectedButton: {
-    backgroundColor: "#6AB952",
+    backgroundColor: "#6AB95230", // Light green with opacity
     borderColor: "#6AB952",
   },
   experiencedSelectedButtonText: {
-    color: "#fff",
+    color: "#6AB952",
   },
   wishlistedSelectedButton: {
-    backgroundColor: "#5FC4ED",
+    backgroundColor: "#5FC4ED30", // Light blue with opacity
     borderColor: "#5FC4ED",
   },
   wishlistedSelectedButtonText: {
-    color: "#fff",
+    color: "#5FC4ED",
   },
 });
