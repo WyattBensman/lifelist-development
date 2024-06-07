@@ -2,7 +2,7 @@ import addCollagesToLifeListExperience from "./addCollagesToLifeListExperience.m
 import addExperienceToLifeList from "./addExperienceToLifeList.mjs";
 import addShotsToLifeListExperience from "./addShotsToLifeListExperience.mjs";
 import removeCollagesFromLifeListExperience from "./removeCollagesFromLifeListExperience.mjs";
-import removeExperiencesFromLifeList from "./removeExperiencesFromLifeList.mjs";
+import removeExperienceFromLifeList from "./removeExperienceFromLifeList.mjs";
 import removeShotsFromLifeListExperience from "./removeShotsFromLifeListExperience.mjs";
 import updateLifeListExperienceListStatus from "./updateLifeListExperienceListStatus.mjs";
 import updateAssociatedShots from "./updateAssociatedShots.mjs";
@@ -13,7 +13,7 @@ export {
   addExperienceToLifeList,
   addShotsToLifeListExperience,
   removeCollagesFromLifeListExperience,
-  removeExperiencesFromLifeList,
+  removeExperienceFromLifeList,
   removeShotsFromLifeListExperience,
   updateLifeListExperienceListStatus,
   updateAssociatedShots,

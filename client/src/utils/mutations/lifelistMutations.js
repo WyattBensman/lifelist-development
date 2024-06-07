@@ -21,14 +21,14 @@ export const ADD_EXPERIENCE_TO_LIFELIST = gql`
   }
 `;
 
-export const REMOVE_EXPERIENCES_FROM_LIFELIST = gql`
-  mutation RemoveExperiencesFromLifeList(
+const REMOVE_EXPERIENCE_FROM_LIFELIST = gql`
+  mutation RemoveExperienceFromLifeList(
     $lifeListId: ID!
-    $lifeListExperienceIds: [ID]
+    $lifeListExperienceId: ID!
   ) {
-    removeExperiencesFromLifeList(
+    removeExperienceFromLifeList(
       lifeListId: $lifeListId
-      lifeListExperienceIds: $lifeListExperienceIds
+      lifeListExperienceId: $lifeListExperienceId
     ) {
       success
       message

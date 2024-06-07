@@ -44,15 +44,11 @@ const addExperienceToLifeList = async (
       _id: { $in: associatedCollages },
     });
 
-    console.log(validAssociatedShots);
-
     // Transform associatedShots to include isHidden property set to true by default
     const transformedAssociatedShots = validAssociatedShots.map((shot) => ({
       shot: shot._id,
       isHidden: false,
     }));
-
-    console.log(transformedAssociatedShots);
 
     // Create a new LifeListExperience document
     const lifeListExperience = await LifeListExperience.create({

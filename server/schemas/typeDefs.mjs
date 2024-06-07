@@ -405,7 +405,7 @@ type User {
       associatedShots: [ID]
       associatedCollages: [ID]
     ): StandardResponse
-    removeExperiencesFromLifeList(lifeListId: ID!, lifeListExperienceIds: [ID]): StandardResponse
+    removeExperienceFromLifeList(lifeListId: ID!, lifeListExperienceId: ID!): StandardResponse
     updateLifeListExperienceListStatus(lifeListExperienceId: ID!, newListStatus: String!): StandardResponse
     addCollagesToLifeListExperience(lifeListExperienceId: ID!, collageIds: [ID]): LifeListExperience
     addShotsToLifeListExperience(lifeListExperienceId: ID!, shotIds: [ID]): LifeListExperience
