@@ -1,209 +1,194 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Pressable,
-  FlatList,
-} from "react-native";
-import { cardStyles } from "../../../styles";
+import { Image, Text, View, Pressable, StyleSheet } from "react-native";
+import { cardStyles, iconStyles } from "../../../styles";
+import { truncateText, capitalizeText } from "../../../utils/utils";
 import { BASE_URL } from "../../../utils/config";
+import IconStatic from "../../../icons/IconStatic";
 
 export default function AddExperienceCard({
   experience,
+  onDelete,
   onListSelect,
   onUpdateShots,
-  onUpdateCollages,
 }) {
-  const [listStatus, setListStatus] = useState(experience.list);
+  const [listStatus, setListStatus] = useState("");
+  const [isDropdownVisible, setDropdownVisible] = useState(false);
 
   const imageUrl = `${BASE_URL}${experience.experience.image}`;
-  const { title, category } = experience.experience;
+  const truncatedTitle = truncateText(experience.experience.title, 30);
+  const capitalizedCategory = capitalizeText(experience.experience.category);
   const associatedShots = experience.associatedShots;
-  const associatedCollages = experience.associatedCollages;
 
   const handleSelectList = (list) => {
     setListStatus(list);
-    onListSelect(experience.experience._id, list); // Update parent component's state
+    onListSelect(experience.experience._id, list);
+    setDropdownVisible(false);
   };
 
   const handleManageShots = () => {
     onUpdateShots(experience.experience._id, associatedShots);
   };
 
-  const handleManageCollages = () => {
-    onUpdateCollages(experience.experience._id, associatedCollages);
-  };
-
   return (
-    <View style={styles.container}>
-      <View style={styles.topRow}>
-        <Image source={{ uri: imageUrl }} style={cardStyles.imageLg} />
-        <View style={styles.infoContainer}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.category}>{category}</Text>
-          <View style={styles.buttonsContainer}>
-            <Pressable
-              style={[
-                styles.button,
-                listStatus === "EXPERIENCED" && styles.experiencedButton,
-              ]}
-              onPress={() => handleSelectList("EXPERIENCED")}
-            >
-              <Text
-                style={[
-                  styles.buttonText,
-                  listStatus === "EXPERIENCED" && styles.selectedText,
-                ]}
-              >
-                Experienced
-              </Text>
-            </Pressable>
-            <Pressable
-              style={[
-                styles.button,
-                listStatus === "WISHLISTED" && styles.wishListedButton,
-              ]}
-              onPress={() => handleSelectList("WISHLISTED")}
-            >
-              <Text
-                style={[
-                  styles.buttonText,
-                  listStatus === "WISHLISTED" && styles.selectedText,
-                ]}
-              >
-                Wish Listed
-              </Text>
-            </Pressable>
-          </View>
+    <View style={styles.listItemContainer}>
+      <View style={styles.contentContainer}>
+        <Image source={{ uri: imageUrl }} style={cardStyles.imageMd} />
+        <View style={styles.textContainer}>
+          <Text style={styles.title}>{truncatedTitle}</Text>
+          <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
         </View>
       </View>
-      <View style={styles.actionsContainer}>
-        <View>
-          <Text style={styles.label}>Associated Shots</Text>
-          {associatedShots.length === 0 ? (
-            <Text style={styles.labelSmall}>No Associated Shots</Text>
-          ) : (
-            <FlatList
-              horizontal
-              data={associatedShots}
-              renderItem={({ item }) => (
-                <Image
-                  source={{ uri: `${baseURL}${item.image}` }}
-                  style={styles.shotImage}
-                />
-              )}
-              keyExtractor={(item) => item._id}
-            />
+      <View style={styles.optionsContainer}>
+        <IconStatic
+          name="trash"
+          style={iconStyles.trashSm}
+          tintColor={"#8A8A8E"}
+          onPress={() => onDelete(experience.experience._id)}
+        />
+        <View style={styles.buttonsContainer}>
+          {listStatus !== "WISHLISTED" && (
+            <Pressable
+              style={[styles.optionsButton, styles.spacer]}
+              onPress={handleManageShots}
+            >
+              <Text style={styles.optionsText}>
+                {associatedShots.length === 0 ? "Add Shots" : "Edit Shots"}
+              </Text>
+            </Pressable>
+          )}
+          <Pressable
+            style={[
+              styles.optionsButton,
+              styles.spacer,
+              listStatus === "EXPERIENCED" && styles.experiencedButton,
+              listStatus === "WISHLISTED" && styles.wishListedButton,
+            ]}
+            onPress={() => setDropdownVisible(!isDropdownVisible)}
+          >
+            <Text
+              style={[
+                styles.optionsText,
+                listStatus === "EXPERIENCED" && styles.experiencedColor,
+                listStatus === "WISHLISTED" && styles.wishlistedColor,
+              ]}
+            >
+              {listStatus === "EXPERIENCED"
+                ? "Experienced"
+                : listStatus === "WISHLISTED"
+                ? "Wish Listed"
+                : "Select List"}
+            </Text>
+          </Pressable>
+          {isDropdownVisible && (
+            <View style={styles.dropdown}>
+              <Pressable
+                style={styles.dropdownOption}
+                onPress={() => handleSelectList("EXPERIENCED")}
+              >
+                <Text style={styles.dropdownOptionText}>Experienced</Text>
+              </Pressable>
+              <Pressable
+                style={styles.dropdownOption}
+                onPress={() => handleSelectList("WISHLISTED")}
+              >
+                <Text style={styles.dropdownOptionText}>Wish Listed</Text>
+              </Pressable>
+            </View>
           )}
         </View>
-        <Pressable onPress={handleManageShots}>
-          <Text style={styles.addAction}>
-            {associatedShots.length === 0 ? "Add Shots" : "Edit Shots"}
-          </Text>
-        </Pressable>
-      </View>
-      <View style={styles.actionsContainer}>
-        <View>
-          <Text style={styles.label}>Associated Collages</Text>
-          {associatedCollages.length === 0 ? (
-            <Text style={styles.labelSmall}>No Associated Collages</Text>
-          ) : (
-            <FlatList
-              horizontal
-              data={associatedCollages}
-              renderItem={({ item }) => (
-                <Image
-                  source={{ uri: `${baseURL}${item.coverImage}` }}
-                  style={styles.shotImage}
-                />
-              )}
-              keyExtractor={(item) => item._id}
-            />
-          )}
-        </View>
-        <Pressable onPress={handleManageCollages}>
-          <Text style={styles.addAction}>
-            {associatedCollages.length === 0 ? "Add Collages" : "Edit Collages"}
-          </Text>
-        </Pressable>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  listItemContainer: {
     flexDirection: "column",
-    marginBottom: 24,
-    position: "relative",
-  },
-  topRow: {
-    flexDirection: "row",
-  },
-  infoContainer: {
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginHorizontal: 4,
+    marginTop: 4,
     flex: 1,
-    marginLeft: 15,
+    padding: 8,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+  },
+  contentContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  textContainer: {
+    flex: 1,
   },
   title: {
-    fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "600",
   },
-  category: {
-    color: "#d4d4d4",
-    marginVertical: 5,
+  secondaryText: {
+    fontSize: 12,
+    color: "#8A8A8E",
+    marginTop: 1.5,
+  },
+  optionsContainer: {
+    flexDirection: "row",
+    marginTop: 8,
+    justifyContent: "space-between",
+    width: "100%",
+    alignItems: "center",
+    paddingLeft: 16,
   },
   buttonsContainer: {
     flexDirection: "row",
-    paddingTop: 4,
+    alignSelf: "flex-end",
   },
-  button: {
-    borderWidth: 1,
-    borderColor: "#d4d4d4",
-    borderRadius: 4,
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    marginRight: 10,
+  optionsButton: {
+    flexDirection: "row",
+    backgroundColor: "#ececec",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 12,
   },
-  buttonText: {
-    textAlign: "center",
+  optionsText: {
     fontSize: 12,
+    fontWeight: "500",
+  },
+  spacer: {
+    marginLeft: 8,
+  },
+  dropdown: {
+    position: "absolute",
+    top: 32,
+    left: 0,
+    backgroundColor: "white",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    zIndex: 1,
+  },
+  dropdownOption: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+  },
+  dropdownOptionText: {
+    color: "#000",
   },
   experiencedButton: {
-    backgroundColor: "#6AB952",
-    borderColor: "#6AB952",
+    backgroundColor: "#6AB95230",
   },
   wishListedButton: {
-    backgroundColor: "#5FC4ED",
-    borderColor: "#5FC4ED",
+    backgroundColor: "#5FC4ED30",
   },
-  selectedText: {
-    color: "#fff",
+  experiencedColor: {
+    color: "#6AB952",
   },
-  actionsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginTop: 8,
-  },
-  label: {
-    fontSize: 14,
-  },
-  labelSmall: {
-    fontSize: 12,
-    color: "#d4d4d4",
-    fontStyle: "italic",
-    marginTop: 4,
-  },
-  addAction: {
-    color: "#5FAF46",
-    fontSize: 12,
-    fontStyle: "italic",
-  },
-  shotImage: {
-    width: 40,
-    height: 40,
-    marginRight: 8,
+  wishlistedColor: {
+    color: "#5FC4ED",
   },
 });

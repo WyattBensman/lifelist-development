@@ -95,11 +95,6 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
     outputRange: ["0deg", "90deg"],
   });
 
-  const listStyle =
-    experience.list === "EXPERIENCED"
-      ? styles.experiencedText
-      : styles.wishlistedText;
-
   return (
     <View>
       <Pressable
@@ -132,14 +127,18 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
               onPress={() => onDelete(_id)}
             />
             <View style={styles.buttonsContainer}>
-              <Pressable
-                style={styles.optionsButton}
-                onPress={handleManageShots}
-              >
-                <Text style={styles.optionsText}>
-                  {associatedShots.length === 0 ? "Add Shots" : "Manage Shots"}
-                </Text>
-              </Pressable>
+              {listStatus === "EXPERIENCED" && (
+                <Pressable
+                  style={styles.optionsButton}
+                  onPress={handleManageShots}
+                >
+                  <Text style={styles.optionsText}>
+                    {associatedShots.length === 0
+                      ? "Add Shots"
+                      : "Manage Shots"}
+                  </Text>
+                </Pressable>
+              )}
               <Pressable
                 style={[
                   styles.optionsButton,
@@ -196,7 +195,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "600",
-    marginTop: 4,
   },
   secondaryText: {
     fontSize: 12,

@@ -5,7 +5,7 @@ import { BASE_URL } from "../../../utils/config";
 export default function ExperienceCard({ experience, associatedShots }) {
   const screenWidth = Dimensions.get("window").width;
   const cardWidth = screenWidth * 0.44;
-  const imageHeight = cardWidth * 1.35;
+  const imageHeight = cardWidth * 1.33;
   const cardHeight = imageHeight + 44;
 
   const imageUrl = `${BASE_URL}${experience.image}`;

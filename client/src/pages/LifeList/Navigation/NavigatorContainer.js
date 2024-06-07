@@ -1,13 +1,6 @@
 // NavigatorContainer.js
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  StyleSheet,
-  Pressable,
-} from "react-native";
+import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import AllExperiences from "../Screens/TabScreens/AllExperiences";
 import CategoryExperiences from "../Screens/TabScreens/CategoryExperiences";
 
