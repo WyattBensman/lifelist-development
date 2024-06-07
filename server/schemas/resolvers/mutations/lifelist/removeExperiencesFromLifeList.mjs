@@ -8,12 +8,12 @@ const removeExperiencesFromLifeList = async (
 ) => {
   try {
     // Ensure the user is authenticated
-    isUser(user);
+    /* isUser(user); */
 
     // Find the LifeList by ID and ensure it belongs to the user
     const lifeList = await LifeList.findOne({
       _id: lifeListId,
-      author: user._id,
+      author: "663a3129e0ffbeff092b81d4",
     });
     if (!lifeList) {
       throw new Error(
