@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, StyleSheet, Text, Button, Animated } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Button,
+  Animated,
+  Dimensions,
+} from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { layoutStyles } from "../../../styles/LayoutStyles";
 import Header from "../Components/Header";
@@ -18,6 +25,9 @@ export default function CameraHome() {
   const cameraRef = useRef(null);
 
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const screenHeight = Dimensions.get("window").height;
+  const screenWidth = Dimensions.get("window").width;
+  const boxHeight = (screenHeight * 2) / 3;
 
   useEffect(() => {
     setIsTabBarVisible(false);
@@ -89,19 +99,10 @@ export default function CameraHome() {
           facing={facing}
           flash={flash}
         />
-        <View style={styles.overlay}>
-          <View style={styles.cornerTopLeft} />
-          <View style={styles.cornerTopRight} />
-          <View style={styles.cornerBottomLeft} />
-          <View style={styles.cornerBottomRight} />
-          <View style={styles.centerCrosshair}>
-            <View style={styles.crosshairVertical} />
-            <View style={styles.crosshairHorizontal} />
-          </View>
-          <View style={styles.innerCornerTopLeft} />
-          <View style={styles.innerCornerTopRight} />
-          <View style={styles.innerCornerBottomLeft} />
-          <View style={styles.innerCornerBottomRight} />
+        <View
+          style={[styles.overlay, { height: boxHeight, width: screenWidth }]}
+        >
+          {/* Your overlay elements here */}
         </View>
       </View>
       <Footer
@@ -121,10 +122,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    position: "absolute",
+    top: 0,
     justifyContent: "space-between",
     alignItems: "center",
     zIndex: 1,
+    borderWidth: 1,
+    borderColor: "red", // Added border color for visibility
   },
   cornerTopLeft: {
     position: "absolute",

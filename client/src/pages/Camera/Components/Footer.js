@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   wrapper: {
     position: "relative",
     alignItems: "center",
-    backgroundColor: "#262828",
+    backgroundColor: "#111",
   },
   circleBackground: {
     position: "absolute",
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 200,
-    backgroundColor: "#262828",
+    backgroundColor: "#111",
   },
   container: {
     height: 100,

@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     paddingTop: 60,
     paddingBottom: 10,
-    backgroundColor: "#262828",
+    backgroundColor: "#111",
   },
   contentContainer: {
     marginHorizontal: 20,
