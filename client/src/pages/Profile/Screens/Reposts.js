@@ -9,6 +9,10 @@ export default function Reposts({ userId }) {
     variables: { userId },
   });
 
+  const filteredCollages = data?.getRepostedCollages.filter(
+    (item) => !item.archived
+  );
+
   const renderCollageItem = ({ item }) => (
     <CollageCard path={item.coverImage} />
   );
@@ -16,7 +20,7 @@ export default function Reposts({ userId }) {
   return (
     <View style={layoutStyles.wrapper}>
       <FlatList
-        data={data?.getRepostedCollages}
+        data={filteredCollages}
         renderItem={renderCollageItem}
         keyExtractor={(item) => item._id.toString()}
         numColumns={3}

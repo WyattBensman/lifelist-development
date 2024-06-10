@@ -1,8 +1,21 @@
-import { Image, StyleSheet, Text, View, Dimensions } from "react-native";
+import React from "react";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+  Pressable,
+} from "react-native";
 import { capitalizeText, truncateText } from "../../../utils/utils";
 import { BASE_URL } from "../../../utils/config";
 
-export default function ExperienceCard({ experience, associatedShots }) {
+export default function ExperienceCard({
+  experience,
+  lifeListExperienceId,
+  associatedShots,
+  navigation,
+}) {
   const screenWidth = Dimensions.get("window").width;
   const cardWidth = screenWidth * 0.44;
   const imageHeight = cardWidth * 1.33;
@@ -12,25 +25,37 @@ export default function ExperienceCard({ experience, associatedShots }) {
   const truncatedTitle = truncateText(experience.title, 20);
   const capitalizedCategory = capitalizeText(experience.category);
 
+  const handlePress = () => {
+    if (associatedShots && associatedShots.length > 0) {
+      navigation.navigate("LifeListStack", {
+        screen: "ViewExperience",
+        params: { experienceId: lifeListExperienceId },
+      });
+    }
+  };
+
   return (
-    <View
-      style={[
-        styles.cardContainer,
-        { width: cardWidth, height: cardHeight },
-        associatedShots && associatedShots.length > 0 && styles.cardShadow,
-      ]}
+    <Pressable
+      onPress={handlePress}
+      disabled={!associatedShots || associatedShots.length === 0}
     >
-      <Image
-        source={{
-          uri: imageUrl,
-        }}
-        style={[styles.image, { height: imageHeight }]}
-      />
-      <View style={styles.spacer}>
-        <Text style={styles.title}>{truncatedTitle}</Text>
-        <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
+      <View
+        style={[
+          styles.cardContainer,
+          { width: cardWidth, height: cardHeight },
+          associatedShots && associatedShots.length > 0 && styles.cardShadow,
+        ]}
+      >
+        <Image
+          source={{ uri: imageUrl }}
+          style={[styles.image, { height: imageHeight }]}
+        />
+        <View style={styles.spacer}>
+          <Text style={styles.title}>{truncatedTitle}</Text>
+          <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
+        </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 

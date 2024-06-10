@@ -44,7 +44,7 @@ export const getFollowing = async (_, { userId }, { user }) => {
 
 export const getUserCollages = async (_, { userId }) => {
   const foundUser = await User.findById(userId)
-    .populate("collages", "_id coverImage")
+    .populate("collages", "_id coverImage archived")
     .exec();
   if (!foundUser) throw new Error("User not found for the provided ID.");
   return foundUser.collages;
@@ -53,7 +53,7 @@ export const getUserCollages = async (_, { userId }) => {
 export const getRepostedCollages = async (_, { userId }, { user }) => {
   isUser(user);
   const foundUser = await User.findById(userId)
-    .populate("repostedCollages", "_id coverImage")
+    .populate("repostedCollages", "_id coverImage archived")
     .exec();
   if (!foundUser) throw new Error("User not found for the provided ID.");
   return foundUser.repostedCollages;
@@ -62,7 +62,7 @@ export const getRepostedCollages = async (_, { userId }, { user }) => {
 export const getTaggedCollages = async (_, { userId }, { user }) => {
   isUser(user);
   const foundUser = await User.findById(userId)
-    .populate("taggedCollages", "_id coverImage")
+    .populate("taggedCollages", "_id coverImage archived")
     .exec();
   if (!foundUser) throw new Error("User not found for the provided ID.");
   return foundUser.taggedCollages;
@@ -71,7 +71,7 @@ export const getTaggedCollages = async (_, { userId }, { user }) => {
 export const getLikedCollages = async (_, __, { user }) => {
   isUser(user);
   const foundUser = await User.findById(user._id)
-    .populate("likedCollages", "_id coverImage")
+    .populate("likedCollages", "_id coverImage archived")
     .exec();
   if (!foundUser) throw new Error("User not found.");
   return foundUser.likedCollages;
@@ -80,7 +80,7 @@ export const getLikedCollages = async (_, __, { user }) => {
 export const getSavedCollages = async (_, __, { user }) => {
   isUser(user);
   const foundUser = await User.findById(user._id)
-    .populate("savedCollages", "_id coverImage")
+    .populate("savedCollages", "_id coverImage archived")
     .exec();
   if (!foundUser) throw new Error("User not found for the provided ID.");
   return foundUser.savedCollages;

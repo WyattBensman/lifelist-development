@@ -1,3 +1,4 @@
+// AllExperiences.js
 import React, { useMemo } from "react";
 import { Text, View, FlatList, StyleSheet } from "react-native";
 import { headerStyles, layoutStyles } from "../../../../styles";
@@ -6,7 +7,7 @@ import ExperienceCard from "../../Cards/ExperienceCard";
 const sortByTitle = (a, b) =>
   a.experience.title.localeCompare(b.experience.title);
 
-export default function AllExperiences({ lifeList }) {
+export default function AllExperiences({ lifeList, navigation }) {
   const experiencedList = useMemo(
     () =>
       lifeList.experiences
@@ -26,7 +27,9 @@ export default function AllExperiences({ lifeList }) {
   const renderExperience = ({ item }) => (
     <ExperienceCard
       experience={item.experience}
+      lifeListExperienceId={item._id}
       associatedShots={item.associatedShots}
+      navigation={navigation}
     />
   );
 

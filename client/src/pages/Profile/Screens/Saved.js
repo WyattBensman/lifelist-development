@@ -1,4 +1,4 @@
-import { Dimensions, FlatList, Image, View } from "react-native";
+import { Dimensions, FlatList, Image, View, Text } from "react-native";
 import { layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
@@ -10,6 +10,23 @@ import CollageCard from "../Cards/CollageCard";
 export default function Saved() {
   const navigation = useNavigation();
   const { data, loading, error } = useQuery(GET_SAVED_COLLAGES);
+
+  if (loading)
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  if (error)
+    return (
+      <View>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+
+  const filteredCollages = data?.getSavedCollages.filter(
+    (item) => !item.archived
+  );
 
   const renderCollageItem = ({ item }) => (
     <CollageCard path={item.coverImage} />
@@ -23,7 +40,7 @@ export default function Saved() {
       />
       <View>
         <FlatList
-          data={data?.getSavedCollages}
+          data={filteredCollages}
           renderItem={renderCollageItem}
           keyExtractor={(item) => item._id.toString()}
           numColumns={3}

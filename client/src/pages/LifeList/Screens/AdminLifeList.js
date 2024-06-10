@@ -1,4 +1,3 @@
-// AdminLifeList.js
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { View, Text } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -19,7 +18,7 @@ export default function AdminLifeList() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchBarVisible, setSearchBarVisible] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(""); // Add search query state
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
     variables: { userId: currentUser._id },
@@ -29,7 +28,6 @@ export default function AdminLifeList() {
     useCallback(() => {
       refetch();
       return () => {
-        // Set dropdownVisible to false when the screen loses focus
         setDropdownVisible(false);
       };
     }, [refetch])
@@ -43,7 +41,6 @@ export default function AdminLifeList() {
 
   const lifeList = data?.getUserLifeList || { experiences: [] };
 
-  // Filter experiences based on search query
   const filteredExperiences = useMemo(() => {
     if (!searchQuery) return lifeList.experiences;
     return lifeList.experiences.filter((exp) =>

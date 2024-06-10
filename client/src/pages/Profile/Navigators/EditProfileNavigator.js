@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import EditProfile from "../Screens/TabScreens/EditProfile";
 import EditContact from "../Screens/TabScreens/EditContact";
 import EditSettings from "../Screens/TabScreens/EditSettings";
+import { useRoute } from "@react-navigation/native";
 
 const tabs = [
   { name: "Profile", component: EditProfile },
@@ -11,7 +12,15 @@ const tabs = [
 ];
 
 export default function EditProfileNavigator() {
-  const [activeTab, setActiveTab] = useState("Profile");
+  const route = useRoute();
+  const initialTab = route.params?.initialTab || "Profile";
+  const [activeTab, setActiveTab] = useState(initialTab);
+
+  useEffect(() => {
+    if (route.params?.initialTab) {
+      setActiveTab(route.params.initialTab);
+    }
+  }, [route.params?.initialTab]);
 
   const renderScreen = () => {
     const activeTabComponent = tabs.find(

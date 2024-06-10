@@ -9,6 +9,23 @@ export default function Collages({ userId }) {
     variables: { userId },
   });
 
+  if (loading)
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    );
+  if (error)
+    return (
+      <View>
+        <Text>Error: {error.message}</Text>
+      </View>
+    );
+
+  const filteredCollages = data?.getUserCollages.filter(
+    (item) => !item.archived
+  );
+
   const renderCollageItem = ({ item }) => (
     <CollageCard path={item.coverImage} />
   );
@@ -16,7 +33,7 @@ export default function Collages({ userId }) {
   return (
     <View style={layoutStyles.wrapper}>
       <FlatList
-        data={data?.getUserCollages}
+        data={filteredCollages}
         renderItem={renderCollageItem}
         keyExtractor={(item) => item._id.toString()}
         numColumns={3}

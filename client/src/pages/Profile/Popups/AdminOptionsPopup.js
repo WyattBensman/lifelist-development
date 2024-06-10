@@ -41,7 +41,7 @@ export default function AdminOptionsPopup({
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={() =>
-            handleNavigate("EditProfile", { screen: "EditSettings" })
+            handleNavigate("EditProfile", { initialTab: "Settings" })
           }
         >
           <View style={layoutStyles.flexRow}>
