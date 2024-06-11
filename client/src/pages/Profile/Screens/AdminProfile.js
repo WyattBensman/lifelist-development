@@ -1,4 +1,3 @@
-// AdminProfile.js
 import React, { useState } from "react";
 import { Text, View } from "react-native";
 import { headerStyles, layoutStyles } from "../../../styles";
@@ -47,6 +46,7 @@ export default function AdminProfile() {
       <CustomProfileNavigator
         userId={profile._id}
         isAdmin={true}
+        isAdminScreen={true} // Pass isAdminScreen prop
         navigation={navigation}
       />
 

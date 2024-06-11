@@ -11,19 +11,6 @@ export default function Saved() {
   const navigation = useNavigation();
   const { data, loading, error } = useQuery(GET_SAVED_COLLAGES);
 
-  if (loading)
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
-  if (error)
-    return (
-      <View>
-        <Text>Error: {error.message}</Text>
-      </View>
-    );
-
   const filteredCollages = data?.getSavedCollages.filter(
     (item) => !item.archived
   );

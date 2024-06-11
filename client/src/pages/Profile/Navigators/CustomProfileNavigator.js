@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import Collages from "../Screens/Collages";
-import LifeList from "../../LifeList/Screens/LifeList";
 import Reposts from "../Screens/Reposts";
 
 const tabs = [
   { name: "Collages", component: Collages },
   { name: "Reposts", component: Reposts },
-  { name: "LifeList", component: LifeList },
+  { name: "LifeList", component: null }, // Change so it doesn't render a component
 ];
 
 export default function CustomProfileNavigator({
   userId,
   isAdmin,
+  isAdminScreen,
   navigation,
 }) {
   const [activeTab, setActiveTab] = useState("Collages");
@@ -21,17 +21,22 @@ export default function CustomProfileNavigator({
     const activeTabComponent = tabs.find(
       (tab) => tab.name === activeTab
     ).component;
-    return React.createElement(activeTabComponent, { userId });
+    if (activeTabComponent) {
+      return React.createElement(activeTabComponent, { userId });
+    }
+    return null;
   };
 
   const handleTabPress = (tabName) => {
-    setActiveTab(tabName);
     if (tabName === "LifeList") {
-      if (isAdmin) {
+      if (isAdmin && isAdminScreen) {
         navigation.navigate("AdminLifeListStack");
       } else {
-        navigation.navigate("LifeListStack", { userId });
+        navigation.navigate("LifeListStack");
       }
+      setActiveTab("Collages"); // Reset to Collages after navigation
+    } else {
+      setActiveTab(tabName);
     }
   };
 

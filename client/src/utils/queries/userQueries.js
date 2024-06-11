@@ -68,6 +68,7 @@ export const GET_USER_COLLAGES = gql`
     getUserCollages(userId: $userId) {
       _id
       coverImage
+      archived
     }
   }
 `;
@@ -78,6 +79,7 @@ export const GET_REPOSTED_COLLAGES = gql`
     getRepostedCollages(userId: $userId) {
       _id
       coverImage
+      archived
     }
   }
 `;
@@ -88,6 +90,7 @@ export const GET_TAGGED_COLLAGES = gql`
     getTaggedCollages(userId: $userId) {
       _id
       coverImage
+      archived
     }
   }
 `;
@@ -98,6 +101,7 @@ export const GET_LIKED_COLLAGES = gql`
     getLikedCollages {
       _id
       coverImage
+      archived
     }
   }
 `;
@@ -108,6 +112,7 @@ export const GET_SAVED_COLLAGES = gql`
     getSavedCollages {
       _id
       coverImage
+      archived
     }
   }
 `;

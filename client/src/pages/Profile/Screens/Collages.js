@@ -9,19 +9,6 @@ export default function Collages({ userId }) {
     variables: { userId },
   });
 
-  if (loading)
-    return (
-      <View>
-        <Text>Loading...</Text>
-      </View>
-    );
-  if (error)
-    return (
-      <View>
-        <Text>Error: {error.message}</Text>
-      </View>
-    );
-
   const filteredCollages = data?.getUserCollages.filter(
     (item) => !item.archived
   );
