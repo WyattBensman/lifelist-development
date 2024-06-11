@@ -231,26 +231,6 @@ type User {
     author: User
     image: String
     capturedAt: Date
-    camera: CameraType
-    shotOrientation: ShotOrientation
-    dimensions: Dimensions
-  }
-
-  type Dimensions {
-    width: Int
-    height: Int
-  }
-
-  enum CameraType {
-    STANDARD
-    FUJI
-    DISPOSABLE
-    POLAROID
-  }
-
-  enum ShotOrientation {
-    VERTICAL
-    HORIZONTAL
   }
 
   type Query {
@@ -415,8 +395,8 @@ type User {
     updateAssociatedCollages(lifeListExperienceId: ID!, collageIds: [ID]): StandardResponse
 
     # Camera Mutations
-    createCameraShot(image: Upload!, camera: CameraType, shotOrientation: ShotOrientation): StandardResponse
-    editCameraShot(shotId: ID!, camera: CameraType): CameraShot
+    createCameraShot(image: Upload!): StandardResponse
+    editCameraShot(shotId: ID!, image: String!): StandardResponse
     deleteCameraShot(shotId: ID!): StandardResponse
     createCameraAlbum(title: String!, description: String, shots: [ID]): CameraAlbum
     editCameraAlbum(albumId: ID!, title: String, description: String): CameraAlbum

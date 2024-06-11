@@ -8,6 +8,7 @@ import PrivacyGroup from "../pages/Profile/Screens/PrivacyGroup";
 import AdminProfile from "../pages/Profile/Screens/AdminProfile";
 import ProfileStack from "./ProfileStack";
 import NavigationTab from "./NavigationTab";
+import ViewCollage from "../pages/Collage/Screens/ViewCollage"; // Import ViewCollage
 
 const Stack = createNativeStackNavigator();
 
@@ -63,6 +64,11 @@ export default function AdminProfileStack() {
       <Stack.Screen
         name="NavigationTabStack"
         component={NavigationTab}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ViewCollage"
+        component={ViewCollage}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

@@ -2,16 +2,8 @@ import { gql } from "@apollo/client";
 
 // Create a camera shot
 export const CREATE_CAMERA_SHOT = gql`
-  mutation CreateCameraShot(
-    $image: Upload!
-    $camera: CameraType!
-    $shotOrientation: ShotOrientation!
-  ) {
-    createCameraShot(
-      image: $image
-      camera: $camera
-      shotOrientation: $shotOrientation
-    ) {
+  mutation CreateCameraShot($image: Upload!) {
+    createCameraShot(image: $image) {
       success
       message
     }
@@ -20,14 +12,10 @@ export const CREATE_CAMERA_SHOT = gql`
 
 // Edit a camera shot
 export const EDIT_CAMERA_SHOT = gql`
-  mutation EditCameraShot($shotId: ID!, $camera: CameraType!) {
-    editCameraShot(shotId: $shotId, camera: $camera) {
-      _id
-      camera
-      dimensions {
-        width
-        height
-      }
+  mutation EditCameraShot($shotId: ID!, $image: String!) {
+    editCameraShot(shotId: $shotId, image: $image) {
+      success
+      message
     }
   }
 `;

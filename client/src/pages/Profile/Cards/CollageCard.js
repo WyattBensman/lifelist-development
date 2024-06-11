@@ -1,19 +1,26 @@
-import { Image, StyleSheet, View, Dimensions } from "react-native";
+import { Image, StyleSheet, View, Dimensions, Pressable } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { BASE_URL } from "../../../utils/config";
 
 const screenWidth = Dimensions.get("window").width;
 const spacing = 1.5;
 const imageWidth = (screenWidth - spacing * 2) / 3; // Adjusted to account for the spacing
 
-export default function CollageCard({ path }) {
+export default function CollageCard({ collageId, path }) {
+  const navigation = useNavigation();
+
+  const handlePress = () => {
+    navigation.navigate("ViewCollage", { collageId });
+  };
+
   return (
-    <View style={styles.container}>
+    <Pressable onPress={handlePress} style={styles.container}>
       <Image
         source={{ uri: `${BASE_URL}${path}` }}
         style={styles.image}
         resizeMode="cover"
       />
-    </View>
+    </Pressable>
   );
 }
 

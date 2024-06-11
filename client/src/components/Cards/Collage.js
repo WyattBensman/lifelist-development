@@ -1,18 +1,34 @@
-import { Text, View, StyleSheet, Pressable, Image } from "react-native";
+import {
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useQuery, gql } from "@apollo/client";
 import { layoutStyles } from "../../styles";
-import SymbolButtonAction from "../../icons/SymbolButtonAction";
-import TaggedUsersIcon from "../../icons/TaggedUsersIcon";
 import Icon from "../../icons/Icon";
 import { iconStyles } from "../../styles/iconStyles";
+import { GET_COLLAGE_BY_ID } from "../../utils/queries/collageQueries";
 
-export default function Collage() {
+export default function Collage({ collageId }) {
   const navigation = useNavigation();
+  const { loading, error, data } = useQuery(GET_COLLAGE_BY_ID, {
+    variables: { collageId },
+  });
+
+  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
+  if (error) return <Text>Error: {error.message}</Text>;
+
+  const { caption, images, coverImage, author, createdAt } =
+    data.getCollageById;
 
   const handlePress = () => {
     navigation.navigate("ProfileStack", {
       screen: "Profile",
-      params: { userId: "663a3133e0ffbeff092b81db" },
+      params: { userId: author._id },
     });
   };
 
@@ -22,20 +38,22 @@ export default function Collage() {
         <Image
           style={styles.image}
           source={{
-            uri: "http://localhost:3001/uploads/abby-bar-post.png",
+            uri: coverImage,
           }}
         />
         <View style={styles.topContainer}>
           <View style={styles.topLeftContainer}>
-            <Image
-              style={styles.profilePicture}
-              source={{
-                uri: "http://localhost:3001/uploads/abby-barr-profile-picture.png",
-              }}
-            />
+            <Pressable onPress={handlePress}>
+              <Image
+                style={styles.profilePicture}
+                source={{
+                  uri: author.profilePicture,
+                }}
+              />
+            </Pressable>
             <View style={styles.userInfo}>
-              <Text style={styles.fullName}>Abby Barr</Text>
-              <Text style={styles.location}>Kauai, Hawaii</Text>
+              <Text style={styles.fullName}>{author.fullName}</Text>
+              <Text style={styles.location}>Location unknown</Text>
             </View>
           </View>
           <Icon
@@ -46,6 +64,12 @@ export default function Collage() {
         </View>
         <View style={styles.actionContainer}>
           <Icon name="heart" style={iconStyles.heart} tintColor={"#ffffff"} />
+          <Icon
+            name="bubble"
+            style={iconStyles.comment}
+            spacer={16}
+            tintColor={"#ffffff"}
+          />
           <Icon
             name="repeat"
             style={iconStyles.repeat}
@@ -58,23 +82,18 @@ export default function Collage() {
             spacer={16}
             tintColor={"#ffffff"}
           />
-          <Icon
-            name="tag"
-            style={iconStyles.tag}
-            spacer={16}
-            tintColor={"#ffffff"}
-          />
         </View>
       </View>
       <View style={styles.bottomContainer}>
         <Text style={styles.caption}>
-          <Text style={styles.username}>abbybar </Text>
-          caption caption caption caption caption caption caption caption
-          caption caption caption caption caption caption caption
+          <Text style={styles.username}>{author.username} </Text>
+          {caption}
         </Text>
         <View style={styles.bottomTextContainer}>
-          <Text style={styles.postDate}>May 21st, 2024</Text>
-          <Text style={styles.viewComments}>Add Comment (17)</Text>
+          <Text style={styles.postDate}>
+            {new Date(createdAt).toLocaleDateString()}
+          </Text>
+          <Text style={styles.viewComments}>Tagged Users (7)</Text>
         </View>
       </View>
     </View>
@@ -86,9 +105,9 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   image: {
-    width: "100%", // Full width of the parent
-    aspectRatio: 2 / 3, // 2:3 aspect ratio
-    backgroundColor: "#d4d4d4", // Grey background color as a fallback
+    width: "100%",
+    aspectRatio: 2 / 3,
+    backgroundColor: "#d4d4d4",
   },
   topContainer: {
     position: "absolute",
@@ -135,21 +154,23 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   bottomContainer: {
-    marginTop: 6,
+    flex: 1,
+    marginTop: 8,
     marginHorizontal: 16,
+    justifyContent: "space-between",
   },
   bottomTextContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginTop: 6,
+    marginBottom: 12,
   },
   postDate: {
     fontSize: 12,
     color: "#d4d4d4",
   },
   viewComments: {
-    color: "#d4d4d4",
     fontSize: 12,
+    color: "#d4d4d4",
   },
 });

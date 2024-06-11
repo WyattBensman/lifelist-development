@@ -1,3 +1,4 @@
+// src/pages/CameraHome.js
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
@@ -19,15 +20,14 @@ export default function CameraHome() {
   const { setIsTabBarVisible } = useNavigationContext();
   const [facing, setFacing] = useState("back");
   const [flash, setFlash] = useState("off");
-  const [shotOrientation, setShotOrientation] = useState("VERTICAL");
-  const [cameraType, setCameraType] = useState("Disposable");
+  const [cameraType, setCameraType] = useState("DISPOSABLE");
+  const [zoom, setZoom] = useState(1);
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef(null);
 
   const rotateAnim = useRef(new Animated.Value(0)).current;
-  const screenHeight = Dimensions.get("window").height;
   const screenWidth = Dimensions.get("window").width;
-  const boxHeight = (screenHeight * 2) / 3;
+  const cameraHeight = (screenWidth * 3) / 2;
 
   useEffect(() => {
     setIsTabBarVisible(false);
@@ -36,11 +36,11 @@ export default function CameraHome() {
 
   useEffect(() => {
     Animated.timing(rotateAnim, {
-      toValue: shotOrientation === "VERTICAL" ? 0 : 1,
+      toValue: 0,
       duration: 300,
       useNativeDriver: true,
     }).start();
-  }, [shotOrientation]);
+  }, []);
 
   const rotation = rotateAnim.interpolate({
     inputRange: [0, 1],
@@ -70,14 +70,12 @@ export default function CameraHome() {
     setFlash((current) => (current === "off" ? "on" : "off"));
   };
 
-  const toggleShotOrientation = () => {
-    setShotOrientation((current) =>
-      current === "VERTICAL" ? "HORIZONTAL" : "VERTICAL"
-    );
-  };
-
   const handleSelectCameraType = (type) => {
     setCameraType(type);
+  };
+
+  const handleZoomChange = (zoomLevel) => {
+    setZoom(zoomLevel);
   };
 
   return (
@@ -85,32 +83,32 @@ export default function CameraHome() {
       <Header
         toggleFlash={toggleFlash}
         flash={flash}
-        toggleShotOrientation={toggleShotOrientation}
-        shotOrientation={shotOrientation}
         toggleCameraFacing={toggleCameraFacing}
         rotation={rotation}
         cameraType={cameraType}
         onSelectCameraType={handleSelectCameraType}
       />
       <View style={{ flex: 1 }}>
-        <CameraView
-          ref={cameraRef}
-          style={{ flex: 1 }}
-          facing={facing}
-          flash={flash}
-        />
-        <View
-          style={[styles.overlay, { height: boxHeight, width: screenWidth }]}
-        >
-          {/* Your overlay elements here */}
+        <View style={{ height: cameraHeight, width: screenWidth }}>
+          <CameraView
+            ref={cameraRef}
+            style={{ height: "100%", width: "100%" }}
+            facing={facing}
+            flash={flash}
+            zoom={zoom}
+          />
         </View>
+        <Footer
+          cameraRef={cameraRef}
+          rotation={rotation}
+          cameraType={cameraType}
+          flash={flash}
+          toggleFlash={toggleFlash}
+          toggleCameraFacing={toggleCameraFacing}
+          handleZoomChange={handleZoomChange}
+          footerHeight={Dimensions.get("window").height - cameraHeight}
+        />
       </View>
-      <Footer
-        cameraRef={cameraRef}
-        shotOrientation={shotOrientation}
-        rotation={rotation}
-        cameraType={cameraType}
-      />
     </View>
   );
 }
@@ -129,111 +127,5 @@ const styles = StyleSheet.create({
     zIndex: 1,
     borderWidth: 1,
     borderColor: "red", // Added border color for visibility
-  },
-  cornerTopLeft: {
-    position: "absolute",
-    top: 20,
-    left: 20,
-    width: 40,
-    height: 40,
-    borderLeftWidth: 2,
-    borderTopWidth: 2,
-    borderColor: "rgba(236, 236, 236, 0.15)",
-  },
-  cornerTopRight: {
-    position: "absolute",
-    top: 20,
-    right: 20,
-    width: 40,
-    height: 40,
-    borderRightWidth: 2,
-    borderTopWidth: 2,
-    borderColor: "rgba(236, 236, 236, 0.15)",
-  },
-  cornerBottomLeft: {
-    position: "absolute",
-    bottom: 20,
-    left: 20,
-    width: 40,
-    height: 40,
-    borderLeftWidth: 2,
-    borderBottomWidth: 2,
-    borderColor: "rgba(236, 236, 236, 0.15)",
-  },
-  cornerBottomRight: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    width: 40,
-    height: 40,
-    borderRightWidth: 2,
-    borderBottomWidth: 2,
-    borderColor: "rgba(236, 236, 236, 0.15)",
-  },
-  centerCrosshair: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: [{ translateX: -20 }, { translateY: -20 }],
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  crosshairVertical: {
-    position: "absolute",
-    width: 2,
-    height: 20,
-    backgroundColor: "rgba(236, 236, 236, 0.15)",
-  },
-  crosshairHorizontal: {
-    position: "absolute",
-    height: 2,
-    width: 20,
-    backgroundColor: "rgba(236, 236, 236, 0.15)",
-  },
-  innerCornerTopLeft: {
-    position: "absolute",
-    top: "45%",
-    left: "45%",
-    width: 20,
-    height: 20,
-    borderLeftWidth: 2,
-    borderTopWidth: 2,
-    borderColor: "rgba(236, 236, 236, 0.15)",
-    transform: [{ translateX: -25 }, { translateY: -10 }],
-  },
-  innerCornerTopRight: {
-    position: "absolute",
-    top: "45%",
-    right: "45%",
-    width: 20,
-    height: 20,
-    borderRightWidth: 2,
-    borderTopWidth: 2,
-    borderColor: "rgba(236, 236, 236, 0.15)",
-    transform: [{ translateX: 25 }, { translateY: -10 }],
-  },
-  innerCornerBottomLeft: {
-    position: "absolute",
-    bottom: "45%",
-    left: "45%",
-    width: 20,
-    height: 20,
-    borderLeftWidth: 2,
-    borderBottomWidth: 2,
-    borderColor: "rgba(236, 236, 236, 0.15)",
-    transform: [{ translateX: -25 }, { translateY: 10 }],
-  },
-  innerCornerBottomRight: {
-    position: "absolute",
-    bottom: "45%",
-    right: "45%",
-    width: 20,
-    height: 20,
-    borderRightWidth: 2,
-    borderBottomWidth: 2,
-    borderColor: "rgba(236, 236, 236, 0.15)",
-    transform: [{ translateX: 25 }, { translateY: 10 }],
   },
 });

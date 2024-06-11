@@ -8,10 +8,9 @@ export const iconStyles = StyleSheet.create({
     alignItems: "center",
   },
   // Collage Icons
-  tag: {
-    width: 25.51,
-    height: 26.22,
-    marginTop: 1,
+  comment: {
+    width: 26.5,
+    height: 23.5,
   },
   bookmark: {
     width: 24.1,
@@ -81,5 +80,13 @@ export const iconStyles = StyleSheet.create({
   arrowUpDown: {
     width: 13.91,
     height: 11,
+  },
+  photoCircle: {
+    width: 20.28,
+    height: 19.93,
+  },
+  photoCircleLg: {
+    width: 38,
+    height: 37,
   },
 });

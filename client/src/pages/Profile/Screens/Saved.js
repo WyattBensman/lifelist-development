@@ -16,7 +16,7 @@ export default function Saved() {
   );
 
   const renderCollageItem = ({ item }) => (
-    <CollageCard path={item.coverImage} />
+    <CollageCard collageId={item._id} path={item.coverImage} />
   );
 
   return (

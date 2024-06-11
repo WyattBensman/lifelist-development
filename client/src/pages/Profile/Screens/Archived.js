@@ -12,7 +12,7 @@ export default function Archived() {
   const { data, loading, error } = useQuery(GET_ARCHIVED_COLLAGES);
 
   const renderCollageItem = ({ item }) => (
-    <CollageCard path={item.coverImage} />
+    <CollageCard collageId={item._id} path={item.coverImage} />
   );
 
   return (

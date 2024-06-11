@@ -1,8 +1,7 @@
-import { applyCameraEffects } from "../../../../utils/applyCameraEffects.mjs";
 import { CameraShot } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-const editCameraShot = async (_, { shotId, camera }, { user }) => {
+const editCameraShot = async (_, { shotId, image }, { user }) => {
   try {
     isUser(user);
 
@@ -16,14 +15,14 @@ const editCameraShot = async (_, { shotId, camera }, { user }) => {
       throw new Error("User not authorized to edit this camera shot.");
     }
 
-    // Apply new camera effects
-    await applyCameraEffects(shot.image, camera);
-
-    // Update the camera type in the database
-    shot.camera = camera;
+    // Update the image in the database
+    shot.image = image;
     await shot.save();
 
-    return shot;
+    return {
+      success: true,
+      message: "Camera shot updated successfully.",
+    };
   } catch (error) {
     console.error("Error editing camera shot:", error);
     throw new Error("Failed to edit camera shot.");

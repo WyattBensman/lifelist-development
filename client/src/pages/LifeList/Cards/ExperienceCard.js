@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { capitalizeText, truncateText } from "../../../utils/utils";
 import { BASE_URL } from "../../../utils/config";
+import { SymbolView } from "expo-symbols";
 
 export default function ExperienceCard({
   experience,
@@ -50,6 +51,14 @@ export default function ExperienceCard({
           source={{ uri: imageUrl }}
           style={[styles.image, { height: imageHeight }]}
         />
+        {associatedShots && associatedShots.length > 0 && (
+          <SymbolView
+            name="photo.on.rectangle"
+            style={styles.photoCircleIcon}
+            type="monochrome"
+            tintColor="#fff"
+          />
+        )}
         <View style={styles.spacer}>
           <Text style={styles.title}>{truncatedTitle}</Text>
           <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
@@ -85,5 +94,12 @@ const styles = StyleSheet.create({
   },
   spacer: {
     marginLeft: 8,
+  },
+  photoCircleIcon: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    width: 18,
+    height: 14.45,
   },
 });

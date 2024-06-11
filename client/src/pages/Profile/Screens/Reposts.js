@@ -14,7 +14,7 @@ export default function Reposts({ userId }) {
   );
 
   const renderCollageItem = ({ item }) => (
-    <CollageCard path={item.coverImage} />
+    <CollageCard collageId={item._id} path={item.coverImage} />
   );
 
   return (

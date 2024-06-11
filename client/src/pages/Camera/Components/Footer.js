@@ -1,17 +1,27 @@
-import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
+// src/components/Footer.js
+import React from "react";
+import { View, StyleSheet, Text, Pressable, Animated } from "react-native";
 import { useMutation } from "@apollo/client";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
 import { useAuth } from "../../../contexts/AuthContext";
-import SymbolButton from "../../../icons/SymbolButton";
+import FlashOutlineIcon from "../Icons/FlashOutlineIcon";
+import FlashSolidIcon from "../Icons/FlashSolidIcon";
+import FlipCameraIcon from "../Icons/FlipCameraIcon";
 import * as FileSystem from "expo-file-system";
+import Icon from "../../../icons/Icon";
+import { iconStyles } from "../../../styles/iconStyles";
 
 export default function Footer({
   cameraRef,
-  shotOrientation,
   rotation,
   cameraType,
+  flash,
+  toggleFlash,
+  toggleCameraFacing,
+  handleZoomChange,
+  footerHeight,
 }) {
   const navigation = useNavigation();
   const { updateCurrentUser } = useAuth();
@@ -21,22 +31,23 @@ export default function Footer({
     if (cameraRef.current) {
       try {
         const photo = await cameraRef.current.takePictureAsync();
-        console.log(`Photo: ${photo}`);
         const file = await convertToFile(photo.uri, "photo.jpg");
-        console.log(`File: ${file}`);
+
+        // Apply filter based on cameraType
+        const filteredUri = await applyFilter(file.uri, cameraType);
+
+        const filteredFile = await convertToFile(
+          filteredUri,
+          "filtered_photo.jpg"
+        );
+
         const result = await createCameraShot({
           variables: {
-            image: file,
-            camera: cameraType,
-            shotOrientation,
+            image: filteredFile,
           },
         });
-        console.log(`Result: ${result}`);
         if (result.data.createCameraShot.success) {
-          console.log("Photo taken and saved successfully");
           updateCurrentUser(result.data.createCameraShot.user);
-        } else {
-          console.log("Failed to save photo");
         }
       } catch (error) {
         console.error("Error taking photo:", error);
@@ -62,21 +73,85 @@ export default function Footer({
     navigation.navigate("DevelopingRoll");
   };
 
+  const [zoomLevel, setZoomLevel] = React.useState(1);
+
+  const handleZoomPress = (zoom) => {
+    setZoomLevel(zoom);
+    handleZoomChange(zoom);
+  };
+
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.circleBackground} />
+    <View style={[styles.wrapper, { height: footerHeight }]}>
+      <View style={styles.row}>
+        <Pressable onPress={toggleFlash} style={styles.rowIcon}>
+          {flash === "off" ? <FlashOutlineIcon /> : <FlashSolidIcon />}
+        </Pressable>
+        <View style={styles.zoomContainer}>
+          <Pressable
+            onPress={() => handleZoomPress(0.5)}
+            style={[
+              styles.zoomButton,
+              zoomLevel === 0.5 && styles.activeZoomButton,
+            ]}
+          >
+            <Text
+              style={[
+                styles.zoomText,
+                zoomLevel === 0.5 && styles.activeZoomText,
+              ]}
+            >
+              0.5x
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => handleZoomPress(1)}
+            style={[
+              styles.zoomButton,
+              zoomLevel === 1 && styles.activeZoomButton,
+            ]}
+          >
+            <Text
+              style={[
+                styles.zoomText,
+                zoomLevel === 1 && styles.activeZoomText,
+              ]}
+            >
+              1x
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => handleZoomPress(3)}
+            style={[
+              styles.zoomButton,
+              zoomLevel === 3 && styles.activeZoomButton,
+            ]}
+          >
+            <Text
+              style={[
+                styles.zoomText,
+                zoomLevel === 3 && styles.activeZoomText,
+              ]}
+            >
+              3x
+            </Text>
+          </Pressable>
+        </View>
+        <Pressable onPress={toggleCameraFacing} style={styles.rowIcon}>
+          <FlipCameraIcon />
+        </Pressable>
+      </View>
       <View style={styles.container}>
         <Animated.View style={{ transform: [{ rotate: rotation }], zIndex: 1 }}>
           <Pressable
             onPress={navigateToCameraRoll}
             style={styles.iconContainer}
           >
-            <SymbolButton
-              name="photo.stack"
-              tintColor="#ffffff"
+            <Icon
+              name="photo.circle"
+              style={iconStyles.photoCircleLg}
+              tintColor="#fff"
               onPress={navigateToCameraRoll}
             />
-            <Text style={styles.iconText}>Gallery</Text>
           </Pressable>
         </Animated.View>
         <View style={styles.circleContainer}>
@@ -94,12 +169,12 @@ export default function Footer({
             onPress={navigateToDevelopingRoll}
             style={styles.iconContainer}
           >
-            <SymbolButton
-              name="film.stack"
-              tintColor="#ffffff"
+            <Icon
+              name="film.circle"
+              style={iconStyles.photoCircleLg}
+              tintColor="#fff"
               onPress={navigateToDevelopingRoll}
             />
-            <Text style={styles.iconText}>Developing</Text>
           </Pressable>
         </Animated.View>
       </View>
@@ -113,16 +188,41 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#111",
   },
-  circleBackground: {
-    position: "absolute",
-    bottom: 19,
-    width: 100,
-    height: 100,
-    borderRadius: 200,
-    backgroundColor: "#111",
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    backgroundColor: "#1C1C1E",
+    borderRadius: 50,
+    paddingVertical: 1,
+    marginTop: 8,
+    marginBottom: 32,
+    width: "70%",
+  },
+  zoomContainer: {
+    flexDirection: "row",
+    borderRadius: 25,
+    paddingHorizontal: 8,
+  },
+  zoomButton: {
+    padding: 10,
+  },
+  activeZoomButton: {
+    backgroundColor: "#6AB95230",
+    borderRadius: 25,
+  },
+  zoomText: {
+    color: "#fff",
+    fontSize: 12,
+  },
+  activeZoomText: {
+    fontWeight: "bold",
+  },
+  rowIcon: {
+    alignItems: "center",
+    justifyContent: "center",
   },
   container: {
-    height: 100,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
@@ -134,7 +234,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     width: 75,
-    height: 75,
   },
   iconText: {
     color: "#fff",
@@ -149,7 +248,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: -45,
   },
   circleOutline: {
     width: 72,
@@ -162,6 +260,6 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 50,
-    backgroundColor: "#d4d4d4",
+    backgroundColor: "#ececec",
   },
 });
