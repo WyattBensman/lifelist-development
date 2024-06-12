@@ -9,20 +9,20 @@ export const iconStyles = StyleSheet.create({
   },
   // Collage Icons
   comment: {
-    width: 26.5,
-    height: 23.5,
+    width: 23.182,
+    height: 20.182,
   },
   bookmark: {
-    width: 24.1,
-    height: 24.26,
+    width: 21.69,
+    height: 21,
   },
-  repeat: {
-    width: 29.45,
-    height: 24.2,
+  repost: {
+    width: 30,
+    height: 17.5,
   },
   heart: {
-    width: 25.875,
-    height: 23.437,
+    width: 23.287,
+    height: 21.093,
   },
   collageEllipsis: {
     width: 23,

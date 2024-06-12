@@ -19,7 +19,7 @@ import { BASE_URL } from "../../../utils/config";
 import Comments from "../Popups/Comments";
 import Participants from "../Popups/Participants";
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 export default function Collage({ collageId }) {
   const navigation = useNavigation();
@@ -60,7 +60,7 @@ export default function Collage({ collageId }) {
   };
 
   return (
-    <View style={layoutStyles.wrapper}>
+    <View style={styles.wrapper}>
       <View style={styles.imageContainer}>
         <FlatList
           data={images}
@@ -117,8 +117,8 @@ export default function Collage({ collageId }) {
             onPress={() => setShowComments(true)}
           />
           <Icon
-            name="repeat"
-            style={iconStyles.repeat}
+            name="arrow.2.squarepath"
+            style={iconStyles.repost}
             spacer={16}
             tintColor={"#ffffff"}
           />
@@ -131,19 +131,47 @@ export default function Collage({ collageId }) {
         </View>
       </View>
       <View style={styles.bottomContainer}>
-        <Text style={styles.caption}>
-          <Text onPress={handlePress} style={styles.username}>
-            {author.username}{" "}
-          </Text>
-          {caption}
-        </Text>
-        <View style={styles.bottomTextContainer}>
-          <Text style={styles.postDate}>
-            {new Date(createdAt).toLocaleDateString()}
-          </Text>
-          <Pressable onPress={() => setShowParticipants(true)}>
-            <Text style={styles.viewComments}>Tagged Users (7)</Text>
+        <View style={styles.captionContainer}>
+          <Pressable onPress={handlePress}>
+            <Image
+              style={styles.smallProfilePicture}
+              source={{
+                uri: `${BASE_URL}${author.profilePicture}`,
+              }}
+            />
           </Pressable>
+          <View style={styles.captionTextContainer}>
+            <Text style={styles.caption}>
+              <Text onPress={handlePress} style={styles.username}>
+                {author.username}{" "}
+              </Text>
+              {caption}
+            </Text>
+          </View>
+        </View>
+        <View style={styles.bottomTextContainer}>
+          <View style={styles.button}>
+            <Text
+              style={[
+                styles.buttonText,
+                { fontWeight: "400", color: "#d4d4d4" },
+              ]}
+            >
+              {new Date(createdAt).toLocaleDateString()}
+            </Text>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <Pressable onPress={() => setShowComments(true)}>
+              <View style={styles.button}>
+                <Text style={styles.buttonText}>Comments</Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => setShowParticipants(true)}>
+              <View style={[styles.button, { marginLeft: 8 }]}>
+                <Text style={styles.buttonText}>Participants</Text>
+              </View>
+            </Pressable>
+          </View>
         </View>
       </View>
       <Comments
@@ -159,6 +187,9 @@ export default function Collage({ collageId }) {
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+  },
   imageContainer: {
     position: "relative",
   },
@@ -188,6 +219,13 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     marginRight: 6,
   },
+  /*   smallProfilePicture: {
+    height: 38,
+    width: 38,
+    borderRadius: 6,
+    borderColor: "#ffffff",
+    marginRight: 6,
+  }, */
   fullName: {
     fontWeight: "600",
     color: "#fff",
@@ -204,8 +242,8 @@ const styles = StyleSheet.create({
     bottom: 12,
     alignSelf: "center",
     flexDirection: "row",
-    backgroundColor: "rgba(38, 40, 40, 0.4)",
-    borderRadius: 8,
+    backgroundColor: "rgba(38, 40, 40, 0.25)",
+    borderRadius: 32,
     paddingHorizontal: 12,
   },
   iconSpacer: {
@@ -214,22 +252,39 @@ const styles = StyleSheet.create({
   bottomContainer: {
     flex: 1,
     marginTop: 8,
-    marginHorizontal: 16,
+    marginHorizontal: 12,
     justifyContent: "space-between",
+  },
+  captionContainer: {
+    flexDirection: "row",
+    alignItems: "flex-start", // Align items to the top
+  },
+  captionTextContainer: {
+    flex: 1, // Allow caption text to take available space
+    justifyContent: "flex-start", // Align caption text to the top
   },
   bottomTextContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: 10,
   },
-  postDate: {
-    fontSize: 12,
-    color: "#d4d4d4",
+  caption: {
+    flexWrap: "wrap",
+    alignItems: "flex-start",
   },
-  viewComments: {
+  button: {
+    backgroundColor: "#ececec", // Light green background
+    borderRadius: 20, // Rounded corners
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#000", // Green text
     fontSize: 12,
-    color: "#d4d4d4",
+    fontWeight: "500",
   },
   indicatorContainer: {
     position: "absolute",
