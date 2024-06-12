@@ -288,9 +288,17 @@ type User {
     # Experience Queries
     getExperience(experienceId: ID!): Experience
     getAllExperiences: [Experience]
+
+    # Main Feed Queries
+    getMainFeed(userId: ID!, page: Int!): FeedResult
   }
 
   # Query Responses
+  type FeedResult {
+    collages: [Collage]
+    hasMore: Boolean
+  }
+
   type UserProfileInformation {
     profilePicture: String
     fullName: String

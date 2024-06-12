@@ -8,7 +8,9 @@ export const getCollageById = async (_, { collageId }) => {
       select: "_id username fullName profilePicture",
     })
     .exec();
+
   if (!collage) throw new Error("Collage not found.");
+
   return collage;
 };
 

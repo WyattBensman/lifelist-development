@@ -5,3 +5,4 @@ export * from "./inboxQueries";
 export * from "./lifeListQueries";
 export * from "./privacyGroupQueries";
 export * from "./userQueries";
+export * from "./mainFeedQueries";

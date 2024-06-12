@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   Text,
   View,
@@ -5,20 +6,31 @@ import {
   Pressable,
   Image,
   ActivityIndicator,
+  FlatList,
+  Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { useQuery } from "@apollo/client";
 import { layoutStyles } from "../../../styles";
 import Icon from "../../../icons/Icon";
 import { iconStyles } from "../../../styles";
 import { GET_COLLAGE_BY_ID } from "../../../utils/queries";
+import { useQuery } from "@apollo/client";
+import { BASE_URL } from "../../../utils/config";
+import Comments from "../Popups/Comments";
+import Participants from "../Popups/Participants";
+
+const { width } = Dimensions.get("window");
 
 export default function Collage({ collageId }) {
-  console.log(collageId);
   const navigation = useNavigation();
   const { loading, error, data } = useQuery(GET_COLLAGE_BY_ID, {
     variables: { collageId },
   });
+
+  const [showParticipants, setShowParticipants] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error.message}</Text>;
@@ -33,27 +45,59 @@ export default function Collage({ collageId }) {
     });
   };
 
+  const renderItem = ({ item }) => (
+    <Image
+      style={styles.image}
+      source={{
+        uri: `${BASE_URL}${item}`,
+      }}
+    />
+  );
+
+  const handleScroll = (event) => {
+    const index = Math.floor(event.nativeEvent.contentOffset.x / width);
+    setCurrentIndex(index);
+  };
+
   return (
     <View style={layoutStyles.wrapper}>
       <View style={styles.imageContainer}>
-        <Image
-          style={styles.image}
-          source={{
-            uri: coverImage,
-          }}
+        <FlatList
+          data={images}
+          renderItem={renderItem}
+          horizontal
+          pagingEnabled
+          onScroll={handleScroll}
+          keyExtractor={(item, index) => index.toString()}
+          showsHorizontalScrollIndicator={false}
         />
+        {images.length > 1 && (
+          <View style={styles.indicatorContainer}>
+            {images.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.indicator,
+                  index === currentIndex ? styles.activeIndicator : null,
+                ]}
+              />
+            ))}
+          </View>
+        )}
         <View style={styles.topContainer}>
           <View style={styles.topLeftContainer}>
             <Pressable onPress={handlePress}>
               <Image
                 style={styles.profilePicture}
                 source={{
-                  uri: author.profilePicture,
+                  uri: `${BASE_URL}${author.profilePicture}`,
                 }}
               />
             </Pressable>
             <View style={styles.userInfo}>
-              <Text style={styles.fullName}>{author.fullName}</Text>
+              <Pressable onPress={handlePress}>
+                <Text style={styles.fullName}>{author.fullName}</Text>
+              </Pressable>
               <Text style={styles.location}>Location unknown</Text>
             </View>
           </View>
@@ -70,6 +114,7 @@ export default function Collage({ collageId }) {
             style={iconStyles.comment}
             spacer={16}
             tintColor={"#ffffff"}
+            onPress={() => setShowComments(true)}
           />
           <Icon
             name="repeat"
@@ -87,16 +132,28 @@ export default function Collage({ collageId }) {
       </View>
       <View style={styles.bottomContainer}>
         <Text style={styles.caption}>
-          <Text style={styles.username}>{author.username} </Text>
+          <Text onPress={handlePress} style={styles.username}>
+            {author.username}{" "}
+          </Text>
           {caption}
         </Text>
         <View style={styles.bottomTextContainer}>
           <Text style={styles.postDate}>
             {new Date(createdAt).toLocaleDateString()}
           </Text>
-          <Text style={styles.viewComments}>Tagged Users (7)</Text>
+          <Pressable onPress={() => setShowParticipants(true)}>
+            <Text style={styles.viewComments}>Tagged Users (7)</Text>
+          </Pressable>
         </View>
       </View>
+      <Comments
+        visible={showComments}
+        onRequestClose={() => setShowComments(false)}
+      />
+      <Participants
+        visible={showParticipants}
+        onRequestClose={() => setShowParticipants(false)}
+      />
     </View>
   );
 }
@@ -106,8 +163,8 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   image: {
-    width: "100%",
-    aspectRatio: 2 / 3,
+    width: width, // Use screen width for FlatList images
+    height: width * (3 / 2), // Maintain aspect ratio of 2:3
     backgroundColor: "#d4d4d4",
   },
   topContainer: {
@@ -173,5 +230,25 @@ const styles = StyleSheet.create({
   viewComments: {
     fontSize: 12,
     color: "#d4d4d4",
+  },
+  indicatorContainer: {
+    position: "absolute",
+    bottom: 5,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  indicator: {
+    height: 2,
+    width: 20,
+    backgroundColor: "#ffffff",
+    marginHorizontal: 2,
+    borderRadius: 2,
+    opacity: 0.5,
+  },
+  activeIndicator: {
+    opacity: 1,
   },
 });

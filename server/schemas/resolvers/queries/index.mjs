@@ -5,6 +5,7 @@ import * as cameraQueries from "./camera/cameraQueries.mjs";
 import * as lifeListQueries from "./lifelist/lifeListQueries.mjs";
 import * as privacyGroupQueries from "./privacyGroup/privacyGroupQueries.mjs";
 import * as inboxQueries from "./inbox/inboxQueries.mjs";
+import * as mainFeedQueries from "./mainFeed/mainFeedQueries.mjs";
 
 const queries = {
   ...userQueries,
@@ -14,6 +15,7 @@ const queries = {
   ...lifeListQueries,
   ...privacyGroupQueries,
   ...inboxQueries,
+  ...mainFeedQueries,
 };
 
 export default queries;

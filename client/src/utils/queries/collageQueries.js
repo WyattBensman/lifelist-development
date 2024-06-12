@@ -5,7 +5,7 @@ export const GET_COLLAGE_BY_ID = gql`
   query GetCollageById($collageId: ID!) {
     getCollageById(collageId: $collageId) {
       _id
-      title
+      caption
       images
       coverImage
       author {

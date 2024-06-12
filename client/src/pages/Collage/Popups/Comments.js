@@ -3,7 +3,7 @@ import { headerStyles, layoutStyles, popupStyles } from "../../../styles";
 import BottomPopup from "../../Profile/Popups/BottomPopup";
 import CommentCard from "../Cards/CommentCard";
 
-export default function CommentsPopup({ visible, onRequestClose }) {
+export default function Comments({ visible, onRequestClose }) {
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={288}>
       <View style={popupStyles.popupContainer}>
