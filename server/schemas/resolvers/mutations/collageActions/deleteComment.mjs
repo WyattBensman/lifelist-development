@@ -7,7 +7,7 @@ import {
 
 const deleteComment = async (_, { commentId, collageId }, { user }) => {
   try {
-    isUser(user);
+    /* isUser(user); */
 
     // Verify the collage exists
     const collage = await findCollageById(collageId);
