@@ -1,8 +1,12 @@
-// AllExperiences.js
 import React, { useMemo } from "react";
-import { Text, View, FlatList, StyleSheet } from "react-native";
+import { Text, View, FlatList, StyleSheet, Dimensions } from "react-native";
 import { headerStyles, layoutStyles } from "../../../../styles";
 import ExperienceCard from "../../Cards/ExperienceCard";
+
+const { width: screenWidth } = Dimensions.get("window");
+const cardWidth = screenWidth * 0.44;
+const imageHeight = cardWidth * 1.33;
+const cardHeight = imageHeight + 44;
 
 const sortByTitle = (a, b) =>
   a.experience.title.localeCompare(b.experience.title);
@@ -33,15 +37,23 @@ export default function AllExperiences({ lifeList, navigation }) {
     />
   );
 
+  const renderPlaceholder = () => (
+    <View
+      style={[styles.placeholderCard, { width: cardWidth, height: cardHeight }]}
+    />
+  );
+
   return (
     <View style={layoutStyles.wrapper}>
       <Text style={[headerStyles.headerMedium, layoutStyles.paddingLeftXxs]}>
         Experienced
       </Text>
       <FlatList
-        data={experiencedList}
-        renderItem={renderExperience}
-        keyExtractor={(item) => item._id}
+        data={experiencedList.length > 0 ? experiencedList : [{}]}
+        renderItem={
+          experiencedList.length > 0 ? renderExperience : renderPlaceholder
+        }
+        keyExtractor={(item, index) => item._id || index.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
         style={layoutStyles.paddingLeftXxs}
@@ -50,9 +62,11 @@ export default function AllExperiences({ lifeList, navigation }) {
         Wish Listed
       </Text>
       <FlatList
-        data={wishListedList}
-        renderItem={renderExperience}
-        keyExtractor={(item) => item._id}
+        data={wishListedList.length > 0 ? wishListedList : [{}]}
+        renderItem={
+          wishListedList.length > 0 ? renderExperience : renderPlaceholder
+        }
+        keyExtractor={(item, index) => item._id || index.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
         style={layoutStyles.paddingLeftXxs}
@@ -62,20 +76,8 @@ export default function AllExperiences({ lifeList, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  navigatorContainer: {
-    flexDirection: "row",
-    marginLeft: 6,
-  },
-  navigatorButton: {
-    backgroundColor: "#ececec",
-    alignSelf: "flex-start",
-    marginTop: 12,
-    marginRight: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 12,
-  },
-  navigatorText: {
-    fontWeight: "500",
+  placeholderCard: {
+    marginRight: 6,
+    backgroundColor: "transparent",
   },
 });

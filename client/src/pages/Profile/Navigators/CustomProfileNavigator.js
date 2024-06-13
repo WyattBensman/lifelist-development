@@ -32,7 +32,7 @@ export default function CustomProfileNavigator({
       if (isAdmin && isAdminScreen) {
         navigation.navigate("AdminLifeListStack");
       } else {
-        navigation.navigate("LifeListStack");
+        navigation.navigate("LifeListStack", { userId });
       }
       setActiveTab("Collages"); // Reset to Collages after navigation
     } else {

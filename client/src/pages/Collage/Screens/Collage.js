@@ -10,7 +10,6 @@ import {
   Dimensions,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { layoutStyles } from "../../../styles";
 import Icon from "../../../icons/Icon";
 import { iconStyles } from "../../../styles";
 import { GET_COLLAGE_BY_ID } from "../../../utils/queries";
@@ -19,7 +18,7 @@ import { BASE_URL } from "../../../utils/config";
 import Comments from "../Popups/Comments";
 import Participants from "../Popups/Participants";
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 export default function Collage({ collageId }) {
   const navigation = useNavigation();
@@ -35,8 +34,7 @@ export default function Collage({ collageId }) {
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error.message}</Text>;
 
-  const { caption, images, coverImage, author, createdAt } =
-    data.getCollageById;
+  const { caption, images, author, createdAt } = data.getCollageById;
 
   const handlePress = () => {
     navigation.navigate("ProfileStack", {
@@ -177,10 +175,12 @@ export default function Collage({ collageId }) {
       <Comments
         visible={showComments}
         onRequestClose={() => setShowComments(false)}
+        collageId={collageId}
       />
       <Participants
         visible={showParticipants}
         onRequestClose={() => setShowParticipants(false)}
+        collageId={collageId}
       />
     </View>
   );

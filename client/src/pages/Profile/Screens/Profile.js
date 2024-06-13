@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View } from "react-native";
-import { layoutStyles } from "../../../styles";
+import { headerStyles, layoutStyles } from "../../../styles";
+import HeaderMain from "../../../components/Headers/HeaderMain";
 import OptionsIcon from "../Icons/OptionsIcon";
 import ProfileOverview from "../Components/ProfileOverview";
-import ProfileNavigator from "../Navigators/ProfileNavigator";
+import CustomProfileNavigator from "../Navigators/CustomProfileNavigator";
 import AdminOptionsPopup from "../Popups/AdminOptionsPopup";
 import DefaultOptionsPopup from "../Popups/DefaultOptionsPopup";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -16,13 +17,13 @@ import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 export default function Profile() {
   const navigation = useNavigation();
   const route = useRoute();
+  const { currentUser } = useAuth();
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
 
-  const { currentUser } = useAuth(); // Getting the current user context
-  const userId = route.params?.userId; // Getting the userId from the route parameters
+  const userId = route.params?.userId;
 
   const { data, loading, error } = useQuery(GET_USER_PROFILE, {
-    variables: { userId }, // Passing userId as a variable to the query
+    variables: { userId },
   });
 
   const toggleOptionsPopup = () => {
@@ -47,7 +48,12 @@ export default function Profile() {
         isAdminView={isAdminView}
         isAdminScreen={false}
       />
-      <ProfileNavigator userId={profile._id} isAdmin={false} />
+      <CustomProfileNavigator
+        userId={profile._id}
+        isAdmin={isAdminView}
+        isAdminScreen={false}
+        navigation={navigation}
+      />
 
       {isAdminView ? (
         <AdminOptionsPopup

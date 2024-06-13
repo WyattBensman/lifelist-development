@@ -8,7 +8,7 @@ import PrivacyGroup from "../pages/Profile/Screens/PrivacyGroup";
 import AdminProfile from "../pages/Profile/Screens/AdminProfile";
 import ProfileStack from "./ProfileStack";
 import NavigationTab from "./NavigationTab";
-import ViewCollage from "../pages/Collage/Screens/ViewCollage"; // Import ViewCollage
+import ViewCollage from "../pages/Collage/Screens/ViewCollage";
 
 const Stack = createNativeStackNavigator();
 

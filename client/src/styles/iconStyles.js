@@ -17,8 +17,8 @@ export const iconStyles = StyleSheet.create({
     height: 21,
   },
   repost: {
-    width: 30,
-    height: 17.5,
+    width: 29,
+    height: 17,
   },
   heart: {
     width: 23.287,

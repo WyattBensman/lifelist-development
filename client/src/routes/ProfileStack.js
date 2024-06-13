@@ -3,6 +3,7 @@ import WorldMap from "../pages/Profile/Screens/WorldMap";
 import UserRelations from "../pages/Profile/Screens/UserRelations";
 import Profile from "../pages/Profile/Screens/Profile";
 import LifeListStack from "./LifeListStack";
+import ViewCollage from "../pages/Collage/Screens/ViewCollage";
 
 const Stack = createNativeStackNavigator();
 
@@ -33,6 +34,11 @@ export default function ProfileStack() {
       <Stack.Screen
         name="LifeListStack"
         component={LifeListStack}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ViewCollage"
+        component={ViewCollage}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

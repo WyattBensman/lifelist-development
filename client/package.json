@@ -22,6 +22,7 @@
     "@react-navigation/native-stack": "^6.9.26",
     "apollo-upload-client": "^18.0.1",
     "base-64": "^1.0.0",
+    "date-fns": "^3.6.0",
     "dayjs": "^1.11.11",
     "expo": "~51.0.13",
     "expo-blur": "~13.0.2",

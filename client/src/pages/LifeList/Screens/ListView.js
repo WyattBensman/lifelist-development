@@ -23,14 +23,16 @@ export default function ListView({ navigation }) {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { currentUser } = useAuth();
+  const userId = route.params?.userId || currentUser._id;
+
+  const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
+    variables: { userId },
+    skip: !!route.params?.lifeList, // Skip fetching if data is passed
+  });
+
   const [lifeList, setLifeList] = useState(
     route.params?.lifeList || { experiences: [] }
   );
-
-  const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
-    variables: { userId: currentUser._id },
-    skip: !!route.params?.lifeList, // Skip fetching if data is passed
-  });
 
   const [removeExperience] = useMutation(REMOVE_EXPERIENCE_FROM_LIFELIST);
 
