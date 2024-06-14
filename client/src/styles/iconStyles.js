@@ -89,4 +89,18 @@ export const iconStyles = StyleSheet.create({
     width: 38,
     height: 37,
   },
+  // Header Icons
+  createCollage: {
+    width: 27,
+    height: 26.3,
+  },
+  bell: {
+    width: 24.67,
+    height: 26.5,
+  },
+  // Create Collage
+  plusCircle: {
+    width: 20.28,
+    height: 19.93,
+  },
 });

@@ -1,4 +1,11 @@
-import { Dimensions, FlatList, Image, View, Text } from "react-native";
+import React from "react";
+import {
+  Dimensions,
+  FlatList,
+  View,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import { layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
@@ -7,32 +14,44 @@ import { useQuery } from "@apollo/client";
 import { GET_SAVED_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
 
+const { height: screenHeight } = Dimensions.get("window");
+
 export default function Saved() {
   const navigation = useNavigation();
   const { data, loading, error } = useQuery(GET_SAVED_COLLAGES);
+
+  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
+  if (error) return <Text>Error: {error.message}</Text>;
 
   const filteredCollages = data?.getSavedCollages.filter(
     (item) => !item.archived
   );
 
-  const renderCollageItem = ({ item }) => (
-    <CollageCard collageId={item._id} path={item.coverImage} />
-  );
-
   return (
-    <View styles={layoutStyles.container}>
+    <View style={layoutStyles.container}>
       <HeaderStack
         title={"Saved"}
         arrow={<BackArrowIcon navigation={navigation} />}
       />
-      <View>
-        <FlatList
-          data={filteredCollages}
-          renderItem={renderCollageItem}
-          keyExtractor={(item) => item._id.toString()}
-          numColumns={3}
-        />
-      </View>
+      <FlatList
+        data={filteredCollages}
+        renderItem={({ item, index }) => (
+          <View style={{ height: screenHeight }}>
+            <CollageCard
+              collageId={item._id}
+              path={item.coverImage}
+              index={index}
+              collages={filteredCollages}
+            />
+          </View>
+        )}
+        keyExtractor={(item) => item._id.toString()}
+        pagingEnabled
+        showsVerticalScrollIndicator={false}
+        snapToAlignment="start"
+        snapToInterval={screenHeight}
+        decelerationRate="fast"
+      />
     </View>
   );
 }

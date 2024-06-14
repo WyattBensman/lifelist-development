@@ -1,12 +1,9 @@
 import { Pressable } from "react-native";
 import Svg, { Path, G } from "react-native-svg";
 
-export default function NextPageArrowIcon({ navigation, navigateTo, color }) {
+export default function NextPageArrowIcon({ onPress, color }) {
   return (
-    <Pressable
-      onPress={() => navigation.navigate(navigateTo)}
-      style={{ width: 15 }}
-    >
+    <Pressable onPress={onPress} style={{ width: 15 }}>
       <Svg
         version="1.0"
         xmlns="http://www.w3.org/2000/svg"

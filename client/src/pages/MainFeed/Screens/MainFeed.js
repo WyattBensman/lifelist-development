@@ -14,10 +14,13 @@ import IconHeader from "../../../icons/IconHeader";
 import Collage from "../../Collage/Screens/Collage";
 import { useLazyQuery } from "@apollo/client";
 import { GET_MAIN_FEED } from "../../../utils/queries";
+import { useNavigation } from "@react-navigation/native";
+import { iconStyles } from "../../../styles";
 
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function MainFeed() {
+  const navigation = useNavigation();
   const { currentUser } = useAuth();
   const [collages, setCollages] = useState([]);
   const [page, setPage] = useState(1);
@@ -116,8 +119,14 @@ export default function MainFeed() {
       <View onLayout={onHeaderLayout}>
         <HeaderMain
           titleComponent={<LifeListLogo />}
-          icon1={<IconHeader name="plus.square.on.square" />}
-          icon2={<IconHeader name="bell" />}
+          icon1={
+            <IconHeader
+              name="plus.square.on.square"
+              onPress={() => navigation.navigate("CreateCollage")}
+              style={iconStyles.createCollage}
+            />
+          }
+          icon2={<IconHeader name="bell" style={iconStyles.bell} />}
         />
       </View>
       <FlatList

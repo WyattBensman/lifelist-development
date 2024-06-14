@@ -26,8 +26,13 @@ export default function Collages({ userId }) {
     (item) => !item.archived
   );
 
-  const renderCollageItem = ({ item }) => (
-    <CollageCard collageId={item._id} path={item.coverImage} />
+  const renderCollageItem = ({ item, index }) => (
+    <CollageCard
+      collageId={item._id}
+      path={item.coverImage}
+      index={index}
+      collages={filteredCollages}
+    />
   );
 
   return (

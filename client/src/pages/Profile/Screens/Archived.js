@@ -1,4 +1,11 @@
-import { Dimensions, FlatList, Image, View } from "react-native";
+import React from "react";
+import {
+  Dimensions,
+  FlatList,
+  View,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import { layoutStyles } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
@@ -7,28 +14,40 @@ import { useQuery } from "@apollo/client";
 import { GET_ARCHIVED_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
 
+const { height: screenHeight } = Dimensions.get("window");
+
 export default function Archived() {
   const navigation = useNavigation();
   const { data, loading, error } = useQuery(GET_ARCHIVED_COLLAGES);
 
-  const renderCollageItem = ({ item }) => (
-    <CollageCard collageId={item._id} path={item.coverImage} />
-  );
+  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
+  if (error) return <Text>Error: {error.message}</Text>;
 
   return (
-    <View styles={layoutStyles.container}>
+    <View style={layoutStyles.container}>
       <HeaderStack
         title={"Archived"}
         arrow={<BackArrowIcon navigation={navigation} />}
       />
-      <View>
-        <FlatList
-          data={data?.getArchivedCollages}
-          renderItem={renderCollageItem}
-          keyExtractor={(item) => item._id.toString()}
-          numColumns={3}
-        />
-      </View>
+      <FlatList
+        data={data?.getArchivedCollages}
+        renderItem={({ item, index }) => (
+          <View style={{ height: screenHeight }}>
+            <CollageCard
+              collageId={item._id}
+              path={item.coverImage}
+              index={index}
+              collages={data?.getArchivedCollages}
+            />
+          </View>
+        )}
+        keyExtractor={(item) => item._id.toString()}
+        pagingEnabled
+        showsVerticalScrollIndicator={false}
+        snapToAlignment="start"
+        snapToInterval={screenHeight}
+        decelerationRate="fast"
+      />
     </View>
   );
 }

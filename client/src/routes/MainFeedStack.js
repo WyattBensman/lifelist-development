@@ -47,11 +47,6 @@ export default function MainFeedStack() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="CollageSummary"
-        component={Summary}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
         name="CollageOverview"
         component={Overview}
         options={{ headerShown: false }}

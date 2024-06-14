@@ -13,15 +13,15 @@ export default function CommentCard({ comment }) {
           style={[cardStyles.imageSm, styles.profilePicture]}
         />
         <View style={layoutStyles.wrapper}>
-          <View style={[layoutStyles.flexRow, layoutStyles.marginBtmTy]}>
+          <View style={layoutStyles.flexRow}>
             <Text style={[layoutStyles.marginRightXs, { fontWeight: "500" }]}>
               {comment.author.fullName}
             </Text>
-            <Text style={{ color: "#d4d4d4" }}>
+            <Text style={{ color: "#d4d4d4", fontSize: 12 }}>
               {formatDistanceToNow(new Date(comment.createdAt))} ago
             </Text>
           </View>
-          <Text style={layoutStyles.marginRightXs}>{comment.text}</Text>
+          <Text>{comment.text}</Text>
         </View>
       </View>
     </View>

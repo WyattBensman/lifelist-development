@@ -6,11 +6,11 @@ const screenWidth = Dimensions.get("window").width;
 const spacing = 1.5;
 const imageWidth = (screenWidth - spacing * 2) / 3; // Adjusted to account for the spacing
 
-export default function CollageCard({ collageId, path }) {
+export default function CollageCard({ collageId, path, index, collages }) {
   const navigation = useNavigation();
 
   const handlePress = () => {
-    navigation.navigate("ViewCollage", { collageId });
+    navigation.navigate("ViewCollage", { collages, initialIndex: index });
   };
 
   return (
