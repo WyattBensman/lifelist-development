@@ -19,10 +19,12 @@ export default function FriendRequestCount() {
 
 const styling = StyleSheet.create({
   cardContent: {
+    marginTop: 12,
+    marginHorizontal: 16,
+    borderRadius: 12,
     paddingHorizontal: 24,
     paddingVertical: 16,
-    borderBottomWidth: 1,
-    borderColor: "#d4d4d4",
+    backgroundColor: "#fff",
   },
   cardText: {
     fontSize: 15,

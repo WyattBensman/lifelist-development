@@ -126,7 +126,13 @@ export default function MainFeed() {
               style={iconStyles.createCollage}
             />
           }
-          icon2={<IconHeader name="bell" style={iconStyles.bell} />}
+          icon2={
+            <IconHeader
+              name="bell"
+              onPress={() => navigation.navigate("Inbox")}
+              style={iconStyles.bell}
+            />
+          }
         />
       </View>
       <FlatList
