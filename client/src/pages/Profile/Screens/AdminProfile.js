@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Text, View } from "react-native";
 import { headerStyles, layoutStyles } from "../../../styles";
 import HeaderMain from "../../../components/Headers/HeaderMain";
@@ -6,7 +6,7 @@ import OptionsIcon from "../Icons/OptionsIcon";
 import ProfileOverview from "../Components/ProfileOverview";
 import CustomProfileNavigator from "../Navigators/CustomProfileNavigator";
 import AdminOptionsPopup from "../Popups/AdminOptionsPopup";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useQuery } from "@apollo/client";
 import { GET_USER_PROFILE } from "../../../utils/queries/userQueries";
@@ -16,9 +16,15 @@ export default function AdminProfile() {
   const { currentUser } = useAuth();
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
 
-  const { data, loading, error } = useQuery(GET_USER_PROFILE, {
+  const { data, loading, error, refetch } = useQuery(GET_USER_PROFILE, {
     variables: { userId: currentUser._id },
   });
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   const toggleOptionsPopup = () => {
     setOptionsPopupVisible(!optionsPopupVisible);

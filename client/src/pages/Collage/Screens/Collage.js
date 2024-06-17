@@ -13,7 +13,15 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "../../../icons/Icon";
 import { iconStyles } from "../../../styles";
 import { GET_COLLAGE_BY_ID } from "../../../utils/queries";
-import { useQuery } from "@apollo/client";
+import {
+  LIKE_COLLAGE,
+  UNLIKE_COLLAGE,
+  REPOST_COLLAGE,
+  UNREPOST_COLLAGE,
+  SAVE_COLLAGE,
+  UNSAVE_COLLAGE,
+} from "../../../utils/mutations";
+import { useQuery, useMutation } from "@apollo/client";
 import { BASE_URL } from "../../../utils/config";
 import Comments from "../Popups/Comments";
 import Participants from "../Popups/Participants";
@@ -31,12 +39,31 @@ export default function Collage({ collageId }) {
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  const [likeCollage] = useMutation(LIKE_COLLAGE);
+  const [unlikeCollage] = useMutation(UNLIKE_COLLAGE);
+  const [repostCollage] = useMutation(REPOST_COLLAGE);
+  const [unrepostCollage] = useMutation(UNREPOST_COLLAGE);
+  const [saveCollage] = useMutation(SAVE_COLLAGE);
+  const [unsaveCollage] = useMutation(UNSAVE_COLLAGE);
+
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error.message}</Text>;
 
-  const { caption, images, author, createdAt } = data.getCollageById;
+  const {
+    caption,
+    images,
+    author,
+    createdAt,
+    isLikedByCurrentUser,
+    isRepostedByCurrentUser,
+    isSavedByCurrentUser,
+  } = data.getCollageById;
 
-  const handlePress = () => {
+  const [isLiked, setIsLiked] = useState(isLikedByCurrentUser);
+  const [isReposted, setIsReposted] = useState(isRepostedByCurrentUser);
+  const [isSaved, setIsSaved] = useState(isSavedByCurrentUser);
+
+  const handleProfilePress = () => {
     navigation.navigate("ProfileStack", {
       screen: "Profile",
       params: { userId: author._id },
@@ -55,6 +82,36 @@ export default function Collage({ collageId }) {
   const handleScroll = (event) => {
     const index = Math.floor(event.nativeEvent.contentOffset.x / width);
     setCurrentIndex(index);
+  };
+
+  const handleLikePress = async () => {
+    if (isLiked) {
+      await unlikeCollage({ variables: { collageId } });
+      setIsLiked(false);
+    } else {
+      await likeCollage({ variables: { collageId } });
+      setIsLiked(true);
+    }
+  };
+
+  const handleRepostPress = async () => {
+    if (isReposted) {
+      await unrepostCollage({ variables: { collageId } });
+      setIsReposted(false);
+    } else {
+      await repostCollage({ variables: { collageId } });
+      setIsReposted(true);
+    }
+  };
+
+  const handleSavePress = async () => {
+    if (isSaved) {
+      await unsaveCollage({ variables: { collageId } });
+      setIsSaved(false);
+    } else {
+      await saveCollage({ variables: { collageId } });
+      setIsSaved(true);
+    }
   };
 
   return (
@@ -84,7 +141,7 @@ export default function Collage({ collageId }) {
         )}
         <View style={styles.topContainer}>
           <View style={styles.topLeftContainer}>
-            <Pressable onPress={handlePress}>
+            <Pressable onPress={handleProfilePress}>
               <Image
                 style={styles.profilePicture}
                 source={{
@@ -93,7 +150,7 @@ export default function Collage({ collageId }) {
               />
             </Pressable>
             <View style={styles.userInfo}>
-              <Pressable onPress={handlePress}>
+              <Pressable onPress={handleProfilePress}>
                 <Text style={styles.fullName}>{author.fullName}</Text>
               </Pressable>
               <Text style={styles.location}>Location unknown</Text>
@@ -106,7 +163,12 @@ export default function Collage({ collageId }) {
           />
         </View>
         <View style={styles.actionContainer}>
-          <Icon name="heart" style={iconStyles.heart} tintColor={"#ffffff"} />
+          <Icon
+            name="heart"
+            style={iconStyles.heart}
+            tintColor={isLiked ? "#FF0000" : "#ffffff"}
+            onPress={handleLikePress}
+          />
           <Icon
             name="bubble"
             style={iconStyles.comment}
@@ -118,19 +180,21 @@ export default function Collage({ collageId }) {
             name="arrow.2.squarepath"
             style={iconStyles.repost}
             spacer={16}
-            tintColor={"#ffffff"}
+            tintColor={isReposted ? "#00FF00" : "#ffffff"}
+            onPress={handleRepostPress}
           />
           <Icon
             name="bookmark"
             style={iconStyles.bookmark}
             spacer={16}
-            tintColor={"#ffffff"}
+            tintColor={isSaved ? "#0000FF" : "#ffffff"}
+            onPress={handleSavePress}
           />
         </View>
       </View>
       <View style={styles.bottomContainer}>
         <View style={styles.captionContainer}>
-          <Pressable onPress={handlePress}>
+          <Pressable onPress={handleProfilePress}>
             <Image
               style={styles.smallProfilePicture}
               source={{
@@ -140,7 +204,7 @@ export default function Collage({ collageId }) {
           </Pressable>
           <View style={styles.captionTextContainer}>
             <Text style={styles.caption}>
-              <Text onPress={handlePress} style={styles.username}>
+              <Text onPress={handleProfilePress} style={styles.username}>
                 {author.username}{" "}
               </Text>
               {caption}
@@ -219,13 +283,13 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     marginRight: 6,
   },
-  /*   smallProfilePicture: {
+  smallProfilePicture: {
     height: 38,
     width: 38,
     borderRadius: 6,
     borderColor: "#ffffff",
     marginRight: 6,
-  }, */
+  },
   fullName: {
     fontWeight: "600",
     color: "#fff",

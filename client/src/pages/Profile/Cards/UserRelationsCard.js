@@ -1,23 +1,52 @@
-import React from "react";
-import { Image, Text, View, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { Image, Text, View, StyleSheet, Pressable } from "react-native";
 import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 import { BASE_URL } from "../../../utils/config";
+import { useNavigation } from "@react-navigation/native";
 
-export default function UserRelationsCard({ user, action }) {
+export default function UserRelationsCard({
+  user,
+  initialAction,
+  onActionPress,
+}) {
+  const [action, setAction] = useState(initialAction);
   const profilePictureUrl = `${BASE_URL}${user.profilePicture}`;
+  const navigation = useNavigation();
+
+  const handleProfilePress = () => {
+    navigation.push("Profile", { userId: user._id });
+  };
+
+  const handleActionPress = async () => {
+    console.log("Action Button Pressed!");
+    const newAction = await onActionPress(
+      user._id,
+      action,
+      user.isProfilePrivate
+    );
+    setAction(newAction);
+  };
 
   return (
     <View style={styles.listItemContainer}>
       <View style={styles.contentContainer}>
-        <Image source={{ uri: profilePictureUrl }} style={styles.imageMd} />
-        <View style={styles.textContainer}>
+        <Image
+          source={{ uri: profilePictureUrl }}
+          onPress={handleProfilePress}
+          style={styles.imageMd}
+        />
+        <Pressable style={styles.textContainer} onPress={handleProfilePress}>
           <Text style={styles.primaryText}>{user.fullName}</Text>
           <Text style={[styles.secondaryText, { marginTop: 2 }]}>
             @{user.username}
           </Text>
-        </View>
+        </Pressable>
         <View style={styles.actionButtonContainer}>
-          <ButtonSmall text={action} backgroundColor={"#ececec"} />
+          <ButtonSmall
+            onPress={handleActionPress}
+            text={action}
+            backgroundColor={"#ececec"}
+          />
         </View>
       </View>
     </View>
@@ -39,6 +68,10 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+  },
+  profileContainer: {
+    flexDirection: "row",
     alignItems: "center",
   },
   imageMd: {

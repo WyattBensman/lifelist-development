@@ -96,7 +96,7 @@ export default function ProfileOverview({
               style={styles.col}
               onPress={() =>
                 isAdminScreen
-                  ? navigation.navigate("ProfileStack", {
+                  ? navigation.push("ProfileStack", {
                       screen: "UserRelations",
                       params: {
                         screen: "Followers",
@@ -106,7 +106,7 @@ export default function ProfileOverview({
                         },
                       },
                     })
-                  : navigation.navigate("UserRelations", {
+                  : navigation.push("UserRelations", {
                       screen: "Followers",
                       params: { userId: profile._id, initialTab: "Followers" },
                     })
@@ -121,7 +121,7 @@ export default function ProfileOverview({
               style={styles.col}
               onPress={() =>
                 isAdminScreen
-                  ? navigation.navigate("ProfileStack", {
+                  ? navigation.push("ProfileStack", {
                       screen: "UserRelations",
                       params: {
                         screen: "Following",
@@ -131,7 +131,7 @@ export default function ProfileOverview({
                         },
                       },
                     })
-                  : navigation.navigate("UserRelations", {
+                  : navigation.push("UserRelations", {
                       screen: "Following",
                       params: { userId: profile._id, initialTab: "Following" },
                     })
@@ -145,7 +145,7 @@ export default function ProfileOverview({
           </View>
           {isAdminView ? (
             <ButtonSkinny
-              onPress={() => navigation.navigate("EditProfile")}
+              onPress={() => navigation.push("EditProfile")}
               text="Edit Profile"
               backgroundColor="#ececec"
               textColor="#262828"
@@ -163,7 +163,7 @@ export default function ProfileOverview({
                   />
                   <ButtonSkinny
                     onPress={() =>
-                      navigation.navigate("Message", { user: profile })
+                      navigation.push("Message", { user: profile })
                     }
                     text="Message"
                     backgroundColor="#ececec"

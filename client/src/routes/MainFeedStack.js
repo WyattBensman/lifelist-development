@@ -8,6 +8,7 @@ import Summary from "../pages/CreateCollage/Screens/Summary";
 import Overview from "../pages/CreateCollage/Screens/Overview";
 import Preview from "../pages/CreateCollage/Screens/Preview";
 import ProfileStack from "./ProfileStack";
+import IconsPage from "../pages/IconsPage";
 
 const Stack = createNativeStackNavigator();
 
@@ -59,6 +60,11 @@ export default function MainFeedStack() {
       <Stack.Screen
         name="ProfileStack"
         component={ProfileStack}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="IconsPage"
+        component={IconsPage}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

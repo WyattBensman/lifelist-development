@@ -30,7 +30,7 @@ const acceptFollowRequest = async (_, { userIdToAccept }, { user }) => {
       recipientId: userIdToAccept,
       senderId: user._id,
       type: "FOLLOW_ACCEPTED",
-      message: `${user.fullName} has successfully accepted your follow request.`,
+      message: `has successfully accepted your follow request.`,
     });
 
     // Notify the current user that they have a new follower
@@ -38,7 +38,7 @@ const acceptFollowRequest = async (_, { userIdToAccept }, { user }) => {
       recipientId: user._id,
       senderId: userIdToAccept,
       type: "FOLLOW",
-      message: `${newFollower.fullName} is now following you.`,
+      message: `is now following you.`,
     });
 
     return {

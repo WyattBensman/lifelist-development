@@ -15,6 +15,9 @@ export const GET_COLLAGE_BY_ID = gql`
         profilePicture
       }
       createdAt
+      isLikedByCurrentUser
+      isRepostedByCurrentUser
+      isSavedByCurrentUser
     }
   }
 `;

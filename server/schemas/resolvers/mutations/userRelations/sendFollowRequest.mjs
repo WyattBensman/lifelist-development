@@ -37,7 +37,7 @@ const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
       recipientId: userIdToFollow,
       senderId: user._id,
       type: "FOLLOW_REQUEST",
-      message: `${user.fullName} has sent you a follow request.`,
+      message: `has sent you a follow request.`,
     });
 
     return {

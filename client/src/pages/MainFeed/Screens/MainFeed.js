@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   Text,
+  Pressable,
 } from "react-native";
 import LifeListLogo from "../Icons/LifeListLogo";
 import HeaderMain from "../../../components/Headers/HeaderMain";
@@ -129,7 +130,7 @@ export default function MainFeed() {
           icon2={
             <IconHeader
               name="bell"
-              onPress={() => navigation.navigate("Inbox")}
+              onPress={() => navigation.navigate("IconsPage")}
               style={iconStyles.bell}
             />
           }
@@ -164,5 +165,13 @@ const styles = StyleSheet.create({
   },
   flatListContent: {
     flexGrow: 1,
+  },
+  iconContainer: {
+    backgroundColor: "#f5f5f5", // light gray background
+    borderRadius: 50, // make it circular
+    padding: 10, // adjust padding as needed
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

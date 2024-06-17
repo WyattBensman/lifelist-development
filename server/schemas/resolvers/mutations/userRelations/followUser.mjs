@@ -25,7 +25,7 @@ const followUser = async (_, { userIdToFollow }, { user }) => {
       recipientId: userIdToFollow,
       senderId: user._id,
       type: "FOLLOW",
-      message: `Cody Maverick started following you.`,
+      message: `started following you.`,
     });
 
     return {

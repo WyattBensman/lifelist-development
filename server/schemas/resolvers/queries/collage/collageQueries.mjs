@@ -1,17 +1,36 @@
 import { Collage } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const getCollageById = async (_, { collageId }) => {
+export const getCollageById = async (_, { collageId }, { user }) => {
   const collage = await Collage.findById(collageId)
     .populate({
       path: "author",
       select: "_id username fullName profilePicture",
     })
+    .populate({
+      path: "likes reposts saves",
+      select: "_id",
+    })
     .exec();
 
   if (!collage) throw new Error("Collage not found.");
 
-  return collage;
+  const isLikedByCurrentUser = collage.likes.some((like) =>
+    like._id.equals(user._id)
+  );
+  const isRepostedByCurrentUser = collage.reposts.some((repost) =>
+    repost._id.equals(user._id)
+  );
+  const isSavedByCurrentUser = collage.saves.some((save) =>
+    save._id.equals(user._id)
+  );
+
+  return {
+    collage,
+    isLikedByCurrentUser,
+    isRepostedByCurrentUser,
+    isSavedByCurrentUser,
+  };
 };
 
 export const getComments = async (_, { collageId }, { user }) => {

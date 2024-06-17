@@ -263,7 +263,7 @@ type User {
     getLifeListExperiencesByExperienceIds(lifeListId: ID!, experienceIds: [ID]): [LifeListExperience]
   
     # Collage Queries
-    getCollageById(collageId: ID!): Collage
+    getCollageById(collageId: ID!): CollageResponse
     getComments(collageId: ID!): [Comment]
     getTaggedUsers(collageId: ID!): [User]
     getInteractions(collageId: ID!): CollageInteractions
@@ -297,6 +297,13 @@ type User {
   type FeedResult {
     collages: [Collage]
     hasMore: Boolean
+  }
+
+  type CollageResponse {
+    collage: Collage
+    isLikedByCurrentUser: Boolean
+    isRepostedByCurrentUser: Boolean
+    isSavedByCurrentUser: Boolean
   }
 
   type UserProfileInformation {
