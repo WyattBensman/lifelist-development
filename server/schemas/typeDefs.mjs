@@ -16,6 +16,7 @@ type User {
   followers: [User]
   following: [User]
   followRequests: [User]
+  pendingFriendRequests: [User]
   lifeList: LifeList
   collages: [Collage]
   repostedCollages: [Collage]

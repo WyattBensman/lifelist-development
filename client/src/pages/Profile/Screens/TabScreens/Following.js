@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { FlatList, Alert, Text } from "react-native";
 import UserRelationsCard from "../../Cards/UserRelationsCard";
 import { layoutStyles } from "../../../../styles";
@@ -14,7 +14,7 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function Following({ userId, searchQuery }) {
-  const { currentUser } = useAuth();
+  const { currentUser, updateCurrentUser } = useAuth();
   const { data, loading, error, refetch } = useQuery(GET_FOLLOWING, {
     variables: { userId },
   });
@@ -22,7 +22,7 @@ export default function Following({ userId, searchQuery }) {
   useFocusEffect(
     useCallback(() => {
       refetch();
-    }, [])
+    }, [refetch])
   );
 
   const [followUser] = useMutation(FOLLOW_USER);
@@ -37,11 +37,20 @@ export default function Following({ userId, searchQuery }) {
           const { data } = await sendFollowRequest({
             variables: { userIdToFollow: userId },
           });
+          updateCurrentUser({
+            pendingFriendRequests: [
+              ...currentUser.pendingFriendRequests,
+              userId,
+            ],
+          });
           Alert.alert("Request Sent", data.sendFollowRequest.message);
           return "Requested";
         } else {
           const { data } = await followUser({
             variables: { userIdToFollow: userId },
+          });
+          updateCurrentUser({
+            following: [...currentUser.following, userId],
           });
           Alert.alert("Follow", data.followUser.message);
           return "Following";
@@ -50,11 +59,19 @@ export default function Following({ userId, searchQuery }) {
         const { data } = await unfollowUser({
           variables: { userIdToUnfollow: userId },
         });
+        updateCurrentUser({
+          following: currentUser.following.filter((id) => id !== userId),
+        });
         Alert.alert("Unfollow", data.unfollowUser.message);
         return "Follow";
       } else if (action === "Requested") {
         const { data } = await unsendFollowRequest({
           variables: { userIdToUnfollow: userId },
+        });
+        updateCurrentUser({
+          pendingFriendRequests: currentUser.pendingFriendRequests.filter(
+            (id) => id !== userId
+          ),
         });
         Alert.alert("Request Withdrawn", data.unsendFollowRequest.message);
         return "Follow";
@@ -71,9 +88,11 @@ export default function Following({ userId, searchQuery }) {
 
   const renderFollowingItem = ({ item }) => {
     let action = "Follow";
-    if (currentUser.following.includes(item._id)) {
+    if (data?.getFollowing.some((following) => following._id === item._id)) {
       action = "Following";
-    } else if (item.followRequests.some((req) => req._id === currentUser._id)) {
+    } else if (
+      item.followRequests.some((req) => req.userId === currentUser._id)
+    ) {
       action = "Requested";
     }
 

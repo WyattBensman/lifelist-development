@@ -16,6 +16,13 @@ const denyFollowRequest = async (_, { userIdToDeny }, { user }) => {
       throw new Error("Current user not found.");
     }
 
+    // Remove the current user from the pendingFriendRequests list of the user whose request is being denied
+    await User.findByIdAndUpdate(
+      userIdToDeny,
+      { $pull: { pendingFriendRequests: user._id } },
+      { new: true }
+    );
+
     return {
       success: true,
       message: "Follow request successfully denied.",

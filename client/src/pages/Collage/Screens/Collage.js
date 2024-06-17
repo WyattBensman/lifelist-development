@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Text,
   View,
@@ -9,7 +9,7 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import Icon from "../../../icons/Icon";
 import { iconStyles } from "../../../styles";
 import { GET_COLLAGE_BY_ID } from "../../../utils/queries";
@@ -30,38 +30,57 @@ const { width } = Dimensions.get("window");
 
 export default function Collage({ collageId }) {
   const navigation = useNavigation();
-  const { loading, error, data } = useQuery(GET_COLLAGE_BY_ID, {
+  const { loading, error, data, refetch } = useQuery(GET_COLLAGE_BY_ID, {
     variables: { collageId },
   });
 
   const [showParticipants, setShowParticipants] = useState(false);
   const [showComments, setShowComments] = useState(false);
-
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const [likeCollage] = useMutation(LIKE_COLLAGE);
-  const [unlikeCollage] = useMutation(UNLIKE_COLLAGE);
-  const [repostCollage] = useMutation(REPOST_COLLAGE);
-  const [unrepostCollage] = useMutation(UNREPOST_COLLAGE);
-  const [saveCollage] = useMutation(SAVE_COLLAGE);
-  const [unsaveCollage] = useMutation(UNSAVE_COLLAGE);
+  const [isLiked, setIsLiked] = useState(false);
+  const [isReposted, setIsReposted] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      setIsLiked(data.getCollageById.isLikedByCurrentUser);
+      setIsReposted(data.getCollageById.isRepostedByCurrentUser);
+      setIsSaved(data.getCollageById.isSavedByCurrentUser);
+    }
+  }, [data]);
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
+
+  const [likeCollage] = useMutation(LIKE_COLLAGE, {
+    onCompleted: () => setIsLiked(true),
+  });
+  const [unlikeCollage] = useMutation(UNLIKE_COLLAGE, {
+    onCompleted: () => setIsLiked(false),
+  });
+  const [repostCollage] = useMutation(REPOST_COLLAGE, {
+    onCompleted: () => setIsReposted(true),
+  });
+  const [unrepostCollage] = useMutation(UNREPOST_COLLAGE, {
+    onCompleted: () => setIsReposted(false),
+  });
+  const [saveCollage] = useMutation(SAVE_COLLAGE, {
+    onCompleted: () => setIsSaved(true),
+  });
+  const [unsaveCollage] = useMutation(UNSAVE_COLLAGE, {
+    onCompleted: () => setIsSaved(false),
+  });
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error.message}</Text>;
 
   const {
-    caption,
-    images,
-    author,
-    createdAt,
-    isLikedByCurrentUser,
-    isRepostedByCurrentUser,
-    isSavedByCurrentUser,
+    collage: { caption, images, author, createdAt },
   } = data.getCollageById;
-
-  const [isLiked, setIsLiked] = useState(isLikedByCurrentUser);
-  const [isReposted, setIsReposted] = useState(isRepostedByCurrentUser);
-  const [isSaved, setIsSaved] = useState(isSavedByCurrentUser);
 
   const handleProfilePress = () => {
     navigation.navigate("ProfileStack", {
@@ -87,30 +106,24 @@ export default function Collage({ collageId }) {
   const handleLikePress = async () => {
     if (isLiked) {
       await unlikeCollage({ variables: { collageId } });
-      setIsLiked(false);
     } else {
       await likeCollage({ variables: { collageId } });
-      setIsLiked(true);
     }
   };
 
   const handleRepostPress = async () => {
     if (isReposted) {
       await unrepostCollage({ variables: { collageId } });
-      setIsReposted(false);
     } else {
       await repostCollage({ variables: { collageId } });
-      setIsReposted(true);
     }
   };
 
   const handleSavePress = async () => {
     if (isSaved) {
       await unsaveCollage({ variables: { collageId } });
-      setIsSaved(false);
     } else {
       await saveCollage({ variables: { collageId } });
-      setIsSaved(true);
     }
   };
 
@@ -164,7 +177,7 @@ export default function Collage({ collageId }) {
         </View>
         <View style={styles.actionContainer}>
           <Icon
-            name="heart"
+            name={isLiked ? "heart.fill" : "heart"}
             style={iconStyles.heart}
             tintColor={isLiked ? "#FF0000" : "#ffffff"}
             onPress={handleLikePress}
@@ -180,14 +193,14 @@ export default function Collage({ collageId }) {
             name="arrow.2.squarepath"
             style={iconStyles.repost}
             spacer={16}
-            tintColor={isReposted ? "#00FF00" : "#ffffff"}
+            tintColor={isReposted ? "#6AB952" : "#ffffff"}
             onPress={handleRepostPress}
           />
           <Icon
-            name="bookmark"
+            name={isSaved ? "bookmark.fill" : "bookmark"}
             style={iconStyles.bookmark}
             spacer={16}
-            tintColor={isSaved ? "#0000FF" : "#ffffff"}
+            tintColor="#ffffff"
             onPress={handleSavePress}
           />
         </View>

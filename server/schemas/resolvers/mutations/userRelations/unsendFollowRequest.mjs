@@ -6,14 +6,14 @@ const unsendFollowRequest = async (_, { userIdToUnfollow }, { user }) => {
   try {
     isUser(user);
 
-    // Check if the friend request exists
-    const friendRequestExists = await User.findOne({
+    // Check if the follow request exists
+    const followRequestExists = await User.findOne({
       _id: userIdToUnfollow,
       "followRequests.userId": user._id,
     });
 
-    if (!friendRequestExists) {
-      throw new Error("No friend request exists to unsend.");
+    if (!followRequestExists) {
+      throw new Error("No follow request exists to unsend.");
     }
 
     // Optionally, find and delete the related notification
@@ -32,11 +32,14 @@ const unsendFollowRequest = async (_, { userIdToUnfollow }, { user }) => {
       );
     }
 
-    // Remove the friend request from the recipient's list
+    // Remove the follow request from the recipient's list
     await User.findByIdAndUpdate(
       userIdToUnfollow,
       {
-        $pull: { followRequests: { userId: user._id } },
+        $pull: {
+          followRequests: { userId: user._id },
+          pendingFriendRequests: user._id,
+        },
       },
       { new: true }
     );

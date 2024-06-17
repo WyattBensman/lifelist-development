@@ -27,7 +27,10 @@ const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
     await User.findByIdAndUpdate(
       userIdToFollow,
       {
-        $addToSet: { followRequests: { userId: user._id, status: "PENDING" } },
+        $addToSet: {
+          followRequests: { userId: user._id, status: "PENDING" },
+          pendingFriendRequests: user._id,
+        },
       },
       { new: true }
     );

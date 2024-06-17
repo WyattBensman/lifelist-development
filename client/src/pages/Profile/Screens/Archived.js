@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   Dimensions,
   FlatList,
@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { layoutStyles } from "../../../styles";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useQuery } from "@apollo/client";
@@ -18,7 +18,13 @@ const { height: screenHeight } = Dimensions.get("window");
 
 export default function Archived() {
   const navigation = useNavigation();
-  const { data, loading, error } = useQuery(GET_ARCHIVED_COLLAGES);
+  const { data, loading, error, refetch } = useQuery(GET_ARCHIVED_COLLAGES);
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error.message}</Text>;

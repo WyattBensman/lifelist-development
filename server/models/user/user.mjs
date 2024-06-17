@@ -66,6 +66,7 @@ const userSchema = new Schema({
   followers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   following: [{ type: Schema.Types.ObjectId, ref: "User" }],
   followRequests: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  pendingFriendRequests: [{ type: Schema.Types.ObjectId, ref: "User" }],
 
   // Content
   lifeList: { type: Schema.Types.ObjectId, ref: "LifeList" },

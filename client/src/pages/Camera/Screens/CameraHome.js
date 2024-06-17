@@ -9,6 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
+import { filters } from "../../../utils/shaders";
 import { layoutStyles } from "../../../styles/LayoutStyles";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
@@ -20,10 +21,11 @@ export default function CameraHome() {
   const { setIsTabBarVisible } = useNavigationContext();
   const [facing, setFacing] = useState("back");
   const [flash, setFlash] = useState("off");
-  const [cameraType, setCameraType] = useState("DISPOSABLE");
+  const [cameraType, setCameraType] = useState("Disposable");
   const [zoom, setZoom] = useState(1);
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef(null);
+  const [filter, setFilter] = useState(null);
 
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const screenWidth = Dimensions.get("window").width;
@@ -72,6 +74,13 @@ export default function CameraHome() {
 
   const handleSelectCameraType = (type) => {
     setCameraType(type);
+    if (type === "Analog") {
+      setFilter(filters.analogFilm);
+    } else if (type === "Disposable") {
+      setFilter(filters.disposableFilm);
+    } else {
+      setFilter(null);
+    }
   };
 
   const handleZoomChange = (zoomLevel) => {

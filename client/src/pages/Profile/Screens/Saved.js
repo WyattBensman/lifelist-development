@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   Dimensions,
   FlatList,
@@ -9,7 +9,7 @@ import {
 import { layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
 import { GET_SAVED_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
@@ -18,7 +18,13 @@ const { height: screenHeight } = Dimensions.get("window");
 
 export default function Saved() {
   const navigation = useNavigation();
-  const { data, loading, error } = useQuery(GET_SAVED_COLLAGES);
+  const { data, loading, error, refetch } = useQuery(GET_SAVED_COLLAGES);
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error.message}</Text>;

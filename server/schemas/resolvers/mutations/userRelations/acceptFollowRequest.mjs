@@ -25,6 +25,13 @@ const acceptFollowRequest = async (_, { userIdToAccept }, { user }) => {
     );
     if (!acceptor) throw new Error("Current user's document not found.");
 
+    // Remove the current user from the pendingFriendRequests list of the user whose request is being accepted
+    await User.findByIdAndUpdate(
+      userIdToAccept,
+      { $pull: { pendingFriendRequests: user._id } },
+      { new: true }
+    );
+
     // Notify the user whose follow request was accepted
     await createNotification({
       recipientId: userIdToAccept,

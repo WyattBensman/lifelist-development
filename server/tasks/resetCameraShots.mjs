@@ -2,40 +2,29 @@ import cron from "node-cron";
 import { User } from "../models/index.mjs";
 
 export const resetCameraShots = () => {
-  // Define a cron job to run daily at 6 AM
-  const job = cron.schedule(
-    "0 6 * * *",
-    async () => {
-      try {
-        const startOfToday = new Date();
-        startOfToday.setHours(0, 0, 0, 0); // Set to the start of today
+  // Scheduled task to run every day at 5am
+  cron.schedule("0 5 * * *", async () => {
+    try {
+      // Fetch all users
+      const users = await User.find({});
 
-        // Find users whose last camera shot reset was before today
-        const users = await User.find({
-          "dailyCameraShots.lastReset": { $lt: startOfToday },
-        });
-
-        // Iterate over each user to reset and transfer camera shots
-        for (let user of users) {
-          user.cameraShots.push(...user.developingCameraShots);
-          user.developingCameraShots = []; // Clear developing shots
-          user.dailyCameraShots.count = 0; // Reset daily shots count
-          user.dailyCameraShots.lastReset = new Date(); // Update last reset time
-
-          await user.save(); // Save the changes to the user document
-        }
-
-        console.log(
-          "Camera shots reset and transferred for all applicable users."
-        );
-      } catch (error) {
-        console.error("Error resetting camera shots:", error);
+      // Iterate through each user
+      for (const user of users) {
+        // Move developingCameraShots to cameraShots
+        user.cameraShots.push(...user.developingCameraShots);
+        // Clear developingCameraShots
+        user.developingCameraShots = [];
+        // Save updated user
+        await user.save();
       }
-    },
-    {
-      scheduled: false, // This prevents the job from auto-starting
-    }
-  );
 
-  return job;
+      console.log(
+        "Successfully moved developingCameraShots to cameraShots and cleared developingCameraShots for all users."
+      );
+    } catch (error) {
+      console.error("Error during scheduled task:", error);
+    }
+  });
+
+  console.log("Scheduled task set to run every day at 5am");
 };

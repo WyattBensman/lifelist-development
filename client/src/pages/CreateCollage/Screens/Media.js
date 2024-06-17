@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Text, FlatList, Pressable } from "react-native";
 import { useQuery } from "@apollo/client";
+import DraggableFlatList from "react-native-draggable-flatlist";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries";
 import { layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
@@ -43,11 +44,17 @@ export default function Media() {
     />
   );
 
-  const renderSelectedShotItem = ({ item }) => (
-    <SelectedShotCard
-      item={item}
-      handleImagePress={() => handleImagePress(item)}
-    />
+  const renderSelectedShotItem = ({ item, drag, isActive }) => (
+    <Pressable
+      onPress={() => handleImagePress(item)}
+      onLongPress={drag}
+      style={{
+        backgroundColor: isActive ? "#e2e2e2" : "#f9f9f9",
+        marginRight: 8,
+      }}
+    >
+      <SelectedShotCard item={item} />
+    </Pressable>
   );
 
   const handleNextPage = () => {
@@ -70,12 +77,13 @@ export default function Media() {
         }
       />
       <View style={styles.selectedContainer}>
-        <FlatList
+        <DraggableFlatList
           data={selectedShots}
           renderItem={renderSelectedShotItem}
           keyExtractor={(item) => item._id.toString()}
           horizontal
           showsHorizontalScrollIndicator={false}
+          onDragEnd={({ data }) => setSelectedShots(data)}
         />
       </View>
       <Text style={styles.instructions}>Camera Shots</Text>

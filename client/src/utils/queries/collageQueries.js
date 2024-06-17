@@ -4,17 +4,19 @@ import { gql } from "@apollo/client";
 export const GET_COLLAGE_BY_ID = gql`
   query GetCollageById($collageId: ID!) {
     getCollageById(collageId: $collageId) {
-      _id
-      caption
-      images
-      coverImage
-      author {
+      collage {
         _id
-        username
-        fullName
-        profilePicture
+        caption
+        images
+        coverImage
+        author {
+          _id
+          username
+          fullName
+          profilePicture
+        }
+        createdAt
       }
-      createdAt
       isLikedByCurrentUser
       isRepostedByCurrentUser
       isSavedByCurrentUser

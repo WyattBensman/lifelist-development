@@ -71,6 +71,32 @@ app.use("/uploads", express.static(uploadDir));
 // Universal CORS configuration
 app.use(cors());
 
+const startServer = async () => {
+  try {
+    await server.start();
+
+    server.applyMiddleware({
+      app,
+      path: "/graphql",
+    });
+
+    // Schedule jobs
+    schedule.scheduleJob("0 0 * * *", cleanupExpiredRegistrations); // Runs daily at midnight
+    resetCameraShots();
+
+    await db; // Ensure database connection is ready
+
+    app.listen(PORT, () => {
+      console.log(`API server running on port ${PORT}!`);
+      console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
+    });
+  } catch (error) {
+    console.error(`Error starting server: ${error.message}`);
+  }
+};
+
+startServer();
+
 // HOME ACCESS
 /* app.use(
   cors({
@@ -99,32 +125,10 @@ app.use(cors());
   })
 ); */
 
-const startServer = async () => {
-  await server.start();
-
-  server.applyMiddleware({
-    app,
-    path: "/graphql",
-  });
-
-  /* if (process.env.NODE_ENV === "production") {
+/* if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../client/dist")));
     app.use("/images", express.static(path.join(__dirname, "/images")));
     app.get("*", (req, res) => {
       res.sendFile(path.join(__dirname, "../client/dist/index.html"));
     });
   } */
-
-  // Schedule jobs
-  schedule.scheduleJob("0 0 * * *", cleanupExpiredRegistrations); // Runs daily at midnight
-  schedule.scheduleJob("0 6 * * *", resetCameraShots); // Runs daily at 6 AM
-
-  await db; // Ensure database connection is ready
-
-  app.listen(PORT, () => {
-    console.log(`API server running on port ${PORT}!`);
-    console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
-  });
-};
-
-startServer();
