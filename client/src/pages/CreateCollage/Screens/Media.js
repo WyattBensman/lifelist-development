@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { View, StyleSheet, Text, FlatList, Pressable } from "react-native";
 import { useQuery } from "@apollo/client";
-import DraggableFlatList from "react-native-draggable-flatlist";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries";
-import { layoutStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigation } from "@react-navigation/native";
 import ShotCard from "../Cards/ShotCard";
 import SelectedShotCard from "../Cards/SelectedShotCard";
-import NextPageArrowIcon from "../../../icons/Universal/NextPageArrowIcon";
+import Icon from "../../../components/Icons/Icon";
+import DraggableFlatList from "react-native-draggable-flatlist";
+import MediaPlaceholder from "../Components/MediaPlaceholder";
 
 export default function Media() {
   const navigation = useNavigation();
@@ -67,51 +67,66 @@ export default function Media() {
     <View style={layoutStyles.wrapper}>
       <HeaderStack
         title={"Media"}
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         button1={
-          <NextPageArrowIcon
+          <Icon
+            name="chevron.forward"
             onPress={handleNextPage}
             disabled={selectedShots.length === 0}
-            color={selectedShots.length > 0 ? "#6AB952" : "#ececec"}
+            style={iconStyles.backArrow}
+            weight={selectedShots.length > 0 ? "heavy" : "semibold"}
+            tintColor={selectedShots.length > 0 ? "#6AB952" : "#696969"}
           />
         }
       />
       <View style={styles.selectedContainer}>
-        <DraggableFlatList
-          data={selectedShots}
-          renderItem={renderSelectedShotItem}
-          keyExtractor={(item) => item._id.toString()}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          onDragEnd={({ data }) => setSelectedShots(data)}
-        />
+        {selectedShots.length === 0 ? (
+          <MediaPlaceholder />
+        ) : (
+          <DraggableFlatList
+            data={selectedShots}
+            renderItem={renderSelectedShotItem}
+            keyExtractor={(item) => item._id.toString()}
+            horizontal
+            showsHorizontalScrollIndicator={true}
+            onDragEnd={({ data }) => setSelectedShots(data)}
+          />
+        )}
       </View>
       <Text style={styles.instructions}>Camera Shots</Text>
-      <View style={styles.listContainer}>
-        <FlatList
-          data={data.getAllCameraShots}
-          renderItem={renderShotItem}
-          keyExtractor={(item) => item._id.toString()}
-          numColumns={4}
-          columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.flatListContent}
-        />
-      </View>
+      <FlatList
+        data={data.getAllCameraShots}
+        renderItem={renderShotItem}
+        keyExtractor={(item) => item._id.toString()}
+        numColumns={3}
+        columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle={styles.flatListContent}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   selectedContainer: {
-    flex: 1,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ececec",
+    height: 220,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#1C1C1C",
   },
   instructions: {
     margin: 8,
+    marginTop: 16,
+    color: "#fff",
+    fontWeight: "600",
   },
   listContainer: {
-    flex: 2,
+    flex: 1.5,
   },
   columnWrapper: {
     justifyContent: "space-between",

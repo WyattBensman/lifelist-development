@@ -9,16 +9,18 @@ export const formStyles = StyleSheet.create({
     marginBottom: 16,
   },
   input: {
-    height: 40,
+    height: 42,
+    color: "#ececec",
     borderWidth: 1,
     padding: 10,
     borderRadius: 8,
-    borderColor: "#D4D4D4",
-    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#252525",
   },
   label: {
     fontWeight: "500",
     marginBottom: 4,
+    color: "#fff",
   },
   inputSpacer: {
     marginTop: 16,

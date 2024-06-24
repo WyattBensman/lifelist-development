@@ -1,8 +1,7 @@
 import React from "react";
-import { FlatList, Text, View } from "react-native";
-import { headerStyles, layoutStyles } from "../../../styles";
+import { FlatList, Text, View, StyleSheet, ScrollView } from "react-native";
+import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
 import {
@@ -11,9 +10,8 @@ import {
 } from "../../../utils/queries/cameraQueries";
 import AlbumCard from "../Cards/AlbumCard";
 import ShotCard from "../Cards/ShotCard";
-import SymbolButton from "../../../icons/SymbolButton";
 import { useAuth } from "../../../contexts/AuthContext";
-import groupShotsByDate from "../../../utils/groupShotsByDate";
+import Icon from "../../../components/Icons/Icon";
 
 export default function CameraRoll() {
   const navigation = useNavigation();
@@ -34,66 +32,44 @@ export default function CameraRoll() {
   if (albumsError) return <Text>Error: {albumsError.message}</Text>;
   if (shotsError) return <Text>Error: {shotsError.message}</Text>;
 
-  const groupedShots = groupShotsByDate(shotsData.getAllCameraShots);
-
   const renderAlbum = ({ item }) => (
     <AlbumCard album={item} navigation={navigation} />
   );
 
-  const renderShot = ({ item }) => (
-    <ShotCard shot={item} navigation={navigation} />
+  const renderShot = ({ item, index }) => (
+    <ShotCard
+      shot={item}
+      shots={shotsData.getAllCameraShots}
+      navigation={navigation}
+      index={index}
+    />
   );
-
-  const renderGroupedShots = () => {
-    const sections = [];
-
-    if (groupedShots["Yesterday"].length > 0) {
-      sections.push({ title: "Yesterday", data: groupedShots["Yesterday"] });
-    }
-
-    if (groupedShots["Within the past week"].length > 0) {
-      sections.push({
-        title: "Within the past week",
-        data: groupedShots["Within the past week"],
-      });
-    }
-
-    Object.keys(groupedShots["Older"]).forEach((month) => {
-      sections.push({ title: month, data: groupedShots["Older"][month] });
-    });
-
-    return sections.map((section, index) => (
-      <View key={index} style={layoutStyles.marginTopMd}>
-        <Text style={headerStyles.headerMedium}>Camera Shots</Text>
-        <Text style={{ marginBottom: 8, color: "#d4d4d4" }}>
-          {section.title}
-        </Text>
-        <FlatList
-          data={section.data}
-          renderItem={renderShot}
-          keyExtractor={(item) => item._id}
-          numColumns={3}
-          showsVerticalScrollIndicator={false}
-          style={layoutStyles.paddingLeftXxs}
-        />
-      </View>
-    ));
-  };
 
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
         title={"Camera Roll"}
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         button1={
-          <SymbolButton
-            name="plus.square"
+          <Icon
+            name="folder.badge.plus"
             onPress={() => navigation.navigate("CreateAlbum")}
+            weight="semibold"
+            style={iconStyles.createAlbum}
           />
         }
       />
-      <View style={[layoutStyles.marginTopSm, layoutStyles.paddingLeftXxs]}>
-        <Text style={headerStyles.headerMedium}>Albums</Text>
+      <ScrollView style={layoutStyles.paddingTopSm}>
+        <Text style={[headerStyles.headerMedium, { marginLeft: 4 }]}>
+          Albums
+        </Text>
         <FlatList
           data={albumsData.getAllCameraAlbums}
           renderItem={renderAlbum}
@@ -102,8 +78,24 @@ export default function CameraRoll() {
           showsHorizontalScrollIndicator={false}
           style={layoutStyles.paddingLeftXxs}
         />
-        {renderGroupedShots()}
-      </View>
+        <View style={layoutStyles.marginTopMd}>
+          <Text style={headerStyles.headerMedium}>Camera Shots</Text>
+          <FlatList
+            data={shotsData.getAllCameraShots}
+            renderItem={renderShot}
+            keyExtractor={(item) => item._id}
+            numColumns={3}
+            columnWrapperStyle={styles.columnWrapper}
+            showsVerticalScrollIndicator={false}
+          />
+        </View>
+      </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  columnWrapper: {
+    justifyContent: "space-between",
+  },
+});

@@ -6,7 +6,14 @@ export const getExperience = async (_, { experienceId }) => {
   return experience;
 };
 
-export const getAllExperiences = async () => {
-  const experiences = await Experience.find().exec();
-  return experiences;
+export const getAllExperiences = async (_, { limit, offset }) => {
+  try {
+    const experiences = await Experience.find({})
+      .skip(offset)
+      .limit(limit)
+      .exec();
+    return experiences;
+  } catch (error) {
+    throw new Error("Failed to fetch experiences");
+  }
 };

@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import UserRelationsNavigator from "../Navigators/UserRelationsNavigator";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
-import { layoutStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import SearchBarStandard from "../../../components/SearchBars/SearchBarStandard";
+import Icon from "../../../components/Icons/Icon";
 
 export default function UserRelations() {
   const navigation = useNavigation();
@@ -25,10 +25,19 @@ export default function UserRelations() {
     <View style={layoutStyles.wrapper}>
       <HeaderStack
         title="User Relations"
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         hasBorder={false}
       />
-      <View style={[layoutStyles.marginSm, { alignSelf: "center" }]}>
+      <View
+        style={[layoutStyles.marginSm, { alignSelf: "center", marginTop: 6 }]}
+      >
         <SearchBarStandard
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}

@@ -4,6 +4,7 @@ import { StyleSheet } from "react-native";
 export default function ButtonSolid({
   backgroundColor,
   textColor,
+  borderColor,
   width,
   text,
   marginTop,
@@ -18,6 +19,8 @@ export default function ButtonSolid({
           backgroundColor: backgroundColor,
           width: width,
           marginTop: marginTop,
+          borderColor: borderColor,
+          borderWidth: borderColor ? 1 : 0,
         },
       ]}
       onPress={onPress}
@@ -40,6 +43,7 @@ const styling = StyleSheet.create({
   buttonMessage: {
     textAlign: "center",
     fontSize: 14,
+    fontWeight: "500",
   },
   iconContainer: {
     marginRight: 6,

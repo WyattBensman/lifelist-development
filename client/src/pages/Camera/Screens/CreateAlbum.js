@@ -1,34 +1,36 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   FlatList,
-  ScrollView,
   Pressable,
+  StyleSheet,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery, useMutation } from "@apollo/client";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
-import { headerStyles, layoutStyles, formStyles } from "../../../styles";
+import {
+  headerStyles,
+  layoutStyles,
+  formStyles,
+  iconStyles,
+} from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
-import ShotCard from "../Cards/ShotCard";
+import SelectableShotCard from "../Cards/SelectableShotCard";
 import { CREATE_CAMERA_ALBUM } from "../../../utils/mutations/cameraMutations";
 import { useAuth } from "../../../contexts/AuthContext"; // Import AuthContext
+import Icon from "../../../components/Icons/Icon";
 
 export default function CreateAlbum() {
   const navigation = useNavigation();
   const { currentUser, updateCurrentUser } = useAuth(); // Get currentUser and updateCurrentUser
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [selectedShots, setSelectedShots] = useState([]);
   const [changesMade, setChangesMade] = useState(false);
 
   const { data, loading, error } = useQuery(GET_ALL_CAMERA_SHOTS);
   const [createCameraAlbum] = useMutation(CREATE_CAMERA_ALBUM);
-
-  console.log(data.getAllCameraShots);
 
   useEffect(() => {
     if (title && selectedShots.length > 0) {
@@ -54,7 +56,6 @@ export default function CreateAlbum() {
       const { data } = await createCameraAlbum({
         variables: {
           title,
-          description,
           shots: selectedShots,
         },
       });
@@ -74,7 +75,7 @@ export default function CreateAlbum() {
   };
 
   const renderShot = ({ item }) => (
-    <ShotCard
+    <SelectableShotCard
       shot={item}
       isSelected={selectedShots.includes(item._id)}
       onCheckboxToggle={handleCheckboxToggle}
@@ -85,54 +86,100 @@ export default function CreateAlbum() {
     <View style={layoutStyles.wrapper}>
       <HeaderStack
         title="New Album"
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         button1={
-          <Pressable onPress={saveChanges} disabled={!changesMade}>
+          <Pressable
+            onPress={saveChanges}
+            disabled={!changesMade}
+            style={[
+              styles.createButtonContainer,
+              changesMade && styles.createButtonActiveContainer,
+            ]}
+          >
             <Text
-              style={changesMade ? { color: "#6AB952" } : { color: "#000000" }}
+              style={[
+                styles.createButtonText,
+                changesMade && styles.createButtonActiveText,
+              ]}
             >
               Create
             </Text>
           </Pressable>
         }
       />
-      <ScrollView>
-        <View style={formStyles.formContainer}>
-          <Text style={formStyles.label}>Title</Text>
+      <View
+        style={[
+          {
+            margin: 16,
+          },
+        ]}
+      >
+        <View style={styles.row}>
+          <Text style={styles.label}>Title</Text>
           <TextInput
-            style={formStyles.input}
+            style={styles.input}
             value={title}
             onChangeText={(text) => {
               setTitle(text);
             }}
           />
-          <Text style={[formStyles.label, layoutStyles.marginTopSm]}>
-            Description
-          </Text>
-          <TextInput
-            style={formStyles.input}
-            value={description}
-            onChangeText={(text) => {
-              setDescription(text);
-            }}
-          />
         </View>
-        <Text
-          style={[
-            headerStyles.headerStandard,
-            layoutStyles.marginLeftMd,
-            layoutStyles.marginBtmSm,
-          ]}
-        >
-          Add Shots
-        </Text>
-        <FlatList
-          data={data.getAllCameraShots}
-          renderItem={renderShot}
-          keyExtractor={(item) => item._id}
-          numColumns={3}
-        />
-      </ScrollView>
+      </View>
+      <Text style={[headerStyles.headerMedium, { marginLeft: 4 }]}>
+        Select Shots
+      </Text>
+      <FlatList
+        data={data.getAllCameraShots}
+        renderItem={renderShot}
+        keyExtractor={(item) => item._id}
+        numColumns={3}
+      />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  label: {
+    width: 72,
+    color: "#ffffff",
+    fontWeight: "500",
+  },
+  input: {
+    flex: 1, // Make input take the remaining space
+    color: "#ececec",
+    height: 42,
+    paddingHorizontal: 10, // Adjust padding as needed
+    borderRadius: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#252525",
+  },
+  createButtonContainer: {
+    backgroundColor: "#252525",
+    paddingVertical: 6,
+    paddingHorizontal: 13,
+    borderRadius: 12,
+  },
+  createButtonText: {
+    color: "#696969",
+    fontWeight: "600",
+  },
+  createButtonActiveContainer: {
+    backgroundColor: "#6AB95230",
+  },
+  createButtonActiveText: {
+    color: "#6AB952",
+    fontWeight: "500",
+  },
+});

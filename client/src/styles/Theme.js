@@ -1,28 +1,54 @@
 export const theme = {
   colors: {
-    primary: "#6200EE", // Primary color for your app
-    secondary: "#03DAC6", // Secondary color for your app
-    background: "#FFFFFF", // Background color of your app
-    text: "#000000", // Primary text color
-    error: "#B00020", // Error color
+    containers: {
+      NAVBAR: "#111111",
+      BACKGROUND: "#121212",
+      ONBACKGROUND: "#252525",
+      SURFACE: "#1C1C1C",
+      ONSURFACE: "#313135",
+      PRIMARY: "#6AB95230",
+      PRIMARYBORDER: "#6AB95250",
+      SECONDARY: "#5FC4ED30",
+      SECONDARYBORDER: "#5FC4ED50",
+    },
+    fonts: {
+      LIGHTFONT: "#FFFFFF",
+      LIGHTGREYFONT: "#ECECEC",
+      GREYFONT: "#D4D4D4",
+      DARKGREYFONT: "#696969",
+      PRIMARYFONT: "#6AB952",
+      SECONDARYFONT: "#5FC4ED",
+    },
   },
-  fontSizes: {
-    small: 12,
-    medium: 16,
-    large: 20,
-    // Define more sizes as needed
+  typography: {
+    fontSizes: {
+      xs: 10,
+      sm: 12,
+      md: 16,
+      lg: 20,
+      xl: 24,
+    },
+    fontWeights: {
+      medium: "500",
+      semibold: "600",
+      bold: "700",
+      heavy: "800",
+    },
   },
   spacing: {
-    tiny: 4,
-    small: 8,
-    medium: 16,
-    large: 32,
+    xxs: 4,
+    xs: 6,
+    sm: 8,
+    md: 12,
+    lg: 16,
+    xl: 20,
+    xxl: 24,
   },
-  borderRadius: {
-    small: 4,
-    default: 8,
-    large: 16,
-    // Define more or different border radius sizes as needed
+  borderRadii: {
+    xs: 6,
+    sm: 8,
+    md: 12,
+    lg: 16,
+    xl: 32,
   },
-  // Add more theme properties as needed, such as fontWeights, lineHeights, etc.
 };

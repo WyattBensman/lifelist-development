@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, FlatList, Pressable } from "react-native";
-import { useQuery } from "@apollo/client";
+import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
+import { useQuery, useMutation } from "@apollo/client";
 import {
   useNavigation,
   useFocusEffect,
@@ -8,31 +8,39 @@ import {
 } from "@react-navigation/native";
 import ShotCard from "../../../components/Cards/ShotCard";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries";
-import { layoutStyles } from "../../../styles";
+import { UPDATE_ASSOCIATED_SHOTS } from "../../../utils/mutations";
+import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
-import { useCallbackContext } from "../../../contexts/CallbackContext";
+import Icon from "../../../components/Icons/Icon";
 
 export default function ManageShots() {
   const route = useRoute();
   const navigation = useNavigation();
-  const { associatedShots } = route.params;
-  const { updateShotsCallback } = useCallbackContext();
+  const { experienceId, associatedShots } = route.params;
   const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_SHOTS);
+  const [updateShots] = useMutation(UPDATE_ASSOCIATED_SHOTS);
 
-  const initialShots = associatedShots || [];
-  const [selectedShots, setSelectedShots] = useState(initialShots);
+  const [selectedShots, setSelectedShots] = useState([]);
   const [isModified, setIsModified] = useState(false);
 
   useEffect(() => {
+    if (associatedShots) {
+      setSelectedShots(associatedShots.map((shotInfo) => shotInfo.shot));
+    }
+  }, [associatedShots]);
+
+  useEffect(() => {
     setIsModified(
-      selectedShots.length !== initialShots.length ||
+      selectedShots.length !== associatedShots.length ||
         selectedShots.some(
           (shot) =>
-            !initialShots.some((initialShot) => initialShot._id === shot._id)
+            !associatedShots.some(
+              (initialShot) => initialShot.shot._id === shot._id
+            )
         )
     );
-  }, [selectedShots, initialShots]);
+  }, [selectedShots, associatedShots]);
 
   const handleCheckboxToggle = (shot) => {
     setSelectedShots((prev) => {
@@ -44,9 +52,19 @@ export default function ManageShots() {
     });
   };
 
-  const handleSave = () => {
-    updateShotsCallback(selectedShots);
-    navigation.goBack();
+  const handleSave = async () => {
+    if (!isModified) return;
+    try {
+      await updateShots({
+        variables: {
+          lifeListExperienceId: experienceId,
+          shotIds: selectedShots.map((shot) => shot._id),
+        },
+      });
+      navigation.goBack();
+    } catch (error) {
+      console.error("Failed to update associated shots:", error);
+    }
   };
 
   useFocusEffect(
@@ -61,11 +79,26 @@ export default function ManageShots() {
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         title={"Manage Shots"}
         button1={
-          <Pressable onPress={handleSave}>
-            <Text style={{ color: isModified ? "green" : "#d4d4d4" }}>
+          <Pressable
+            onPress={handleSave}
+            style={[
+              styles.buttonContainer,
+              isModified && styles.buttonContainerActive,
+            ]}
+          >
+            <Text
+              style={[styles.buttonText, isModified && styles.buttonTextActive]}
+            >
               Save
             </Text>
           </Pressable>
@@ -87,3 +120,22 @@ export default function ManageShots() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    backgroundColor: "#1C1C1C",
+    paddingVertical: 6,
+    paddingHorizontal: 13,
+    borderRadius: 12,
+  },
+  buttonText: {
+    color: "#696969",
+  },
+  buttonContainerActive: {
+    backgroundColor: "#6AB95230",
+    fontWeight: "500",
+  },
+  buttonTextActive: {
+    color: "#6AB952",
+  },
+});

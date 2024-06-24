@@ -1,15 +1,21 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
+import {
+  formStyles,
+  headerStyles,
+  iconStyles,
+  layoutStyles,
+} from "../../../../styles";
 import { useState, useEffect } from "react";
 import BottomContainer from "../../../../components/BottomContainer";
 import SolidButton from "../../../../components/SolidButton";
 import OutlinedButton from "../../../../components/OutlinedButton";
-import ForwardArrowIcon from "../../../../icons/Universal/ForwardArrowIcon";
 import GlobalSwitch from "../../../../components/Switch";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../../../contexts/AuthContext";
 import { useMutation } from "@apollo/client";
 import { UPDATE_SETTINGS } from "../../../../utils/mutations";
+import Icon from "../../../../components/Icons/Icon";
+import IconStatic from "../../../../components/Icons/IconStatic";
 
 export default function EditSettings() {
   const navigation = useNavigation();
@@ -74,46 +80,74 @@ export default function EditSettings() {
   return (
     <View style={layoutStyles.wrapper}>
       <View style={formStyles.formContainer}>
-        <Text style={headerStyles.headerMedium}>Account Privacy</Text>
+        <Text style={[headerStyles.headerMedium, styles.text]}>
+          Account Privacy
+        </Text>
         <View style={[layoutStyles.flex, layoutStyles.marginBtmMd]}>
-          <Text>Private</Text>
+          <Text style={styles.text}>Private</Text>
           <GlobalSwitch isOn={isPrivate} onToggle={setIsPrivate} />
         </View>
         <Pressable
           style={[layoutStyles.flex, layoutStyles.marginBtmLg]}
           onPress={() => navigation.navigate("BlockedUsers")}
         >
-          <Text>Blocked Users</Text>
-          <ForwardArrowIcon />
+          <Text style={styles.text}>Blocked Users</Text>
+          <IconStatic
+            name="chevron.forward"
+            noFill={true}
+            weight={"semibold"}
+            style={iconStyles.forwardArrow}
+          />
         </Pressable>
         <Pressable
           style={layoutStyles.flex}
           onPress={() => navigation.navigate("PrivacyGroups")}
         >
-          <Text>Privacy Groups</Text>
-          <ForwardArrowIcon />
+          <Text style={styles.text}>Privacy Groups</Text>
+          <IconStatic
+            name="chevron.forward"
+            noFill={true}
+            weight={"semibold"}
+            style={iconStyles.forwardArrow}
+          />
         </Pressable>
-        <Text style={[headerStyles.headerMedium, layoutStyles.marginTopLg]}>
+        <Text
+          style={[
+            headerStyles.headerMedium,
+            layoutStyles.marginTopLg,
+            styles.text,
+          ]}
+        >
           General Settings
         </Text>
         <View>
           <View style={[layoutStyles.flex, layoutStyles.marginBtmMd]}>
-            <Text>Dark Mode</Text>
+            <Text style={styles.text}>Dark Mode</Text>
             <GlobalSwitch isOn={isDarkMode} onToggle={setIsDarkMode} />
           </View>
           <Pressable
             style={[layoutStyles.flex, layoutStyles.marginBtmLg]}
             onPress={() => navigation.navigate("Notifications")}
           >
-            <Text>Notifications</Text>
-            <ForwardArrowIcon />
+            <Text style={styles.text}>Notifications</Text>
+            <IconStatic
+              name="chevron.forward"
+              noFill={true}
+              weight={"semibold"}
+              style={iconStyles.forwardArrow}
+            />
           </Pressable>
           <Pressable
             style={layoutStyles.flex}
             onPress={() => navigation.navigate("Language")}
           >
-            <Text>Language</Text>
-            <ForwardArrowIcon />
+            <Text style={styles.text}>Language</Text>
+            <IconStatic
+              name="chevron.forward"
+              noFill={true}
+              weight={"semibold"}
+              style={iconStyles.forwardArrow}
+            />
           </Pressable>
         </View>
       </View>
@@ -139,3 +173,10 @@ export default function EditSettings() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  text: {
+    color: "#ffffff",
+    fontWeight: "500",
+  },
+});

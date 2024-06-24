@@ -45,7 +45,7 @@ export default function EditExperienceCard({ experience, navigation }) {
   };
 
   const handleManageShots = () => {
-    navigation.navigate("UpdateShots", {
+    navigation.navigate("ManageShots", {
       experienceId: _id,
       associatedShots,
     });

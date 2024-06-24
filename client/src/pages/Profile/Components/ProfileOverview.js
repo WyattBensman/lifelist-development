@@ -84,10 +84,10 @@ export default function ProfileOverview({
             style={[layoutStyles.flexSpaceBetween, layoutStyles.marginHorMd]}
           >
             <View style={styles.col}>
-              <Text style={{ fontWeight: "700" }}>
+              <Text style={{ fontWeight: "700", color: "#fff" }}>
                 {profile.collages.length}
               </Text>
-              <Text style={{ fontSize: 12 }}>Collages</Text>
+              <Text style={{ fontSize: 12, color: "#fff" }}>Collages</Text>
             </View>
             <Pressable
               style={styles.col}
@@ -109,10 +109,10 @@ export default function ProfileOverview({
                     })
               }
             >
-              <Text style={{ fontWeight: "700" }}>
+              <Text style={{ fontWeight: "700", color: "#fff" }}>
                 {profile.followers.length}
               </Text>
-              <Text style={{ fontSize: 12 }}>Followers</Text>
+              <Text style={{ fontSize: 12, color: "#fff" }}>Followers</Text>
             </Pressable>
             <Pressable
               style={styles.col}
@@ -134,18 +134,18 @@ export default function ProfileOverview({
                     })
               }
             >
-              <Text style={{ fontWeight: "700" }}>
+              <Text style={{ fontWeight: "700", color: "#fff" }}>
                 {profile.following.length}
               </Text>
-              <Text style={{ fontSize: 12 }}>Following</Text>
+              <Text style={{ fontSize: 12, color: "#fff" }}>Following</Text>
             </Pressable>
           </View>
           {isAdminView ? (
             <ButtonSkinny
               onPress={() => navigation.push("EditProfile")}
               text="Edit Profile"
-              backgroundColor="#ececec"
-              textColor="#262828"
+              backgroundColor="#252525"
+              textColor="#fff"
             />
           ) : (
             <>
@@ -154,7 +154,7 @@ export default function ProfileOverview({
                   <ButtonSkinny
                     onPress={handleUnfollow}
                     text="Following"
-                    backgroundColor="#ececec"
+                    backgroundColor="#222"
                     textColor="#6AB952"
                     style={{ flex: 1, marginRight: 4 }}
                   />
@@ -163,8 +163,8 @@ export default function ProfileOverview({
                       navigation.push("Message", { user: profile })
                     }
                     text="Message"
-                    backgroundColor="#ececec"
-                    textColor="#262828"
+                    backgroundColor="#222"
+                    textColor="#fff"
                     style={{ flex: 1, marginLeft: 4 }}
                   />
                 </View>
@@ -172,15 +172,15 @@ export default function ProfileOverview({
                 <ButtonSkinny
                   onPress={handleUnsendRequest}
                   text="Pending Request"
-                  backgroundColor="#ececec"
-                  textColor="#262828"
+                  backgroundColor="#222"
+                  textColor="#fff"
                 />
               ) : (
                 <ButtonSkinny
                   onPress={handleFollow}
                   text="Follow"
-                  backgroundColor="#ececec"
-                  textColor="#262828"
+                  backgroundColor="#222"
+                  textColor="#fff"
                 />
               )}
             </>
@@ -188,8 +188,10 @@ export default function ProfileOverview({
         </View>
       </View>
       <View style={[layoutStyles.marginTopXs, { marginTop: 6 }]}>
-        <Text style={{ fontWeight: "bold" }}>@{profile.username}</Text>
-        <Text style={{ marginTop: 2 }}>{profile.bio}</Text>
+        <Text style={{ fontWeight: "bold", color: "#fff" }}>
+          @{profile.username}
+        </Text>
+        <Text style={{ marginTop: 2, color: "#fff" }}>{profile.bio}</Text>
       </View>
     </View>
   );

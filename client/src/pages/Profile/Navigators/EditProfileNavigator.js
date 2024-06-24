@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
 import EditProfile from "../Screens/TabScreens/EditProfile";
 import EditContact from "../Screens/TabScreens/EditContact";
 import EditSettings from "../Screens/TabScreens/EditSettings";
 import { useRoute } from "@react-navigation/native";
+import { layoutStyles } from "../../../styles";
+import Animated, {
+  Easing,
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+} from "react-native-reanimated";
+
+const { width } = Dimensions.get("window");
 
 const tabs = [
   { name: "Profile", component: EditProfile },
@@ -15,6 +24,7 @@ export default function EditProfileNavigator() {
   const route = useRoute();
   const initialTab = route.params?.initialTab || "Profile";
   const [activeTab, setActiveTab] = useState(initialTab);
+  const translateX = useSharedValue(0);
 
   useEffect(() => {
     if (route.params?.initialTab) {
@@ -22,19 +32,35 @@ export default function EditProfileNavigator() {
     }
   }, [route.params?.initialTab]);
 
+  useEffect(() => {
+    translateX.value = tabs.findIndex((tab) => tab.name === activeTab) * -width;
+  }, [activeTab, translateX]);
+
   const renderScreen = () => {
-    const activeTabComponent = tabs.find(
-      (tab) => tab.name === activeTab
-    ).component;
-    return React.createElement(activeTabComponent);
+    return tabs.map((tab) => (
+      <View key={tab.name} style={styles.screen}>
+        {React.createElement(tab.component)}
+      </View>
+    ));
   };
 
   const handleTabPress = (tabName) => {
     setActiveTab(tabName);
   };
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: withTiming(translateX.value, {
+          duration: 300,
+          easing: Easing.inOut(Easing.ease),
+        }),
+      },
+    ],
+  }));
+
   return (
-    <View style={styles.container}>
+    <View style={layoutStyles.wrapper}>
       <View style={styles.navigatorWrapper}>
         {tabs.map((tab) => (
           <Pressable
@@ -56,7 +82,9 @@ export default function EditProfileNavigator() {
           </Pressable>
         ))}
       </View>
-      <View style={styles.screenContainer}>{renderScreen()}</View>
+      <Animated.View style={[styles.screenContainer, animatedStyle]}>
+        {renderScreen()}
+      </Animated.View>
     </View>
   );
 }
@@ -68,12 +96,11 @@ const styles = StyleSheet.create({
   navigatorWrapper: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "#FBFBFE",
     paddingBottom: 12,
-    paddingTop: 12,
+    paddingTop: 6,
     marginBottom: 16,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#ececec",
+    borderBottomColor: "#252525",
   },
   navigatorButton: {
     width: "26%",
@@ -82,14 +109,16 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: 6, // spacing between buttons
-    backgroundColor: "#ececec",
+    marginHorizontal: 6,
+    backgroundColor: "#1C1C1C",
   },
   activeNavigatorButton: {
     backgroundColor: "#6AB95230",
+    borderWidth: 1,
+    borderColor: "#6AB95250",
   },
   navigatorText: {
-    color: "#d4d4d4",
+    color: "#696969",
     fontWeight: "500",
   },
   activeNavigatorText: {
@@ -97,6 +126,12 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   screenContainer: {
-    flex: 1,
+    flexDirection: "row",
+    width: width * tabs.length,
+    height: "100%",
+  },
+  screen: {
+    width: width,
+    height: "100%",
   },
 });

@@ -1,5 +1,7 @@
+import React from "react";
 import { View, StyleSheet } from "react-native";
-import SearchBar from "../SearchBar";
+import SearchBarHeader from "../SearchBars/SearchBarHeader";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HeaderSearchBar({
   arrowIcon,
@@ -13,15 +15,20 @@ export default function HeaderSearchBar({
   onSearchFocusChange,
 }) {
   const showIcons = arrowIcon || icon1 || icon2;
+  const navigation = useNavigation();
 
   return (
-    <View style={[styles.headerContainer, hasBorder && styles.border]}>
-      {arrowIcon && (
-        <View style={[styles.icon, arrowIcon ? styles.iconSpacing : {}]}>
-          {arrowIcon}
-        </View>
-      )}
-      <SearchBar
+    <View
+      style={[
+        styles.headerContainer,
+        hasBorder && styles.border,
+        !icon1 && !icon2 && styles.paddingRight,
+      ]}
+    >
+      <View style={[styles.icon, arrowIcon ? styles.iconSpacing : {}]}>
+        {arrowIcon}
+      </View>
+      <SearchBarHeader
         style={[styles.searchBar, !showIcons && styles.fullWidth]}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -45,16 +52,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingTop: 60,
-    paddingHorizontal: 20,
     paddingBottom: 10,
-    backgroundColor: "#FBFBFE",
   },
   border: {
     borderBottomWidth: 1,
-    borderBottomColor: "#D4D4D4",
+    borderBottomColor: "#1C1C1C",
   },
   searchBar: {
     flex: 1,
+    backgroundColor: "#252525",
   },
   fullWidth: {
     flex: 1,
@@ -68,5 +74,8 @@ const styles = StyleSheet.create({
   },
   iconSpacing: {
     marginRight: 10,
+  },
+  paddingRight: {
+    paddingRight: 20,
   },
 });

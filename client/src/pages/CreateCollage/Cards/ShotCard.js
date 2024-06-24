@@ -1,10 +1,10 @@
 import { Dimensions, Image, StyleSheet, View, Pressable } from "react-native";
-import { Checkbox } from "expo-checkbox";
+import Checkbox from "expo-checkbox";
 import { BASE_URL } from "../../../utils/config";
 
 const screenWidth = Dimensions.get("window").width;
 const spacing = 1.5;
-const shotWidth = (screenWidth - spacing * 3) / 4; // Adjust for 4 columns
+const shotWidth = (screenWidth - spacing * 2) / 3; // Adjust for 3 columns
 const shotHeight = (shotWidth * 3) / 2; // 2:3 ratio
 
 export default function ShotCard({
@@ -19,12 +19,14 @@ export default function ShotCard({
     <Pressable onPress={() => onCheckboxToggle(shot._id)}>
       <View style={styles.shotContainer}>
         <Image source={{ uri: imageUrl }} style={styles.shotImage} />
-        <Checkbox
-          style={styles.checkbox}
-          value={isSelected}
-          onValueChange={() => onCheckboxToggle(shot._id)}
-          color={isSelected ? "#6AB952" : "#d4d4d4"}
-        />
+        {isSelected && (
+          <Checkbox
+            style={styles.checkbox}
+            value={isSelected}
+            onValueChange={() => onCheckboxToggle(shot._id)}
+            color={isSelected ? "#6AB952" : undefined}
+          />
+        )}
       </View>
     </Pressable>
   );
@@ -44,11 +46,11 @@ const styles = StyleSheet.create({
   },
   checkbox: {
     position: "absolute",
-    top: 10,
-    right: 10,
+    top: 6,
+    right: 6,
     width: 12,
     height: 12,
     borderWidth: 2,
-    borderRadius: 10,
+    borderRadius: 12,
   },
 });

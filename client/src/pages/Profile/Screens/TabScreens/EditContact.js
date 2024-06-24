@@ -1,7 +1,12 @@
-import { Text, TextInput, View } from "react-native";
-import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
+import {
+  Text,
+  TextInput,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { useState, useEffect } from "react";
-import BottomContainer from "../../../../components/BottomContainer";
+import BottomButtonContainer from "../../../../components/Containers/BottomButtonContainer";
 import SolidButton from "../../../../components/SolidButton";
 import OutlinedButton from "../../../../components/OutlinedButton";
 import { useMutation } from "@apollo/client";
@@ -11,6 +16,7 @@ import {
   UPDATE_PASSWORD,
 } from "../../../../utils/mutations";
 import { useAuth } from "../../../../contexts/AuthContext";
+import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
 
 export default function EditContact() {
   const { currentUser, updateCurrentUser } = useAuth();
@@ -21,7 +27,6 @@ export default function EditContact() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [changesMade, setChangesMade] = useState(false);
 
-  // Define mutations
   const [updateEmailMutation] = useMutation(UPDATE_EMAIL);
   const [updatePhoneNumberMutation] = useMutation(UPDATE_PHONE_NUMBER);
   const [updatePasswordMutation] = useMutation(UPDATE_PASSWORD);
@@ -67,7 +72,6 @@ export default function EditContact() {
           variables: { currentPassword, newPassword },
         });
       }
-      // Show success message or update UI accordingly
     } catch (error) {
       console.error("Failed to update contact information", error);
     }
@@ -86,54 +90,64 @@ export default function EditContact() {
     <View style={layoutStyles.wrapper}>
       <View style={formStyles.formContainer}>
         <Text style={headerStyles.headerMedium}>Contact Information</Text>
-        <View style={formStyles.inputContainer}>
-          <Text style={formStyles.label}>Email</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Email</Text>
           <TextInput
             value={email}
             onChangeText={setEmail}
-            style={formStyles.input}
+            style={styles.input}
+            placeholder="Enter your email"
+            placeholderTextColor="#d4d4d4"
           />
         </View>
-        <View style={formStyles.inputContainer}>
-          <Text style={formStyles.label}>Phone Number</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Phone</Text>
           <TextInput
             value={phoneNumber}
             onChangeText={setPhoneNumber}
-            style={formStyles.input}
+            style={styles.input}
+            placeholder="Enter your phone number"
+            placeholderTextColor="#d4d4d4"
           />
         </View>
         <Text style={[headerStyles.headerMedium, layoutStyles.marginTopXs]}>
           Change Password
         </Text>
-        <View style={formStyles.inputContainer}>
-          <Text style={formStyles.label}>Current Password</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Current</Text>
           <TextInput
             value={currentPassword}
             onChangeText={setCurrentPassword}
-            style={formStyles.input}
+            style={styles.input}
+            placeholder="Enter your current password"
+            placeholderTextColor="#d4d4d4"
             secureTextEntry
           />
         </View>
-        <View style={formStyles.inputContainer}>
-          <Text style={formStyles.label}>New Password</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>New</Text>
           <TextInput
             value={newPassword}
             onChangeText={setNewPassword}
-            style={formStyles.input}
+            style={styles.input}
+            placeholder="Enter your new password"
+            placeholderTextColor="#d4d4d4"
             secureTextEntry
           />
         </View>
-        <View style={formStyles.inputContainer}>
-          <Text style={formStyles.label}>Confirm New Password</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Confirm</Text>
           <TextInput
             value={confirmNewPassword}
             onChangeText={setConfirmNewPassword}
-            style={formStyles.input}
+            style={styles.input}
+            placeholder="Confirm your new password"
+            placeholderTextColor="#d4d4d4"
             secureTextEntry
           />
         </View>
         {changesMade && (
-          <BottomContainer
+          <BottomButtonContainer
             topButton={
               <SolidButton
                 backgroundColor={"#6AB952"}
@@ -155,3 +169,25 @@ export default function EditContact() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  label: {
+    width: 72,
+    color: "#ffffff",
+    fontWeight: "500",
+  },
+  input: {
+    flex: 1, // Make input take the remaining space
+    color: "#ececec",
+    height: 42,
+    paddingHorizontal: 10, // Adjust padding as needed
+    borderRadius: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#252525",
+  },
+});

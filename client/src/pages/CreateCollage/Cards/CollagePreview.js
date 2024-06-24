@@ -77,6 +77,7 @@ export default function CollagePreview({ images, caption }) {
             name="ellipsis"
             style={iconStyles.collageEllipsis}
             tintColor={"#ffffff"}
+            backgroundColor={"rgba(38, 40, 40, 0.3)"}
           />
         </View>
         <View style={styles.actionContainer}>
@@ -111,22 +112,17 @@ export default function CollagePreview({ images, caption }) {
           </View>
         </View>
         <View style={styles.bottomTextContainer}>
-          <View style={styles.button}>
-            <Text
-              style={[
-                styles.buttonText,
-                { fontWeight: "400", color: "#d4d4d4" },
-              ]}
-            >
+          <View style={styles.dateButton}>
+            <Text style={styles.dateButtonText}>
               {new Date().toLocaleDateString()}
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
-            <View style={styles.button}>
-              <Text style={styles.buttonText}>Comments</Text>
+            <View style={styles.commentsButton}>
+              <Text style={styles.commentsButtonText}>Comments</Text>
             </View>
-            <View style={[styles.button, { marginLeft: 8 }]}>
-              <Text style={styles.buttonText}>Participants</Text>
+            <View style={[styles.participantsButton, { marginLeft: 8 }]}>
+              <Text style={styles.participantsButtonText}>Participants</Text>
             </View>
           </View>
         </View>
@@ -168,19 +164,13 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     marginRight: 6,
   },
-  smallProfilePicture: {
-    height: 38,
-    width: 38,
-    borderRadius: 6,
-    borderColor: "#ffffff",
-    marginRight: 6,
-  },
   fullName: {
     fontWeight: "600",
     color: "#fff",
   },
   username: {
     fontWeight: "600",
+    color: "#fff",
   },
   location: {
     fontSize: 12,
@@ -191,12 +181,9 @@ const styles = StyleSheet.create({
     bottom: 12,
     alignSelf: "center",
     flexDirection: "row",
-    backgroundColor: "rgba(38, 40, 40, 0.25)",
+    backgroundColor: "rgba(38, 40, 40, 0.3)",
     borderRadius: 32,
     paddingHorizontal: 12,
-  },
-  iconSpacer: {
-    marginLeft: 8,
   },
   bottomContainer: {
     flex: 1,
@@ -221,17 +208,44 @@ const styles = StyleSheet.create({
   caption: {
     flexWrap: "wrap",
     alignItems: "flex-start",
+    color: "#fff",
   },
-  button: {
-    backgroundColor: "#ececec", // Light green background
+  dateButton: {
+    backgroundColor: "#1C1C1C", // Dark background for Date button
     borderRadius: 20, // Rounded corners
     paddingVertical: 6,
     paddingHorizontal: 12,
     justifyContent: "center",
     alignItems: "center",
   },
-  buttonText: {
-    color: "#000", // Green text
+  dateButtonText: {
+    color: "#696969", // Light grey text
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  commentsButton: {
+    backgroundColor: "#252525", // Darker background for Comments button
+    borderRadius: 20, // Rounded corners
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  commentsButtonText: {
+    color: "#fff", // White text
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  participantsButton: {
+    backgroundColor: "#252525", // Darker background for Participants button
+    borderRadius: 20, // Rounded corners
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  participantsButtonText: {
+    color: "#fff", // White text
     fontSize: 12,
     fontWeight: "500",
   },

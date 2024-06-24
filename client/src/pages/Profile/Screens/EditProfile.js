@@ -1,11 +1,12 @@
 import { View } from "react-native";
-import { layoutStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import EditProfileNavigator from "../Navigators/EditProfileNavigator";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigation } from "@react-navigation/native";
 import { useEffect } from "react";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
+import Icon from "../../../components/Icons/Icon";
 
 export default function EditProfile() {
   const navigation = useNavigation();
@@ -17,9 +18,16 @@ export default function EditProfile() {
   }, [setIsTabBarVisible]);
 
   return (
-    <View style={layoutStyles.container}>
+    <View style={layoutStyles.wrapper}>
       <HeaderStack
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         title={"Edit Profile"}
         hasBorder={false}
       />

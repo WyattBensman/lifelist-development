@@ -8,8 +8,9 @@ export default function MediaPlaceholder() {
       <SymbolView
         name="photo.fill"
         style={styles.placeholderIcon}
-        tintColor={"#d4d4d4"}
+        tintColor={"#696969"}
       />
+      <Text style={styles.placeholderText}>Please select at least 1 image</Text>
     </View>
   );
 }
@@ -19,12 +20,12 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#1C1C1C",
   },
   placeholderText: {
     marginTop: 8,
-    fontSize: 16,
-    color: "#888",
+    fontSize: 12,
+    color: "#696969",
   },
   placeholderIcon: {
     height: 61,

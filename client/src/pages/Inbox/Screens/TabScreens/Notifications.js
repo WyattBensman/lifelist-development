@@ -8,6 +8,7 @@ import { GET_USER_NOTIFICATIONS } from "../../../../utils/queries";
 
 export default function Notifications() {
   const { data, loading, error } = useQuery(GET_USER_NOTIFICATIONS);
+  console.log(data);
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error.message}</Text>;

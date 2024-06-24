@@ -9,7 +9,7 @@ export default function AlbumCard({ album, navigation }) {
 
   return (
     <Pressable
-      style={layoutStyles.marginRightXs}
+      style={styles.container}
       onPress={() => navigation.navigate("ViewAlbum", { albumId: album._id })}
     >
       <Image source={{ uri: imageUrl }} style={styles.albumImage} />
@@ -20,16 +20,20 @@ export default function AlbumCard({ album, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    marginRight: 8,
+  },
   albumImage: {
     width: 150,
     height: 150,
-    borderRadius: 10,
   },
   albumTitle: {
-    marginTop: 5,
-    fontSize: 14,
+    marginTop: 6,
+    color: "#fff",
   },
   albumCount: {
+    marginTop: 2,
     fontSize: 12,
+    color: "#d4d4d4",
   },
 });

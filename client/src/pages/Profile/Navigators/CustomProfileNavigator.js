@@ -1,12 +1,21 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
 import Collages from "../Screens/Collages";
 import Reposts from "../Screens/Reposts";
+import { layoutStyles } from "../../../styles";
+import Animated, {
+  Easing,
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+} from "react-native-reanimated";
+
+const { width } = Dimensions.get("window");
 
 const tabs = [
   { name: "Collages", component: Collages },
   { name: "Reposts", component: Reposts },
-  { name: "LifeList", component: null }, // Change so it doesn't render a component
+  { name: "LifeList", component: null },
 ];
 
 export default function CustomProfileNavigator({
@@ -16,16 +25,13 @@ export default function CustomProfileNavigator({
   navigation,
 }) {
   const [activeTab, setActiveTab] = useState("Collages");
+  const translateX = useSharedValue(0);
 
-  const renderScreen = () => {
-    const activeTabComponent = tabs.find(
-      (tab) => tab.name === activeTab
-    ).component;
-    if (activeTabComponent) {
-      return React.createElement(activeTabComponent, { userId });
-    }
-    return null;
-  };
+  useEffect(() => {
+    translateX.value = activeTab === "Collages" ? 0 : -width;
+  }, [activeTab, translateX]);
+
+  const renderScreen = (Component) => <Component userId={userId} />;
 
   const handleTabPress = (tabName) => {
     if (tabName === "LifeList") {
@@ -40,8 +46,19 @@ export default function CustomProfileNavigator({
     }
   };
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: withTiming(translateX.value, {
+          duration: 300,
+          easing: Easing.inOut(Easing.ease),
+        }),
+      },
+    ],
+  }));
+
   return (
-    <View style={styles.container}>
+    <View style={layoutStyles.wrapper}>
       <View style={styles.navigatorWrapper}>
         {tabs.map((tab) => (
           <Pressable
@@ -63,7 +80,14 @@ export default function CustomProfileNavigator({
           </Pressable>
         ))}
       </View>
-      <View style={styles.screenContainer}>{renderScreen()}</View>
+      <Animated.View style={[styles.screenContainer, animatedStyle]}>
+        <View style={styles.screen}>
+          {activeTab === "Collages" && renderScreen(Collages)}
+        </View>
+        <View style={styles.screen}>
+          {activeTab === "Reposts" && renderScreen(Reposts)}
+        </View>
+      </Animated.View>
     </View>
   );
 }
@@ -74,14 +98,13 @@ const styles = StyleSheet.create({
   },
   navigatorWrapper: {
     flexDirection: "row",
-    backgroundColor: "#FBFBFE",
     marginTop: 16,
     marginBottom: 8,
     paddingHorizontal: 8,
   },
   navigatorButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: 7,
+    paddingHorizontal: 10,
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
@@ -89,6 +112,8 @@ const styles = StyleSheet.create({
   },
   activeNavigatorButton: {
     backgroundColor: "#6AB95230",
+    borderWidth: 1,
+    borderColor: "#6AB95250",
   },
   navigatorText: {
     color: "#d4d4d4",
@@ -99,6 +124,12 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   screenContainer: {
-    flex: 1,
+    flexDirection: "row",
+    width: width * 2,
+    height: "100%",
+  },
+  screen: {
+    width: width,
+    height: "100%",
   },
 });

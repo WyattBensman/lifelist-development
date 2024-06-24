@@ -1,7 +1,7 @@
 import React from "react";
-import BottomContainer from "../../../components/BottomContainer";
 import OutlinedButton from "../../../components/OutlinedButton";
-import SolidButton from "../../../components/SolidButton";
+import BottomContainer from "../../../components/Containers/BottomContainer";
+import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 
 export default function AddExperiencesBottomContainer({
   onAdd,
@@ -11,19 +11,20 @@ export default function AddExperiencesBottomContainer({
   return (
     <BottomContainer
       topButton={
-        <SolidButton
+        <ButtonSolid
           text="Add Experiences"
-          backgroundColor={isAddDisabled ? "#d4d4d4" : "#5FAF46"}
-          textColor={"#ffffff"}
+          backgroundColor={isAddDisabled ? "#252525" : "#6AB95230"}
+          borderColor={isAddDisabled ? "#252525" : "#6AB95250"}
+          textColor={isAddDisabled ? "#696969" : "#6AB952"}
           onPress={onAdd}
-          disabled={isAddDisabled} // Disable button if no experiences are selected
+          disabled={!isAddDisabled}
         />
       }
       bottomButton={
         <OutlinedButton
-          borderColor={"#d4d4d4"}
+          borderColor={"#1C1C1C"}
           text={"Deselect All"}
-          textColor={"#000000"}
+          textColor={"#d4d4d4"}
           onPress={onDeselect}
         />
       }

@@ -60,9 +60,6 @@ export default function Comments({ visible, onRequestClose, collageId }) {
     }
   };
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
-
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={400}>
       <KeyboardAvoidingView
@@ -71,15 +68,18 @@ export default function Comments({ visible, onRequestClose, collageId }) {
       >
         <View style={styles.popupContainer}>
           <Text style={headerStyles.headerMedium}>Comments</Text>
+          <View style={styles.separator} />
           <FlatList
             data={data?.getComments || []}
             renderItem={({ item }) => (
-              <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
+              <View style={[layoutStyles.flex, styles.cardContainer]}>
                 <CommentCard comment={item} onDelete={handleDeleteComment} />
               </View>
             )}
             keyExtractor={(item) => item._id}
-            ListEmptyComponent={<Text>No comments yet.</Text>}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>No comments yet.</Text>
+            }
             contentContainerStyle={styles.flatListContent}
           />
         </View>
@@ -87,6 +87,7 @@ export default function Comments({ visible, onRequestClose, collageId }) {
           <TextInput
             style={styles.input}
             placeholder="Add a comment..."
+            placeholderTextColor="#a1a1a1"
             value={comment}
             onChangeText={handleCommentChange}
             editable={!mutationLoading} // Disable input during mutation
@@ -109,6 +110,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "space-between",
   },
+  cardContainer: {
+    paddingBottom: 12,
+  },
+  separator: {
+    height: 2,
+    backgroundColor: "#252525",
+    marginBottom: 8,
+  },
   flatListContent: {
     flexGrow: 1,
   },
@@ -120,29 +129,36 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingTop: 12,
+    paddingBottom: 24,
     borderTopWidth: 1,
-    borderTopColor: "#ececec",
-    backgroundColor: "#ffffff",
+    borderTopColor: "#696969",
+    backgroundColor: "#1C1C1C",
   },
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: "#ececec",
+    borderColor: "#1c1c1c",
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: "#fbfbfe",
+    backgroundColor: "#252525",
+    color: "#ffffff",
   },
   postButton: {
     marginLeft: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
-    backgroundColor: "#6AB952",
+    backgroundColor: "#6AB95230",
     borderRadius: 20,
   },
   postButtonText: {
-    color: "#ffffff",
-    fontWeight: "500",
+    color: "#6AB952",
+    fontWeight: "600",
+  },
+  emptyText: {
+    color: "#696969",
+    textAlign: "center",
+    marginTop: 20,
   },
 });

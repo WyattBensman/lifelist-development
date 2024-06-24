@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, FlatList, Dimensions, StyleSheet } from "react-native";
-import { layoutStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import Collage from "./Collage";
+import Icon from "../../../components/Icons/Icon";
 
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -45,7 +45,7 @@ export default function ViewCollage() {
   const renderCollage = useCallback(
     ({ item }) => (
       <View style={{ height: contentHeight }}>
-        <Collage collageId={item._id} />
+        <Collage collageId={item._id} isViewCollageScreen={true} />
       </View>
     ),
     [contentHeight]
@@ -55,8 +55,24 @@ export default function ViewCollage() {
     <View style={layoutStyles.wrapper}>
       <View onLayout={onHeaderLayout}>
         <HeaderStack
-          arrow={<BackArrowIcon navigation={navigation} />}
-          title={`Collage ${currentIndex + 1} of ${collages.length}`}
+          arrow={
+            <Icon
+              name="chevron.backward"
+              onPress={() => navigation.goBack()}
+              style={iconStyles.backArrow}
+              weight="semibold"
+            />
+          }
+          button1={
+            <Icon
+              name="ellipsis"
+              style={iconStyles.ellipsis}
+              weight="bold"
+              onPress={() => {
+                /* handle ellipsis action for the collage */
+              }}
+            />
+          }
         />
       </View>
       <FlatList

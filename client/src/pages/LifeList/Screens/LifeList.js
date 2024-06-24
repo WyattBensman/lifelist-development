@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { View, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { layoutStyles } from "../../../styles";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useQuery } from "@apollo/client";
 import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import SearchBar from "../../../components/SearchBar";
-import Icon from "../../../icons/Icon";
 import { iconStyles } from "../../../styles/iconStyles";
 import NavigatorContainer from "../Navigation/NavigatorContainer";
+import Icon from "../../../components/Icons/Icon";
 
 export default function LifeList({ route }) {
   const { currentUser } = useAuth();
@@ -53,7 +52,14 @@ export default function LifeList({ route }) {
         />
       )}
       <HeaderStack
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         title={"LifeList"}
         button1={
           <Icon

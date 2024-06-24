@@ -9,6 +9,8 @@ import AdminProfile from "../pages/Profile/Screens/AdminProfile";
 import ProfileStack from "./ProfileStack";
 import NavigationTab from "./NavigationTab";
 import ViewCollage from "../pages/Collage/Screens/ViewCollage";
+import CameraStack from "./CameraStack";
+import AddUsersToPrivacyGroup from "../pages/Profile/Screens/AddUsersToPrivacyGroup";
 
 const Stack = createNativeStackNavigator();
 
@@ -52,8 +54,13 @@ export default function AdminProfileStack() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="EditPrivacyGroup"
+        name="PrivacyGroup"
         component={PrivacyGroup}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddUsersToPrivacyGroup"
+        component={AddUsersToPrivacyGroup}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -69,6 +76,11 @@ export default function AdminProfileStack() {
       <Stack.Screen
         name="ViewCollage"
         component={ViewCollage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CameraStack"
+        component={CameraStack}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

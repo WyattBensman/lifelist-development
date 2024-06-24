@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { FlatList, Alert, Text } from "react-native";
+import React, { useCallback } from "react";
+import { FlatList, Alert, Text, View } from "react-native";
 import UserRelationsCard from "../../Cards/UserRelationsCard";
 import { layoutStyles } from "../../../../styles";
 import { useMutation, useQuery } from "@apollo/client";
@@ -39,7 +39,7 @@ export default function Followers({ userId, searchQuery }) {
     useCallback(() => {
       refetchFollowers();
       refetchFollowing();
-    }, [])
+    }, [refetchFollowers, refetchFollowing])
   );
 
   const [followUser] = useMutation(FOLLOW_USER);

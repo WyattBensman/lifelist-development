@@ -11,13 +11,13 @@ import { useMutation } from "@apollo/client";
 import { cardStyles, iconStyles } from "../../../styles";
 import { truncateText, capitalizeText } from "../../../utils/utils";
 import { BASE_URL } from "../../../utils/config";
-import Icon from "../../../icons/Icon";
-import IconStatic from "../../../icons/IconStatic";
 import {
   UPDATE_LIFELIST_EXPERIENCE_LIST_STATUS,
   UPDATE_ASSOCIATED_SHOTS,
 } from "../../../utils/mutations";
 import { useNavigation } from "@react-navigation/native";
+import Icon from "../../../components/Icons/Icon";
+import IconStatic from "../../../components/Icons/IconStatic";
 
 export default function ListItemCard({ experience, editMode, onDelete }) {
   const navigation = useNavigation();
@@ -63,7 +63,7 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
   };
 
   const handleManageShots = () => {
-    navigation.navigate("UpdateShots", {
+    navigation.navigate("ManageShots", {
       experienceId: _id,
       associatedShots,
     });
@@ -111,8 +111,9 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
             <Animated.View style={{ transform: [{ rotate: rotation }] }}>
               <Icon
                 name="ellipsis"
-                tintColor={"#8A8A8E"}
+                tintColor={"#696969"}
                 style={iconStyles.ellipsis}
+                noFill={true}
                 onPress={toggleEditMode}
               />
             </Animated.View>
@@ -123,7 +124,7 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
             <IconStatic
               name="trash"
               style={iconStyles.trashSm}
-              tintColor={"#8A8A8E"}
+              tintColor={"#696969"}
               onPress={() => onDelete(_id)}
             />
             <View style={styles.buttonsContainer}>
@@ -177,12 +178,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
     flex: 1,
     padding: 8,
-    backgroundColor: "#fff",
+    backgroundColor: "#1C1C1C",
     borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
   },
   contentContainer: {
     flex: 1,
@@ -195,10 +192,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "600",
+    color: "#fff",
   },
   secondaryText: {
     fontSize: 12,
-    color: "#8A8A8E",
+    color: "#696969", //#8A8A8E
     marginTop: 1.5,
   },
   optionsContainer: {
@@ -214,8 +212,9 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   optionsButton: {
+    borderWidth: 1,
+    borderColor: "#696969",
     flexDirection: "row",
-    backgroundColor: "#ececec",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 12,
@@ -223,6 +222,7 @@ const styles = StyleSheet.create({
   optionsText: {
     fontSize: 12,
     fontWeight: "500",
+    color: "#fff",
   },
   spacer: {
     marginLeft: 8,
@@ -242,8 +242,12 @@ const styles = StyleSheet.create({
   },
   experiencedButton: {
     backgroundColor: "#6AB95230",
+    borderWidth: 1,
+    borderColor: "#6AB95250",
   },
   wishListedButton: {
     backgroundColor: "#5FC4ED30",
+    borderWidth: 1,
+    borderColor: "#5FC4ED50",
   },
 });

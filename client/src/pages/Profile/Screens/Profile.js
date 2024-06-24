@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Text, View } from "react-native";
-import { headerStyles, layoutStyles } from "../../../styles";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { Animated, Text, View } from "react-native";
+import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
 import HeaderMain from "../../../components/Headers/HeaderMain";
 import OptionsIcon from "../Icons/OptionsIcon";
 import ProfileOverview from "../Components/ProfileOverview";
@@ -17,12 +17,14 @@ import { useQuery } from "@apollo/client";
 import { GET_USER_PROFILE } from "../../../utils/queries/userQueries";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
+import Icon from "../../../components/Icons/Icon";
 
 export default function Profile() {
   const navigation = useNavigation();
   const route = useRoute();
   const { currentUser } = useAuth();
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const userId = route.params?.userId;
 
@@ -36,6 +38,19 @@ export default function Profile() {
     }, [refetch])
   );
 
+  useEffect(() => {
+    Animated.timing(rotateAnim, {
+      toValue: optionsPopupVisible ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [optionsPopupVisible]);
+
+  const rotation = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "90deg"],
+  });
+
   const toggleOptionsPopup = () => {
     setOptionsPopupVisible(!optionsPopupVisible);
   };
@@ -47,11 +62,27 @@ export default function Profile() {
   const isAdminView = profile._id === currentUser._id;
 
   return (
-    <View style={layoutStyles.container}>
+    <View style={layoutStyles.wrapper}>
       <HeaderStack
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         title={profile.fullName}
-        button1={<OptionsIcon onPress={toggleOptionsPopup} />}
+        button1={
+          <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+            <Icon
+              name="ellipsis"
+              style={iconStyles.ellipsis}
+              weight="bold"
+              onPress={toggleOptionsPopup}
+            />
+          </Animated.View>
+        }
       />
       <ProfileOverview
         profile={profile}

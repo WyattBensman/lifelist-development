@@ -8,6 +8,7 @@ import {
   TextInput,
   View,
   Pressable,
+  TouchableOpacity,
 } from "react-native";
 import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
 import { useState, useEffect } from "react";
@@ -19,10 +20,14 @@ import { useMutation } from "@apollo/client";
 import * as ImagePicker from "expo-image-picker";
 import { UPDATE_PROFILE, UPDATE_IDENTITY } from "../../../../utils/mutations";
 import { BASE_URL } from "../../../../utils/config";
+import { Picker } from "@react-native-picker/picker";
+import Modal from "react-native-modal";
 
 export default function EditProfileTab() {
   const { currentUser, updateCurrentUser } = useAuth();
   const [changesMade, setChangesMade] = useState(false);
+  const [showGenderPicker, setShowGenderPicker] = useState(false);
+  const [temporaryGender, setTemporaryGender] = useState("");
 
   const [fullName, setFullName] = useState(currentUser.fullName || "");
   const [username, setUsername] = useState(currentUser.username || "");
@@ -127,58 +132,47 @@ export default function EditProfileTab() {
             <Text style={styles.changePictureText}>Change Profile Picture</Text>
           </Pressable>
         </View>
-        <View style={formStyles.inputContainer}>
-          <Text style={formStyles.label}>Full Name</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Name</Text>
           <TextInput
             value={fullName}
             onChangeText={setFullName}
-            style={formStyles.input}
+            style={styles.input}
             placeholder="Enter your full name"
             placeholderTextColor="#d4d4d4"
           />
         </View>
-        <View style={formStyles.inputContainer}>
-          <Text style={formStyles.label}>Username</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Username</Text>
           <TextInput
             value={username}
             onChangeText={setUsername}
-            style={formStyles.input}
+            style={styles.input}
             placeholder="Enter your username"
             placeholderTextColor="#d4d4d4"
           />
         </View>
-        <View style={formStyles.inputContainer}>
-          <Text style={formStyles.label}>Bio</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Bio</Text>
           <TextInput
             value={bio}
             onChangeText={setBio}
-            style={formStyles.input}
+            style={styles.input}
             placeholder="Tell us about yourself"
             placeholderTextColor="#d4d4d4"
             multiline={true}
           />
         </View>
-        <Text style={[headerStyles.headerMedium, { marginTop: 16 }]}>
-          Personal Information
-        </Text>
-        <View style={formStyles.inputContainer}>
-          <Text style={formStyles.label}>Birthday</Text>
+        <View style={styles.row}>
+          <Text style={styles.label}>Gender</Text>
           <TextInput
-            value={birthday}
-            onChangeText={setBirthday}
-            style={formStyles.input}
-            placeholder="YYYY-MM-DD"
-            placeholderTextColor="#d4d4d4"
-          />
-        </View>
-        <View style={formStyles.inputContainer}>
-          <Text style={formStyles.label}>Gender</Text>
-          <TextInput
-            value={gender}
-            onChangeText={setGender}
-            style={formStyles.input}
-            placeholder="Enter your gender"
-            placeholderTextColor="#d4d4d4"
+            style={styles.input}
+            value={gender ? gender : "Enter your gender"}
+            editable={false}
+            onPressIn={() => {
+              setTemporaryGender(gender); // Initialize temporary gender
+              setShowGenderPicker(true);
+            }}
           />
         </View>
       </ScrollView>
@@ -201,6 +195,44 @@ export default function EditProfileTab() {
           }
         />
       )}
+
+      <Modal
+        isVisible={showGenderPicker}
+        onBackdropPress={() => setShowGenderPicker(false)}
+        style={styles.modal}
+      >
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={temporaryGender}
+            onValueChange={(itemValue) => setTemporaryGender(itemValue)}
+            itemStyle={styles.pickerItem}
+          >
+            <Picker.Item label="Select your gender" value="" />
+            <Picker.Item label="Male" value="Male" />
+            <Picker.Item label="Female" value="Female" />
+            <Picker.Item label="Shiiiii idk" value="Non-binary" />
+          </Picker>
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={styles.discardButton}
+              onPress={() => {
+                setShowGenderPicker(false);
+              }}
+            >
+              <Text style={styles.discardButtonText}>Discard</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={() => {
+                setGender(temporaryGender);
+                setShowGenderPicker(false);
+              }}
+            >
+              <Text style={styles.confirmButtonText}>Confirm</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </KeyboardAvoidingView>
   );
 }
@@ -221,6 +253,68 @@ const styles = StyleSheet.create({
   changePictureText: {
     marginLeft: 12,
     color: "#6AB952",
+    fontWeight: "500",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  label: {
+    width: 72,
+    color: "#ffffff",
+    fontWeight: "500",
+  },
+  input: {
+    flex: 1, // Make input take the remaining space
+    color: "#ececec",
+    height: 42,
+    paddingHorizontal: 10, // Adjust padding as needed
+    borderRadius: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#252525",
+  },
+  modal: {
+    justifyContent: "flex-end",
+    margin: 0,
+  },
+  pickerContainer: {
+    backgroundColor: "#1C1C1C",
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    paddingBottom: 48,
+  },
+  pickerItem: {
+    color: "#ececec",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginHorizontal: 20,
+    marginTop: 20,
+  },
+  discardButton: {
+    backgroundColor: "#d4d4d4",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    flex: 1,
+    marginRight: 10,
+  },
+  discardButtonText: {
+    color: "#252525",
+    fontWeight: "500",
+  },
+  confirmButton: {
+    backgroundColor: "#6AB952",
+    padding: 10,
+    borderRadius: 8,
+    alignItems: "center",
+    flex: 1,
+    marginLeft: 10,
+  },
+  confirmButtonText: {
+    color: "#ffffff",
     fontWeight: "500",
   },
 });

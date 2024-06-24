@@ -59,12 +59,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
     flex: 1,
     padding: 8,
-    backgroundColor: "#fff",
+    backgroundColor: "#1C1C1C",
     borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
   },
   pressable: {
     flex: 1,
@@ -81,10 +77,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "600",
+    color: "#fff",
   },
   secondaryText: {
     fontSize: 12,
-    color: "#8A8A8E",
+    color: "#696969",
     marginTop: 1.5,
   },
   checkbox: {

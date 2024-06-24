@@ -12,28 +12,33 @@ export default function CommentCard({ comment, onDelete }) {
       style={styles.deleteButton}
       onPress={() => onDelete(comment._id)}
     >
-      <Icon name="trash" size={24} color="#fff" />
+      <Icon name="trash" />
     </Pressable>
   );
 
   return (
     <Swipeable renderRightActions={renderRightActions}>
-      <View style={[layoutStyles.flex, styles.commentContainer]}>
+      <View style={layoutStyles.flex}>
         <View style={layoutStyles.flexRow}>
           <Image
             source={{ uri: `${BASE_URL}${comment.author.profilePicture}` }}
             style={[cardStyles.imageSm, styles.profilePicture]}
           />
-          <View style={layoutStyles.wrapper}>
+          <View style={[layoutStyles.wrapper, { backgroundColor: "#1c1c1c" }]}>
             <View style={layoutStyles.flexRow}>
-              <Text style={[layoutStyles.marginRightXs, { fontWeight: "500" }]}>
+              <Text
+                style={[
+                  layoutStyles.marginRightXs,
+                  { fontWeight: "500", color: "#fff" },
+                ]}
+              >
                 {comment.author.fullName}
               </Text>
               <Text style={{ color: "#d4d4d4", fontSize: 12 }}>
                 {formatDistanceToNow(new Date(comment.createdAt))} ago
               </Text>
             </View>
-            <Text>{comment.text}</Text>
+            <Text style={{ color: "#ececec" }}>{comment.text}</Text>
           </View>
         </View>
       </View>
@@ -43,7 +48,7 @@ export default function CommentCard({ comment, onDelete }) {
 
 const styles = StyleSheet.create({
   commentContainer: {
-    paddingVertical: 10,
+    backgroundColor: "#fff",
   },
   profilePicture: {
     backgroundColor: "#d4d4d4",
@@ -53,6 +58,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: 80,
-    height: "100%",
   },
 });

@@ -1,18 +1,24 @@
 import { StyleSheet } from "react-native";
+import { theme } from "../styles/theme";
+
+const { typography, colors, spacing } = theme;
 
 export const headerStyles = StyleSheet.create({
   headerHeavy: {
-    fontSize: 24,
-    fontWeight: "800",
-    marginTop: 8,
+    fontSize: typography.fontSizes.xl,
+    fontWeight: typography.fontWeights.heavy,
+    marginTop: spacing.sm,
+    color: colors.fonts.LIGHTFONT,
   },
   headerMedium: {
-    fontSize: 20,
-    fontWeight: "700",
-    marginBottom: 8,
+    fontSize: typography.fontSizes.lg,
+    fontWeight: typography.fontWeights.bold,
+    marginBottom: spacing.sm,
+    color: colors.fonts.LIGHTFONT,
   },
   headerStandard: {
-    fontSize: 16,
-    marginBottom: 12,
+    fontSize: typography.fontSizes.md,
+    marginBottom: spacing.md,
+    color: colors.fonts.LIGHTFONT,
   },
 });

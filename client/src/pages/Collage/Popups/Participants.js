@@ -12,9 +12,6 @@ export default function Participants({ visible, onRequestClose, collageId }) {
     skip: !visible, // Skip the query if the popup is not visible
   });
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
-
   // Calculate the height based on the number of participants
   const numberOfParticipants = data?.getTaggedUsers?.length || 0;
   const dynamicHeight = 115 + numberOfParticipants * 60; // Adjust 60 based on the height of each participant card
@@ -28,11 +25,12 @@ export default function Participants({ visible, onRequestClose, collageId }) {
       <View style={styles.container}>
         <View style={styles.popupContainer}>
           <Text style={headerStyles.headerMedium}>Participants</Text>
+          <View style={styles.separator} />
           <FlatList
             data={data?.getTaggedUsers || []}
             renderItem={({ item }) =>
               item ? (
-                <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
+                <View style={[styles.cardContainer, layoutStyles.flex]}>
                   <ParticipantCard participant={item} />
                 </View>
               ) : null
@@ -54,5 +52,13 @@ const styles = StyleSheet.create({
   popupContainer: {
     flex: 1,
     padding: 16,
+  },
+  cardContainer: {
+    paddingBottom: 12,
+  },
+  separator: {
+    height: 2,
+    backgroundColor: "#252525",
+    marginBottom: 8,
   },
 });

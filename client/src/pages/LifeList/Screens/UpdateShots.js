@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, FlatList, Pressable } from "react-native";
+import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
 import { useQuery, useMutation } from "@apollo/client";
 import {
   useNavigation,
@@ -29,18 +29,30 @@ export default function UpdateShots() {
     }
   }, [associatedShots]);
 
+  useEffect(() => {
+    setIsModified(
+      selectedShots.length !== associatedShots.length ||
+        selectedShots.some(
+          (shot) =>
+            !associatedShots.some(
+              (initialShot) => initialShot.shot._id === shot._id
+            )
+        )
+    );
+  }, [selectedShots, associatedShots]);
+
   const handleCheckboxToggle = (shot) => {
     setSelectedShots((prev) => {
       const isAlreadySelected = prev.some((s) => s._id === shot._id);
       const newShots = isAlreadySelected
         ? prev.filter((s) => s._id !== shot._id)
         : [...prev, shot];
-      setIsModified(true);
       return newShots;
     });
   };
 
   const handleSave = async () => {
+    if (!isModified) return;
     try {
       await updateShots({
         variables: {
@@ -69,8 +81,16 @@ export default function UpdateShots() {
         arrow={<BackArrowIcon navigation={navigation} />}
         title={"Update Shots"}
         button1={
-          <Pressable onPress={handleSave}>
-            <Text style={{ color: isModified ? "green" : "#d4d4d4" }}>
+          <Pressable
+            onPress={handleSave}
+            style={[
+              styles.buttonContainer,
+              isModified && styles.buttonContainerActive,
+            ]}
+          >
+            <Text
+              style={[styles.buttonText, isModified && styles.buttonTextActive]}
+            >
               Save
             </Text>
           </Pressable>
@@ -93,12 +113,23 @@ export default function UpdateShots() {
   );
 }
 
-/* useEffect(() => {
-  setIsModified(
-    selectedShots.length !== initialShots.length ||
-      selectedShots.some(
-        (shot) =>
-          !initialShots.some((initialShot) => initialShot._id === shot._id)
-      )
-  );
-}, [selectedShots, initialShots]); */
+const styles = StyleSheet.create({
+  buttonContainer: {
+    backgroundColor: "#1C1C1C",
+    borderWidth: 1,
+    borderColor: "#1C1C1C",
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderRadius: 12,
+  },
+  buttonText: {
+    color: "#696969",
+  },
+  buttonContainerActive: {
+    backgroundColor: "#6AB95230",
+    borderColor: "#6AB95250",
+  },
+  buttonTextActive: {
+    color: "#6AB952",
+  },
+});

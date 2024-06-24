@@ -7,13 +7,12 @@ import {
   Pressable,
 } from "react-native";
 import { layoutStyles, formStyles, iconStyles } from "../../../styles";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { useNavigation } from "@react-navigation/native";
-import NextPageArrowIcon from "../../../icons/Universal/NextPageArrowIcon";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useState } from "react";
-import { SymbolView } from "expo-symbols";
 import { BASE_URL } from "../../../utils/config";
+import Icon from "../../../components/Icons/Icon";
+import IconStatic from "../../../components/Icons/IconStatic";
 
 export default function Overview({ route }) {
   const navigation = useNavigation();
@@ -26,13 +25,23 @@ export default function Overview({ route }) {
   };
 
   return (
-    <View style={layoutStyles.container}>
+    <View style={layoutStyles.wrapper}>
       <HeaderStack
         title={"Overview"}
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         button1={
-          <Pressable onPress={handlePreview}>
-            <Text>Preview</Text>
+          <Pressable
+            onPress={handlePreview}
+            style={styles.previewButtonContainer}
+          >
+            <Text style={styles.previewButtonText}>Preview</Text>
           </Pressable>
         }
       />
@@ -42,36 +51,42 @@ export default function Overview({ route }) {
             source={{ uri: `${BASE_URL}${selectedImages[0].image}` }}
             style={styles.image}
           />
-          <Text style={layoutStyles.marginTopXs}>Change Cover Image</Text>
+          <Text style={[layoutStyles.marginTopXs, { color: "#fff" }]}>
+            Change Cover Image
+          </Text>
         </View>
-        <Text style={formStyles.label}>Caption</Text>
-        <TextInput
-          style={formStyles.input}
-          onChangeText={setCaption}
-          value={caption}
-        />
+        <View style={styles.row}>
+          <Text style={styles.label}>Caption</Text>
+          <TextInput
+            style={styles.input}
+            onChangeText={setCaption}
+            value={caption}
+            placeholder="Enter your caption"
+            placeholderTextColor="#d4d4d4"
+          />
+        </View>
         <View style={styles.bottomButtonContainer}>
           <Pressable style={styles.buttonContainer}>
-            <SymbolView
+            <IconStatic
               name="plus.circle"
               style={iconStyles.plusCircle}
-              tintColor={"#000"}
+              tintColor={"#fff"}
             />
             <Text style={styles.buttonText}>Add Locations</Text>
           </Pressable>
           <Pressable style={styles.buttonContainer}>
-            <SymbolView
+            <IconStatic
               name="plus.circle"
               style={iconStyles.plusCircle}
-              tintColor={"#000"}
+              tintColor={"#fff"}
             />
             <Text style={styles.buttonText}>Add Participants</Text>
           </Pressable>
           <Pressable style={styles.buttonContainer}>
-            <SymbolView
+            <IconStatic
               name="plus.circle"
               style={iconStyles.plusCircle}
-              tintColor={"#000"}
+              tintColor={"#fff"}
             />
             <Text style={styles.buttonText}>Set Audience</Text>
           </Pressable>
@@ -94,7 +109,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginBottom: 12,
     height: 40,
-    backgroundColor: "#ececec",
+    backgroundColor: "#252525",
     borderRadius: 8,
     flexDirection: "row",
     justifyContent: "center",
@@ -104,5 +119,42 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     textAlign: "center",
     marginLeft: 6,
+    color: "#fff",
+  },
+  previewButtonContainer: {
+    backgroundColor: "#252525",
+    paddingVertical: 6,
+    paddingHorizontal: 13,
+    borderRadius: 12,
+  },
+  previewButtonText: {
+    color: "#6AB952",
+    fontWeight: "600",
+  },
+  previewButtonActiveContainer: {
+    backgroundColor: "#6AB95230",
+  },
+  previewButtonActiveText: {
+    color: "#6AB952",
+    fontWeight: "500",
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  label: {
+    width: 72,
+    color: "#ffffff",
+    fontWeight: "500",
+  },
+  input: {
+    flex: 1, // Make input take the remaining space
+    color: "#ececec",
+    height: 42,
+    paddingHorizontal: 10, // Adjust padding as needed
+    borderRadius: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#252525",
   },
 });

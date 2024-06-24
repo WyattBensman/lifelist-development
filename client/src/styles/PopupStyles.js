@@ -7,10 +7,10 @@ export const popupStyles = StyleSheet.create({
   cardContainer: {
     paddingVertical: 12,
     borderTopWidth: 1,
-    borderTopColor: "#ececec",
+    borderTopColor: "#252525",
   },
   /* CORRECT USAGE INSTANCES */
   spacer: {
-    marginLeft: 6,
+    marginLeft: 12,
   },
 });

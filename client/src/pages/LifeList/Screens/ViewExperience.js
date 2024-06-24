@@ -12,6 +12,8 @@ import HeaderStack from "../../../components/Headers/HeaderStack";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import { BASE_URL } from "../../../utils/config";
 import { GET_LIFELIST_EXPERIENCE } from "../../../utils/queries/lifeListQueries";
+import { iconStyles, layoutStyles } from "../../../styles";
+import Icon from "../../../components/Icons/Icon";
 
 const { width } = Dimensions.get("window");
 const imageWidth = width / 2;
@@ -38,10 +40,17 @@ export default function ViewExperience({ route, navigation }) {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={layoutStyles.wrapper}>
       <HeaderStack
         title={experience.title}
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         onPress={() => navigation.goBack()}
       />
       <FlatList

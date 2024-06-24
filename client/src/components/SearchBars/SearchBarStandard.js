@@ -1,5 +1,7 @@
+import React, { useState } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
-import SearchIcon from "../../pages/Inbox/Icons/SearchIcon";
+import Icon from "../Icons/Icon";
+import { iconStyles } from "../../styles/iconStyles";
 
 export default function SearchBarStandard({
   searchQuery,
@@ -7,17 +9,34 @@ export default function SearchBarStandard({
   handleSearch,
   onFocusChange,
 }) {
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
     <View style={styles.container}>
-      <SearchIcon />
+      {!isFocused && searchQuery === "" && (
+        <Icon
+          name="magnifyingglass"
+          tintColor={"#d4d4d4"}
+          fill={false}
+          style={iconStyles.magnifyingGlass}
+          noFill={true}
+        />
+      )}
       <TextInput
         style={styles.input}
         placeholder="Search..."
+        placeholderTextColor="#d4d4d4"
         value={searchQuery}
         onChangeText={setSearchQuery}
         onSubmitEditing={handleSearch}
-        onFocus={() => onFocusChange(true)}
-        onBlur={() => onFocusChange(false)}
+        onFocus={() => {
+          setIsFocused(true);
+          onFocusChange(true);
+        }}
+        onBlur={() => {
+          setIsFocused(false);
+          onFocusChange(false);
+        }}
       />
     </View>
   );
@@ -29,16 +48,13 @@ const styles = StyleSheet.create({
     height: 35,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#EEEEEF",
+    backgroundColor: "#252525",
     borderRadius: 8,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
   },
   input: {
     flex: 1,
-    padding: 10,
-    color: "#000",
-  },
-  icon: {
-    padding: 5,
+    marginLeft: 4,
+    color: "#d4d4d4",
   },
 });

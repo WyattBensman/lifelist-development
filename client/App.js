@@ -5,6 +5,9 @@ import { AuthProvider } from "./src/contexts/AuthContext";
 import AppNavigator from "./AppNavigator";
 import { CallbackProvider } from "./src/contexts/CallbackContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ThemeProvider } from "@react-navigation/native";
+import { theme } from "./src/styles/theme.js";
+import "react-native-gesture-handler";
 
 export default function App() {
   return (
@@ -12,9 +15,11 @@ export default function App() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <AuthProvider>
           <CallbackProvider>
-            <NavigationProvider>
-              <AppNavigator />
-            </NavigationProvider>
+            <ThemeProvider theme={theme}>
+              <NavigationProvider>
+                <AppNavigator />
+              </NavigationProvider>
+            </ThemeProvider>
           </CallbackProvider>
         </AuthProvider>
       </GestureHandlerRootView>

@@ -5,6 +5,7 @@ import { formStyles } from "./formStyles";
 import { cardStyles } from "./CardStyles";
 import { authenticationStyles } from "./AuthenticationStyles";
 import { iconStyles } from "./iconStyles";
+import { navigatorStyles } from "./navigationStyles";
 
 export {
   layoutStyles,
@@ -14,4 +15,5 @@ export {
   cardStyles,
   authenticationStyles,
   iconStyles,
+  navigatorStyles,
 };

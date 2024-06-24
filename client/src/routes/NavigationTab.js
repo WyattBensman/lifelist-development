@@ -33,7 +33,7 @@ export default function NavigationTab() {
   return (
     <Tab.Navigator
       barStyle={{
-        backgroundColor: "#111", // 262828 or 111
+        backgroundColor: "#252525", // 262828 or 111
         flex: isTabBarVisible ? 0.095 : 0,
         overflow: "hidden",
         display: isTabBarVisible ? "flex" : "none",

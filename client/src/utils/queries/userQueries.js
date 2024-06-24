@@ -183,3 +183,15 @@ export const GET_USER_SETTINGS_INFORMATION = gql`
     }
   }
 `;
+
+// Fetch all users
+export const GET_ALL_USERS = gql`
+  query GetAllUsers($limit: Int, $offset: Int) {
+    getAllUsers(limit: $limit, offset: $offset) {
+      _id
+      fullName
+      username
+      profilePicture
+    }
+  }
+`;

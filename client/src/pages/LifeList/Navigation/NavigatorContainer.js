@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import AllExperiences from "../Screens/TabScreens/AllExperiences";
 import CategoryExperiences from "../Screens/TabScreens/CategoryExperiences";
+import { layoutStyles } from "../../../styles";
 
 const categories = [
   "All",
@@ -36,7 +37,7 @@ export default function NavigatorContainer({ lifeList, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={layoutStyles.wrapper}>
       <View style={styles.navigatorWrapper}>
         <ScrollView
           horizontal
@@ -78,11 +79,10 @@ const styles = StyleSheet.create({
   },
   navigatorContainer: {
     flexDirection: "row",
-    backgroundColor: "#FBFBFE",
     alignItems: "center",
   },
   navigatorButton: {
-    backgroundColor: "#ececec",
+    backgroundColor: "#1C1C1C",
     marginHorizontal: 6,
     paddingVertical: 10,
     paddingHorizontal: 16,
@@ -92,14 +92,16 @@ const styles = StyleSheet.create({
   },
   activeNavigatorButton: {
     backgroundColor: "#6AB95230",
+    borderWidth: 1,
+    borderColor: "#6AB95250",
   },
   navigatorText: {
+    color: "#696969",
     fontWeight: "500",
-    color: "#d4d4d4",
   },
   activeNavigatorText: {
-    fontWeight: "500",
     color: "#6AB952",
+    fontWeight: "500",
   },
   screenContainer: {
     flex: 1,

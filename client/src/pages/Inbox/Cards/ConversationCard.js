@@ -17,11 +17,11 @@ export default function ConversationCard({
         <View style={styles.row}>
           <Image source={{ uri: senderProfilePicture }} style={styles.image} />
           <View style={{ justifyContent: "center" }}>
-            <Text style={cardStyles.primaryText}>{senderName}</Text>
-            <Text style={[cardStyles.messageText]}>{truncatedMessage}</Text>
+            <Text style={styles.primaryText}>{senderName}</Text>
+            <Text style={styles.messageText}>{truncatedMessage}</Text>
           </View>
         </View>
-        <Text style={cardStyles.secondaryText}>
+        <Text style={styles.date}>
           {new Date(createdAt).toLocaleTimeString()}
         </Text>
       </View>
@@ -37,6 +37,18 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: "row",
+  },
+  primaryText: {
+    fontWeight: "500",
+    color: "#fff",
+  },
+  secondaryText: {
+    fontSize: 12,
+    color: "#ececec",
+  },
+  date: {
+    fontSize: 12,
+    color: "#d4d4d4",
   },
   image: {
     height: 50,

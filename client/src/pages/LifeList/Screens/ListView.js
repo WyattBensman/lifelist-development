@@ -10,9 +10,8 @@ import { REMOVE_EXPERIENCE_FROM_LIFELIST } from "../../../utils/mutations";
 import { useAuth } from "../../../contexts/AuthContext";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import LoadingScreen from "../../Loading/LoadingScreen";
-import SymbolButtonSm from "../../../icons/SymbolButtonSm";
-import Icon from "../../../icons/Icon";
 import DeleteConfirmation from "../Modals/DeleteConfirmation";
+import Icon from "../../../components/Icons/Icon";
 
 export default function ListView({ navigation }) {
   const route = useRoute();
@@ -118,14 +117,16 @@ export default function ListView({ navigation }) {
     <View style={layoutStyles.wrapper}>
       <HeaderSearchBar
         arrowIcon={
-          <SymbolButtonSm
+          <Icon
             name="chevron.backward"
             onPress={handleBackPress}
-            style={{ height: 20, width: 14.61 }}
+            style={iconStyles.backArrow}
+            weight="semibold"
           />
         }
         icon1={
-          !editMode && (
+          !editMode &&
+          route.params?.fromScreen === "AdminLifeList" && (
             <Icon
               name="square.and.pencil"
               style={iconStyles.squarePencilSm}
@@ -196,31 +197,37 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     paddingHorizontal: 32,
-    paddingVertical: 8,
-    backgroundColor: "#FBFBFE",
+    paddingTop: 2,
+    paddingBottom: 12,
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#252525",
   },
   button: {
-    borderWidth: 1,
-    borderColor: "#ececec",
     width: "45%",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 16,
-    paddingVertical: 5,
+    justifyContent: "center",
     alignItems: "center",
+    marginHorizontal: 6,
+    backgroundColor: "#1C1C1C",
   },
   buttonText: {
-    textAlign: "center",
-    color: "#000",
+    color: "#696969",
+    fontWeight: "500",
   },
   experiencedSelectedButton: {
     backgroundColor: "#6AB95230", // Light green with opacity
-    borderColor: "#6AB952",
+    borderWidth: 1,
+    borderColor: "#6AB95250",
   },
   experiencedSelectedButtonText: {
     color: "#6AB952",
   },
   wishlistedSelectedButton: {
     backgroundColor: "#5FC4ED30", // Light blue with opacity
-    borderColor: "#5FC4ED",
+    borderWidth: 1,
+    borderColor: "#5FC4ED50",
   },
   wishlistedSelectedButtonText: {
     color: "#5FC4ED",

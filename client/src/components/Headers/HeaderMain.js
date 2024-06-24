@@ -66,15 +66,15 @@ export default function HeaderMain({
 
 const styles = StyleSheet.create({
   headerContainer: {
-    backgroundColor: "#FBFBFE",
+    backgroundColor: "#121212",
     paddingTop: 56,
     paddingBottom: 4,
     borderBottomWidth: 1,
     paddingHorizontal: 20,
-    borderBottomColor: "#ececec",
+    borderBottomColor: "#1C1C1C",
   },
   dropdownContainer: {
     overflow: "hidden",
-    backgroundColor: "#FBFBFE",
+    backgroundColor: "#121212",
   },
 });

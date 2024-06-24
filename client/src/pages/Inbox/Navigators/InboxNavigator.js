@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import Notifications from "../Screens/TabScreens/Notifications";
 import Messages from "../Screens/TabScreens/Messages";
+import { layoutStyles } from "../../../styles";
 
 const tabs = [
   { name: "Notifications", component: Notifications },
@@ -27,7 +28,7 @@ export default function InboxNavigator({ searchQuery, initialTab }) {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={layoutStyles.wrapper}>
       <View style={styles.navigatorWrapper}>
         {tabs.map((tab) => (
           <Pressable
@@ -61,10 +62,9 @@ const styles = StyleSheet.create({
   navigatorWrapper: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "#FBFBFE",
     paddingBottom: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#ececec",
+    borderBottomColor: "#252525",
   },
   navigatorButton: {
     width: "40%",
@@ -74,13 +74,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 6,
-    backgroundColor: "#ececec",
+    backgroundColor: "#1C1C1C",
   },
   activeNavigatorButton: {
     backgroundColor: "#6AB95230",
   },
   navigatorText: {
-    color: "#d4d4d4",
+    color: "#696969",
     fontWeight: "500",
   },
   activeNavigatorText: {

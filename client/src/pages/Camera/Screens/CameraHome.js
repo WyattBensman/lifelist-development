@@ -1,4 +1,3 @@
-// src/pages/CameraHome.js
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
@@ -106,6 +105,20 @@ export default function CameraHome() {
             flash={flash}
             zoom={zoom}
           />
+          <View style={styles.overlay}>
+            <View style={styles.cornerTopLeft} />
+            <View style={styles.cornerTopRight} />
+            <View style={styles.cornerBottomLeft} />
+            <View style={styles.cornerBottomRight} />
+            <View style={styles.centerCrosshair}>
+              <View style={styles.crosshairVertical} />
+              <View style={styles.crosshairHorizontal} />
+            </View>
+            <View style={styles.innerCornerTopLeft} />
+            <View style={styles.innerCornerTopRight} />
+            <View style={styles.innerCornerBottomLeft} />
+            <View style={styles.innerCornerBottomRight} />
+          </View>
         </View>
         <Footer
           cameraRef={cameraRef}
@@ -129,12 +142,115 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   overlay: {
-    position: "absolute",
-    top: 0,
+    ...StyleSheet.absoluteFillObject,
     justifyContent: "space-between",
     alignItems: "center",
     zIndex: 1,
-    borderWidth: 1,
-    borderColor: "red", // Added border color for visibility
+  },
+  cornerTopLeft: {
+    position: "absolute",
+    top: 20,
+    left: 20,
+    width: 40,
+    height: 40,
+    borderLeftWidth: 2,
+    borderTopWidth: 2,
+    borderColor: "rgba(236, 236, 236, 0.15)",
+  },
+  cornerTopRight: {
+    position: "absolute",
+    top: 20,
+    right: 20,
+    width: 40,
+    height: 40,
+    borderRightWidth: 2,
+    borderTopWidth: 2,
+    borderColor: "rgba(236, 236, 236, 0.15)",
+  },
+  cornerBottomLeft: {
+    position: "absolute",
+    bottom: 20,
+    left: 20,
+    width: 40,
+    height: 40,
+    borderLeftWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: "rgba(236, 236, 236, 0.15)",
+  },
+  cornerBottomRight: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
+    width: 40,
+    height: 40,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: "rgba(236, 236, 236, 0.15)",
+  },
+  centerCrosshair: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: [{ translateX: -20 }, { translateY: -20 }],
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  crosshairVertical: {
+    position: "absolute",
+    width: 2,
+    height: 20,
+    backgroundColor: "rgba(236, 236, 236, 0.15)",
+  },
+  crosshairHorizontal: {
+    position: "absolute",
+    height: 2,
+    width: 20,
+    backgroundColor: "rgba(236, 236, 236, 0.15)",
+  },
+  innerCornerTopLeft: {
+    position: "absolute",
+    top: "45%",
+    left: "45%",
+    width: 20,
+    height: 20,
+    borderLeftWidth: 2,
+    borderTopWidth: 2,
+    borderColor: "rgba(236, 236, 236, 0.15)",
+    transform: [{ translateX: -25 }, { translateY: -10 }],
+  },
+  innerCornerTopRight: {
+    position: "absolute",
+    top: "45%",
+    right: "45%",
+    width: 20,
+    height: 20,
+    borderRightWidth: 2,
+    borderTopWidth: 2,
+    borderColor: "rgba(236, 236, 236, 0.15)",
+    transform: [{ translateX: 25 }, { translateY: -10 }],
+  },
+  innerCornerBottomLeft: {
+    position: "absolute",
+    bottom: "45%",
+    left: "45%",
+    width: 20,
+    height: 20,
+    borderLeftWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: "rgba(236, 236, 236, 0.15)",
+    transform: [{ translateX: -25 }, { translateY: 10 }],
+  },
+  innerCornerBottomRight: {
+    position: "absolute",
+    bottom: "45%",
+    right: "45%",
+    width: 20,
+    height: 20,
+    borderRightWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: "rgba(236, 236, 236, 0.15)",
+    transform: [{ translateX: 25 }, { translateY: 10 }],
   },
 });

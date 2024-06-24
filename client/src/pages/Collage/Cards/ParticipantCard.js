@@ -1,7 +1,8 @@
 import React from "react";
 import { Image, Text, View, StyleSheet } from "react-native";
-import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
 import { BASE_URL } from "../../../utils/config";
+import IconStatic from "../../../components/Icons/IconStatic";
+import { iconStyles } from "../../../styles";
 
 export default function ParticipantCard({ participant }) {
   const profilePictureUrl = `${BASE_URL}${participant.profilePicture}`;
@@ -17,7 +18,11 @@ export default function ParticipantCard({ participant }) {
           </Text>
         </View>
         <View style={styles.iconContainer}>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </View>
       </View>
     </View>
@@ -50,10 +55,11 @@ const styles = StyleSheet.create({
   primaryText: {
     fontWeight: "600",
     marginTop: 4,
+    color: "#fff",
   },
   secondaryText: {
     fontSize: 12,
-    color: "#8A8A8E",
+    color: "#d4d4d4",
     marginTop: 1.5,
   },
   iconContainer: {

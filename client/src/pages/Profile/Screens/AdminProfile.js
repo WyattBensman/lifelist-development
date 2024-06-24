@@ -1,8 +1,7 @@
-import React, { useCallback, useState } from "react";
-import { Text, View } from "react-native";
-import { headerStyles, layoutStyles } from "../../../styles";
+import React, { useCallback, useState, useEffect, useRef } from "react";
+import { Text, View, Animated } from "react-native";
+import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
 import HeaderMain from "../../../components/Headers/HeaderMain";
-import OptionsIcon from "../Icons/OptionsIcon";
 import ProfileOverview from "../Components/ProfileOverview";
 import CustomProfileNavigator from "../Navigators/CustomProfileNavigator";
 import AdminOptionsPopup from "../Popups/AdminOptionsPopup";
@@ -10,11 +9,13 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useQuery } from "@apollo/client";
 import { GET_USER_PROFILE } from "../../../utils/queries/userQueries";
+import Icon from "../../../components/Icons/Icon";
 
 export default function AdminProfile() {
   const navigation = useNavigation();
   const { currentUser } = useAuth();
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const { data, loading, error, refetch } = useQuery(GET_USER_PROFILE, {
     variables: { userId: currentUser._id },
@@ -25,6 +26,19 @@ export default function AdminProfile() {
       refetch();
     }, [refetch])
   );
+
+  useEffect(() => {
+    Animated.timing(rotateAnim, {
+      toValue: optionsPopupVisible ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [optionsPopupVisible]);
+
+  const rotation = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "90deg"],
+  });
 
   const toggleOptionsPopup = () => {
     setOptionsPopupVisible(!optionsPopupVisible);
@@ -37,12 +51,21 @@ export default function AdminProfile() {
   const isAdminView = true;
 
   return (
-    <View style={layoutStyles.container}>
+    <View style={layoutStyles.wrapper}>
       <HeaderMain
         titleComponent={
           <Text style={headerStyles.headerHeavy}>{profile.fullName}</Text>
         }
-        icon1={<OptionsIcon onPress={toggleOptionsPopup} />}
+        icon1={
+          <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+            <Icon
+              name="ellipsis"
+              style={iconStyles.ellipsis}
+              weight="bold"
+              onPress={toggleOptionsPopup}
+            />
+          </Animated.View>
+        }
       />
       <ProfileOverview
         profile={profile}
@@ -52,7 +75,7 @@ export default function AdminProfile() {
       <CustomProfileNavigator
         userId={profile._id}
         isAdmin={true}
-        isAdminScreen={true} // Pass isAdminScreen prop
+        isAdminScreen={true}
         navigation={navigation}
       />
 

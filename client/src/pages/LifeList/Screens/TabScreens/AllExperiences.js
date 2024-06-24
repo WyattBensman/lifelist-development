@@ -45,32 +45,36 @@ export default function AllExperiences({ lifeList, navigation }) {
 
   return (
     <View style={layoutStyles.wrapper}>
-      <Text style={[headerStyles.headerMedium, layoutStyles.paddingLeftXxs]}>
-        Experienced
-      </Text>
-      <FlatList
-        data={experiencedList.length > 0 ? experiencedList : [{}]}
-        renderItem={
-          experiencedList.length > 0 ? renderExperience : renderPlaceholder
-        }
-        keyExtractor={(item, index) => item._id || index.toString()}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={layoutStyles.paddingLeftXxs}
-      />
-      <Text style={[headerStyles.headerMedium, layoutStyles.paddingLeftXxs]}>
-        Wish Listed
-      </Text>
-      <FlatList
-        data={wishListedList.length > 0 ? wishListedList : [{}]}
-        renderItem={
-          wishListedList.length > 0 ? renderExperience : renderPlaceholder
-        }
-        keyExtractor={(item, index) => item._id || index.toString()}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={layoutStyles.paddingLeftXxs}
-      />
+      <View>
+        <Text style={[headerStyles.headerMedium, layoutStyles.paddingLeftXxs]}>
+          Experienced
+        </Text>
+        <FlatList
+          data={experiencedList.length > 0 ? experiencedList : [{}]}
+          renderItem={
+            experiencedList.length > 0 ? renderExperience : renderPlaceholder
+          }
+          keyExtractor={(item, index) => item._id || index.toString()}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={layoutStyles.paddingLeftXxs}
+        />
+      </View>
+      <View style={{ marginTop: 7 }}>
+        <Text style={[headerStyles.headerMedium, layoutStyles.paddingLeftXxs]}>
+          Wish Listed
+        </Text>
+        <FlatList
+          data={wishListedList.length > 0 ? wishListedList : [{}]}
+          renderItem={
+            wishListedList.length > 0 ? renderExperience : renderPlaceholder
+          }
+          keyExtractor={(item, index) => item._id || index.toString()}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={layoutStyles.paddingLeftXxs}
+        />
+      </View>
     </View>
   );
 }

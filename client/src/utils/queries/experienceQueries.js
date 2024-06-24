@@ -21,9 +21,10 @@ export const GET_EXPERIENCE = gql`
   }
 `;
 
+// Fetch all experiences
 export const GET_ALL_EXPERIENCES = gql`
-  query GetAllExperiences {
-    getAllExperiences {
+  query GetAllExperiences($limit: Int, $offset: Int) {
+    getAllExperiences(limit: $limit, offset: $offset) {
       _id
       title
       image

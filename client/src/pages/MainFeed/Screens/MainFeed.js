@@ -6,17 +6,16 @@ import {
   ActivityIndicator,
   StyleSheet,
   Text,
-  Pressable,
 } from "react-native";
 import LifeListLogo from "../Icons/LifeListLogo";
 import HeaderMain from "../../../components/Headers/HeaderMain";
 import { useAuth } from "../../../contexts/AuthContext";
-import IconHeader from "../../../icons/IconHeader";
 import Collage from "../../Collage/Screens/Collage";
 import { useLazyQuery } from "@apollo/client";
 import { GET_MAIN_FEED } from "../../../utils/queries";
 import { useNavigation } from "@react-navigation/native";
-import { iconStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
+import Icon from "../../../components/Icons/Icon";
 
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -85,7 +84,7 @@ export default function MainFeed() {
   const renderCollage = useCallback(
     ({ item }) => (
       <View style={{ height: contentHeight }}>
-        <Collage collageId={item._id} />
+        <Collage collageId={item._id} isMainFeed={true} />
       </View>
     ),
     [contentHeight]
@@ -116,22 +115,24 @@ export default function MainFeed() {
   }
 
   return (
-    <View style={styles.wrapper}>
+    <View style={layoutStyles.wrapper}>
       <View onLayout={onHeaderLayout}>
         <HeaderMain
           titleComponent={<LifeListLogo />}
           icon1={
-            <IconHeader
-              name="plus.square.on.square"
+            <Icon
+              name="plus"
+              weight="medium"
               onPress={() => navigation.navigate("CreateCollage")}
-              style={iconStyles.createCollage}
+              style={iconStyles.createCollagePlus}
             />
           }
           icon2={
-            <IconHeader
+            <Icon
               name="bell"
-              onPress={() => navigation.navigate("IconsPage")}
               style={iconStyles.bell}
+              weight="medium"
+              onPress={() => navigation.navigate("Inbox")}
             />
           }
         />
@@ -159,19 +160,7 @@ export default function MainFeed() {
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: "#FBFBFE",
-  },
   flatListContent: {
     flexGrow: 1,
-  },
-  iconContainer: {
-    backgroundColor: "#f5f5f5", // light gray background
-    borderRadius: 50, // make it circular
-    padding: 10, // adjust padding as needed
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

@@ -1,44 +1,88 @@
-import { Text, View } from "react-native";
+import { Text, View, StyleSheet } from "react-native";
 import BottomPopup from "./BottomPopup";
 import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
-import { headerStyles, layoutStyles, popupStyles } from "../../../styles";
+import {
+  headerStyles,
+  iconStyles,
+  layoutStyles,
+  popupStyles,
+} from "../../../styles";
 import ShareProfile from "../Icons/PopupIcons/ShareProfile";
 import CopyProfileUrl from "../Icons/PopupIcons/CopyProfileURL";
 import SendMessage from "../Icons/PopupIcons/SendMessage";
+import IconStatic from "../../../components/Icons/IconStatic";
 
 export default function DefaultOptionsPopup({ visible, onRequestClose }) {
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={288}>
       <View style={popupStyles.popupContainer}>
-        <Text style={headerStyles.headerMedium}>Profile Options</Text>
+        <Text style={[headerStyles.headerMedium, styles.text]}>
+          Profile Options
+        </Text>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
           <View style={layoutStyles.flexRow}>
-            <ShareProfile />
-            <Text style={popupStyles.spacer}>Share Profile</Text>
+            <IconStatic name="paperplane.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>Share Profile</Text>
           </View>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </View>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
           <View style={layoutStyles.flexRow}>
-            <CopyProfileUrl />
-            <Text style={popupStyles.spacer}>Copy Profile URL</Text>
+            <IconStatic name="doc.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>
+              Copy Profile URL
+            </Text>
           </View>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </View>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
           <View style={layoutStyles.flexRow}>
-            <SendMessage />
-            <Text style={popupStyles.spacer}>Send Message</Text>
+            <IconStatic name="message.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>Send Message</Text>
           </View>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </View>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
-          <Text style={[popupStyles.spacer, { color: "red" }]}>Block</Text>
+          <Text
+            style={[
+              popupStyles.spacer,
+              styles.text,
+              { color: "red", fontWeight: "500" },
+            ]}
+          >
+            Block
+          </Text>
         </View>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
-          <Text style={[popupStyles.spacer, { color: "red" }]}>Report</Text>
+          <Text
+            style={[
+              popupStyles.spacer,
+              styles.text,
+              { color: "red", fontWeight: "500" },
+            ]}
+          >
+            Report
+          </Text>
         </View>
       </View>
     </BottomPopup>
   );
 }
+
+const styles = StyleSheet.create({
+  text: {
+    color: "#ffffff",
+  },
+});

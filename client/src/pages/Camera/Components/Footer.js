@@ -12,6 +12,7 @@ import FlipCameraIcon from "../Icons/FlipCameraIcon";
 import * as FileSystem from "expo-file-system";
 import Icon from "../../../icons/Icon";
 import { iconStyles } from "../../../styles/iconStyles";
+import IconLarge from "../../../components/Icons/IconLarge";
 
 export default function Footer({
   cameraRef,
@@ -146,9 +147,9 @@ export default function Footer({
             onPress={navigateToCameraRoll}
             style={styles.iconContainer}
           >
-            <Icon
-              name="photo.circle"
-              style={iconStyles.photoCircleLg}
+            <IconLarge
+              name="photo"
+              style={iconStyles.photoGallery}
               tintColor="#fff"
               onPress={navigateToCameraRoll}
             />
@@ -169,9 +170,9 @@ export default function Footer({
             onPress={navigateToDevelopingRoll}
             style={styles.iconContainer}
           >
-            <Icon
-              name="film.circle"
-              style={iconStyles.photoCircleLg}
+            <IconLarge
+              name="film"
+              style={iconStyles.inDevelopment}
               tintColor="#fff"
               onPress={navigateToDevelopingRoll}
             />
@@ -186,17 +187,17 @@ const styles = StyleSheet.create({
   wrapper: {
     position: "relative",
     alignItems: "center",
-    backgroundColor: "#111",
+    backgroundColor: "#121212",
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-evenly",
-    backgroundColor: "#1C1C1E",
+    backgroundColor: "#1C1C1C",
     borderRadius: 50,
     paddingVertical: 1,
     marginTop: 8,
-    marginBottom: 32,
+    marginBottom: 27,
     width: "70%",
   },
   zoomContainer: {

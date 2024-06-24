@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { FlatList, Alert, Text } from "react-native";
 import UserRelationsCard from "../../Cards/UserRelationsCard";
 import { layoutStyles } from "../../../../styles";
@@ -14,15 +14,31 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 
 export default function Following({ userId, searchQuery }) {
-  const { currentUser, updateCurrentUser } = useAuth();
-  const { data, loading, error, refetch } = useQuery(GET_FOLLOWING, {
+  const { currentUser } = useAuth();
+
+  const {
+    data: followingData,
+    loading: loadingFollowing,
+    error: errorFollowing,
+    refetch: refetchFollowing,
+  } = useQuery(GET_FOLLOWING, {
     variables: { userId },
+  });
+
+  const {
+    data: currentUserFollowingData,
+    loading: loadingCurrentUserFollowing,
+    error: errorCurrentUserFollowing,
+    refetch: refetchCurrentUserFollowing,
+  } = useQuery(GET_FOLLOWING, {
+    variables: { userId: currentUser._id },
   });
 
   useFocusEffect(
     useCallback(() => {
-      refetch();
-    }, [refetch])
+      refetchFollowing();
+      refetchCurrentUserFollowing();
+    }, [refetchFollowing, refetchCurrentUserFollowing])
   );
 
   const [followUser] = useMutation(FOLLOW_USER);
@@ -37,20 +53,11 @@ export default function Following({ userId, searchQuery }) {
           const { data } = await sendFollowRequest({
             variables: { userIdToFollow: userId },
           });
-          updateCurrentUser({
-            pendingFriendRequests: [
-              ...currentUser.pendingFriendRequests,
-              userId,
-            ],
-          });
           Alert.alert("Request Sent", data.sendFollowRequest.message);
           return "Requested";
         } else {
           const { data } = await followUser({
             variables: { userIdToFollow: userId },
-          });
-          updateCurrentUser({
-            following: [...currentUser.following, userId],
           });
           Alert.alert("Follow", data.followUser.message);
           return "Following";
@@ -59,36 +66,32 @@ export default function Following({ userId, searchQuery }) {
         const { data } = await unfollowUser({
           variables: { userIdToUnfollow: userId },
         });
-        updateCurrentUser({
-          following: currentUser.following.filter((id) => id !== userId),
-        });
         Alert.alert("Unfollow", data.unfollowUser.message);
         return "Follow";
       } else if (action === "Requested") {
         const { data } = await unsendFollowRequest({
           variables: { userIdToUnfollow: userId },
         });
-        updateCurrentUser({
-          pendingFriendRequests: currentUser.pendingFriendRequests.filter(
-            (id) => id !== userId
-          ),
-        });
         Alert.alert("Request Withdrawn", data.unsendFollowRequest.message);
         return "Follow";
       }
     } catch (error) {
       Alert.alert("Action Error", error.message);
-      return action; // Return the current action if there's an error
+      return action;
     }
   };
 
-  const filteredFollowing = data?.getFollowing.filter((following) =>
+  const filteredFollowing = followingData?.getFollowing.filter((following) =>
     following.fullName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const renderFollowingItem = ({ item }) => {
     let action = "Follow";
-    if (data?.getFollowing.some((following) => following._id === item._id)) {
+    if (
+      currentUserFollowingData?.getFollowing.some(
+        (following) => following._id === item._id
+      )
+    ) {
       action = "Following";
     } else if (
       item.followRequests.some((req) => req.userId === currentUser._id)
@@ -105,8 +108,14 @@ export default function Following({ userId, searchQuery }) {
     );
   };
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (loadingFollowing || loadingCurrentUserFollowing)
+    return <Text>Loading...</Text>;
+  if (errorFollowing || errorCurrentUserFollowing)
+    return (
+      <Text>
+        Error: {errorFollowing?.message || errorCurrentUserFollowing?.message}
+      </Text>
+    );
 
   return (
     <FlatList

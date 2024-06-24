@@ -3,12 +3,14 @@ import { Image, Text, View, StyleSheet, Pressable } from "react-native";
 import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 import { BASE_URL } from "../../../utils/config";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function UserRelationsCard({
   user,
   initialAction,
   onActionPress,
 }) {
+  const { currentUser } = useAuth();
   const [action, setAction] = useState(initialAction);
   const profilePictureUrl = `${BASE_URL}${user.profilePicture}`;
   const navigation = useNavigation();
@@ -41,13 +43,16 @@ export default function UserRelationsCard({
             @{user.username}
           </Text>
         </Pressable>
-        <View style={styles.actionButtonContainer}>
-          <ButtonSmall
-            onPress={handleActionPress}
-            text={action}
-            backgroundColor={"#ececec"}
-          />
-        </View>
+        {currentUser._id !== user._id && (
+          <View style={styles.actionButtonContainer}>
+            <ButtonSmall
+              text={action}
+              textColor={"#d4d4d4"}
+              backgroundColor={"#252525"}
+              onPress={handleActionPress}
+            />
+          </View>
+        )}
       </View>
     </View>
   );
@@ -85,11 +90,11 @@ const styles = StyleSheet.create({
   },
   primaryText: {
     fontWeight: "600",
-    marginTop: 4,
+    color: "#FFFFFF",
   },
   secondaryText: {
     fontSize: 12,
-    color: "#8A8A8E",
+    color: "#d4d4d4",
     marginTop: 1.5,
   },
   actionButtonContainer: {

@@ -52,12 +52,14 @@ export default function ExperienceCard({
           style={[styles.image, { height: imageHeight }]}
         />
         {associatedShots && associatedShots.length > 0 && (
-          <SymbolView
-            name="photo.on.rectangle"
-            style={styles.photoCircleIcon}
-            type="monochrome"
-            tintColor="#fff"
-          />
+          <View style={styles.photoCircleIcon}>
+            <SymbolView
+              name="photo.on.rectangle"
+              style={styles.photoIcon}
+              type="monochrome"
+              tintColor="#ececec"
+            />
+          </View>
         )}
         <View style={styles.spacer}>
           <Text style={styles.title}>{truncatedTitle}</Text>
@@ -71,35 +73,40 @@ export default function ExperienceCard({
 const styles = StyleSheet.create({
   cardContainer: {
     marginRight: 6,
-    backgroundColor: "#fff",
-    borderRadius: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.075,
-    shadowRadius: 1,
+    backgroundColor: "#1C1C1C",
+    borderRadius: 6,
   },
-  cardShadow: {},
   image: {
     width: "100%",
-    borderRadius: 4,
+    borderRadius: 6,
   },
   title: {
     fontWeight: "600",
     marginTop: 4,
+    color: "#fff",
   },
   secondaryText: {
     fontSize: 12,
-    color: "#8A8A8E",
     marginTop: 1.5,
+    color: "#696969",
   },
   spacer: {
     marginLeft: 8,
   },
   photoCircleIcon: {
     position: "absolute",
-    top: 8,
-    right: 8,
-    width: 18,
-    height: 14.45,
+    top: 7,
+    right: 7,
+    width: 22.5,
+    height: 22.5,
+    borderRadius: 15,
+    backgroundColor: "rgba(38, 40, 40, 0.1)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  photoIcon: {
+    marginLeft: 1,
+    width: 15,
+    height: 12.04,
   },
 });

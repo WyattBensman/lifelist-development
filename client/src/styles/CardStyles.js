@@ -83,6 +83,7 @@ export const cardStyles = StyleSheet.create({
   /* TEXT */
   primaryText: {
     fontWeight: "500",
+    color: "#fff",
   },
   primaryTextSm: {
     fontWeight: "500",

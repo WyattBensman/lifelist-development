@@ -19,10 +19,6 @@ export default function SelectedShotCard({ item, handleImagePress }) {
 
 const styles = StyleSheet.create({
   shotContainer: {
-    paddingVertical: 8,
-    paddingLeft: 8,
-    marginBottom: 1.5,
-    marginRight: 1.5,
     position: "relative",
     aspectRatio: 2 / 3,
   },
@@ -38,5 +34,6 @@ const styles = StyleSheet.create({
     transform: [{ translateX: -8.75 }],
     height: 17.5,
     width: 17.5,
+    padding: 4,
   },
 });

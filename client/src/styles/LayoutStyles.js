@@ -3,11 +3,7 @@ import { StyleSheet } from "react-native";
 export const layoutStyles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: "#FBFBFE",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#FBFBFE",
+    backgroundColor: "#121212",
   },
   contentContainer: {
     flex: 1,
@@ -21,11 +17,7 @@ export const layoutStyles = StyleSheet.create({
     marginTop: 12,
   },
   /* DELETE LATER ON?????? */
-  containerTab: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-    marginTop: 1,
-  },
+
   marginContainer: {
     marginHorizontal: 10,
     marginTop: 10,
@@ -176,3 +168,9 @@ export const layoutStyles = StyleSheet.create({
     marginVertical: 16,
   },
 });
+
+/*   containerTab: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+    marginTop: 1,
+  }, */

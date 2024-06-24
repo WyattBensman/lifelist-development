@@ -1,10 +1,13 @@
-// src/components/Header.js
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { layoutStyles } from "../../../styles/LayoutStyles";
 import { useNavigation } from "@react-navigation/native";
-import ExitIcon from "../Icons/ExitIcon";
 import DownArrowIcon from "../Icons/DownArrowIcon";
+import Icon from "../../../components/Icons/Icon";
+import DisposableCameraIcon from "../Icons/DisposableCameraIcon";
+import OriginalCameraIcon from "../Icons/OriginalCameraIcon";
+import FujiCameraIcon from "../Icons/FujiCameraIcon";
+import { iconStyles } from "../../../styles/iconStyles";
 
 const IconFiller = () => <View style={{ width: 35, height: 35 }} />;
 
@@ -22,7 +25,7 @@ export default function Header({ cameraType, onSelectCameraType }) {
     }).start();
 
     Animated.timing(heightAnim, {
-      toValue: showOptions ? 45 : 0,
+      toValue: showOptions ? 66 : 0,
       duration: 300,
       useNativeDriver: false,
     }).start();
@@ -46,28 +49,28 @@ export default function Header({ cameraType, onSelectCameraType }) {
     setShowOptions(false);
   };
 
+  const getIconColor = (type) => (cameraType === type ? "#5FC4ED" : "#ffffff");
+
   return (
     <View
       style={[styles.mainContainer, showOptions && styles.expandedContainer]}
     >
       <View style={styles.contentContainer}>
         <View style={styles.sideContainer}>
-          <Pressable onPress={handleExit} style={{ zIndex: 1 }}>
-            <ExitIcon handleExit={handleExit} />
-          </Pressable>
+          <Icon
+            name="xmark"
+            style={iconStyles.exit}
+            onPress={handleExit}
+            weight={"semibold"}
+          />
           <IconFiller />
         </View>
-
-        <View style={[styles.sideContainer, styles.rightContainer]}>
-          {!showOptions && (
-            <>
-              <Text style={{ color: "#fff", fontSize: 12 }}>
-                Shots Left: 10
-              </Text>
-            </>
-          )}
-        </View>
-
+        {/* {!showOptions && (
+          <View style={[styles.sideContainer, styles.rightContainer]}>
+            <Text style={{ color: "#fff", fontWeight: "600" }}>5 </Text>
+            <Text style={{ color: "#fff", fontSize: 12 }}>Shots Left</Text>
+          </View>
+        )} */}
         <View style={[styles.titleContainer, layoutStyles.flexRow]}>
           <Pressable
             onPress={handleToggleOptions}
@@ -85,33 +88,57 @@ export default function Header({ cameraType, onSelectCameraType }) {
       <Animated.View style={[styles.animatedContainer, { height: heightAnim }]}>
         {showOptions && (
           <View style={styles.optionsContainer}>
-            <Text
-              style={[
-                styles.option,
-                cameraType === "Standard" && styles.selectedOption,
-              ]}
+            <Pressable
+              style={styles.optionContainer}
               onPress={() => handleSelectOption("Standard")}
             >
-              Standard
-            </Text>
-            <Text
-              style={[
-                styles.option,
-                cameraType === "Disposable" && styles.selectedOption,
-              ]}
+              <OriginalCameraIcon
+                color={getIconColor("Standard")}
+                onPress={() => handleSelectOption("Standard")}
+              />
+              <Text
+                style={[
+                  styles.option,
+                  cameraType === "Standard" && styles.selectedOption,
+                ]}
+              >
+                Standard
+              </Text>
+            </Pressable>
+            <Pressable
+              style={[styles.optionContainer, styles.centerOptionContainer]}
               onPress={() => handleSelectOption("Disposable")}
             >
-              Disposable
-            </Text>
-            <Text
-              style={[
-                styles.option,
-                cameraType === "Analog" && styles.selectedOption,
-              ]}
-              onPress={() => handleSelectOption("Analog")}
+              <DisposableCameraIcon
+                color={getIconColor("Disposable")}
+                onPress={() => handleSelectOption("Disposable")}
+              />
+              <Text
+                style={[
+                  styles.option,
+                  cameraType === "Disposable" && styles.selectedOption,
+                ]}
+              >
+                Disposable
+              </Text>
+            </Pressable>
+            <Pressable
+              style={styles.optionContainer}
+              onPress={() => handleSelectOption("Fuji")}
             >
-              Analog
-            </Text>
+              <FujiCameraIcon
+                color={getIconColor("Fuji")}
+                onPress={() => handleSelectOption("Fuji")}
+              />
+              <Text
+                style={[
+                  styles.option,
+                  cameraType === "Fuji" && styles.selectedOption,
+                ]}
+              >
+                Fuji
+              </Text>
+            </Pressable>
           </View>
         )}
       </Animated.View>
@@ -123,7 +150,7 @@ const styles = StyleSheet.create({
   mainContainer: {
     paddingTop: 60,
     paddingBottom: 10,
-    backgroundColor: "#111",
+    backgroundColor: "#121212",
   },
   contentContainer: {
     marginHorizontal: 20,
@@ -154,9 +181,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    fontSize: 16,
     fontWeight: "700",
     color: "#ffffff",
+    paddingLeft: 20,
   },
   iconGap: {
     marginLeft: 20,
@@ -164,14 +191,27 @@ const styles = StyleSheet.create({
   expandedContainer: {
     paddingBottom: 12,
   },
+  animatedContainer: {
+    overflow: "hidden",
+  },
   optionsContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     marginTop: 16,
   },
+  optionContainer: {
+    alignItems: "center",
+    flex: 1,
+  },
+  centerOptionContainer: {
+    justifyContent: "center",
+    flex: 1, // Adjust the flex value to center the middle option
+  },
   option: {
     color: "#ffffff",
-    paddingVertical: 5,
+    paddingVertical: 2,
+    fontSize: 12,
+    fontWeight: "500",
   },
   selectedOption: {
     color: "#5FC4ED",

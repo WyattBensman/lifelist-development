@@ -3,11 +3,12 @@ import { useNavigation } from "@react-navigation/native";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import BlockedUserCard from "../Cards/BlockedUserCard";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { layoutStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import { useMutation, useQuery } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { GET_BLOCKED_USERS } from "../../../utils/queries/userQueries";
 import { UNBLOCK_USER } from "../../../utils/mutations/userRelationsMutations";
+import Icon from "../../../components/Icons/Icon";
 
 export default function BlockedUsers() {
   const navigation = useNavigation();
@@ -47,18 +48,23 @@ export default function BlockedUsers() {
   );
 
   return (
-    <View style={layoutStyles.container}>
+    <View style={layoutStyles.wrapper}>
       <HeaderStack
         title={"Blocked Users"}
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
       />
-      <View>
-        <FlatList
-          data={blockedUsers}
-          renderItem={renderBlockedUserCard}
-          keyExtractor={(item) => item._id.toString()}
-        />
-      </View>
+      <FlatList
+        data={blockedUsers}
+        renderItem={renderBlockedUserCard}
+        keyExtractor={(item) => item._id.toString()}
+      />
     </View>
   );
 }

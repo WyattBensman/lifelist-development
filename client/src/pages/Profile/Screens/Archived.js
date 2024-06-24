@@ -6,13 +6,14 @@ import {
   Text,
   ActivityIndicator,
 } from "react-native";
-import { layoutStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useQuery } from "@apollo/client";
 import { GET_ARCHIVED_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
+import Icon from "../../../components/Icons/Icon";
 
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -30,10 +31,17 @@ export default function Archived() {
   if (error) return <Text>Error: {error.message}</Text>;
 
   return (
-    <View style={layoutStyles.container}>
+    <View style={layoutStyles.wrapper}>
       <HeaderStack
         title={"Archived"}
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
       />
       <FlatList
         data={data?.getArchivedCollages}

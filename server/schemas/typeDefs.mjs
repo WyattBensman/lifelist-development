@@ -89,6 +89,7 @@ type User {
     FOLLOW_ACCEPTED
     FOLLOW
     COLLAGE_REPOST
+    COLLAGE_LIKE
     COMMENT
     TAG
     MESSAGE
@@ -250,6 +251,7 @@ type User {
     getUserContactInformation: UserContactInformation
     getUserIdentityInformation: UserIdentityInformation
     getUserSettingsInformation: UserSettingsInformation
+    getAllUsers(limit: Int, offset: Int): [User]
   
     # Privacy Group Queries
     getAllPrivacyGroups: [PrivacyGroup]
@@ -288,7 +290,7 @@ type User {
   
     # Experience Queries
     getExperience(experienceId: ID!): Experience
-    getAllExperiences: [Experience]
+    getAllExperiences(limit: Int, offset: Int): [Experience]
 
     # Main Feed Queries
     getMainFeed(userId: ID!, page: Int!): FeedResult

@@ -3,7 +3,8 @@ import { Checkbox } from "expo-checkbox";
 import { BASE_URL } from "../../../utils/config";
 
 const { width } = Dimensions.get("window");
-const shotWidth = width / 3;
+const spacing = 1.5;
+const shotWidth = (width - spacing * 2) / 3; // Adjusted to account for the spacing
 const shotHeight = (shotWidth * 3) / 2;
 
 export default function ShotCard({
@@ -11,13 +12,19 @@ export default function ShotCard({
   isSelected,
   onCheckboxToggle,
   navigation,
+  index,
 }) {
   const imageUrl = `${BASE_URL}${shot.image}`;
-  console.log(imageUrl);
 
   return (
     <Pressable
-      onPress={() => navigation.navigate("ViewShot", { imageUrl: shot.image })}
+      onPress={() => navigation.navigate("ViewShot", { shotId: shot._id })}
+      style={[
+        styles.container,
+        {
+          marginRight: (index + 1) % 3 === 0 ? 0 : spacing, // Remove marginRight for the last item in each row
+        },
+      ]}
     >
       <View style={styles.shotContainer}>
         <Image source={{ uri: imageUrl }} style={styles.shotImage} />
@@ -35,10 +42,14 @@ export default function ShotCard({
 }
 
 const styles = StyleSheet.create({
-  shotContainer: {
+  container: {
     width: shotWidth,
     height: shotHeight,
-    marginBottom: 10,
+    marginBottom: spacing,
+  },
+  shotContainer: {
+    width: "100%",
+    height: "100%",
     position: "relative",
   },
   shotImage: {

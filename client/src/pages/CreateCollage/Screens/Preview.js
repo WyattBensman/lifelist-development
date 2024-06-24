@@ -1,10 +1,10 @@
 import React from "react";
 import { Text, View, StyleSheet, Pressable } from "react-native";
-import { layoutStyles } from "../../../styles";
-import StackHeader from "../../../components/StackHeader";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
+import { iconStyles, layoutStyles } from "../../../styles";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import CollagePreview from "../Cards/CollagePreview";
+import HeaderStack from "../../../components/Headers/HeaderStack";
+import Icon from "../../../components/Icons/Icon";
 
 export default function Preview() {
   const navigation = useNavigation();
@@ -16,10 +16,17 @@ export default function Preview() {
   };
 
   return (
-    <View style={layoutStyles.container}>
-      <StackHeader
+    <View style={layoutStyles.wrapper}>
+      <HeaderStack
         title={"Preview"}
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         button1={
           <Pressable onPress={handlePost}>
             <Text style={styles.postText}>Post</Text>

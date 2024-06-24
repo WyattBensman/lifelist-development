@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import {
   Text,
   View,
@@ -8,10 +8,10 @@ import {
   ActivityIndicator,
   FlatList,
   Dimensions,
+  Animated,
 } from "react-native";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import Icon from "../../../icons/Icon";
-import { iconStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import { GET_COLLAGE_BY_ID } from "../../../utils/queries";
 import {
   LIKE_COLLAGE,
@@ -25,10 +25,17 @@ import { useQuery, useMutation } from "@apollo/client";
 import { BASE_URL } from "../../../utils/config";
 import Comments from "../Popups/Comments";
 import Participants from "../Popups/Participants";
+import Icon from "../../../components/Icons/Icon";
+import IconCollage from "../../../components/Icons/IconCollage";
+import Options from "../Popups/Options";
 
 const { width } = Dimensions.get("window");
 
-export default function Collage({ collageId }) {
+export default function Collage({
+  collageId,
+  isMainFeed,
+  isViewCollageScreen,
+}) {
   const navigation = useNavigation();
   const { loading, error, data, refetch } = useQuery(GET_COLLAGE_BY_ID, {
     variables: { collageId },
@@ -36,11 +43,13 @@ export default function Collage({ collageId }) {
 
   const [showParticipants, setShowParticipants] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [isLiked, setIsLiked] = useState(false);
   const [isReposted, setIsReposted] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (data) {
@@ -73,6 +82,19 @@ export default function Collage({ collageId }) {
   });
   const [unsaveCollage] = useMutation(UNSAVE_COLLAGE, {
     onCompleted: () => setIsSaved(false),
+  });
+
+  useEffect(() => {
+    Animated.timing(rotateAnim, {
+      toValue: showOptions ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [showOptions]);
+
+  const rotation = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "90deg"],
   });
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
@@ -127,8 +149,12 @@ export default function Collage({ collageId }) {
     }
   };
 
+  const handleOptionsPress = () => {
+    setShowOptions(!showOptions); // Toggle the options popup
+  };
+
   return (
-    <View style={styles.wrapper}>
+    <View style={layoutStyles.wrapper}>
       <View style={styles.imageContainer}>
         <FlatList
           data={images}
@@ -169,40 +195,63 @@ export default function Collage({ collageId }) {
               <Text style={styles.location}>Location unknown</Text>
             </View>
           </View>
-          <Icon
-            name="ellipsis"
-            style={iconStyles.collageEllipsis}
-            tintColor={"#ffffff"}
-          />
+          {/* {isMainFeed && (
+            <Icon
+              name="ellipsis"
+              style={iconStyles.ellipsis}
+              weight="bold"
+              tintColor={"#ffffff"}
+              backgroundColor={"rgba(38, 40, 40, 0.25)"}
+              onPress={handleOptionsPress} // Show options popup on press
+            />
+          )} */}
         </View>
         <View style={styles.actionContainer}>
-          <Icon
-            name={isLiked ? "heart.fill" : "heart"}
-            style={iconStyles.heart}
-            tintColor={isLiked ? "#FF0000" : "#ffffff"}
-            onPress={handleLikePress}
-          />
-          <Icon
-            name="bubble"
-            style={iconStyles.comment}
-            spacer={16}
-            tintColor={"#ffffff"}
+          <Pressable onPress={handleLikePress}>
+            <IconCollage
+              name={isLiked ? "heart.fill" : "heart"}
+              style={iconStyles.like}
+              weight={"medium"}
+              tintColor={isLiked ? "#ff0000" : "#ffffff"}
+              backgroundColor={"rgba(38, 40, 40, 0.25)"}
+              onPress={handleLikePress}
+            />
+          </Pressable>
+          <Pressable onPress={handleRepostPress} style={styles.iconSpacer}>
+            <IconCollage
+              name="arrow.2.squarepath"
+              style={iconStyles.repost}
+              weight={"medium"}
+              tintColor={isReposted ? "#6AB952" : "#ffffff"}
+              backgroundColor={"rgba(38, 40, 40, 0.25)"}
+              onPress={handleRepostPress}
+            />
+          </Pressable>
+          <Pressable
             onPress={() => setShowComments(true)}
-          />
-          <Icon
-            name="arrow.2.squarepath"
-            style={iconStyles.repost}
-            spacer={16}
-            tintColor={isReposted ? "#6AB952" : "#ffffff"}
-            onPress={handleRepostPress}
-          />
-          <Icon
-            name={isSaved ? "bookmark.fill" : "bookmark"}
-            style={iconStyles.bookmark}
-            spacer={16}
-            tintColor="#ffffff"
-            onPress={handleSavePress}
-          />
+            style={styles.iconSpacer}
+          >
+            <IconCollage
+              name="text.bubble"
+              style={iconStyles.comment}
+              weight={"medium"}
+              tintColor={"#ffffff"}
+              backgroundColor={"rgba(38, 40, 40, 0.25)"}
+              onPress={() => setShowComments(true)}
+            />
+          </Pressable>
+          <Pressable onPress={handleOptionsPress} style={styles.iconSpacer}>
+            <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+              <IconCollage
+                name="ellipsis"
+                style={iconStyles.ellipsis}
+                weight={"bold"}
+                tintColor={"#ffffff"}
+                backgroundColor={"rgba(38, 40, 40, 0.25)"}
+                onPress={handleOptionsPress} // Show options popup on press
+              />
+            </Animated.View>
+          </Pressable>
         </View>
       </View>
       <View style={styles.bottomContainer}>
@@ -225,25 +274,20 @@ export default function Collage({ collageId }) {
           </View>
         </View>
         <View style={styles.bottomTextContainer}>
-          <View style={styles.button}>
-            <Text
-              style={[
-                styles.buttonText,
-                { fontWeight: "400", color: "#d4d4d4" },
-              ]}
-            >
+          <View style={styles.dateButton}>
+            <Text style={styles.dateButtonText}>
               {new Date(createdAt).toLocaleDateString()}
             </Text>
           </View>
           <View style={{ flexDirection: "row" }}>
             <Pressable onPress={() => setShowComments(true)}>
-              <View style={styles.button}>
-                <Text style={styles.buttonText}>Comments</Text>
+              <View style={styles.commentsButton}>
+                <Text style={styles.commentsButtonText}>Comments</Text>
               </View>
             </Pressable>
             <Pressable onPress={() => setShowParticipants(true)}>
-              <View style={[styles.button, { marginLeft: 8 }]}>
-                <Text style={styles.buttonText}>Participants</Text>
+              <View style={[styles.participantsButton, { marginLeft: 8 }]}>
+                <Text style={styles.participantsButtonText}>Participants</Text>
               </View>
             </Pressable>
           </View>
@@ -257,6 +301,11 @@ export default function Collage({ collageId }) {
       <Participants
         visible={showParticipants}
         onRequestClose={() => setShowParticipants(false)}
+        collageId={collageId}
+      />
+      <Options
+        visible={showOptions}
+        onRequestClose={() => setShowOptions(false)}
         collageId={collageId}
       />
     </View>
@@ -273,7 +322,6 @@ const styles = StyleSheet.create({
   image: {
     width: width, // Use screen width for FlatList images
     height: width * (3 / 2), // Maintain aspect ratio of 2:3
-    backgroundColor: "#d4d4d4",
   },
   topContainer: {
     position: "absolute",
@@ -289,18 +337,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   profilePicture: {
-    height: 36,
-    width: 36,
+    height: 35,
+    width: 35,
     borderRadius: 4,
-    borderColor: "#ffffff",
-    borderWidth: 1.5,
-    marginRight: 6,
-  },
-  smallProfilePicture: {
-    height: 38,
-    width: 38,
-    borderRadius: 6,
-    borderColor: "#ffffff",
+    borderColor: "rgba(38, 40, 40, 0.3)",
+    borderWidth: 2,
     marginRight: 6,
   },
   fullName: {
@@ -309,6 +350,7 @@ const styles = StyleSheet.create({
   },
   username: {
     fontWeight: "600",
+    color: "#fff",
   },
   location: {
     fontSize: 12,
@@ -317,14 +359,12 @@ const styles = StyleSheet.create({
   actionContainer: {
     position: "absolute",
     bottom: 12,
-    alignSelf: "center",
-    flexDirection: "row",
-    backgroundColor: "rgba(38, 40, 40, 0.25)",
-    borderRadius: 32,
-    paddingHorizontal: 12,
+    right: 12,
+    flexDirection: "column", // Changed to column for vertical alignment
+    alignItems: "center",
   },
   iconSpacer: {
-    marginLeft: 8,
+    marginTop: 12, // Adds spacing between icons
   },
   bottomContainer: {
     flex: 1,
@@ -349,17 +389,44 @@ const styles = StyleSheet.create({
   caption: {
     flexWrap: "wrap",
     alignItems: "flex-start",
+    color: "#fff",
   },
-  button: {
-    backgroundColor: "#ececec", // Light green background
+  dateButton: {
+    backgroundColor: "#1C1C1C", // Dark background for Date button
     borderRadius: 20, // Rounded corners
     paddingVertical: 6,
     paddingHorizontal: 12,
     justifyContent: "center",
     alignItems: "center",
   },
-  buttonText: {
-    color: "#000", // Green text
+  dateButtonText: {
+    color: "#696969", // Light grey text
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  commentsButton: {
+    backgroundColor: "#252525", // Darker background for Comments button
+    borderRadius: 20, // Rounded corners
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  commentsButtonText: {
+    color: "#fff", // White text
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  participantsButton: {
+    backgroundColor: "#252525", // Darker background for Participants button
+    borderRadius: 20, // Rounded corners
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  participantsButtonText: {
+    color: "#fff", // White text
     fontSize: 12,
     fontWeight: "500",
   },

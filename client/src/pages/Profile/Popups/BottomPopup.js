@@ -59,9 +59,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 0,
     width: "100%",
-    backgroundColor: "white",
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
+    backgroundColor: "#1C1C1C",
+    borderTopRightRadius: 16,
+    borderTopLeftRadius: 16,
     overflow: "hidden",
   },
 });

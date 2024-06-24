@@ -1,17 +1,13 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import BottomPopup from "./BottomPopup";
-import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
-import { headerStyles, layoutStyles, popupStyles } from "../../../styles";
-import EditProfile from "../Icons/PopupIcons/EditProfile";
-import Saved from "../Icons/PopupIcons/Saved";
-import Archived from "../Icons/PopupIcons/Archived";
-import Logbook from "../Icons/PopupIcons/Logbook";
-import CameraShots from "../Icons/PopupIcons/CameraShots";
-import InviteFriends from "../Icons/PopupIcons/InviteFriends";
-import About from "../Icons/PopupIcons/About";
-import Settings from "../Icons/PopupIcons/Settings";
-import Support from "../Icons/PopupIcons/Support";
+import {
+  headerStyles,
+  iconStyles,
+  layoutStyles,
+  popupStyles,
+} from "../../../styles";
 import { useAuth } from "../../../contexts/AuthContext";
+import IconStatic from "../../../components/Icons/IconStatic";
 
 export default function AdminOptionsPopup({
   visible,
@@ -25,18 +21,24 @@ export default function AdminOptionsPopup({
   const { logout, currentUser } = useAuth();
 
   return (
-    <BottomPopup visible={visible} onRequestClose={onRequestClose} height={540}>
+    <BottomPopup visible={visible} onRequestClose={onRequestClose} height={508}>
       <View style={popupStyles.popupContainer}>
-        <Text style={headerStyles.headerMedium}>Profile Options</Text>
+        <Text style={[headerStyles.headerMedium, styles.text]}>
+          Profile Options
+        </Text>
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={() => handleNavigate("EditProfile")}
         >
           <View style={layoutStyles.flexRow}>
-            <EditProfile />
-            <Text style={popupStyles.spacer}>Edit Profile</Text>
+            <IconStatic name="person.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>Edit Profile</Text>
           </View>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </Pressable>
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
@@ -45,83 +47,130 @@ export default function AdminOptionsPopup({
           }
         >
           <View style={layoutStyles.flexRow}>
-            <Settings />
-            <Text style={popupStyles.spacer}>Settings</Text>
+            <IconStatic name="gearshape.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>Settings</Text>
           </View>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </Pressable>
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={() => handleNavigate("Saved")}
         >
           <View style={layoutStyles.flexRow}>
-            <Saved />
-            <Text style={popupStyles.spacer}>Saved</Text>
+            <IconStatic name="bookmark.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>Saved</Text>
           </View>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </Pressable>
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={() => handleNavigate("Archived")}
         >
           <View style={layoutStyles.flexRow}>
-            <Archived />
-            <Text style={popupStyles.spacer}>Archived</Text>
+            <IconStatic name="archivebox.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>Archived</Text>
           </View>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </Pressable>
-        <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
+        <Pressable
+          style={[popupStyles.cardContainer, layoutStyles.flex]}
+          onPress={() =>
+            handleNavigate("CameraStack", { screen: "CameraRoll" })
+          }
+        >
           <View style={layoutStyles.flexRow}>
-            <Logbook />
-            <Text style={popupStyles.spacer}>Logbook</Text>
+            <IconStatic name="camera.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>Camera Shots</Text>
           </View>
-          <ForwardArrowIcon />
-        </View>
-        <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
-          <View style={layoutStyles.flexRow}>
-            <CameraShots />
-            <Text style={popupStyles.spacer}>Camera Shots</Text>
-          </View>
-          <ForwardArrowIcon />
-        </View>
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
+        </Pressable>
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={() => handleNavigate("PrivacyGroups")}
         >
           <View style={layoutStyles.flexRow}>
-            <CameraShots />
-            <Text style={popupStyles.spacer}>Privacy Groups</Text>
+            <IconStatic name="person.2.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>
+              Privacy Groups
+            </Text>
           </View>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </Pressable>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
           <View style={layoutStyles.flexRow}>
-            <InviteFriends />
-            <Text style={popupStyles.spacer}>Invite Friends</Text>
+            <IconStatic name="envelope.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>
+              Invite Friends
+            </Text>
           </View>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </View>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
           <View style={layoutStyles.flexRow}>
-            <Support />
-            <Text style={popupStyles.spacer}>Support</Text>
+            <IconStatic
+              name="questionmark.circle"
+              style={iconStyles.popupIcon}
+            />
+            <Text style={[popupStyles.spacer, styles.text]}>Support</Text>
           </View>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </View>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
           <View style={layoutStyles.flexRow}>
-            <About />
-            <Text style={popupStyles.spacer}>About</Text>
+            <IconStatic name="info.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>About</Text>
           </View>
-          <ForwardArrowIcon />
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
         </View>
         <Pressable
           onPress={logout}
           style={[popupStyles.cardContainer, layoutStyles.flex]}
         >
-          <Text style={[popupStyles.spacer, { color: "red" }]}>Sign Out</Text>
+          <Text
+            style={[popupStyles.spacer, { color: "red", fontWeight: "600" }]}
+          >
+            Sign Out
+          </Text>
         </Pressable>
       </View>
     </BottomPopup>
   );
 }
+
+const styles = StyleSheet.create({
+  text: {
+    color: "#ffffff",
+  },
+});

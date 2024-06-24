@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { layoutStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import FriendsIcon from "../Icons/FriendsIcon";
@@ -9,6 +9,7 @@ import CreateConversationIcon from "../Icons/CreateConversationIcon";
 import SearchBarStandard from "../../../components/SearchBars/SearchBarStandard";
 import InboxNavigator from "../Navigators/InboxNavigator";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
+import Icon from "../../../components/Icons/Icon";
 
 export default function Inbox() {
   const navigation = useNavigation();
@@ -23,11 +24,36 @@ export default function Inbox() {
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
-        arrow={<BackArrowIcon navigation={navigation} />}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
         title="Inbox"
         hasBorder={false}
+        button1={
+          <Icon
+            name="plus.message"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.newConversation}
+            weight="semibold"
+          />
+        }
+        button2={
+          <Icon
+            name="person.badge.plus"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.addFriends}
+            weight="semibold"
+          />
+        }
       />
-      <View style={[layoutStyles.marginSm, { alignSelf: "center" }]}>
+      <View
+        style={[layoutStyles.marginSm, { alignSelf: "center", marginTop: 6 }]}
+      >
         <SearchBarStandard
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}

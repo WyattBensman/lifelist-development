@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, Pressable } from "react-native";
+import React, { useState } from "react";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useMutation, useQuery } from "@apollo/client";
-import { headerStyles, layoutStyles } from "../../../styles";
-import SymbolButtonSm from "../../../icons/SymbolButtonSm";
+import { iconStyles, layoutStyles } from "../../../styles";
 import AddExperienceCard from "../Cards/AddExperienceCard";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useAuth } from "../../../contexts/AuthContext";
 import { ADD_EXPERIENCE_TO_LIFELIST } from "../../../utils/mutations";
 import { GET_USER_PROFILE } from "../../../utils/queries/userQueries";
 import { useCallbackContext } from "../../../contexts/CallbackContext";
+import Icon from "../../../components/Icons/Icon";
 
 export default function AddExperiencesOverview() {
   const { currentUser, updateCurrentUser } = useAuth();
@@ -33,6 +33,8 @@ export default function AddExperiencesOverview() {
   );
 
   const handleAddExperiences = async () => {
+    if (!allExperiencesHaveList) return;
+
     try {
       // Iterate over each experience and add them to the LifeList
       for (const exp of experiences) {
@@ -89,28 +91,34 @@ export default function AddExperiencesOverview() {
     <View style={layoutStyles.wrapper}>
       <HeaderStack
         arrow={
-          <SymbolButtonSm
+          <Icon
             name="chevron.backward"
             onPress={() => navigation.goBack()}
-            style={{ height: 18, width: 18 }}
+            style={iconStyles.backArrow}
+            weight="semibold"
           />
         }
+        title={"New Experiences"}
         button1={
-          <Text
+          <View
             style={[
-              styles.addButton,
-              allExperiencesHaveList && styles.addButtonActive,
+              styles.buttonContainer,
+              allExperiencesHaveList && styles.addButtonActiveContainer,
             ]}
-            onPress={allExperiencesHaveList ? handleAddExperiences : null}
           >
-            Add Experiences
-          </Text>
+            <Text
+              style={[
+                styles.addButton,
+                allExperiencesHaveList && styles.addButtonActive,
+              ]}
+              onPress={handleAddExperiences}
+            >
+              Add
+            </Text>
+          </View>
         }
       />
-      <View style={layoutStyles.contentContainer}>
-        <Text style={[headerStyles.headerHeavy, layoutStyles.marginBtmSm]}>
-          New Experiences
-        </Text>
+      <View style={{ marginTop: 8 }}>
         <FlatList
           data={experiences}
           renderItem={({ item }) => (
@@ -136,10 +144,20 @@ export default function AddExperiencesOverview() {
 }
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    backgroundColor: "#1C1C1C",
+    paddingVertical: 6,
+    paddingHorizontal: 13,
+    borderRadius: 12,
+  },
   addButton: {
-    color: "#d4d4d4",
+    color: "#696969",
+  },
+  addButtonActiveContainer: {
+    backgroundColor: "#6AB95230",
   },
   addButtonActive: {
     color: "#6AB952",
+    fontWeight: "500",
   },
 });

@@ -1,42 +1,105 @@
-import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
+import React, { useState, useMemo } from "react";
+import { Text, View, StyleSheet, FlatList } from "react-native";
 import { layoutStyles } from "../../../styles";
-import SearchBar from "../../../components/SearchBar";
-import FromYourListList from "../Containers/FromYourLifeList";
-import TrendingCollages from "../Containers/TrendingCollages";
-import TrendingDestinations from "../Containers/TrendingDestinations";
-import TrendingActivities from "../Containers/TrendingActivites";
-import TrendingAttractions from "../Containers/TrendingAttractions";
-import TrendingConcertsFestivals from "../Containers/TrendingConcertsFestivals";
+import ExploreHeader from "../../../components/Headers/ExploreHeader";
+import ExploreNavigator from "../Navigators/ExploreNavigator";
+import {
+  GET_ALL_USERS,
+  GET_ALL_EXPERIENCES,
+} from "../../../utils/queries/index";
+import { useQuery } from "@apollo/client";
+import SearchExperienceCard from "../Cards/SearchExperienceCard";
+import SearchUserCard from "../Cards/SearchUserCard";
 
 export default function ExploreHome({ navigation }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [activeTab, setActiveTab] = useState("All");
+
+  const handleSearch = () => {
+    console.log("Search:", searchQuery);
+  };
+
+  const handleSearchFocusChange = (isFocused) => {
+    setIsSearchFocused(isFocused);
+  };
+
+  const {
+    data: allUsersData,
+    loading: usersLoading,
+    error: usersError,
+  } = useQuery(GET_ALL_USERS, {
+    variables: { limit: 50, offset: 0 },
+  });
+
+  const {
+    data: allExperiencesData,
+    loading: experiencesLoading,
+    error: experiencesError,
+  } = useQuery(GET_ALL_EXPERIENCES, {
+    variables: { limit: 50, offset: 0 },
+  });
+
+  const filteredUsers = useMemo(() => {
+    if (!searchQuery || (activeTab !== "All" && activeTab !== "Users"))
+      return [];
+    return (allUsersData?.getAllUsers || []).filter(
+      (user) =>
+        user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        user.username.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery, allUsersData, activeTab]);
+
+  const filteredExperiences = useMemo(() => {
+    if (!searchQuery || (activeTab !== "All" && activeTab !== "Experiences"))
+      return [];
+    return (allExperiencesData?.getAllExperiences || []).filter((exp) =>
+      exp.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery, allExperiencesData, activeTab]);
+
   return (
-    <View style={styles.container}>
-      <View style={layoutStyles.contentContainer}>
-        <SearchBar />
-        <ScrollView style={[layoutStyles.marginTopLg, { marginRight: -16 }]}>
-          <FromYourListList />
-          <TrendingCollages />
-          <TrendingDestinations />
-          <TrendingConcertsFestivals />
-          <TrendingActivities />
-          <TrendingAttractions />
-        </ScrollView>
-        <Pressable onPress={() => navigation.navigate("ExplorePage")}>
-          <Text>Go to Explore Page</Text>
-        </Pressable>
-      </View>
+    <View style={layoutStyles.wrapper}>
+      <ExploreHeader
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        handleSearch={handleSearch}
+        onSearchFocusChange={handleSearchFocusChange}
+      />
+      {isSearchFocused && (
+        <ExploreNavigator activeTab={activeTab} setActiveTab={setActiveTab} />
+      )}
+      {isSearchFocused && searchQuery === "" ? (
+        <View style={styles.instructionContainer}>
+          <Text style={styles.instructionText}>
+            Start typing to search for users & experiences
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={activeTab === "Users" ? filteredUsers : filteredExperiences}
+          renderItem={({ item }) =>
+            activeTab === "Users" ? (
+              <SearchUserCard user={item} navigation={navigation} />
+            ) : (
+              <SearchExperienceCard experience={item} navigation={navigation} />
+            )
+          }
+          keyExtractor={(item) => item._id}
+        />
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 60,
-    backgroundColor: "#ffffff",
+  instructionContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
   },
-  content: {
-    marginTop: 10,
-    paddingTop: 10,
+  instructionText: {
+    textAlign: "center",
+    color: "#d4d4d4",
   },
 });

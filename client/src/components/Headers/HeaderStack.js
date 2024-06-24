@@ -57,11 +57,11 @@ const styles = StyleSheet.create({
   mainContainer: {
     marginTop: 45,
     paddingTop: 15,
-    paddingBottom: 2,
+    paddingBottom: 8,
   },
   border: {
     borderBottomWidth: 1,
-    borderBottomColor: "#D4D4D4",
+    borderBottomColor: "#1C1C1C",
   },
   contentContainer: {
     marginHorizontal: 20,
@@ -89,8 +89,7 @@ const styles = StyleSheet.create({
   },
   header: {
     fontSize: 16,
-    fontWeight: "600",
-    fontFamily: "Helvetica",
+    fontWeight: "800",
     color: "#6AB952",
   },
   iconSpacing: {
@@ -101,6 +100,6 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     overflow: "hidden",
-    backgroundColor: "#fff",
+    backgroundColor: "#121212",
   },
 });

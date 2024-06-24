@@ -1,7 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
+import Animated, {
+  Easing,
+  useSharedValue,
+  withTiming,
+  useAnimatedStyle,
+} from "react-native-reanimated";
 import Followers from "../Screens/TabScreens/Followers";
 import Following from "../Screens/TabScreens/Following";
+
+const { width } = Dimensions.get("window");
 
 const tabs = [
   { name: "Followers", component: Followers },
@@ -14,21 +22,36 @@ export default function UserRelationsNavigator({
   initialTab,
 }) {
   const [activeTab, setActiveTab] = useState(initialTab || "Followers");
+  const translateX = useSharedValue(0);
 
   useEffect(() => {
     setActiveTab(initialTab);
   }, [initialTab]);
 
-  const renderScreen = () => {
-    const activeTabComponent = tabs.find(
-      (tab) => tab.name === activeTab
-    ).component;
-    return React.createElement(activeTabComponent, { userId, searchQuery });
-  };
+  useEffect(() => {
+    translateX.value = activeTab === "Followers" ? 0 : -width;
+  }, [activeTab, translateX]);
+
+  const renderScreen = (Component) => (
+    <Component userId={userId} searchQuery={searchQuery} />
+  );
 
   const handleTabPress = (tabName) => {
-    setActiveTab(tabName);
+    if (tabName !== activeTab) {
+      setActiveTab(tabName);
+    }
   };
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      {
+        translateX: withTiming(translateX.value, {
+          duration: 300,
+          easing: Easing.inOut(Easing.ease),
+        }),
+      },
+    ],
+  }));
 
   return (
     <View style={styles.container}>
@@ -53,7 +76,10 @@ export default function UserRelationsNavigator({
           </Pressable>
         ))}
       </View>
-      <View style={styles.screenContainer}>{renderScreen()}</View>
+      <Animated.View style={[styles.screenContainer, animatedStyle]}>
+        <View style={styles.screen}>{renderScreen(Followers)}</View>
+        <View style={styles.screen}>{renderScreen(Following)}</View>
+      </Animated.View>
     </View>
   );
 }
@@ -65,10 +91,9 @@ const styles = StyleSheet.create({
   navigatorWrapper: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "#FBFBFE",
     paddingBottom: 12,
     borderBottomWidth: 0.5,
-    borderBottomColor: "#ececec",
+    borderBottomColor: "#252525",
   },
   navigatorButton: {
     width: "40%",
@@ -78,13 +103,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 6,
-    backgroundColor: "#ececec",
+    backgroundColor: "#1C1C1C",
   },
   activeNavigatorButton: {
     backgroundColor: "#6AB95230",
   },
   navigatorText: {
-    color: "#d4d4d4",
+    color: "#696969",
     fontWeight: "500",
   },
   activeNavigatorText: {
@@ -92,6 +117,12 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   screenContainer: {
-    flex: 1,
+    flexDirection: "row",
+    width: width * 2,
+    height: "100%",
+  },
+  screen: {
+    width: width,
+    height: "100%",
   },
 });

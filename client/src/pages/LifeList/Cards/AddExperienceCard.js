@@ -110,12 +110,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
     flex: 1,
     padding: 8,
-    backgroundColor: "#fff",
+    backgroundColor: "#1C1C1C",
     borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
   },
   contentContainer: {
     flex: 1,
@@ -128,10 +124,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontWeight: "600",
+    color: "#fff",
   },
   secondaryText: {
     fontSize: 12,
-    color: "#8A8A8E",
+    color: "#696969",
     marginTop: 1.5,
   },
   optionsContainer: {
@@ -147,8 +144,9 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
   },
   optionsButton: {
+    borderWidth: 1,
+    borderColor: "#696969",
     flexDirection: "row",
-    backgroundColor: "#ececec",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 12,
@@ -156,6 +154,7 @@ const styles = StyleSheet.create({
   optionsText: {
     fontSize: 12,
     fontWeight: "500",
+    color: "#fff",
   },
   spacer: {
     marginLeft: 8,
@@ -181,9 +180,13 @@ const styles = StyleSheet.create({
   },
   experiencedButton: {
     backgroundColor: "#6AB95230",
+    borderWidth: 1,
+    borderColor: "#6AB95250",
   },
   wishListedButton: {
     backgroundColor: "#5FC4ED30",
+    borderWidth: 1,
+    borderColor: "#5FC4ED50",
   },
   experiencedColor: {
     color: "#6AB952",

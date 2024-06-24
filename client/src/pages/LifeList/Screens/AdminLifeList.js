@@ -1,5 +1,11 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
+import { View, Text, Animated } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { headerStyles, layoutStyles } from "../../../styles";
 import NavigatorContainer from "../Navigation/NavigatorContainer";
@@ -9,9 +15,8 @@ import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
 import HeaderMain from "../../../components/Headers/HeaderMain";
 import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
 import SearchBar from "../../../components/SearchBar";
-import Icon from "../../../icons/Icon";
 import { iconStyles } from "../../../styles/iconStyles";
-import { SymbolView } from "expo-symbols";
+import Icon from "../../../components/Icons/Icon";
 
 export default function AdminLifeList() {
   const { currentUser } = useAuth();
@@ -20,6 +25,7 @@ export default function AdminLifeList() {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchBarVisible, setSearchBarVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
     variables: { userId: currentUser._id },
@@ -40,6 +46,19 @@ export default function AdminLifeList() {
     }
   }, [data]);
 
+  useEffect(() => {
+    Animated.timing(rotateAnim, {
+      toValue: dropdownVisible ? 1 : 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+  }, [dropdownVisible]);
+
+  const rotation = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "90deg"],
+  });
+
   const lifeList = data?.getUserLifeList || { experiences: [] };
 
   const filteredExperiences = useMemo(() => {
@@ -52,15 +71,17 @@ export default function AdminLifeList() {
   const dropdownItems = useMemo(
     () => [
       {
-        icon: "plus.square",
-        style: iconStyles.plusSquare,
+        icon: "plus",
+        style: iconStyles.addExperience,
         label: "Add Experiences",
         onPress: () => navigation.navigate("AddExperiences"),
+        backgroundColor: "#6AB95230", // Add backgroundColor
+        tintColor: "#6AB952", // Add tintColor
       },
       {
-        icon: "square.and.pencil",
+        icon: "pencil",
         label: "Edit Experiences",
-        style: iconStyles.squarePencil,
+        style: iconStyles.editExperience,
         onPress: () =>
           navigation.navigate("LifeListStack", {
             screen: "ListView",
@@ -69,6 +90,8 @@ export default function AdminLifeList() {
               fromScreen: "AdminLifeList",
             },
           }),
+        backgroundColor: "#5FC4ED30", // Add backgroundColor
+        tintColor: "#5FC4ED", // Add tintColor
       },
     ],
     [navigation, data]
@@ -97,21 +120,22 @@ export default function AdminLifeList() {
             onPress={() =>
               navigation.navigate("LifeListStack", {
                 screen: "ListView",
+                params: {
+                  fromScreen: "AdminLifeList",
+                },
               })
             }
           />
         }
         icon2={
-          <Icon
-            name={!dropdownVisible ? "ellipsis.circle" : "ellipsis.circle.fill"}
-            style={iconStyles.ellipsisCircle}
-            onPress={() => setDropdownVisible(!dropdownVisible)}
-          />
-        }
-        icon3={
-          <View style={styles.iconContainer}>
-            <SymbolView name="bell" style={styles.bell} tintColor={"#000"} />
-          </View>
+          <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+            <Icon
+              name="ellipsis"
+              style={iconStyles.ellipsis}
+              weight="bold"
+              onPress={() => setDropdownVisible(!dropdownVisible)}
+            />
+          </Animated.View>
         }
         dropdownVisible={dropdownVisible}
         dropdownContent={<DropdownMenu items={dropdownItems} />}
@@ -123,23 +147,3 @@ export default function AdminLifeList() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    margin: 16,
-  },
-  iconContainer: {
-    backgroundColor: "#f3f3f3", // light gray background
-    borderRadius: 50, // make it circular
-    padding: 10, // adjust padding as needed
-    height: 30,
-    width: 30,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  // Header Icons
-  bell: {
-    height: 20,
-    width: 18.62,
-  },
-});
