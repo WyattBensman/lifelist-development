@@ -1,27 +1,48 @@
-import React, { useState } from "react";
-import { FlatList, Pressable, Text, View } from "react-native";
+import React, { useState, useCallback } from "react";
+import { FlatList, Pressable, Text, View, Alert } from "react-native";
 import { iconStyles, layoutStyles } from "../../../styles";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import PrivacyGroupCard from "../Cards/PrivacyGroupCard";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { GET_ALL_PRIVACY_GROUPS } from "../../../utils/queries/privacyGroupQueries";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import Icon from "../../../components/Icons/Icon";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
+import { DELETE_PRIVACY_GROUP } from "../../../utils/mutations/index";
 
 export default function PrivacyGroups() {
   const navigation = useNavigation();
   const [isEditMode, setIsEditMode] = useState(false);
-  const { data, loading, error } = useQuery(GET_ALL_PRIVACY_GROUPS);
+  const { data, loading, error, refetch } = useQuery(GET_ALL_PRIVACY_GROUPS);
+  const [deletePrivacyGroup] = useMutation(DELETE_PRIVACY_GROUP);
+
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
+
+  const handleDelete = async (id) => {
+    try {
+      const { data } = await deletePrivacyGroup({
+        variables: { privacyGroupId: id },
+      });
+
+      if (data.deletePrivacyGroup.success) {
+        refetch();
+      } else {
+        Alert.alert("Error", data.deletePrivacyGroup.message);
+      }
+    } catch (error) {
+      console.error("Error deleting privacy group:", error);
+    }
+  };
 
   const renderPrivacyGroupCard = ({ item }) => (
     <PrivacyGroupCard
       isEditMode={isEditMode}
       privacyGroup={item}
-      onDelete={(id) => {
-        // handle delete logic here
-        console.log("Delete privacy group with id:", id);
-      }}
+      onDelete={handleDelete}
     />
   );
 
@@ -59,6 +80,7 @@ export default function PrivacyGroups() {
           text={"Create New Group"}
           textColor="#fff"
           backgroundColor={"#252525"}
+          onPress={() => navigation.navigate("CreatePrivacyGroup")}
         />
         <FlatList
           data={data?.getAllPrivacyGroups}

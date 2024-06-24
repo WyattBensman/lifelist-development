@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import {
   Modal,
   Text,
@@ -16,6 +15,7 @@ import OutlinedButton from "../../../components/OutlinedButton";
 export default function DeletePrivacyGroupModal({
   modalVisible,
   setModalVisible,
+  onConfirm,
 }) {
   return (
     <View style={styles.centeredView}>
@@ -45,7 +45,7 @@ export default function DeletePrivacyGroupModal({
                   <CloseButton />
                 </Pressable>
                 <Text style={[styles.modalHeader, { textAlign: "center" }]}>
-                  Are you sure you want to delete the privacy group ""?
+                  Are you sure you want to delete this privacy group?
                 </Text>
                 <View style={styles.actionButtons}>
                   <View style={{ flex: 1, marginRight: 4 }}>
@@ -53,6 +53,7 @@ export default function DeletePrivacyGroupModal({
                       borderColor={"red"}
                       textColor={"red"}
                       text={"Delete Group"}
+                      onPress={onConfirm}
                     />
                   </View>
                   <View style={{ flex: 1, marginLeft: 4 }}>

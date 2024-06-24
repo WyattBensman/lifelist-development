@@ -9,12 +9,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useQuery, useMutation } from "@apollo/client";
-import {
-  headerStyles,
-  layoutStyles,
-  formStyles,
-  iconStyles,
-} from "../../../styles";
+import { headerStyles, layoutStyles, iconStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import SelectableShotCard from "../Cards/SelectableShotCard";

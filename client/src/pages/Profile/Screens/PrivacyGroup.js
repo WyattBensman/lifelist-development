@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FlatList, Text, View, Animated } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { iconStyles, layoutStyles } from "../../../styles";
 import UserPrivacyGroupCard from "../Cards/UserPrivacyGroupCard";
 import HeaderStack from "../../../components/Headers/HeaderStack";
@@ -12,20 +12,50 @@ import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import OutlinedButton from "../../../components/OutlinedButton";
 import { GET_PRIVACY_GROUP } from "../../../utils/queries/privacyGroupQueries";
 import Icon from "../../../components/Icons/Icon";
+import {
+  DELETE_PRIVACY_GROUP,
+  REMOVE_USERS_FROM_PRIVACY_GROUP,
+} from "../../../utils/mutations/index";
 
 export default function PrivacyGroup() {
   const navigation = useNavigation();
   const route = useRoute();
   const privacyGroupId = route.params.privacyGroupId;
-  const [isEditMode, setIsEditMode] = useState(false);
+  const initialEditMode = route.params.editMode || false;
+  const fromCard = route.params.fromCard || false;
+  const [isEditMode, setIsEditMode] = useState(initialEditMode);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
-  const { data, loading, error } = useQuery(GET_PRIVACY_GROUP, {
+  const { data, loading, error, refetch } = useQuery(GET_PRIVACY_GROUP, {
     variables: { privacyGroupId },
   });
+
+  const [deletePrivacyGroup] = useMutation(DELETE_PRIVACY_GROUP, {
+    onCompleted: () => {
+      setModalVisible(false);
+      navigation.goBack();
+    },
+    onError: (error) => {
+      console.error("Error deleting privacy group:", error);
+    },
+  });
+
+  const [removeUsersFromPrivacyGroup] = useMutation(
+    REMOVE_USERS_FROM_PRIVACY_GROUP,
+    {
+      onCompleted: () => {
+        setSelectedUsers([]);
+        setIsEditMode(false);
+        refetch();
+      },
+      onError: (error) => {
+        console.error("Error removing users from privacy group:", error);
+      },
+    }
+  );
 
   useEffect(() => {
     Animated.timing(rotateAnim, {
@@ -58,8 +88,12 @@ export default function PrivacyGroup() {
 
   const handleBackPress = () => {
     if (isEditMode) {
-      setIsEditMode(false);
-      setSelectedUsers([]);
+      if (fromCard) {
+        navigation.navigate("PrivacyGroups");
+      } else {
+        setIsEditMode(false);
+        setSelectedUsers([]);
+      }
     } else {
       navigation.goBack();
     }
@@ -74,10 +108,12 @@ export default function PrivacyGroup() {
   };
 
   const handleRemoveUsers = () => {
-    // Implement user removal logic here
-    console.log("Remove Users:", selectedUsers);
-    setSelectedUsers([]);
-    setIsEditMode(false);
+    removeUsersFromPrivacyGroup({
+      variables: {
+        privacyGroupId: privacyGroupId,
+        userIds: selectedUsers,
+      },
+    });
   };
 
   const handleDiscardChanges = () => {
@@ -134,7 +170,7 @@ export default function PrivacyGroup() {
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
-        title={"Cool Guys"}
+        title={data.getPrivacyGroup.groupName}
         arrow={
           <Icon
             name="chevron.backward"
@@ -187,7 +223,7 @@ export default function PrivacyGroup() {
       <DeletePrivacyGroupModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
-        onConfirm={() => console.log("Delete Group Confirmed")}
+        onConfirm={() => deletePrivacyGroup({ variables: { privacyGroupId } })}
       />
     </View>
   );

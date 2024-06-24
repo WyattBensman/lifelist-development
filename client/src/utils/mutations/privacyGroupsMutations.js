@@ -39,14 +39,8 @@ export const EDIT_PRIVACY_GROUP = gql`
 export const DELETE_PRIVACY_GROUP = gql`
   mutation DeletePrivacyGroup($privacyGroupId: ID!) {
     deletePrivacyGroup(privacyGroupId: $privacyGroupId) {
-      _id
-      groupName
-      users {
-        _id
-        username
-        fullName
-        profilePicture
-      }
+      success
+      message
     }
   }
 `;

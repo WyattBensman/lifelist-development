@@ -18,11 +18,10 @@ const deletePrivacyGroup = async (_, { privacyGroupId }, { user }) => {
       $pull: { privacyGroups: privacyGroupId },
     });
 
-    // Return updated list of privacy groups
-    return await User.findById(user._id).populate("privacyGroups");
+    return { success: true, message: "Privacy Group deleted successfully." };
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("Failed to delete privacy group.");
+    return { success: false, message: "Failed to delete privacy group." };
   }
 };
 

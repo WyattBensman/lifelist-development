@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { useQuery } from "@apollo/client";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { useQuery, useMutation } from "@apollo/client";
 import { useAuth } from "../../../contexts/AuthContext";
 import SearchUsersCard from "../Cards/SearchUsersCard";
 import { iconStyles, layoutStyles } from "../../../styles";
@@ -9,10 +9,14 @@ import Icon from "../../../components/Icons/Icon";
 import { GET_ALL_USERS } from "../../../utils/queries/userQueries";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import AddUsersBottomContainer from "../Popups/AddUsersBottomContainer";
+import { ADD_USERS_TO_PRIVACY_GROUP } from "../../../utils/mutations/privacyGroupsMutations";
 
 export default function AddUsersToPrivacyGroup() {
   const { currentUser } = useAuth();
   const navigation = useNavigation();
+  const route = useRoute();
+  const privacyGroupId = route.params.privacyGroupId;
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -27,7 +31,16 @@ export default function AddUsersToPrivacyGroup() {
     variables: { limit, offset },
   });
 
-  console.log(allUsersData);
+  const [addUsersToPrivacyGroup] = useMutation(ADD_USERS_TO_PRIVACY_GROUP, {
+    onCompleted: () => {
+      navigation.navigate("PrivacyGroup", {
+        privacyGroupId: privacyGroupId,
+      });
+    },
+    onError: (error) => {
+      console.error("Error adding users to privacy group:", error);
+    },
+  });
 
   const filteredUsers = useMemo(() => {
     if (!searchQuery) return [];
@@ -39,17 +52,23 @@ export default function AddUsersToPrivacyGroup() {
   }, [searchQuery, allUsersData]);
 
   const handleSelect = (user, isSelected) => {
-    if (isSelected) {
-      setSelectedUsers([...selectedUsers, user]);
-    } else {
-      setSelectedUsers(selectedUsers.filter((u) => u._id !== user._id));
-    }
+    setSelectedUsers((prevSelectedUsers) => {
+      if (isSelected) {
+        return [...prevSelectedUsers, user];
+      } else {
+        return prevSelectedUsers.filter((u) => u._id !== user._id);
+      }
+    });
   };
 
   const handleAddUsers = () => {
     if (selectedUsers.length > 0) {
-      navigation.navigate("PrivacyGroup", {
-        addedUsers: selectedUsers,
+      const userIds = selectedUsers.map((user) => user._id);
+      addUsersToPrivacyGroup({
+        variables: {
+          privacyGroupId,
+          userIds,
+        },
       });
     }
   };

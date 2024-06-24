@@ -46,6 +46,14 @@ export default function PrivacyGroupCard({
     }
   };
 
+  const handleEditGroupPress = () => {
+    navigation.navigate("PrivacyGroup", {
+      privacyGroupId: privacyGroup._id,
+      editMode: true,
+      fromCard: true,
+    });
+  };
+
   return (
     <View style={styles.privacyGroupCard}>
       <Pressable onPress={handlePress} style={styles.contentContainer}>
@@ -82,11 +90,7 @@ export default function PrivacyGroupCard({
                 styles.spacer,
                 styles.editGroupButton,
               ]}
-              onPress={() =>
-                navigation.navigate("EditPrivacyGroup", {
-                  privacyGroupId: privacyGroup._id,
-                })
-              }
+              onPress={handleEditGroupPress}
             >
               <Text style={[styles.optionsText, styles.editGroupText]}>
                 Edit Group
@@ -95,7 +99,7 @@ export default function PrivacyGroupCard({
             <Pressable
               style={[styles.optionsButton, styles.spacer, styles.addButton]}
               onPress={() =>
-                navigation.navigate("AddUsers", {
+                navigation.navigate("AddUsersToPrivacyGroup", {
                   privacyGroupId: privacyGroup._id,
                 })
               }

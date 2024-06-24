@@ -425,7 +425,7 @@ type User {
     # Privacy Group Mutations
     createPrivacyGroup(groupName: String!, userIds: [ID]!): PrivacyGroup
     editPrivacyGroup(privacyGroupId: ID!, newGroupName: String!): PrivacyGroup
-    deletePrivacyGroup(privacyGroupId: ID!): [PrivacyGroup]
+    deletePrivacyGroup(privacyGroupId: ID!): StandardResponse
     addUsersToPrivacyGroup(privacyGroupId: ID!, userIds: [ID]!): PrivacyGroup
     removeUsersFromPrivacyGroup(privacyGroupId: ID!, userIds: [ID]!): PrivacyGroup
 
