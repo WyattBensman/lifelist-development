@@ -7,6 +7,7 @@ import SearchUsersCard from "../Cards/SearchUsersCard";
 import { iconStyles, layoutStyles } from "../../../styles";
 import Icon from "../../../components/Icons/Icon";
 import { GET_ALL_USERS } from "../../../utils/queries/userQueries";
+import { GET_PRIVACY_GROUP } from "../../../utils/queries/privacyGroupQueries";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import AddUsersBottomContainer from "../Popups/AddUsersBottomContainer";
 import { ADD_USERS_TO_PRIVACY_GROUP } from "../../../utils/mutations/privacyGroupsMutations";
@@ -25,10 +26,18 @@ export default function AddUsersToPrivacyGroup() {
 
   const {
     data: allUsersData,
-    loading,
-    error,
+    loading: allUsersLoading,
+    error: allUsersError,
   } = useQuery(GET_ALL_USERS, {
     variables: { limit, offset },
+  });
+
+  const {
+    data: privacyGroupData,
+    loading: privacyGroupLoading,
+    error: privacyGroupError,
+  } = useQuery(GET_PRIVACY_GROUP, {
+    variables: { privacyGroupId },
   });
 
   const [addUsersToPrivacyGroup] = useMutation(ADD_USERS_TO_PRIVACY_GROUP, {
@@ -77,8 +86,13 @@ export default function AddUsersToPrivacyGroup() {
     setSelectedUsers([]);
   };
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (allUsersLoading || privacyGroupLoading) return <Text>Loading...</Text>;
+  if (allUsersError) return <Text>Error: {allUsersError.message}</Text>;
+  if (privacyGroupError) return <Text>Error: {privacyGroupError.message}</Text>;
+
+  const existingUserIds = new Set(
+    privacyGroupData.getPrivacyGroup.users.map((user) => user._id)
+  );
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -109,6 +123,7 @@ export default function AddUsersToPrivacyGroup() {
             user={item}
             isSelected={selectedUsers.some((u) => u._id === item._id)}
             onSelect={(isSelected) => handleSelect(item, isSelected)}
+            isPreExisting={existingUserIds.has(item._id)}
           />
         )}
         keyExtractor={(item) => item._id}

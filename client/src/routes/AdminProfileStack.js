@@ -12,6 +12,7 @@ import ViewCollage from "../pages/Collage/Screens/ViewCollage";
 import CameraStack from "./CameraStack";
 import AddUsersToPrivacyGroup from "../pages/Profile/Screens/AddUsersToPrivacyGroup";
 import CreatePrivacyGroup from "../pages/Profile/Screens/CreatePrivacyGroup";
+import InviteFriends from "../pages/Profile/Screens/InviteFriends";
 
 const Stack = createNativeStackNavigator();
 
@@ -87,6 +88,11 @@ export default function AdminProfileStack() {
       <Stack.Screen
         name="CameraStack"
         component={CameraStack}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="InviteFriends"
+        component={InviteFriends}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

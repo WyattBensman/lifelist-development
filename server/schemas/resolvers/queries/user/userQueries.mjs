@@ -127,7 +127,11 @@ export const getUserSettingsInformation = async (_, __, { user }) => {
 
 export const getAllUsers = async (_, { limit, offset }) => {
   try {
-    const users = await User.find({}).skip(offset).limit(limit).exec();
+    const users = await User.find({})
+      .skip(offset)
+      .limit(limit)
+      .select("_id fullName email phoneNumber username profilePicture")
+      .exec();
     return users;
   } catch (error) {
     throw new Error("Failed to fetch users");

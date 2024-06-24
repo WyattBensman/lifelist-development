@@ -116,7 +116,10 @@ export default function AdminOptionsPopup({
             weight={"semibold"}
           />
         </Pressable>
-        <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
+        <Pressable
+          style={[popupStyles.cardContainer, layoutStyles.flex]}
+          onPress={() => handleNavigate("InviteFriends")}
+        >
           <View style={layoutStyles.flexRow}>
             <IconStatic name="envelope.circle" style={iconStyles.popupIcon} />
             <Text style={[popupStyles.spacer, styles.text]}>
@@ -128,7 +131,7 @@ export default function AdminOptionsPopup({
             style={iconStyles.forwardArrow}
             weight={"semibold"}
           />
-        </View>
+        </Pressable>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
           <View style={layoutStyles.flexRow}>
             <IconStatic

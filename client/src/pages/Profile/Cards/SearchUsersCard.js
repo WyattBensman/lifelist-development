@@ -1,17 +1,31 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Image, Text, View, Pressable, StyleSheet } from "react-native";
 import CheckBox from "expo-checkbox";
 import { BASE_URL } from "../../../utils/config";
 
-export default function SearchUsersCard({ user, isSelected, onSelect }) {
+export default function SearchUsersCard({
+  user,
+  isSelected,
+  onSelect,
+  isPreExisting,
+}) {
   const profilePictureUrl = `${BASE_URL}${user.profilePicture}`;
+  const [isChecked, setIsChecked] = useState(isSelected);
+
+  useEffect(() => {
+    setIsChecked(isSelected);
+  }, [isSelected]);
+
+  const handlePress = () => {
+    if (!isPreExisting) {
+      setIsChecked(!isChecked);
+      onSelect(!isChecked);
+    }
+  };
 
   return (
-    <View style={styles.listItemContainer}>
-      <Pressable
-        onPress={() => onSelect(!isSelected)}
-        style={styles.contentContainer}
-      >
+    <View style={[styles.listItemContainer, isPreExisting && styles.disabled]}>
+      <Pressable onPress={handlePress} style={styles.contentContainer}>
         <Image source={{ uri: profilePictureUrl }} style={styles.imageMd} />
         <View style={styles.textContainer}>
           <Text style={styles.title}>{user.fullName}</Text>
@@ -19,9 +33,10 @@ export default function SearchUsersCard({ user, isSelected, onSelect }) {
         </View>
         <CheckBox
           style={styles.checkbox}
-          value={isSelected}
-          onValueChange={() => onSelect(!isSelected)}
-          color={isSelected ? "#6AB952" : "#d4d4d4"}
+          value={isChecked}
+          onValueChange={handlePress}
+          disabled={isPreExisting}
+          color={isChecked ? "#6AB952" : "#d4d4d4"}
         />
       </Pressable>
     </View>
@@ -54,6 +69,7 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+    marginLeft: 12,
   },
   title: {
     fontWeight: "600",
@@ -70,5 +86,8 @@ const styles = StyleSheet.create({
     height: 12,
     width: 12,
     borderRadius: 10,
+  },
+  disabled: {
+    opacity: 0.5,
   },
 });

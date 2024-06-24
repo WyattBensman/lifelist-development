@@ -192,6 +192,8 @@ export const GET_ALL_USERS = gql`
       fullName
       username
       profilePicture
+      phoneNumber
+      email
     }
   }
 `;
