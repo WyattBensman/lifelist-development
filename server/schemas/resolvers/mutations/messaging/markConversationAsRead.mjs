@@ -1,5 +1,5 @@
-import { Conversation, User } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils.auth.mjs";
+import { User } from "../../../../models/index.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const markConversationAsRead = async (_, { conversationId }, { user }) => {
   try {
