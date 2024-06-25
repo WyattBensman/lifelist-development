@@ -2,11 +2,11 @@ import { User, Conversation } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 /* MESSAGING QUERIES */
-export const getUserConversations = async (_, __ /* { user } */) => {
-  /* isUser(user); */
+/* export const getUserConversations = async (_, __, { user }) => {
+  isUser(user);
 
   // Find the authenticated user
-  const currentUser = await User.findById("663a3129e0ffbeff092b81d4").populate(
+  const currentUser = await User.findById(user._id).populate(
     "conversations.conversation"
   );
 
@@ -38,6 +38,36 @@ export const getUserConversations = async (_, __ /* { user } */) => {
     });
 
   return conversations;
+}; */
+
+export const getUserConversations = async (_, __, { user }) => {
+  try {
+    const foundUser = await User.findById(user._id).populate({
+      path: "conversations.conversation",
+      populate: [
+        {
+          path: "participants",
+          select: "_id username fullName profilePicture",
+        },
+        {
+          path: "lastMessage",
+          populate: {
+            path: "sender",
+            select: "_id username fullName profilePicture",
+          },
+        },
+      ],
+    });
+
+    if (!foundUser) {
+      throw new Error("User not found");
+    }
+
+    return foundUser.conversations.map((convo) => convo.conversation);
+  } catch (error) {
+    console.error(error);
+    throw new Error("Error fetching user conversations");
+  }
 };
 
 export const getConversation = async (_, { conversationId }, { user }) => {
