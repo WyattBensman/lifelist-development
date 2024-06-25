@@ -20,7 +20,23 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
 
       await User.updateMany(
         { _id: { $in: [user._id, recipientId] } },
-        { $addToSet: { conversations: conversation._id } }
+        {
+          $addToSet: {
+            conversations: { conversation: conversation._id, isRead: false },
+          },
+        }
+      );
+    } else {
+      await User.updateMany(
+        {
+          _id: { $in: [user._id, recipientId] },
+          "conversations.conversation": { $ne: conversation._id },
+        },
+        {
+          $addToSet: {
+            conversations: { conversation: conversation._id, isRead: false },
+          },
+        }
       );
     }
 
