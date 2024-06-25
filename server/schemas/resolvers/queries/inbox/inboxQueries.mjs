@@ -7,7 +7,7 @@ export const getUserConversations = async (_, __ /* { user } */) => {
 
   // Find the authenticated user
   const currentUser = await User.findById("663a3129e0ffbeff092b81d4").populate(
-    "conversations._id"
+    "conversations.conversation"
   );
 
   if (!currentUser) {
@@ -16,11 +16,11 @@ export const getUserConversations = async (_, __ /* { user } */) => {
 
   // Extract the conversation IDs
   const conversationIds = currentUser.conversations.map(
-    (conversation) => conversation._id
+    (conv) => conv.conversation
   );
 
   // Find and populate the conversations
-  const foundConversations = await Conversation.find({
+  const conversations = await Conversation.find({
     _id: { $in: conversationIds },
   })
     .populate({
@@ -35,10 +35,9 @@ export const getUserConversations = async (_, __ /* { user } */) => {
       path: "participants",
       model: "User",
       select: "_id username fullName profilePicture",
-    })
-    .exec();
+    });
 
-  return foundConversations;
+  return conversations;
 };
 
 export const getConversation = async (_, { conversationId }, { user }) => {

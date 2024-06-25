@@ -27,7 +27,7 @@ type User {
   cameraShots: [CameraShot]
   cameraAlbums: [CameraAlbum]
   notifications: [Notification]
-  conversations: [Conversation]
+  conversations: [UserConversation]
   unreadMessagesCount: Int
   settings: UserSettings
   privacyGroups: [PrivacyGroup]
@@ -71,6 +71,11 @@ type User {
     sender: User
     content: String!
     sentAt: Date
+  }
+
+  type UserConversation {
+    conversation: Conversation
+    isRead: Boolean
   }
 
   type Notification {
