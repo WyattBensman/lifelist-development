@@ -2,7 +2,7 @@ import { User, Conversation } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 /* MESSAGING QUERIES */
-export const getUserConversations = async (_, __, { user }) => {
+export const getUserConversations = async (_, __ /* { user } */) => {
   /* isUser(user); */
   const user = User.findById("663a3129e0ffbeff092b81d4");
 
