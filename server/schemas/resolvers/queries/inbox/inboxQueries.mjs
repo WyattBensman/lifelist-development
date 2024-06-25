@@ -4,11 +4,22 @@ import { isUser } from "../../../../utils/auth.mjs";
 /* MESSAGING QUERIES */
 export const getUserConversations = async (_, __ /* { user } */) => {
   /* isUser(user); */
-  const user = User.findById("663a3129e0ffbeff092b81d4");
 
-  const conversationIds = user.conversations.map(
+  // Find the authenticated user
+  const currentUser = await User.findById("663a3129e0ffbeff092b81d4").populate(
+    "conversations.conversation"
+  );
+
+  if (!currentUser) {
+    throw new Error("User not found");
+  }
+
+  // Extract the conversation IDs
+  const conversationIds = currentUser.conversations.map(
     (conversation) => conversation.conversation
   );
+
+  // Find and populate the conversations
   const foundConversations = await Conversation.find({
     _id: { $in: conversationIds },
   })
@@ -19,6 +30,11 @@ export const getUserConversations = async (_, __ /* { user } */) => {
         model: "User",
         select: "_id username fullName profilePicture",
       },
+    })
+    .populate({
+      path: "participants",
+      model: "User",
+      select: "_id username fullName profilePicture",
     })
     .exec();
   return foundConversations;
