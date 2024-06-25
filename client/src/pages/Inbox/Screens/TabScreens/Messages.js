@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   FlatList,
   View,
@@ -21,10 +21,14 @@ export default function Messages() {
     }, [refetch])
   );
 
+  useEffect(() => {
+    console.log("Fetched conversations data:", data);
+  }, [data]);
+
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error.message}</Text>;
 
-  const conversations = data.getUserConversations
+  const conversations = data?.getUserConversations
     .filter((conversation) => conversation.lastMessage.sender !== null)
     .sort(
       (a, b) => new Date(b.lastMessage.sentAt) - new Date(a.lastMessage.sentAt)

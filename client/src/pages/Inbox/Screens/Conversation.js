@@ -1,12 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import {
-  View,
-  FlatList,
-  StyleSheet,
-  Text,
-  ActivityIndicator,
-} from "react-native";
+import { View, FlatList, Text, ActivityIndicator } from "react-native";
 import { useMutation, useQuery } from "@apollo/client";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
@@ -32,6 +26,7 @@ export default function Conversation({ route, navigation }) {
   const [createConversation] = useMutation(CREATE_CONVERSATION);
   const [messages, setMessages] = useState([]);
   const flatListRef = useRef(null);
+  const [hasSentMessage, setHasSentMessage] = useState(false);
 
   useFocusEffect(() => {
     setIsTabBarVisible(false);
@@ -57,10 +52,12 @@ export default function Conversation({ route, navigation }) {
       },
     };
 
-    setMessages((prevMessages) => [newMessage, ...prevMessages]);
+    setMessages((prevMessages) => [...prevMessages, newMessage]);
+    setHasSentMessage(true); // Mark that a message has been sent
 
+    // Scroll to the bottom after sending a message
     if (flatListRef.current) {
-      flatListRef.current.scrollToOffset({ offset: 0, animated: true });
+      flatListRef.current.scrollToEnd({ animated: true });
     }
 
     try {
@@ -82,6 +79,15 @@ export default function Conversation({ route, navigation }) {
       setMessages((prevMessages) =>
         prevMessages.filter((message) => message._id !== newMessage._id)
       );
+      setHasSentMessage(false); // Reset if message send fails
+    }
+  };
+
+  const handleBackPress = () => {
+    if (hasSentMessage) {
+      navigation.navigate("Messages");
+    } else {
+      navigation.goBack();
     }
   };
 
@@ -94,7 +100,7 @@ export default function Conversation({ route, navigation }) {
         arrow={
           <Icon
             name="chevron.backward"
-            onPress={() => navigation.goBack()}
+            onPress={handleBackPress}
             style={iconStyles.backArrow}
             weight="semibold"
           />
@@ -120,18 +126,12 @@ export default function Conversation({ route, navigation }) {
           />
         )}
         keyExtractor={(item) => item._id}
-        inverted
+        onContentSizeChange={() =>
+          flatListRef.current.scrollToEnd({ animated: true })
+        }
+        onLayout={() => flatListRef.current.scrollToEnd({ animated: true })}
       />
       <ChatInputBar onSendMessage={handleSendMessage} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  messageContainer: {
-    marginVertical: 10,
-  },
-  messageText: {
-    color: "#fff",
-  },
-});
