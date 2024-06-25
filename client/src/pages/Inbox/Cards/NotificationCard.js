@@ -1,8 +1,9 @@
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
-import { cardStyles, layoutStyles } from "../../../styles";
+import { layoutStyles } from "../../../styles";
 import { truncateText } from "../../../utils/utils";
 import { BASE_URL } from "../../../utils/config";
+import { formatDate } from "../../../utils/utils";
 
 export default function NotificationCard({
   senderName,
@@ -25,9 +26,7 @@ export default function NotificationCard({
             <Text style={styles.secondaryText}>{truncatedMessage}</Text>
           </View>
         </View>
-        <Text style={styles.date}>
-          {new Date(createdAt).toLocaleTimeString()}
-        </Text>
+        <Text style={styles.date}>{formatDate(createdAt)}</Text>
       </View>
     </View>
   );

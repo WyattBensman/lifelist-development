@@ -10,13 +10,11 @@ const sendMessage = async (
   try {
     isUser(user);
 
-    // Create the new message
     const newMessage = await Message.create({
       sender: user._id,
       content,
     });
 
-    // Add the new message to the conversation
     const updatedConversation = await Conversation.findByIdAndUpdate(
       conversationId,
       {
@@ -26,21 +24,18 @@ const sendMessage = async (
       { new: true, runValidators: true }
     ).populate("messages");
 
-    // Find the recipient directly using recipientId
     const recipient = await User.findById(recipientId);
 
     if (!recipient) {
       throw new Error("Recipient not found.");
     }
 
-    // Check if the recipient removed the conversation
     const recipientRemoved = await User.exists({
       _id: recipient._id,
       "conversations.conversation": conversationId,
     });
 
     if (recipientRemoved) {
-      // If the recipient removed the conversation, add it back to their conversations array
       await User.updateOne(
         { _id: recipient._id },
         {
@@ -55,10 +50,7 @@ const sendMessage = async (
     }
 
     await User.updateOne(
-      {
-        _id: user._id,
-        "conversations.conversation": conversationId,
-      },
+      { _id: user._id, "conversations.conversation": conversationId },
       { $set: { "conversations.$.isRead": true } }
     );
 
@@ -74,10 +66,17 @@ const sendMessage = async (
       message: `You received a new message from ${user.fullName}`,
     });
 
-    return updatedConversation;
+    return {
+      success: true,
+      message: "Message sent successfully",
+      conversation: updatedConversation,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during message sending.");
+    return {
+      success: false,
+      message: "An error occurred during message sending.",
+    };
   }
 };
 

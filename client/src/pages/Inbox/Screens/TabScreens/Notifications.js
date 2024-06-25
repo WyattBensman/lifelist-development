@@ -8,33 +8,28 @@ import { GET_USER_NOTIFICATIONS } from "../../../../utils/queries";
 
 export default function Notifications() {
   const { data, loading, error } = useQuery(GET_USER_NOTIFICATIONS);
-  console.log(data);
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error.message}</Text>;
 
-  const renderItem = ({ item }) => {
-    if (!item.sender) {
-      return null; // Skip rendering this notification if the sender is null
-    }
+  const notifications = data.getUserNotifications
+    .filter((notification) => notification.sender !== null)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    return (
-      <NotificationCard
-        senderName={item.sender.fullName}
-        senderProfilePicture={item.sender.profilePicture}
-        message={item.message}
-        createdAt={item.createdAt}
-      />
-    );
-  };
+  const renderItem = ({ item }) => (
+    <NotificationCard
+      senderName={item.sender.fullName}
+      senderProfilePicture={item.sender.profilePicture}
+      message={item.message}
+      createdAt={item.createdAt}
+    />
+  );
 
   return (
     <View style={layoutStyles.wrapper}>
       <FriendRequestCount />
       <FlatList
-        data={data.getUserNotifications.filter(
-          (notification) => notification.sender !== null
-        )}
+        data={notifications}
         renderItem={renderItem}
         keyExtractor={(item) => item._id.toString()}
       />

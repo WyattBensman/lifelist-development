@@ -6,7 +6,6 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
   try {
     isUser(user);
 
-    // Find or create the conversation
     let conversation = await Conversation.findOneAndUpdate(
       { participants: { $all: [user._id, recipientId] } },
       {},
@@ -14,20 +13,17 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
     );
 
     if (!conversation) {
-      // If the conversation does not exist, create it
       conversation = new Conversation({
         participants: [user._id, recipientId],
       });
       await conversation.save();
 
-      // Ensure the conversation is in each participant's list
       await User.updateMany(
         { _id: { $in: [user._id, recipientId] } },
         { $addToSet: { conversations: conversation._id } }
       );
     }
 
-    // Create and append the new message
     const newMessage = await Message.create({
       sender: user._id,
       content: message,
@@ -39,7 +35,6 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
     conversation.lastMessage = newMessage;
     await conversation.save();
 
-    // Notify the recipient of the new message
     await createNotification({
       recipientId,
       senderId: user._id,
@@ -47,10 +42,17 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
       message: `You received a new message from ${user.fullName}`,
     });
 
-    return conversation;
+    return {
+      success: true,
+      message: "Conversation created successfully",
+      conversation,
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("Failed to create or update the conversation.");
+    return {
+      success: false,
+      message: "Failed to create or update the conversation.",
+    };
   }
 };
 

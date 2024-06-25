@@ -9,10 +9,10 @@ import {
   Keyboard,
   Pressable,
 } from "react-native";
-import GalleryIcon from "../Icons/GalleryIcon";
-import { formStyling } from "../../../styles/FormStyling";
+import IconStatic from "../../../components/Icons/IconStatic";
+import { iconStyles } from "../../../styles";
 
-export default function ChatInputBar() {
+export default function ChatInputBar({ onSendMessage }) {
   const [message, setMessage] = useState("");
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
@@ -32,10 +32,17 @@ export default function ChatInputBar() {
     };
   }, []);
 
+  const handleSend = () => {
+    if (message.trim()) {
+      onSendMessage(message);
+      setMessage("");
+    }
+  };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ position: "absolute", left: 0, right: 0, bottom: 0 }}
+      style={styles.keyboardAvoidingView}
     >
       <View
         style={[
@@ -44,19 +51,22 @@ export default function ChatInputBar() {
         ]}
       >
         <Pressable style={styles.iconContainer}>
-          <GalleryIcon />
+          <IconStatic
+            name="photo.on.rectangle"
+            style={iconStyles.sendImage}
+            weight="bold"
+            onPress={() => console.log("Gallery Icon Pressed")}
+          />
         </Pressable>
         <TextInput
-          style={formStyling.input}
+          style={styles.input}
           value={message}
           onChangeText={setMessage}
           placeholder="Type a message..."
+          placeholderTextColor="#696969"
         />
-        <Pressable
-          style={styles.sendContainer}
-          onPress={() => console.log("Send message:", message)}
-        >
-          <Text>Send</Text>
+        <Pressable style={styles.sendContainer} onPress={handleSend}>
+          <Text style={styles.sendText}>Send</Text>
         </Pressable>
       </View>
     </KeyboardAvoidingView>
@@ -64,14 +74,22 @@ export default function ChatInputBar() {
 }
 
 const styles = StyleSheet.create({
+  keyboardAvoidingView: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "#121212",
+  },
   container: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 16,
+    paddingBottom: 40,
     paddingHorizontal: 16,
-    paddingBottom: 25,
     borderTopColor: "#D4D4D4",
     borderTopWidth: 1,
+    backgroundColor: "#1C1C1C",
   },
   containerKeyboardActive: {
     paddingBottom: 0,
@@ -79,9 +97,24 @@ const styles = StyleSheet.create({
   iconContainer: {
     marginRight: 16,
     height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    backgroundColor: "#252525",
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    color: "#FFFFFF",
   },
   sendContainer: {
     marginLeft: 16,
-    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  sendText: {
+    color: "#6AB952",
+    fontWeight: "600",
   },
 });

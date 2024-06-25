@@ -1,9 +1,9 @@
 import { View, Pressable, Text, StyleSheet } from "react-native";
 import IconLarge from "../Icons/IconLarge";
 
-const DropdownMenu = ({ items }) => {
+const DropdownMenu = ({ items, containerStyle }) => {
   return (
-    <View style={styles.dropdownContainer}>
+    <View style={[styles.dropdownContainer, containerStyle]}>
       {items.map((item, index) => (
         <Pressable
           key={index}

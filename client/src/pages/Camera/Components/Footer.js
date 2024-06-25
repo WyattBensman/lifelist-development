@@ -1,4 +1,3 @@
-// src/components/Footer.js
 import React from "react";
 import { View, StyleSheet, Text, Pressable, Animated } from "react-native";
 import { useMutation } from "@apollo/client";
@@ -10,9 +9,8 @@ import FlashOutlineIcon from "../Icons/FlashOutlineIcon";
 import FlashSolidIcon from "../Icons/FlashSolidIcon";
 import FlipCameraIcon from "../Icons/FlipCameraIcon";
 import * as FileSystem from "expo-file-system";
-import Icon from "../../../icons/Icon";
-import { iconStyles } from "../../../styles/iconStyles";
 import IconLarge from "../../../components/Icons/IconLarge";
+import { iconStyles } from "../../../styles/iconStyles";
 
 export default function Footer({
   cameraRef,
@@ -23,13 +21,14 @@ export default function Footer({
   toggleCameraFacing,
   handleZoomChange,
   footerHeight,
+  disabled,
 }) {
   const navigation = useNavigation();
   const { updateCurrentUser } = useAuth();
   const [createCameraShot] = useMutation(CREATE_CAMERA_SHOT);
 
   const handleTakePhoto = async () => {
-    if (cameraRef.current) {
+    if (cameraRef.current && !disabled) {
       try {
         const photo = await cameraRef.current.takePictureAsync();
         const file = await convertToFile(photo.uri, "photo.jpg");
@@ -68,23 +67,34 @@ export default function Footer({
   };
 
   const navigateToCameraRoll = () => {
-    navigation.navigate("CameraRoll");
+    if (!disabled) {
+      navigation.navigate("CameraRoll");
+    }
   };
+
   const navigateToDevelopingRoll = () => {
-    navigation.navigate("DevelopingRoll");
+    if (!disabled) {
+      navigation.navigate("DevelopingRoll");
+    }
   };
 
   const [zoomLevel, setZoomLevel] = React.useState(1);
 
   const handleZoomPress = (zoom) => {
-    setZoomLevel(zoom);
-    handleZoomChange(zoom);
+    if (!disabled) {
+      setZoomLevel(zoom);
+      handleZoomChange(zoom);
+    }
   };
 
   return (
     <View style={[styles.wrapper, { height: footerHeight }]}>
-      <View style={styles.row}>
-        <Pressable onPress={toggleFlash} style={styles.rowIcon}>
+      <View style={[styles.row, disabled && styles.disabled]}>
+        <Pressable
+          onPress={toggleFlash}
+          style={styles.rowIcon}
+          disabled={disabled}
+        >
           {flash === "off" ? <FlashOutlineIcon /> : <FlashSolidIcon />}
         </Pressable>
         <View style={styles.zoomContainer}>
@@ -93,12 +103,15 @@ export default function Footer({
             style={[
               styles.zoomButton,
               zoomLevel === 0.5 && styles.activeZoomButton,
+              disabled && styles.disabledButton,
             ]}
+            disabled={disabled}
           >
             <Text
               style={[
                 styles.zoomText,
                 zoomLevel === 0.5 && styles.activeZoomText,
+                disabled && styles.disabledText,
               ]}
             >
               0.5x
@@ -109,12 +122,15 @@ export default function Footer({
             style={[
               styles.zoomButton,
               zoomLevel === 1 && styles.activeZoomButton,
+              disabled && styles.disabledButton,
             ]}
+            disabled={disabled}
           >
             <Text
               style={[
                 styles.zoomText,
                 zoomLevel === 1 && styles.activeZoomText,
+                disabled && styles.disabledText,
               ]}
             >
               1x
@@ -125,19 +141,26 @@ export default function Footer({
             style={[
               styles.zoomButton,
               zoomLevel === 3 && styles.activeZoomButton,
+              disabled && styles.disabledButton,
             ]}
+            disabled={disabled}
           >
             <Text
               style={[
                 styles.zoomText,
                 zoomLevel === 3 && styles.activeZoomText,
+                disabled && styles.disabledText,
               ]}
             >
               3x
             </Text>
           </Pressable>
         </View>
-        <Pressable onPress={toggleCameraFacing} style={styles.rowIcon}>
+        <Pressable
+          onPress={toggleCameraFacing}
+          style={styles.rowIcon}
+          disabled={disabled}
+        >
           <FlipCameraIcon />
         </Pressable>
       </View>
@@ -146,20 +169,22 @@ export default function Footer({
           <Pressable
             onPress={navigateToCameraRoll}
             style={styles.iconContainer}
+            disabled={disabled}
           >
             <IconLarge
               name="photo"
-              style={iconStyles.photoGallery}
+              style={[iconStyles.photoGallery, disabled && styles.disabledIcon]}
               tintColor="#fff"
               onPress={navigateToCameraRoll}
+              disabled={disabled}
             />
           </Pressable>
         </Animated.View>
         <View style={styles.circleContainer}>
-          <Pressable onPress={handleTakePhoto}>
+          <Pressable onPress={handleTakePhoto} disabled={disabled}>
             <LinearGradient
               colors={["#6AB952", "#5FC4ED"]}
-              style={styles.circleOutline}
+              style={[styles.circleOutline, disabled && styles.disabledCircle]}
             >
               <View style={styles.circle} />
             </LinearGradient>
@@ -169,12 +194,17 @@ export default function Footer({
           <Pressable
             onPress={navigateToDevelopingRoll}
             style={styles.iconContainer}
+            disabled={disabled}
           >
             <IconLarge
               name="film"
-              style={iconStyles.inDevelopment}
+              style={[
+                iconStyles.inDevelopment,
+                disabled && styles.disabledIcon,
+              ]}
               tintColor="#fff"
               onPress={navigateToDevelopingRoll}
+              disabled={disabled}
             />
           </Pressable>
         </Animated.View>
@@ -199,6 +229,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 27,
     width: "70%",
+  },
+  disabled: {
+    opacity: 0.5,
   },
   zoomContainer: {
     flexDirection: "row",
@@ -257,10 +290,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  disabledCircle: {
+    opacity: 0.5,
+  },
   circle: {
     width: 60,
     height: 60,
     borderRadius: 50,
     backgroundColor: "#ececec",
+  },
+  disabledIcon: {
+    opacity: 0.5,
+  },
+  disabledButton: {
+    opacity: 0.5,
+  },
+  disabledText: {
+    color: "#696969",
   },
 });

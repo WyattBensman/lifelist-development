@@ -430,11 +430,11 @@ type User {
     removeUsersFromPrivacyGroup(privacyGroupId: ID!, userIds: [ID]!): PrivacyGroup
 
     # Messaging Mutations
-    createConversation(recipientId: ID!, message: String): Conversation
-    sendMessage(conversationId: ID!, recipientId: ID, content: String): Conversation
-    deleteMessage(conversationId: ID!, messageId: ID!): Conversation
-    markConversationAsRead(conversationId: ID!): Conversation
-    deleteConversation(conversationId: ID!): [Conversation]
+    createConversation(recipientId: ID!, message: String): StandardResponse
+    sendMessage(conversationId: ID!, recipientId: ID, content: String): StandardResponse
+    deleteMessage(conversationId: ID!, messageId: ID!): StandardResponse
+    markConversationAsRead(conversationId: ID!): StandardResponse
+    deleteConversation(conversationId: ID!): StandardResponse
 
     # Notification Mutations
     createNotification(

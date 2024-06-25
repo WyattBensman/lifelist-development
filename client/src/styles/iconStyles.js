@@ -176,6 +176,10 @@ export const iconStyles = StyleSheet.create({
     height: 18.85,
     width: 20,
   },
+  sendImage: {
+    height: 19.27,
+    width: 24,
+  },
   //CAMERA
   exit: {
     height: 14.5,

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
@@ -16,7 +16,7 @@ export default function Inbox() {
   const { setIsTabBarVisible } = useNavigationContext();
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
+  useFocusEffect(() => {
     setIsTabBarVisible(false);
     return () => setIsTabBarVisible(true);
   }, [setIsTabBarVisible]);
@@ -37,7 +37,7 @@ export default function Inbox() {
         button1={
           <Icon
             name="plus.message"
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate("SearchNewConversation")}
             style={iconStyles.newConversation}
             weight="semibold"
           />
@@ -45,7 +45,7 @@ export default function Inbox() {
         button2={
           <Icon
             name="person.badge.plus"
-            onPress={() => navigation.goBack()}
+            onPress={() => navigation.navigate("SearchNewConversation")}
             style={iconStyles.addFriends}
             weight="semibold"
           />

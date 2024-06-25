@@ -1,3 +1,5 @@
+import { formatDistanceToNow, format } from "date-fns";
+
 export function truncateText(text, maxLength) {
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 }
@@ -17,4 +19,15 @@ export const capitalizeTextNoSlice = (text) => {
     return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
   }
   return text.toUpperCase();
+};
+
+export const formatDate = (date) => {
+  const tenDaysAgo = new Date();
+  tenDaysAgo.setDate(tenDaysAgo.getDate() - 10);
+
+  if (new Date(date) < tenDaysAgo) {
+    return format(new Date(date), "MM/dd/yyyy");
+  } else {
+    return `${formatDistanceToNow(new Date(date))} ago`;
+  }
 };

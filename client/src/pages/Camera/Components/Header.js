@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { Animated, Pressable, StyleSheet, Text, View } from "react-native";
 import { layoutStyles } from "../../../styles/LayoutStyles";
 import { useNavigation } from "@react-navigation/native";
@@ -11,9 +11,13 @@ import { iconStyles } from "../../../styles/iconStyles";
 
 const IconFiller = () => <View style={{ width: 35, height: 35 }} />;
 
-export default function Header({ cameraType, onSelectCameraType }) {
+export default function Header({
+  cameraType,
+  onSelectCameraType,
+  showOptions,
+  onToggleOptions,
+}) {
   const navigation = useNavigation();
-  const [showOptions, setShowOptions] = useState(false);
   const rotateArrowAnim = useRef(new Animated.Value(0)).current;
   const heightAnim = useRef(new Animated.Value(0)).current;
 
@@ -40,13 +44,9 @@ export default function Header({ cameraType, onSelectCameraType }) {
     navigation.goBack();
   };
 
-  const handleToggleOptions = () => {
-    setShowOptions((prev) => !prev);
-  };
-
   const handleSelectOption = (type) => {
     onSelectCameraType(type);
-    setShowOptions(false);
+    onToggleOptions();
   };
 
   const getIconColor = (type) => (cameraType === type ? "#5FC4ED" : "#ffffff");
@@ -65,17 +65,8 @@ export default function Header({ cameraType, onSelectCameraType }) {
           />
           <IconFiller />
         </View>
-        {/* {!showOptions && (
-          <View style={[styles.sideContainer, styles.rightContainer]}>
-            <Text style={{ color: "#fff", fontWeight: "600" }}>5 </Text>
-            <Text style={{ color: "#fff", fontSize: 12 }}>Shots Left</Text>
-          </View>
-        )} */}
         <View style={[styles.titleContainer, layoutStyles.flexRow]}>
-          <Pressable
-            onPress={handleToggleOptions}
-            style={styles.titlePressable}
-          >
+          <Pressable onPress={onToggleOptions} style={styles.titlePressable}>
             <Text style={styles.header} numberOfLines={1} ellipsizeMode="tail">
               {cameraType}
             </Text>
@@ -205,7 +196,7 @@ const styles = StyleSheet.create({
   },
   centerOptionContainer: {
     justifyContent: "center",
-    flex: 1, // Adjust the flex value to center the middle option
+    flex: 1,
   },
   option: {
     color: "#ffffff",

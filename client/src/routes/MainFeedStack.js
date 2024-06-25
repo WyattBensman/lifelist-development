@@ -7,6 +7,7 @@ import Media from "../pages/CreateCollage/Screens/Media";
 import Overview from "../pages/CreateCollage/Screens/Overview";
 import Preview from "../pages/CreateCollage/Screens/Preview";
 import ProfileStack from "./ProfileStack";
+import SearchNewConversation from "../pages/Inbox/Screens/SearchNewConversation";
 
 const Stack = createNativeStackNavigator();
 
@@ -38,6 +39,11 @@ export default function MainFeedStack() {
       <Stack.Screen
         name="Conversation"
         component={Conversation}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SearchNewConversation"
+        component={SearchNewConversation}
         options={{ headerShown: false }}
       />
       <Stack.Screen

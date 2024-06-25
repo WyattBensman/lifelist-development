@@ -1,11 +1,9 @@
-// /screens/InviteFriends.js
-
 import React, { useState, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import * as Contacts from "expo-contacts";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_USERS } from "../../../utils/queries/userQueries";
-import { layoutStyles, iconStyles } from "../../../styles";
+import { layoutStyles, iconStyles, headerStyles } from "../../../styles";
 import Icon from "../../../components/Icons/Icon";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useNavigation } from "@react-navigation/native";
@@ -38,9 +36,10 @@ export default function InviteFriends() {
 
   useEffect(() => {
     if (allUsersData && contacts.length > 0) {
-      const registeredPhones = allUsersData.getAllUsers.map((user) =>
-        user.phoneNumber.replace(/[^0-9]/g, "")
-      );
+      const registeredPhones = allUsersData.getAllUsers
+        .filter((user) => user.phoneNumber) // Filter out users without phone numbers
+        .map((user) => user.phoneNumber.replace(/[^0-9]/g, ""));
+
       const registered = contacts.filter(
         (contact) =>
           contact.phoneNumbers &&
@@ -68,20 +67,26 @@ export default function InviteFriends() {
           />
         }
       />
-      <FlatList
-        data={contacts}
-        renderItem={({ item }) => (
-          <InviteUserCard
-            contact={item}
-            isRegistered={registeredContacts.some((c) => c.id === item.id)}
-          />
-        )}
-        keyExtractor={(item) => item.id}
-      />
+      <View style={styles.listContainer}>
+        <Text style={headerStyles.headerMedium}>From your Contacts</Text>
+        <FlatList
+          data={contacts}
+          renderItem={({ item }) => (
+            <InviteUserCard
+              contact={item}
+              isRegistered={registeredContacts.some((c) => c.id === item.id)}
+            />
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // Add your custom styles here
+  listContainer: {
+    marginTop: 8,
+    marginHorizontal: 16,
+  },
 });

@@ -25,6 +25,7 @@ export default function CameraHome() {
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef(null);
   const [filter, setFilter] = useState(null);
+  const [showHeaderOptions, setShowHeaderOptions] = useState(false);
 
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const screenWidth = Dimensions.get("window").width;
@@ -86,6 +87,10 @@ export default function CameraHome() {
     setZoom(zoomLevel);
   };
 
+  const handleToggleHeaderOptions = () => {
+    setShowHeaderOptions((prev) => !prev);
+  };
+
   return (
     <View style={layoutStyles.wrapper}>
       <Header
@@ -95,6 +100,8 @@ export default function CameraHome() {
         rotation={rotation}
         cameraType={cameraType}
         onSelectCameraType={handleSelectCameraType}
+        showOptions={showHeaderOptions}
+        onToggleOptions={handleToggleHeaderOptions}
       />
       <View style={{ flex: 1 }}>
         <View style={{ height: cameraHeight, width: screenWidth }}>
@@ -129,6 +136,7 @@ export default function CameraHome() {
           toggleCameraFacing={toggleCameraFacing}
           handleZoomChange={handleZoomChange}
           footerHeight={Dimensions.get("window").height - cameraHeight}
+          disabled={showHeaderOptions}
         />
       </View>
     </View>

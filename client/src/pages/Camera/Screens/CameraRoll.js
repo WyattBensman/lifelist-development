@@ -27,6 +27,7 @@ export default function CameraRoll() {
     loading: shotsLoading,
     error: shotsError,
   } = useQuery(GET_ALL_CAMERA_SHOTS);
+  console.log(shotsData);
 
   if (albumsLoading || shotsLoading) return <Text>Loading...</Text>;
   if (albumsError) return <Text>Error: {albumsError.message}</Text>;

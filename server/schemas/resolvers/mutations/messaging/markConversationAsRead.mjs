@@ -1,25 +1,25 @@
 import { Conversation, User } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils/auth.mjs";
+import { isUser } from "../../../../utils.auth.mjs";
 
 const markConversationAsRead = async (_, { conversationId }, { user }) => {
   try {
     isUser(user);
 
-    // Update the current user's conversations array to set isRead to true
     await User.updateOne(
-      {
-        _id: user._id,
-        "conversations.conversation": conversationId,
-      },
+      { _id: user._id, "conversations.conversation": conversationId },
       { $set: { "conversations.$.isRead": true } }
     );
 
-    const conversation = await Conversation.findById(conversationId);
-
-    return conversation;
+    return {
+      success: true,
+      message: "Conversation marked as read successfully",
+    };
   } catch (error) {
     console.error(`Error: ${error.message}`);
-    throw new Error("An error occurred during marking conversation as read.");
+    return {
+      success: false,
+      message: "An error occurred during marking conversation as read.",
+    };
   }
 };
 

@@ -10,23 +10,27 @@ export default function FriendRequestCard({
 }) {
   return (
     <View style={styles.container}>
-      <View style={layoutStyles.flexRowSpace}>
+      <View style={styles.contentContainer}>
         <Image source={{ uri: profilePicture }} style={styles.image} />
-        <View>
-          <Text style={cardStyles.primaryText}>{fullName}</Text>
-          <Text style={cardStyles.secondaryText}>wants to be your friend.</Text>
-        </View>
+        <Pressable style={styles.textContainer} onPress={handleProfilePress}>
+          <Text style={styles.primaryText}>{user.fullName}</Text>
+          <Text style={[styles.secondaryText, { marginTop: 2 }]}>
+            @{user.username}
+          </Text>
+        </Pressable>
       </View>
-      <View style={layoutStyles.flexRow}>
+      <View style={styles.flexRow}>
         <ButtonSmall
           text={"Accept"}
-          textColor={"#ffffff"}
-          backgroundColor={"#5FAF46"}
+          textColor={"#6AB952"}
+          backgroundColor={"#252525"}
+          onPress={toggleModal}
         />
         <ButtonSmall
           text={"Decline"}
-          textColor={"#000000"}
-          backgroundColor={"#ececec"}
+          textColor={"#d4d4d4"}
+          backgroundColor={"#252525"}
+          onPress={toggleModal}
         />
       </View>
     </View>
@@ -35,15 +39,40 @@ export default function FriendRequestCard({
 
 const styles = StyleSheet.create({
   container: {
-    ...cardStyles.userCardContainer,
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginTop: 8,
     marginLeft: 8,
-    marginRight: 8,
+    marginRight: 16,
+    flex: 1,
+    borderRadius: 8,
+  },
+  contentContainer: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   image: {
     height: 50,
     width: 50,
     borderRadius: 4,
-    marginRight: 6,
+  },
+  textContainer: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  primaryText: {
+    fontWeight: "600",
+    color: "#FFFFFF",
+  },
+  secondaryText: {
+    fontSize: 12,
+    color: "#d4d4d4",
+    marginTop: 1.5,
+  },
+  flexRow: {
+    flexDirection: "row",
   },
 });

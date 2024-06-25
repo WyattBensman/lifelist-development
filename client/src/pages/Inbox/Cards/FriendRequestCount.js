@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { layoutStyles } from "../../../styles";
-import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
+import { iconStyles, layoutStyles } from "../../../styles";
+import IconStatic from "../../../components/Icons/IconStatic";
 
 export default function FriendRequestCount() {
   const navigation = useNavigation();
@@ -12,21 +12,29 @@ export default function FriendRequestCount() {
       style={[layoutStyles.flexRowSpace, styling.cardContent]}
     >
       <Text style={styling.cardText}>Friend Request: 6</Text>
-      <ForwardArrowIcon />
+      <IconStatic
+        name="chevron.forward"
+        style={iconStyles.forwardArrow}
+        weight={"semibold"}
+      />
     </Pressable>
   );
 }
 
 const styling = StyleSheet.create({
   cardContent: {
-    marginTop: 12,
-    marginHorizontal: 16,
-    borderRadius: 12,
     paddingHorizontal: 24,
     paddingVertical: 16,
-    backgroundColor: "#fff",
+    borderWidth: 1,
+    borderColor: "#1c1c1c",
   },
   cardText: {
     fontSize: 15,
+    fontWeight: "500",
+    color: "#fff",
+  },
+  seeAllText: {
+    fontSize: 12,
+    color: "#fff",
   },
 });

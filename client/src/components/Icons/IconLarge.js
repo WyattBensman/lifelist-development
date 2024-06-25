@@ -9,16 +9,19 @@ export default function IconLarge({
   tintColor,
   onPress,
   noFill,
-  backgroundColor, // Add backgroundColor prop
+  backgroundColor,
+  disabled,
 }) {
   return (
     <Pressable
       onPress={onPress}
       style={[
         styles.iconContainer,
-        { backgroundColor: backgroundColor || "#252525" }, // Apply backgroundColor if passed, otherwise use default
+        { backgroundColor: backgroundColor || "#252525" },
         noFill && styles.noBackground,
+        disabled && styles.disabled,
       ]}
+      disabled={disabled}
     >
       <SymbolView
         name={name}
@@ -41,5 +44,8 @@ const styles = StyleSheet.create({
   },
   noBackground: {
     backgroundColor: "transparent",
+  },
+  disabled: {
+    opacity: 0.5,
   },
 });

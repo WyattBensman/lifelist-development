@@ -7,11 +7,12 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useQuery } from "@apollo/client";
-import { layoutStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import FriendRequestCard from "../Cards/FriendRequestCard";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { GET_FOLLOW_REQUESTS } from "../../../utils/queries";
+import Icon from "../../../components/Icons/Icon";
 
 export default function FriendRequest({ navigation }) {
   const { data, loading, error } = useQuery(GET_FOLLOW_REQUESTS);
@@ -30,8 +31,23 @@ export default function FriendRequest({ navigation }) {
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
-        arrow={<BackArrowIcon navigation={navigation} />}
         title={"Friend Request"}
+        arrow={
+          <Icon
+            name="chevron.backward"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.backArrow}
+            weight="semibold"
+          />
+        }
+        button1={
+          <Icon
+            name="person.badge.plus"
+            onPress={() => navigation.goBack()}
+            style={iconStyles.addFriends}
+            weight="semibold"
+          />
+        }
       />
       <FlatList
         data={data.getFollowRequests.filter((request) => request !== null)}

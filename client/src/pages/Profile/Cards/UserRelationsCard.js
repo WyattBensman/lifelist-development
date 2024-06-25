@@ -75,10 +75,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  profileContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
   imageMd: {
     height: 50,
     width: 50,
