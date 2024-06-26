@@ -11,7 +11,6 @@ import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries";
 import { UPDATE_ASSOCIATED_SHOTS } from "../../../utils/mutations";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import Icon from "../../../components/Icons/Icon";
 
 export default function ManageShots() {
@@ -23,10 +22,12 @@ export default function ManageShots() {
 
   const [selectedShots, setSelectedShots] = useState([]);
   const [isModified, setIsModified] = useState(false);
+  const [title, setTitle] = useState("Manage Shots");
 
   useEffect(() => {
     if (associatedShots) {
       setSelectedShots(associatedShots.map((shotInfo) => shotInfo.shot));
+      setTitle(associatedShots.length === 0 ? "Add Shots" : "Manage Shots");
     }
   }, [associatedShots]);
 
@@ -87,7 +88,7 @@ export default function ManageShots() {
             weight="semibold"
           />
         }
-        title={"Manage Shots"}
+        title={title}
         button1={
           <Pressable
             onPress={handleSave}

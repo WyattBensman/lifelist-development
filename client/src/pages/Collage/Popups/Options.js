@@ -6,13 +6,67 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  Alert,
 } from "react-native";
+import * as Sharing from "expo-sharing";
+import * as Clipboard from "expo-clipboard";
+import * as SMS from "expo-sms";
+import * as Linking from "expo-linking";
 import { headerStyles, iconStyles } from "../../../styles";
 import BottomPopup from "../../Profile/Popups/BottomPopup";
 import Icon from "../../../components/Icons/Icon";
 import IconLarge from "../../../components/Icons/IconLarge";
+import Instagram from "../Icons/Instagram";
+import Facebook from "../Icons/Facebook";
+import { BASE_URL } from "../../../utils/config";
 
-export default function Options({ visible, onRequestClose, collageId }) {
+export default function Options({
+  visible,
+  onRequestClose,
+  collageId,
+  isSaved,
+  handleSavePress,
+}) {
+  const collageLink = `${BASE_URL}/collage/${collageId}`; // Construct the collage link
+
+  const handleCopyLink = async () => {
+    await Clipboard.setStringAsync(collageLink);
+    Alert.alert("Link copied to clipboard");
+  };
+
+  const handleShareSMS = async () => {
+    const isAvailable = await SMS.isAvailableAsync();
+    if (isAvailable) {
+      await SMS.sendSMSAsync([], collageLink);
+    } else {
+      Alert.alert("SMS is not available on this device");
+    }
+  };
+
+  const handleShareInstagram = async () => {
+    const isAvailable = await Sharing.isAvailableAsync();
+    if (isAvailable) {
+      await Sharing.shareAsync(collageLink, {
+        dialogTitle: "Share to Instagram",
+        mimeType: "text/plain",
+      });
+    } else {
+      Alert.alert("Sharing is not available on this device");
+    }
+  };
+
+  const handleShareFacebook = async () => {
+    const isAvailable = await Sharing.isAvailableAsync();
+    if (isAvailable) {
+      await Sharing.shareAsync(collageLink, {
+        dialogTitle: "Share to Facebook",
+        mimeType: "text/plain",
+      });
+    } else {
+      Alert.alert("Sharing is not available on this device");
+    }
+  };
+
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={228}>
       <KeyboardAvoidingView
@@ -24,15 +78,20 @@ export default function Options({ visible, onRequestClose, collageId }) {
           <View style={[styles.separator, { marginBottom: 16 }]} />
           <View style={styles.contentContainer}>
             <View style={styles.buttonContainer}>
-              <Pressable style={styles.topButtonContainerGreen}>
+              <Pressable
+                style={styles.topButtonContainerGreen}
+                onPress={handleSavePress}
+              >
                 <Icon
-                  name="bookmark"
+                  name={isSaved ? "bookmark.fill" : "bookmark"}
                   style={iconStyles.bookmark}
-                  noFill={true}
+                  noFill={!isSaved}
                   weight={"bold"}
                   tintColor={"#6AB952"}
                 />
-                <Text style={styles.topButtonTextGreen}>Save</Text>
+                <Text style={styles.topButtonTextGreen}>
+                  {isSaved ? "Unsave" : "Save"}
+                </Text>
               </Pressable>
               <Pressable style={styles.topButtonContainerRed}>
                 <Icon
@@ -45,44 +104,41 @@ export default function Options({ visible, onRequestClose, collageId }) {
                 <Text style={styles.topButtonTextRed}>Report</Text>
               </Pressable>
             </View>
-            {/* <View style={[styles.separator, { marginTop: 15 }]} /> */}
             <View style={styles.shareContainer}>
-              <View style={styles.shareButton}>
+              <Pressable style={styles.shareButton} onPress={handleShareSMS}>
                 <IconLarge
                   name="message"
                   style={styles.shareIcon}
                   weight={"semibold"}
                   tintColor={"#ececec"}
+                  onPress={handleShareSMS}
                 />
                 <Text style={styles.shareText}>SMS</Text>
-              </View>
-              <View style={styles.shareButton}>
+              </Pressable>
+              <Pressable style={styles.shareButton} onPress={handleCopyLink}>
                 <IconLarge
                   name="link"
                   style={styles.shareIcon}
                   weight={"semibold"}
                   tintColor={"#ececec"}
+                  onPress={handleCopyLink}
                 />
                 <Text style={styles.shareText}>Copy Link</Text>
-              </View>
-              <View style={styles.shareButton}>
-                <IconLarge
-                  name="message"
-                  style={styles.shareIcon}
-                  weight={"semibold"}
-                  tintColor={"#ececec"}
-                />
+              </Pressable>
+              <Pressable
+                style={styles.shareButton}
+                onPress={handleShareInstagram}
+              >
+                <Instagram onPress={handleShareInstagram} />
                 <Text style={styles.shareText}>Instagram</Text>
-              </View>
-              <View style={styles.shareButton}>
-                <IconLarge
-                  name="link"
-                  style={styles.shareIcon}
-                  weight={"semibold"}
-                  tintColor={"#ececec"}
-                />
+              </Pressable>
+              <Pressable
+                style={styles.shareButton}
+                onPress={handleShareFacebook}
+              >
+                <Facebook onPress={handleShareFacebook} />
                 <Text style={styles.shareText}>Facebook</Text>
-              </View>
+              </Pressable>
             </View>
           </View>
         </View>

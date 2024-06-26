@@ -1,7 +1,7 @@
 import React from "react";
 import { Image, Text, View, StyleSheet, Pressable } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
-import { cardStyles, layoutStyles } from "../../../styles";
+import { cardStyles, iconStyles, layoutStyles } from "../../../styles";
 import { BASE_URL } from "../../../utils/config";
 import { formatDistanceToNow } from "date-fns";
 import Icon from "../../../icons/Icon"; // Ensure the correct import path
@@ -12,7 +12,7 @@ export default function CommentCard({ comment, onDelete }) {
       style={styles.deleteButton}
       onPress={() => onDelete(comment._id)}
     >
-      <Icon name="trash" />
+      <Icon name="trash" tintColor={"#ececec"} style={iconStyles.trash} />
     </Pressable>
   );
 
@@ -57,6 +57,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF3B30",
     justifyContent: "center",
     alignItems: "center",
-    width: 80,
+    width: 100,
   },
 });

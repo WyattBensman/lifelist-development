@@ -22,7 +22,7 @@ export default function PrivacyGroup() {
   const route = useRoute();
   const privacyGroupId = route.params.privacyGroupId;
   const initialEditMode = route.params.editMode || false;
-  const fromCard = route.params.fromCard || false;
+  const fromAddUsers = route.params.fromAddUsers || false;
   const [isEditMode, setIsEditMode] = useState(initialEditMode);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -87,13 +87,11 @@ export default function PrivacyGroup() {
   };
 
   const handleBackPress = () => {
-    if (isEditMode) {
-      if (fromCard) {
-        navigation.navigate("PrivacyGroups");
-      } else {
-        setIsEditMode(false);
-        setSelectedUsers([]);
-      }
+    if (fromAddUsers) {
+      navigation.navigate("PrivacyGroups");
+    } else if (isEditMode) {
+      setIsEditMode(false);
+      setSelectedUsers([]);
     } else {
       navigation.goBack();
     }

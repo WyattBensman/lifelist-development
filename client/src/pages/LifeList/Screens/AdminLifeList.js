@@ -87,7 +87,7 @@ export default function AdminLifeList() {
             screen: "ListView",
             params: {
               editMode: true,
-              fromScreen: "AdminLifeList",
+              fromScreen: "EditExperiences",
             },
           }),
         backgroundColor: "#5FC4ED30", // Add backgroundColor
@@ -121,7 +121,7 @@ export default function AdminLifeList() {
               navigation.navigate("LifeListStack", {
                 screen: "ListView",
                 params: {
-                  fromScreen: "AdminLifeList",
+                  fromScreen: "HeaderIcon",
                 },
               })
             }

@@ -13,8 +13,10 @@ import {
 } from "../../../utils/mutations/messagingMutations";
 import { GET_CONVERSATION } from "../../../utils/queries/inboxQueries";
 import MessageBubble from "../Cards/MessageBubble";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function Conversation({ route, navigation }) {
+  const { currentUser } = useAuth();
   const { user, conversationId } = route.params;
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const { setIsTabBarVisible } = useNavigationContext();
@@ -45,10 +47,10 @@ export default function Conversation({ route, navigation }) {
       content: messageContent,
       sentAt: new Date().toISOString(),
       sender: {
-        _id: user._id,
-        username: user.username,
-        fullName: user.fullName,
-        profilePicture: user.profilePicture,
+        _id: currentUser._id,
+        username: currentUser.username,
+        fullName: currentUser.fullName,
+        profilePicture: currentUser.profilePicture,
       },
     };
 
@@ -85,11 +87,17 @@ export default function Conversation({ route, navigation }) {
 
   const handleBackPress = () => {
     if (hasSentMessage) {
-      navigation.navigate("Messages");
+      navigation.navigate("Inbox");
     } else {
       navigation.goBack();
     }
   };
+
+  const otherParticipant = data?.getConversation?.participants?.find(
+    (participant) => participant._id !== currentUser._id
+  );
+
+  const displayUser = user || otherParticipant;
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error.message}</Text>;
@@ -105,15 +113,7 @@ export default function Conversation({ route, navigation }) {
             weight="semibold"
           />
         }
-        title={user.fullName}
-        button1={
-          <Icon
-            name="ellipsis"
-            style={iconStyles.ellipsis}
-            weight="bold"
-            onPress={() => setDropdownVisible(!dropdownVisible)}
-          />
-        }
+        title={displayUser?.fullName || "Conversation"}
       />
       <FlatList
         ref={flatListRef}
@@ -122,7 +122,7 @@ export default function Conversation({ route, navigation }) {
           <MessageBubble
             key={item._id}
             message={item}
-            isCurrentUser={item.sender._id === user._id}
+            isCurrentUser={item.sender._id === currentUser._id}
           />
         )}
         keyExtractor={(item) => item._id}

@@ -1,9 +1,8 @@
 import { View } from "react-native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import EditProfileNavigator from "../Navigators/EditProfileNavigator";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
-import { useNavigation } from "@react-navigation/native";
-import { useEffect } from "react";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useCallback, useEffect } from "react";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import Icon from "../../../components/Icons/Icon";

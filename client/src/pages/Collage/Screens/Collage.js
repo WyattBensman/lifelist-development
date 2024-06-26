@@ -307,6 +307,8 @@ export default function Collage({
         visible={showOptions}
         onRequestClose={() => setShowOptions(false)}
         collageId={collageId}
+        isSaved={isSaved}
+        handleSavePress={handleSavePress}
       />
     </View>
   );

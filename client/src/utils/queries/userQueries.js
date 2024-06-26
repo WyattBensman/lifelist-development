@@ -147,6 +147,8 @@ export const GET_USER_PROFILE_INFORMATION = gql`
       fullName
       username
       bio
+      birthday
+      gender
     }
   }
 `;

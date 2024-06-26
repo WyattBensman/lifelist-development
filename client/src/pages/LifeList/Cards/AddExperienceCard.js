@@ -52,7 +52,7 @@ export default function AddExperienceCard({
               onPress={handleManageShots}
             >
               <Text style={styles.optionsText}>
-                {associatedShots.length === 0 ? "Add Shots" : "Edit Shots"}
+                {associatedShots.length === 0 ? "Add Shots" : "Manage Shots"}
               </Text>
             </Pressable>
           )}

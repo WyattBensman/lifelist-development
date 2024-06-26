@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1C1C1C",
   },
   containerKeyboardActive: {
-    paddingBottom: 0,
+    paddingBottom: 16,
   },
   iconContainer: {
     marginRight: 16,

@@ -319,6 +319,8 @@ type User {
     fullName: String
     username: String
     bio: String
+    birthday: Date
+    gender: String
   }
 
   type UserContactInformation {

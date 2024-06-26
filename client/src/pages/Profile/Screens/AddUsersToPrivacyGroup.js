@@ -44,6 +44,7 @@ export default function AddUsersToPrivacyGroup() {
     onCompleted: () => {
       navigation.navigate("PrivacyGroup", {
         privacyGroupId: privacyGroupId,
+        fromAddUsers: true, // Pass a flag to indicate we came from AddUsersToPrivacyGroup
       });
     },
     onError: (error) => {

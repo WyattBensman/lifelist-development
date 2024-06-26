@@ -8,49 +8,62 @@ import {
   TextInput,
   View,
   Pressable,
-  TouchableOpacity,
 } from "react-native";
 import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
 import { useState, useEffect } from "react";
 import BottomButtonContainer from "../../../../components/Containers/BottomButtonContainer";
 import SolidButton from "../../../../components/SolidButton";
 import OutlinedButton from "../../../../components/OutlinedButton";
-import { useAuth } from "../../../../contexts/AuthContext";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import * as ImagePicker from "expo-image-picker";
 import { UPDATE_PROFILE, UPDATE_IDENTITY } from "../../../../utils/mutations";
+import { GET_USER_PROFILE_INFORMATION } from "../../../../utils/queries"; // import your query
 import { BASE_URL } from "../../../../utils/config";
 import { Picker } from "@react-native-picker/picker";
 import Modal from "react-native-modal";
+import { MaterialIcons } from "@expo/vector-icons"; // Import the icon
 
 export default function EditProfileTab() {
-  const { currentUser, updateCurrentUser } = useAuth();
+  const { loading, error, data } = useQuery(GET_USER_PROFILE_INFORMATION);
   const [changesMade, setChangesMade] = useState(false);
   const [showGenderPicker, setShowGenderPicker] = useState(false);
   const [temporaryGender, setTemporaryGender] = useState("");
 
-  const [fullName, setFullName] = useState(currentUser.fullName || "");
-  const [username, setUsername] = useState(currentUser.username || "");
-  const [bio, setBio] = useState(currentUser.bio || "");
-  const [birthday, setBirthday] = useState(currentUser.birthday || "");
-  const [gender, setGender] = useState(currentUser.gender || "");
-  const [profilePicture, setProfilePicture] = useState(
-    currentUser.profilePicture || ""
-  );
+  const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
+  const [bio, setBio] = useState("");
+  const [birthday, setBirthday] = useState("");
+  const [gender, setGender] = useState("");
+  const [profilePicture, setProfilePicture] = useState("");
 
   const [updateProfileMutation] = useMutation(UPDATE_PROFILE);
   const [updateIdentityMutation] = useMutation(UPDATE_IDENTITY);
 
   useEffect(() => {
-    setChangesMade(
-      fullName !== currentUser.fullName ||
-        username !== currentUser.username ||
-        bio !== currentUser.bio ||
-        birthday !== currentUser.birthday ||
-        gender !== currentUser.gender ||
-        profilePicture !== currentUser.profilePicture
-    );
-  }, [fullName, username, bio, birthday, gender, profilePicture, currentUser]);
+    if (data) {
+      const { getUserProfileInformation } = data;
+      setFullName(getUserProfileInformation.fullName);
+      setUsername(getUserProfileInformation.username);
+      setBio(getUserProfileInformation.bio);
+      setBirthday(getUserProfileInformation.birthday);
+      setGender(getUserProfileInformation.gender);
+      setProfilePicture(getUserProfileInformation.profilePicture);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (data) {
+      const { getUserProfileInformation } = data;
+      setChangesMade(
+        fullName !== getUserProfileInformation.fullName ||
+          username !== getUserProfileInformation.username ||
+          bio !== getUserProfileInformation.bio ||
+          birthday !== getUserProfileInformation.birthday ||
+          gender !== getUserProfileInformation.gender ||
+          profilePicture !== getUserProfileInformation.profilePicture
+      );
+    }
+  }, [fullName, username, bio, birthday, gender, profilePicture, data]);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -69,7 +82,7 @@ export default function EditProfileTab() {
     try {
       const updateProfileVariables = { fullName, username, bio };
 
-      if (profilePicture !== currentUser.profilePicture) {
+      if (profilePicture !== data.getUserProfileInformation.profilePicture) {
         const photo = {
           uri: profilePicture,
           type: "image/jpeg",
@@ -78,12 +91,14 @@ export default function EditProfileTab() {
         updateProfileVariables.profilePicture = photo;
       }
 
+      const capitalize = (str) => str.toUpperCase();
+
       const { data: profileData } = await updateProfileMutation({
         variables: updateProfileVariables,
       });
 
       const { data: identityData } = await updateIdentityMutation({
-        variables: { gender, birthday },
+        variables: { gender: capitalize(gender), birthday },
       });
 
       updateCurrentUser({
@@ -102,14 +117,20 @@ export default function EditProfileTab() {
   };
 
   const discardChanges = () => {
-    setFullName(currentUser.fullName || "");
-    setUsername(currentUser.username || "");
-    setBio(currentUser.bio || "");
-    setBirthday(currentUser.birthday || "");
-    setGender(currentUser.gender || "");
-    setProfilePicture(currentUser.profilePicture || "");
-    setChangesMade(false);
+    if (data) {
+      const { getUserProfileInformation } = data;
+      setFullName(getUserProfileInformation.fullName || "");
+      setUsername(getUserProfileInformation.username || "");
+      setBio(getUserProfileInformation.bio || "");
+      setBirthday(getUserProfileInformation.birthday || "");
+      setGender(getUserProfileInformation.gender || "");
+      setProfilePicture(getUserProfileInformation.profilePicture || "");
+      setChangesMade(false);
+    }
   };
+
+  if (loading) return <Text>Loading...</Text>;
+  if (error) return <Text>Error! {error.message}</Text>;
 
   const profilePictureUrl = `${BASE_URL}${profilePicture}`;
 
@@ -123,7 +144,10 @@ export default function EditProfileTab() {
         keyboardDismissMode="on-drag"
       >
         <Text style={headerStyles.headerMedium}>Profile Information</Text>
-        <View style={[layoutStyles.marginBtmSm, styles.profileContainer]}>
+        <Pressable
+          onPress={pickImage}
+          style={[layoutStyles.marginBtmSm, styles.profileContainer]}
+        >
           <Image
             source={{ uri: profilePictureUrl }}
             style={styles.profilePicture}
@@ -131,7 +155,7 @@ export default function EditProfileTab() {
           <Pressable onPress={pickImage}>
             <Text style={styles.changePictureText}>Change Profile Picture</Text>
           </Pressable>
-        </View>
+        </Pressable>
         <View style={styles.row}>
           <Text style={styles.label}>Name</Text>
           <TextInput
@@ -165,14 +189,29 @@ export default function EditProfileTab() {
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Gender</Text>
-          <TextInput
-            style={styles.input}
-            value={gender ? gender : "Enter your gender"}
-            editable={false}
-            onPressIn={() => {
+          <Pressable
+            style={styles.genderInputContainer}
+            onPress={() => {
               setTemporaryGender(gender); // Initialize temporary gender
               setShowGenderPicker(true);
             }}
+          >
+            <TextInput
+              style={[styles.input, { flex: 1 }]}
+              value={gender ? gender : "Select your gender"}
+              editable={false}
+              placeholderTextColor="#d4d4d4"
+            />
+            <MaterialIcons name="arrow-drop-down" size={24} color="#d4d4d4" />
+          </Pressable>
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.label}>Birthday</Text>
+          <TextInput
+            style={styles.input}
+            value={birthday ? birthday : "Enter your birthday"}
+            onChangeText={setBirthday}
+            placeholderTextColor="#d4d4d4"
           />
         </View>
       </ScrollView>
@@ -210,18 +249,18 @@ export default function EditProfileTab() {
             <Picker.Item label="Select your gender" value="" />
             <Picker.Item label="Male" value="Male" />
             <Picker.Item label="Female" value="Female" />
-            <Picker.Item label="Shiiiii idk" value="Non-binary" />
+            <Picker.Item label="Non-binary" value="Non-binary" />
           </Picker>
           <View style={styles.buttonRow}>
-            <TouchableOpacity
+            <Pressable
               style={styles.discardButton}
               onPress={() => {
                 setShowGenderPicker(false);
               }}
             >
               <Text style={styles.discardButtonText}>Discard</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
               style={styles.confirmButton}
               onPress={() => {
                 setGender(temporaryGender);
@@ -229,7 +268,7 @@ export default function EditProfileTab() {
               }}
             >
               <Text style={styles.confirmButtonText}>Confirm</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </Modal>
@@ -252,7 +291,7 @@ const styles = StyleSheet.create({
   },
   changePictureText: {
     marginLeft: 12,
-    color: "#6AB952",
+    color: "#fff",
     fontWeight: "500",
   },
   row: {
@@ -273,6 +312,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#252525",
+  },
+  genderInputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderBottomColor: "#252525",
+    height: 42,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    backgroundColor: "#1C1C1C",
   },
   modal: {
     justifyContent: "flex-end",

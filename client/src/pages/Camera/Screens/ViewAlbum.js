@@ -8,6 +8,7 @@ import ShotCard from "../Cards/ShotCard";
 import { GET_CAMERA_ALBUM } from "../../../utils/queries/cameraQueries";
 import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
 import Icon from "../../../components/Icons/Icon";
+import NavigableShotCard from "../Cards/NavigableShotCard";
 
 export default function ViewAlbum() {
   const navigation = useNavigation();
@@ -33,7 +34,9 @@ export default function ViewAlbum() {
 
   const album = data.getCameraAlbum;
 
-  const renderShot = ({ item }) => <ShotCard shot={item} />;
+  const renderShot = ({ item }) => (
+    <NavigableShotCard shot={item} navigation={navigation} />
+  );
 
   const toggleDropdown = () => {
     setDropdownVisible(!dropdownVisible);

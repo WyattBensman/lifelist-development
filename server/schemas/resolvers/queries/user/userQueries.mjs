@@ -106,7 +106,10 @@ export const getBlockedUsers = async (_, __, { user }) => {
 
 export const getUserProfileInformation = async (_, __, { user }) => {
   isUser(user);
-  return User.findById(user._id, "profilePicture fullName username bio").exec();
+  return User.findById(
+    user._id,
+    "profilePicture fullName username bio birthday gender"
+  ).exec();
 };
 
 export const getUserContactInformation = async (_, __, { user }) => {

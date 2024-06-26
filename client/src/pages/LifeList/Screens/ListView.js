@@ -73,7 +73,7 @@ export default function ListView({ navigation }) {
   };
 
   const handleBackPress = () => {
-    if (editMode && route.params?.fromScreen === "AdminLifeList") {
+    if (editMode && route.params?.fromScreen === "EditExperiences") {
       navigation.navigate("AdminLifeList");
     } else if (editMode) {
       setEditMode(false);
@@ -126,7 +126,7 @@ export default function ListView({ navigation }) {
         }
         icon1={
           !editMode &&
-          route.params?.fromScreen === "AdminLifeList" && (
+          route.params?.fromScreen === "HeaderIcon" && (
             <Icon
               name="square.and.pencil"
               style={iconStyles.squarePencilSm}

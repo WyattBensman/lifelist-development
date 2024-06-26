@@ -8,6 +8,7 @@ import Overview from "../pages/CreateCollage/Screens/Overview";
 import Preview from "../pages/CreateCollage/Screens/Preview";
 import ProfileStack from "./ProfileStack";
 import SearchNewConversation from "../pages/Inbox/Screens/SearchNewConversation";
+import InviteFriends from "../pages/Profile/Screens/InviteFriends";
 
 const Stack = createNativeStackNavigator();
 
@@ -64,6 +65,11 @@ export default function MainFeedStack() {
       <Stack.Screen
         name="ProfileStack"
         component={ProfileStack}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="InviteFriends"
+        component={InviteFriends}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
