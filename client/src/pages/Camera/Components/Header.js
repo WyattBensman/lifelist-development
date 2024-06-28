@@ -170,11 +170,15 @@ const styles = StyleSheet.create({
   titlePressable: {
     flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#252525",
+    height: 35,
+    borderRadius: 32,
+    paddingRight: 12,
+    paddingLeft: 22,
   },
   header: {
     fontWeight: "700",
     color: "#ffffff",
-    paddingLeft: 20,
   },
   iconGap: {
     marginLeft: 20,

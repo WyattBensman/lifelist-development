@@ -190,6 +190,8 @@ type User {
     createdAt: Date
     comments: [Comment]
     reports: [Report]
+    likes: Int
+    likedBy: [ID]
   }
 
   enum PrivacySetting {
@@ -401,6 +403,9 @@ type User {
     deleteCollage(collageId: ID!): ActionResponse!
     reportCollage(collageId: ID!, reason: ReportReason!): ActionResponse!
     reportComment(commentId: ID!, reason: ReportReason!): ActionResponse!
+    likeComment(commentId: ID!): ActionResponse!
+    unlikeComment(commentId: ID!): ActionResponse!
+  
 
     # LifeList Mutations
     addExperienceToLifeList(

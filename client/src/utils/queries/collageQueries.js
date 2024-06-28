@@ -29,14 +29,16 @@ export const GET_COMMENTS = gql`
   query GetComments($collageId: ID!) {
     getComments(collageId: $collageId) {
       _id
-      text
-      createdAt
       author {
         _id
         username
         fullName
         profilePicture
       }
+      text
+      createdAt
+      likes
+      likedBy
     }
   }
 `;

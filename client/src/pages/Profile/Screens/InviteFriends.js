@@ -1,58 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
-import * as Contacts from "expo-contacts";
-import { useQuery } from "@apollo/client";
-import { GET_ALL_USERS } from "../../../utils/queries/userQueries";
-import { layoutStyles, iconStyles, headerStyles } from "../../../styles";
-import Icon from "../../../components/Icons/Icon";
+import { View } from "react-native";
 import HeaderStack from "../../../components/Headers/HeaderStack";
+import Icon from "../../../components/Icons/Icon";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
+import SearchBarStandard from "../../../components/SearchBars/SearchBarStandard";
+import InviteFriendsNavigator from "../Navigators/InviteFriendsNavigator";
+import { layoutStyles, iconStyles } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
-import InviteUserCard from "../Cards/InviteUserCard";
 
 export default function InviteFriends() {
   const navigation = useNavigation();
-  const [contacts, setContacts] = useState([]);
-  const [registeredContacts, setRegisteredContacts] = useState([]);
-
-  const {
-    data: allUsersData,
-    loading: allUsersLoading,
-    error: allUsersError,
-  } = useQuery(GET_ALL_USERS);
+  const { setIsTabBarVisible } = useNavigationContext();
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Contacts.requestPermissionsAsync();
-      if (status === "granted") {
-        const { data } = await Contacts.getContactsAsync({
-          fields: [Contacts.Fields.PhoneNumbers],
-        });
-        if (data.length > 0) {
-          setContacts(data);
-        }
-      }
-    })();
-  }, []);
-
-  useEffect(() => {
-    if (allUsersData && contacts.length > 0) {
-      const registeredPhones = allUsersData.getAllUsers
-        .filter((user) => user.phoneNumber) // Filter out users without phone numbers
-        .map((user) => user.phoneNumber.replace(/[^0-9]/g, ""));
-
-      const registered = contacts.filter(
-        (contact) =>
-          contact.phoneNumbers &&
-          contact.phoneNumbers.some((phone) =>
-            registeredPhones.includes(phone.number.replace(/[^0-9]/g, ""))
-          )
-      );
-      setRegisteredContacts(registered);
-    }
-  }, [allUsersData, contacts]);
-
-  if (allUsersLoading) return <Text>Loading...</Text>;
-  if (allUsersError) return <Text>Error: {allUsersError.message}</Text>;
+    setIsTabBarVisible(false);
+    return () => setIsTabBarVisible(true);
+  }, [setIsTabBarVisible]);
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -66,27 +30,19 @@ export default function InviteFriends() {
             weight="semibold"
           />
         }
+        hasBorder={false}
       />
-      <View style={styles.listContainer}>
-        <Text style={headerStyles.headerMedium}>From your Contacts</Text>
-        <FlatList
-          data={contacts}
-          renderItem={({ item }) => (
-            <InviteUserCard
-              contact={item}
-              isRegistered={registeredContacts.some((c) => c.id === item.id)}
-            />
-          )}
-          keyExtractor={(item) => item.id}
+      <View
+        style={[layoutStyles.marginSm, { alignSelf: "center", marginTop: 6 }]}
+      >
+        <SearchBarStandard
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSearch={() => {}}
+          onFocusChange={() => {}}
         />
       </View>
+      <InviteFriendsNavigator searchQuery={searchQuery} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  listContainer: {
-    marginTop: 8,
-    marginHorizontal: 16,
-  },
-});

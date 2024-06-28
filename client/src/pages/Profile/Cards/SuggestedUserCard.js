@@ -1,49 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 import { Image, Text, View, StyleSheet, Pressable } from "react-native";
 import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 import { BASE_URL } from "../../../utils/config";
 import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../../../contexts/AuthContext";
 
-export default function InviteUserCard({ contact }) {
-  const profilePictureUrl = contact.imageAvailable
-    ? contact.thumbnailPath
-    : null;
+export default function SuggestedUserCard({
+  user,
+  initialAction,
+  onActionPress,
+  isInContacts,
+}) {
+  const { currentUser } = useAuth();
+  const [action, setAction] = useState(initialAction);
+  const profilePictureUrl = `${BASE_URL}${user.profilePicture}`;
   const navigation = useNavigation();
 
   const handleProfilePress = () => {
-    // Add navigation to contact profile if needed
+    navigation.push("Profile", { userId: user._id });
   };
 
-  const handleInvitePress = () => {
-    // Handle invite action here
+  const handleActionPress = async () => {
+    console.log("Action Button Pressed!");
+    const newAction = await onActionPress(
+      user._id,
+      action,
+      user.isProfilePrivate
+    );
+    setAction(newAction);
   };
 
   return (
     <View style={styles.listItemContainer}>
       <View style={styles.contentContainer}>
-        {profilePictureUrl ? (
-          <Image
-            source={{ uri: profilePictureUrl }}
-            onPress={handleProfilePress}
-            style={styles.imageMd}
-          />
-        ) : (
-          <View style={styles.placeholder} />
-        )}
+        <Image
+          source={{ uri: profilePictureUrl }}
+          onPress={handleProfilePress}
+          style={styles.imageMd}
+        />
         <Pressable style={styles.textContainer} onPress={handleProfilePress}>
-          <Text style={styles.primaryText}>{contact.name}</Text>
+          <Text style={styles.primaryText}>{user.fullName}</Text>
           <Text style={[styles.secondaryText, { marginTop: 2 }]}>
-            {contact.phoneNumbers[0]?.number}
+            {isInContacts ? "In your contacts" : `@${user.username}`}
           </Text>
         </Pressable>
-        <View style={styles.actionButtonContainer}>
-          <ButtonSmall
-            text="Invite"
-            textColor={"#d4d4d4"}
-            backgroundColor={"#252525"}
-            onPress={handleInvitePress}
-          />
-        </View>
+        {currentUser._id !== user._id && (
+          <View style={styles.actionButtonContainer}>
+            <ButtonSmall
+              text={action}
+              textColor={"#d4d4d4"}
+              backgroundColor={"#252525"}
+              onPress={handleActionPress}
+            />
+          </View>
+        )}
       </View>
     </View>
   );
@@ -70,12 +80,6 @@ const styles = StyleSheet.create({
     height: 50,
     width: 50,
     borderRadius: 4,
-  },
-  placeholder: {
-    height: 50,
-    width: 50,
-    borderRadius: 4,
-    backgroundColor: "#ccc",
   },
   textContainer: {
     flex: 1,

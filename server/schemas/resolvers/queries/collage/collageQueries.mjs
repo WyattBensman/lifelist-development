@@ -38,10 +38,16 @@ export const getComments = async (_, { collageId }, { user }) => {
   const collage = await Collage.findById(collageId)
     .populate({
       path: "comments",
-      populate: {
-        path: "author",
-        select: "_id username fullName profilePicture",
-      },
+      populate: [
+        {
+          path: "author",
+          select: "_id username fullName profilePicture",
+        },
+        {
+          path: "likedBy",
+          select: "_id",
+        },
+      ],
     })
     .exec();
   if (!collage) throw new Error("Collage not found.");

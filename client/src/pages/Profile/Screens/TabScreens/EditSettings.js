@@ -11,41 +11,49 @@ import SolidButton from "../../../../components/SolidButton";
 import OutlinedButton from "../../../../components/OutlinedButton";
 import GlobalSwitch from "../../../../components/Switch";
 import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "../../../../contexts/AuthContext";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { UPDATE_SETTINGS } from "../../../../utils/mutations";
-import Icon from "../../../../components/Icons/Icon";
+import { GET_USER_SETTINGS_INFORMATION } from "../../../../utils/queries";
 import IconStatic from "../../../../components/Icons/IconStatic";
 
 export default function EditSettings() {
   const navigation = useNavigation();
-  const { currentUser, updateCurrentUser } = useAuth();
+  const { loading, error, data } = useQuery(GET_USER_SETTINGS_INFORMATION);
 
-  // Initialize state with current user settings
-  const [isPrivate, setIsPrivate] = useState(
-    currentUser.settings.isProfilePrivate
-  );
-  const [isDarkMode, setIsDarkMode] = useState(currentUser.settings.darkMode);
-  const [language, setLanguage] = useState(currentUser.settings.language);
-  const [notifications, setNotifications] = useState(
-    currentUser.settings.notifications
-  );
+  // Initialize state with empty values
+  const [isPrivate, setIsPrivate] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [language, setLanguage] = useState("");
+  const [notifications, setNotifications] = useState(false);
   const [changesMade, setChangesMade] = useState(false);
 
   const [updateSettingsMutation] = useMutation(UPDATE_SETTINGS);
 
   useEffect(() => {
-    setChangesMade(
-      isPrivate !== currentUser.settings.isProfilePrivate ||
-        isDarkMode !== currentUser.settings.darkMode ||
-        language !== currentUser.settings.language ||
-        notifications !== currentUser.settings.notifications
-    );
-  }, [isPrivate, isDarkMode, language, notifications, currentUser]);
+    if (data) {
+      const { getUserSettingsInformation } = data;
+      setIsPrivate(getUserSettingsInformation.isProfilePrivate);
+      setIsDarkMode(getUserSettingsInformation.darkMode);
+      setLanguage(getUserSettingsInformation.language);
+      setNotifications(getUserSettingsInformation.notifications);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (data) {
+      const { getUserSettingsInformation } = data;
+      setChangesMade(
+        isPrivate !== getUserSettingsInformation.isProfilePrivate ||
+          isDarkMode !== getUserSettingsInformation.darkMode ||
+          language !== getUserSettingsInformation.language ||
+          notifications !== getUserSettingsInformation.notifications
+      );
+    }
+  }, [isPrivate, isDarkMode, language, notifications, data]);
 
   const saveChanges = async () => {
     try {
-      const { data } = await updateSettingsMutation({
+      const { data: settingsData } = await updateSettingsMutation({
         variables: {
           isProfilePrivate: isPrivate,
           darkMode: isDarkMode,
@@ -54,14 +62,11 @@ export default function EditSettings() {
         },
       });
 
-      updateCurrentUser({
-        settings: {
-          isProfilePrivate: data.updateSettings.isProfilePrivate,
-          darkMode: data.updateSettings.darkMode,
-          language: data.updateSettings.language,
-          notifications: data.updateSettings.notifications,
-        },
-      });
+      // Manually update the values on the screen
+      setIsPrivate(settingsData.updateSettings.isProfilePrivate);
+      setIsDarkMode(settingsData.updateSettings.darkMode);
+      setLanguage(settingsData.updateSettings.language);
+      setNotifications(settingsData.updateSettings.notifications);
 
       setChangesMade(false);
     } catch (error) {
@@ -70,12 +75,18 @@ export default function EditSettings() {
   };
 
   const discardChanges = () => {
-    setIsPrivate(currentUser.settings.isProfilePrivate);
-    setIsDarkMode(currentUser.settings.darkMode);
-    setLanguage(currentUser.settings.language);
-    setNotifications(currentUser.settings.notifications);
-    setChangesMade(false);
+    if (data) {
+      const { getUserSettingsInformation } = data;
+      setIsPrivate(getUserSettingsInformation.isProfilePrivate);
+      setIsDarkMode(getUserSettingsInformation.darkMode);
+      setLanguage(getUserSettingsInformation.language);
+      setNotifications(getUserSettingsInformation.notifications);
+      setChangesMade(false);
+    }
   };
+
+  if (loading) return <Text>Loading...</Text>;
+  if (error) return <Text>Error! {error.message}</Text>;
 
   return (
     <View style={layoutStyles.wrapper}>

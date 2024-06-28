@@ -101,14 +101,13 @@ export default function EditProfileTab() {
         variables: { gender: capitalize(gender), birthday },
       });
 
-      updateCurrentUser({
-        profilePicture: profileData.updateProfile.profilePicture,
-        fullName: profileData.updateProfile.fullName,
-        username: profileData.updateProfile.username,
-        bio: profileData.updateProfile.bio,
-        gender: identityData.updateIdentity.gender,
-        birthday: identityData.updateIdentity.birthday,
-      });
+      // Manually update the values on the screen
+      setFullName(profileData.updateProfile.fullName);
+      setUsername(profileData.updateProfile.username);
+      setBio(profileData.updateProfile.bio);
+      setProfilePicture(profileData.updateProfile.profilePicture);
+      setGender(identityData.updateIdentity.gender);
+      setBirthday(identityData.updateIdentity.birthday);
 
       setChangesMade(false);
     } catch (error) {
@@ -190,18 +189,15 @@ export default function EditProfileTab() {
         <View style={styles.row}>
           <Text style={styles.label}>Gender</Text>
           <Pressable
-            style={styles.genderInputContainer}
+            style={styles.input}
             onPress={() => {
               setTemporaryGender(gender); // Initialize temporary gender
               setShowGenderPicker(true);
             }}
           >
-            <TextInput
-              style={[styles.input, { flex: 1 }]}
-              value={gender ? gender : "Select your gender"}
-              editable={false}
-              placeholderTextColor="#d4d4d4"
-            />
+            <Text style={{ color: gender ? "#ececec" : "#d4d4d4" }}>
+              {gender ? gender : "Select your gender"}
+            </Text>
             <MaterialIcons name="arrow-drop-down" size={24} color="#d4d4d4" />
           </Pressable>
         </View>
@@ -209,8 +205,9 @@ export default function EditProfileTab() {
           <Text style={styles.label}>Birthday</Text>
           <TextInput
             style={styles.input}
-            value={birthday ? birthday : "Enter your birthday"}
+            value={birthday}
             onChangeText={setBirthday}
+            placeholder="Enter your birthday"
             placeholderTextColor="#d4d4d4"
           />
         </View>
@@ -312,16 +309,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#252525",
-  },
-  genderInputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#252525",
-    height: 42,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    backgroundColor: "#1C1C1C",
+    justifyContent: "space-between", // Space between text and icon
   },
   modal: {
     justifyContent: "flex-end",

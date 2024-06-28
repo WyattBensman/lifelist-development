@@ -153,3 +153,23 @@ export const REPORT_COMMENT = gql`
     }
   }
 `;
+
+export const LIKE_COMMENT = gql`
+  mutation LikeComment($commentId: ID!) {
+    likeComment(commentId: $commentId) {
+      success
+      message
+      action
+    }
+  }
+`;
+
+export const UNLIKE_COMMENT = gql`
+  mutation UnlikeComment($commentId: ID!) {
+    unlikeComment(commentId: $commentId) {
+      success
+      message
+      action
+    }
+  }
+`;

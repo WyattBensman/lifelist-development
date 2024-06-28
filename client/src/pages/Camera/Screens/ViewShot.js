@@ -9,7 +9,7 @@ import {
   Text,
   Animated,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import { iconStyles, layoutStyles } from "../../../styles";
@@ -26,10 +26,21 @@ const imageHeight = width * aspectRatio;
 
 export default function ViewShot() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const { shotId } = route.params;
   const { data, loading, error } = useQuery(GET_ALL_CAMERA_SHOTS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (data) {
+      const initialIndex = data.getAllCameraShots.findIndex(
+        (shot) => shot._id === shotId
+      );
+      setCurrentIndex(initialIndex);
+    }
+  }, [data, shotId]);
 
   if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
   if (error) return <Text>Error: {error.message}</Text>;
@@ -80,20 +91,28 @@ export default function ViewShot() {
 
   const dropdownItems = [
     {
-      icon: "plus",
-      style: iconStyles.addExperience,
-      label: "Add Experiences",
-      onPress: () => console.log("Add Experiences"),
-      backgroundColor: "#6AB95230",
-      tintColor: "#6AB952",
+      icon: "trash",
+      style: iconStyles.deleteIcon,
+      label: "Delete",
+      onPress: () => console.log("Delete"),
+      backgroundColor: "#FF634730",
+      tintColor: "#FF6347",
     },
     {
-      icon: "pencil",
-      label: "Edit Experiences",
-      style: iconStyles.editExperience,
-      onPress: () => console.log("Edit Experiences"),
+      icon: "folder-plus",
+      style: iconStyles.addAlbumIcon,
+      label: "Add to Album",
+      onPress: () => console.log("Add to Album"),
       backgroundColor: "#5FC4ED30",
       tintColor: "#5FC4ED",
+    },
+    {
+      icon: "plus",
+      style: iconStyles.addExperienceIcon,
+      label: "Add to Experience",
+      onPress: () => console.log("Add to Experience"),
+      backgroundColor: "#6AB95230",
+      tintColor: "#6AB952",
     },
   ];
 
@@ -146,6 +165,12 @@ export default function ViewShot() {
           showsHorizontalScrollIndicator={false}
           snapToAlignment="start"
           decelerationRate="fast"
+          initialScrollIndex={currentIndex}
+          getItemLayout={(data, index) => ({
+            length: width,
+            offset: width * index,
+            index,
+          })}
         />
       </View>
       <View style={styles.bottomContainer}>
