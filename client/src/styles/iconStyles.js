@@ -13,6 +13,11 @@ export const iconStyles = StyleSheet.create({
     height: 18.53,
     width: 19.76,
   },
+  likeComment: {
+    height: 14,
+    width: 14.92,
+    marginRight: 6,
+  },
   comment: {
     width: 19.25,
     height: 17.34,

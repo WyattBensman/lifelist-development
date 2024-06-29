@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_COMMENTS } from "../../../utils/queries"; // Ensure correct import path
-import { CREATE_COMMENT, DELETE_COMMENT } from "../../../utils/mutations"; // Import the mutation
+import { CREATE_COMMENT, DELETE_COMMENT } from "../../../utils/mutations"; // Ensure the mutation
 import { headerStyles, layoutStyles, popupStyles } from "../../../styles";
 import BottomPopup from "../../Profile/Popups/BottomPopup";
 import CommentCard from "../Cards/CommentCard";
@@ -34,9 +34,7 @@ export default function Comments({ visible, onRequestClose, collageId }) {
     }
   );
 
-  const [deleteComment] = useMutation(DELETE_COMMENT, {
-    onCompleted: () => refetch(), // Refresh comments after a comment is deleted
-  });
+  const [deleteComment] = useMutation(DELETE_COMMENT);
 
   const handleCommentChange = (text) => {
     setComment(text);
@@ -55,9 +53,18 @@ export default function Comments({ visible, onRequestClose, collageId }) {
   const handleDeleteComment = async (commentId) => {
     try {
       await deleteComment({ variables: { collageId, commentId } });
+      // Manually remove the comment from the local state
+      refetch();
     } catch (error) {
       console.error("Error deleting comment:", error.message);
     }
+  };
+
+  const updateComment = (updatedComment) => {
+    const updatedComments = data.getComments.map((comment) =>
+      comment._id === updatedComment._id ? updatedComment : comment
+    );
+    refetch(); // Refresh comments after a comment is updated
   };
 
   return (
@@ -73,7 +80,11 @@ export default function Comments({ visible, onRequestClose, collageId }) {
             data={data?.getComments || []}
             renderItem={({ item }) => (
               <View style={[layoutStyles.flex, styles.cardContainer]}>
-                <CommentCard comment={item} onDelete={handleDeleteComment} />
+                <CommentCard
+                  comment={item}
+                  onDelete={handleDeleteComment}
+                  onUpdate={updateComment}
+                />
               </View>
             )}
             keyExtractor={(item) => item._id}
