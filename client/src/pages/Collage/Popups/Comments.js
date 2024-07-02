@@ -24,7 +24,6 @@ export default function Comments({ visible, onRequestClose, collageId }) {
     variables: { collageId },
     skip: !visible, // Skip the query if the popup is not visible
   });
-  console.log(data);
 
   useFocusEffect(
     useCallback(() => {
