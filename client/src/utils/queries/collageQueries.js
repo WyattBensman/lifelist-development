@@ -38,7 +38,9 @@ export const GET_COMMENTS = gql`
       text
       createdAt
       likes
-      likedBy
+      likedBy {
+        _id
+      }
     }
   }
 `;

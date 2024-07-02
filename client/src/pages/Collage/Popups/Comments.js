@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   Text,
   View,
@@ -11,6 +11,7 @@ import {
   Platform,
 } from "react-native";
 import { useQuery, useMutation } from "@apollo/client";
+import { useFocusEffect } from "@react-navigation/native";
 import { GET_COMMENTS } from "../../../utils/queries"; // Ensure correct import path
 import { CREATE_COMMENT, DELETE_COMMENT } from "../../../utils/mutations"; // Ensure the mutation
 import { headerStyles, layoutStyles, popupStyles } from "../../../styles";
@@ -23,6 +24,15 @@ export default function Comments({ visible, onRequestClose, collageId }) {
     variables: { collageId },
     skip: !visible, // Skip the query if the popup is not visible
   });
+  console.log(data);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (visible) {
+        refetch();
+      }
+    }, [visible])
+  );
 
   const [createComment, { loading: mutationLoading }] = useMutation(
     CREATE_COMMENT,

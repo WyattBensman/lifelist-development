@@ -15,7 +15,6 @@ export default function CommentCard({ comment, onDelete, onUpdate }) {
     comment.likedBy.includes(currentUser._id)
   );
   const [likeCount, setLikeCount] = useState(comment.likes);
-  console.log(comment._id);
 
   const [likeComment] = useMutation(LIKE_COMMENT, {
     onCompleted: (data) => {
