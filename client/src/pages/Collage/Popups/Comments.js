@@ -12,9 +12,9 @@ import {
 } from "react-native";
 import { useQuery, useMutation } from "@apollo/client";
 import { useFocusEffect } from "@react-navigation/native";
-import { GET_COMMENTS } from "../../../utils/queries"; // Ensure correct import path
-import { CREATE_COMMENT, DELETE_COMMENT } from "../../../utils/mutations"; // Ensure the mutation
-import { headerStyles, layoutStyles, popupStyles } from "../../../styles";
+import { GET_COMMENTS } from "../../../utils/queries";
+import { CREATE_COMMENT, DELETE_COMMENT } from "../../../utils/mutations";
+import { headerStyles, layoutStyles } from "../../../styles";
 import BottomPopup from "../../Profile/Popups/BottomPopup";
 import CommentCard from "../Cards/CommentCard";
 
@@ -30,7 +30,7 @@ export default function Comments({ visible, onRequestClose, collageId }) {
       if (visible) {
         refetch();
       }
-    }, [visible])
+    }, [visible, refetch])
   );
 
   const [createComment, { loading: mutationLoading }] = useMutation(
@@ -62,8 +62,7 @@ export default function Comments({ visible, onRequestClose, collageId }) {
   const handleDeleteComment = async (commentId) => {
     try {
       await deleteComment({ variables: { collageId, commentId } });
-      // Manually remove the comment from the local state
-      refetch();
+      refetch(); // Refresh comments after a comment is deleted
     } catch (error) {
       console.error("Error deleting comment:", error.message);
     }
@@ -85,23 +84,29 @@ export default function Comments({ visible, onRequestClose, collageId }) {
         <View style={styles.popupContainer}>
           <Text style={headerStyles.headerMedium}>Comments</Text>
           <View style={styles.separator} />
-          <FlatList
-            data={data?.getComments || []}
-            renderItem={({ item }) => (
-              <View style={[layoutStyles.flex, styles.cardContainer]}>
-                <CommentCard
-                  comment={item}
-                  onDelete={handleDeleteComment}
-                  onUpdate={updateComment}
-                />
-              </View>
-            )}
-            keyExtractor={(item) => item._id}
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>No comments yet.</Text>
-            }
-            contentContainerStyle={styles.flatListContent}
-          />
+          {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : error ? (
+            <Text>Error: {error.message}</Text>
+          ) : (
+            <FlatList
+              data={data?.getComments || []}
+              renderItem={({ item }) => (
+                <View style={[layoutStyles.flex, styles.cardContainer]}>
+                  <CommentCard
+                    comment={item}
+                    onDelete={handleDeleteComment}
+                    onUpdate={updateComment}
+                  />
+                </View>
+              )}
+              keyExtractor={(item) => item._id}
+              ListEmptyComponent={
+                <Text style={styles.emptyText}>No comments yet.</Text>
+              }
+              contentContainerStyle={styles.flatListContent}
+            />
+          )}
         </View>
         <View style={styles.inputContainer}>
           <TextInput
