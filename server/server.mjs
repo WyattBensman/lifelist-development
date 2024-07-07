@@ -39,6 +39,16 @@ const server = new ApolloServer({
     await authMiddleware(req);
     return { user: req.user };
   },
+  formatError: (err) => {
+    // Log detailed error information
+    console.error(`Error: ${err.message}`);
+    console.error(`Locations: ${JSON.stringify(err.locations)}`);
+    console.error(`Path: ${err.path}`);
+    if (err.originalError) {
+      console.error(`Original Error: ${err.originalError}`);
+    }
+    return err;
+  },
 });
 
 // Middleware for file uploads

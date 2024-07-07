@@ -34,24 +34,38 @@ export const getCollageById = async (_, { collageId }, { user }) => {
 };
 
 export const getComments = async (_, { collageId }, { user }) => {
-  isUser(user);
-  const collage = await Collage.findById(collageId)
-    .populate({
-      path: "comments",
-      populate: [
-        {
-          path: "author",
-          select: "_id username fullName profilePicture",
-        },
-        {
-          path: "likedBy",
-          select: "_id",
-        },
-      ],
-    })
-    .exec();
-  if (!collage) throw new Error("Collage not found.");
-  return collage.comments || [];
+  try {
+    isUser(user);
+    console.log(`Fetching comments for collageId: ${collageId}`);
+    const collage = await Collage.findById(collageId)
+      .populate({
+        path: "comments",
+        populate: [
+          {
+            path: "author",
+            select: "_id username fullName profilePicture",
+          },
+          {
+            path: "likedBy",
+            select: "_id",
+          },
+        ],
+      })
+      .exec();
+
+    if (!collage) {
+      console.error(`Collage not found for ID: ${collageId}`);
+      throw new Error("Collage not found.");
+    }
+
+    console.log(`Comments fetched successfully for collageId: ${collageId}`);
+    return collage.comments || [];
+  } catch (error) {
+    console.error(
+      `Error fetching comments for collageId: ${collageId} - ${error.message}`
+    );
+    throw new Error(error.message);
+  }
 };
 
 export const getTaggedUsers = async (_, { collageId }, { user }) => {
