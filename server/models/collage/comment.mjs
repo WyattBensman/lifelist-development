@@ -36,25 +36,6 @@ const commentSchema = new Schema({
   ],
 });
 
-// Method to like a comment
-commentSchema.methods.like = function (userId) {
-  if (!this.likedBy.includes(userId)) {
-    this.likes += 1;
-    this.likedBy.push(userId);
-  }
-  return this.save();
-};
-
-// Method to unlike a comment
-commentSchema.methods.unlike = function (userId) {
-  const index = this.likedBy.indexOf(userId);
-  if (index !== -1) {
-    this.likes -= 1;
-    this.likedBy.splice(index, 1);
-  }
-  return this.save();
-};
-
 const Comment = model("Comment", commentSchema);
 
 export default Comment;

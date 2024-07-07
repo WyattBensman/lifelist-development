@@ -5,12 +5,18 @@ const likeComment = async (_, { commentId }, { user }) => {
   try {
     isUser(user);
 
-    const comment = await Comment.findById(commentId);
+    const comment = await Comment.findByIdAndUpdate(
+      commentId,
+      {
+        $addToSet: { likedBy: user._id },
+        $inc: { likes: 1 },
+      },
+      { new: true }
+    );
+
     if (!comment) {
       throw new Error("Comment not found");
     }
-
-    await comment.like(user._id);
 
     return {
       success: true,

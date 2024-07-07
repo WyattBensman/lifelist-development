@@ -191,7 +191,7 @@ type User {
     comments: [Comment]
     reports: [Report]
     likes: Int
-    likedBy: [ID]
+    likedBy: [User] 
   }
 
   enum PrivacySetting {
