@@ -2,18 +2,30 @@ import React, { useState } from "react";
 import { Image, Text, View, StyleSheet, Pressable } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import { useMutation } from "@apollo/client";
-import { LIKE_COMMENT, UNLIKE_COMMENT } from "../../../utils/mutations/index";
+import { LIKE_COMMENT, UNLIKE_COMMENT } from "../../../utils/mutations/index"; // Ensure correct import path
 import { cardStyles, iconStyles, layoutStyles } from "../../../styles";
 import { BASE_URL } from "../../../utils/config";
 import { formatDistanceToNow } from "date-fns";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext"; // Ensure correct import path
 import IconStatic from "../../../components/Icons/IconStatic";
+import { useNavigation } from "@react-navigation/native"; // Import useNavigation
 
-export default function CommentCard({ comment, onDelete, onUpdate }) {
+export default function CommentCard({
+  comment,
+  onDelete,
+  onUpdate,
+  onRequestClose,
+  collageAuthorId,
+}) {
+  const navigation = useNavigation();
   const { currentUser } = useAuth();
-  const [isLiked, setIsLiked] = useState(
-    comment.likedBy.includes(currentUser._id)
+
+  // Check if the current user has liked the comment
+  const hasCurrentUserLiked = comment.likedBy.some(
+    (user) => user._id === currentUser._id
   );
+
+  const [isLiked, setIsLiked] = useState(hasCurrentUserLiked);
   const [likeCount, setLikeCount] = useState(comment.likes);
 
   const [likeComment] = useMutation(LIKE_COMMENT, {
@@ -32,26 +44,77 @@ export default function CommentCard({ comment, onDelete, onUpdate }) {
     },
   });
 
-  const handleLikePress = async () => {
-    try {
-      if (isLiked) {
-        await unlikeComment({ variables: { commentId: comment._id } });
-      } else {
-        await likeComment({ variables: { commentId: comment._id } });
-      }
-    } catch (error) {
-      console.error("Error handling like/unlike:", error.message);
+  const handleLikePress = () => {
+    if (isLiked) {
+      unlikeComment({ variables: { commentId: comment._id } });
+    } else {
+      likeComment({ variables: { commentId: comment._id } });
     }
   };
 
-  const renderRightActions = () => (
-    <Pressable
-      style={styles.deleteButton}
-      onPress={() => onDelete(comment._id)}
-    >
-      <IconStatic name="trash" tintColor={"#ececec"} style={iconStyles.trash} />
-    </Pressable>
-  );
+  const handleReportPress = () => {
+    onRequestClose();
+    navigation.navigate("CollageStack", {
+      screen: "ReportOptionsScreen",
+      params: { commentId: comment._id },
+    });
+  };
+
+  const renderRightActions = () => {
+    if (currentUser._id === comment.author._id) {
+      // Comment author: Show delete button
+      return (
+        <Pressable
+          style={styles.deleteButton}
+          onPress={() => onDelete(comment._id)}
+        >
+          <IconStatic
+            name="trash"
+            tintColor={"#ececec"}
+            style={iconStyles.trash}
+            onPress={() => onDelete(comment._id)}
+          />
+        </Pressable>
+      );
+    } else if (currentUser._id === collageAuthorId) {
+      // Collage author: Show delete and report buttons
+      return (
+        <View style={styles.actionsContainer}>
+          <Pressable
+            style={styles.deleteButton}
+            onPress={() => onDelete(comment._id)}
+          >
+            <IconStatic
+              name="trash"
+              tintColor={"#ececec"}
+              style={iconStyles.trash}
+              onPress={() => onDelete(comment._id)}
+            />
+          </Pressable>
+          <Pressable style={styles.reportButton} onPress={handleReportPress}>
+            <IconStatic
+              name="flag"
+              tintColor={"#FF3B30"}
+              style={iconStyles.trashSm}
+              onPress={handleReportPress}
+            />
+          </Pressable>
+        </View>
+      );
+    } else {
+      // Neither: Show report button
+      return (
+        <Pressable style={styles.reportButton} onPress={handleReportPress}>
+          <IconStatic
+            name="flag"
+            tintColor={"#FF3B30"}
+            style={iconStyles.trashSm}
+            onPress={handleReportPress}
+          />
+        </Pressable>
+      );
+    }
+  };
 
   return (
     <Swipeable renderRightActions={renderRightActions}>
@@ -104,17 +167,31 @@ export default function CommentCard({ comment, onDelete, onUpdate }) {
 const styles = StyleSheet.create({
   profilePicture: {
     backgroundColor: "#d4d4d4",
+    marginLeft: 16,
+  },
+  actionsContainer: {
+    flexDirection: "row",
+  },
+  reportButton: {
+    backgroundColor: "#696969", // grey background color
+    justifyContent: "center",
+    alignItems: "center",
+    width: 85,
   },
   deleteButton: {
     backgroundColor: "#FF3B30",
     justifyContent: "center",
     alignItems: "center",
-    width: 100,
+    width: 85,
+  },
+  buttonText: {
+    color: "#ffffff",
   },
   likeContainer: {
     marginHorizontal: 4,
     flexDirection: "row",
     alignItems: "center",
+    marginRight: 16,
   },
   likeCount: {
     color: "#A1A1A1",

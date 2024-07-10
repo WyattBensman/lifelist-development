@@ -18,7 +18,12 @@ import { headerStyles, layoutStyles } from "../../../styles";
 import BottomPopup from "../../Profile/Popups/BottomPopup";
 import CommentCard from "../Cards/CommentCard";
 
-export default function Comments({ visible, onRequestClose, collageId }) {
+export default function Comments({
+  visible,
+  onRequestClose,
+  collageId,
+  collageAuthorId,
+}) {
   const [comment, setComment] = useState("");
   const { data, loading, error, refetch } = useQuery(GET_COMMENTS, {
     variables: { collageId },
@@ -82,7 +87,9 @@ export default function Comments({ visible, onRequestClose, collageId }) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <View style={styles.popupContainer}>
-          <Text style={headerStyles.headerMedium}>Comments</Text>
+          <Text style={[headerStyles.headerMedium, { paddingHorizontal: 16 }]}>
+            Comments
+          </Text>
           <View style={styles.separator} />
           {loading ? (
             <ActivityIndicator size="large" color="#0000ff" />
@@ -97,6 +104,8 @@ export default function Comments({ visible, onRequestClose, collageId }) {
                     comment={item}
                     onDelete={handleDeleteComment}
                     onUpdate={updateComment}
+                    collageAuthorId={collageAuthorId}
+                    onRequestClose={onRequestClose}
                   />
                 </View>
               )}
@@ -142,13 +151,14 @@ const styles = StyleSheet.create({
     height: 2,
     backgroundColor: "#252525",
     marginBottom: 8,
+    marginHorizontal: 16,
   },
   flatListContent: {
     flexGrow: 1,
   },
   popupContainer: {
     flex: 1,
-    padding: 16,
+    paddingTop: 16,
   },
   inputContainer: {
     flexDirection: "row",

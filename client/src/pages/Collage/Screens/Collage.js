@@ -195,16 +195,6 @@ export default function Collage({
               <Text style={styles.location}>Location unknown</Text>
             </View>
           </View>
-          {/* {isMainFeed && (
-            <Icon
-              name="ellipsis"
-              style={iconStyles.ellipsis}
-              weight="bold"
-              tintColor={"#ffffff"}
-              backgroundColor={"rgba(38, 40, 40, 0.25)"}
-              onPress={handleOptionsPress} // Show options popup on press
-            />
-          )} */}
         </View>
         <View style={styles.actionContainer}>
           <Pressable onPress={handleLikePress}>
@@ -297,6 +287,7 @@ export default function Collage({
         visible={showComments}
         onRequestClose={() => setShowComments(false)}
         collageId={collageId}
+        collageAuthorId={author._id}
       />
       <Participants
         visible={showParticipants}

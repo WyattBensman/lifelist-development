@@ -4,6 +4,7 @@ import UserRelations from "../pages/Profile/Screens/UserRelations";
 import Profile from "../pages/Profile/Screens/Profile";
 import LifeListStack from "./LifeListStack";
 import ViewCollage from "../pages/Collage/Screens/ViewCollage";
+import CollageStack from "./CollageStack";
 
 const Stack = createNativeStackNavigator();
 
@@ -39,6 +40,11 @@ export default function ProfileStack() {
       <Stack.Screen
         name="ViewCollage"
         component={ViewCollage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CollageStack"
+        component={CollageStack}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

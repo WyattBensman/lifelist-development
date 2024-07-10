@@ -1,4 +1,4 @@
-import { Image, StyleSheet, View, Dimensions, Pressable } from "react-native";
+import { Image, StyleSheet, Dimensions, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { BASE_URL } from "../../../utils/config";
 

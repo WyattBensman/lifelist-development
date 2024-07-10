@@ -11,7 +11,6 @@ import {
 import * as Sharing from "expo-sharing";
 import * as Clipboard from "expo-clipboard";
 import * as SMS from "expo-sms";
-import * as Linking from "expo-linking";
 import { headerStyles, iconStyles } from "../../../styles";
 import BottomPopup from "../../Profile/Popups/BottomPopup";
 import Icon from "../../../components/Icons/Icon";
@@ -19,6 +18,7 @@ import IconLarge from "../../../components/Icons/IconLarge";
 import Instagram from "../Icons/Instagram";
 import Facebook from "../Icons/Facebook";
 import { BASE_URL } from "../../../utils/config";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Options({
   visible,
@@ -27,6 +27,7 @@ export default function Options({
   isSaved,
   handleSavePress,
 }) {
+  const navigation = useNavigation();
   const collageLink = `${BASE_URL}/collage/${collageId}`; // Construct the collage link
 
   const handleCopyLink = async () => {
@@ -67,6 +68,14 @@ export default function Options({
     }
   };
 
+  const handleReportPress = () => {
+    onRequestClose();
+    navigation.navigate("CollageStack", {
+      screen: "ReportOptionsScreen",
+      params: { collageId },
+    });
+  };
+
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={228}>
       <KeyboardAvoidingView
@@ -93,13 +102,17 @@ export default function Options({
                   {isSaved ? "Unsave" : "Save"}
                 </Text>
               </Pressable>
-              <Pressable style={styles.topButtonContainerRed}>
+              <Pressable
+                style={styles.topButtonContainerRed}
+                onPress={handleReportPress}
+              >
                 <Icon
                   name="flag"
                   style={iconStyles.bookmark}
                   noFill={true}
                   weight={"semibold"}
                   tintColor={"#E53935"}
+                  onPress={handleReportPress}
                 />
                 <Text style={styles.topButtonTextRed}>Report</Text>
               </Pressable>

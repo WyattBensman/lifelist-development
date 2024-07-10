@@ -12,7 +12,6 @@ import { useQuery, useMutation } from "@apollo/client";
 import { layoutStyles, iconStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import SearchUsersCard from "../Cards/SearchUsersCard";
-import AddUsersBottomContainer from "../Popups/AddUsersBottomContainer";
 import { GET_ALL_USERS } from "../../../utils/queries/userQueries";
 import { CREATE_PRIVACY_GROUP } from "../../../utils/mutations/index";
 import Icon from "../../../components/Icons/Icon";
