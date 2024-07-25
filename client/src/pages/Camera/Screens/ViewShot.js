@@ -87,6 +87,8 @@ export default function ViewShot() {
     }
   };
 
+  console.log(currentShot._id);
+
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
   };
@@ -97,10 +99,12 @@ export default function ViewShot() {
         variables: { shotId: currentShot._id },
       });
       if (data.deleteCameraShot.success) {
+        console.log("Success");
         const newShotsData = shotsData.filter(
           (shot) => shot._id !== currentShot._id
         );
         if (newShotsData.length > 0) {
+          console.log("Double Success");
           setCurrentIndex((prevIndex) =>
             prevIndex === newShotsData.length ? prevIndex - 1 : prevIndex
           );
