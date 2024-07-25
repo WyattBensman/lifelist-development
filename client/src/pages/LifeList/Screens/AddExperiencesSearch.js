@@ -10,6 +10,7 @@ import AddExperiencesBottomContainer from "../Components/AddExperiencesBottomCon
 import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
 import { GET_ALL_EXPERIENCES } from "../../../utils/queries/experienceQueries";
 import Icon from "../../../components/Icons/Icon";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function AddExperiencesSearch() {
   const { currentUser } = useAuth();
@@ -17,6 +18,11 @@ export default function AddExperiencesSearch() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [selectedExperiences, setSelectedExperiences] = useState([]);
+  const { setIsTabBarVisible } = useNavigationContext();
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   const { data: lifeListData, refetch: refetchLifeList } = useQuery(
     GET_USER_LIFELIST,
@@ -36,9 +42,6 @@ export default function AddExperiencesSearch() {
       refetchLifeList();
     }, [refetchLifeList])
   );
-
-  console.log(lifeListData);
-  console.log(allExperiencesData);
 
   const lifeList = lifeListData?.getUserLifeList || { experiences: [] };
   const userExperienceIds = new Set(

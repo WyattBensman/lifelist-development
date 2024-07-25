@@ -25,9 +25,9 @@ import { useQuery, useMutation } from "@apollo/client";
 import { BASE_URL } from "../../../utils/config";
 import Comments from "../Popups/Comments";
 import Participants from "../Popups/Participants";
-import Icon from "../../../components/Icons/Icon";
 import IconCollage from "../../../components/Icons/IconCollage";
 import Options from "../Popups/Options";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const { width } = Dimensions.get("window");
 
@@ -36,6 +36,7 @@ export default function Collage({
   isMainFeed,
   isViewCollageScreen,
 }) {
+  const { currentUser } = useAuth();
   const navigation = useNavigation();
   const { loading, error, data, refetch } = useQuery(GET_COLLAGE_BY_ID, {
     variables: { collageId },
@@ -300,6 +301,8 @@ export default function Collage({
         collageId={collageId}
         isSaved={isSaved}
         handleSavePress={handleSavePress}
+        currentUserId={currentUser._id} // Pass the current user ID
+        collageAuthorId={author._id} // Pass the collage author ID
       />
     </View>
   );

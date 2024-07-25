@@ -117,6 +117,7 @@ export default function ManageShots() {
         )}
         keyExtractor={(item) => item._id}
         numColumns={3}
+        columnWrapperStyle={styles.columnWrapper}
       />
     </View>
   );
@@ -138,5 +139,9 @@ const styles = StyleSheet.create({
   },
   buttonTextActive: {
     color: "#6AB952",
+  },
+  columnWrapper: {
+    justifyContent: "space-between",
+    marginHorizontal: 0, // Ensures no margin on the outside
   },
 });

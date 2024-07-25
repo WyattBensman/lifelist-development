@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 import { CameraShot, CameraAlbum, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
@@ -36,12 +35,12 @@ const deleteCameraShot = async (_, { shotId }, { user }) => {
 
     // Delete the image file from the filesystem
     const filePath = path.join(shot.image);
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.error("Failed to delete image file:", err);
-        throw new Error("Failed to delete image file.");
-      }
-    });
+    try {
+      await fs.unlink(filePath);
+    } catch (err) {
+      console.error("Failed to delete image file:", err);
+      throw new Error("Failed to delete image file.");
+    }
 
     // Delete the camera shot
     await CameraShot.findByIdAndDelete(shotId);

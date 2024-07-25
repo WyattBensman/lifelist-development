@@ -77,31 +77,21 @@ export const UNTAG_USERS = gql`
   }
 `;
 
-// Finalize and post the collage
-export const POST_COLLAGE = gql`
-  mutation PostCollage($collageId: ID!) {
-    postCollage(collageId: $collageId) {
-      _id
-      author {
-        _id
-        username
-        fullName
-        profilePicture
-      }
-      images
-      caption
-      createdAt
-      posted
-      privacy
-      privacyGroup {
-        _id
-        groupName
-        users {
-          _id
-          username
-          fullName
-        }
-      }
+// Create Collage
+export const CREATE_COLLAGE = gql`
+  mutation CreateCollage(
+    $caption: String
+    $images: [String]!
+    $taggedUsers: [ID]
+  ) {
+    createCollage(
+      caption: $caption
+      images: $images
+      taggedUsers: $taggedUsers
+    ) {
+      success
+      message
+      collageId
     }
   }
 `;

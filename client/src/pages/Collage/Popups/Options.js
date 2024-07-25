@@ -26,6 +26,8 @@ export default function Options({
   collageId,
   isSaved,
   handleSavePress,
+  currentUserId, // Current user ID
+  collageAuthorId, // Collage author ID
 }) {
   const navigation = useNavigation();
   const collageLink = `${BASE_URL}/collage/${collageId}`; // Construct the collage link
@@ -76,6 +78,18 @@ export default function Options({
     });
   };
 
+  const handleDeletePress = () => {
+    // Add your delete functionality here
+    Alert.alert(
+      "Delete Collage",
+      "Are you sure you want to delete this collage?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", onPress: () => console.log("Collage deleted") },
+      ]
+    );
+  };
+
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={228}>
       <KeyboardAvoidingView
@@ -102,20 +116,37 @@ export default function Options({
                   {isSaved ? "Unsave" : "Save"}
                 </Text>
               </Pressable>
-              <Pressable
-                style={styles.topButtonContainerRed}
-                onPress={handleReportPress}
-              >
-                <Icon
-                  name="flag"
-                  style={iconStyles.bookmark}
-                  noFill={true}
-                  weight={"semibold"}
-                  tintColor={"#E53935"}
+              {currentUserId === collageAuthorId ? (
+                <Pressable
+                  style={styles.topButtonContainerRed}
+                  onPress={handleDeletePress}
+                >
+                  <Icon
+                    name="trash"
+                    style={iconStyles.bookmark}
+                    noFill={true}
+                    weight={"semibold"}
+                    tintColor={"#E53935"}
+                    onPress={handleDeletePress}
+                  />
+                  <Text style={styles.topButtonTextRed}>Delete</Text>
+                </Pressable>
+              ) : (
+                <Pressable
+                  style={styles.topButtonContainerRed}
                   onPress={handleReportPress}
-                />
-                <Text style={styles.topButtonTextRed}>Report</Text>
-              </Pressable>
+                >
+                  <Icon
+                    name="flag"
+                    style={iconStyles.bookmark}
+                    noFill={true}
+                    weight={"semibold"}
+                    tintColor={"#E53935"}
+                    onPress={handleReportPress}
+                  />
+                  <Text style={styles.topButtonTextRed}>Report</Text>
+                </Pressable>
+              )}
             </View>
             <View style={styles.shareContainer}>
               <Pressable style={styles.shareButton} onPress={handleShareSMS}>

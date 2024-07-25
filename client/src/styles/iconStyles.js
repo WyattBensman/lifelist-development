@@ -210,4 +210,10 @@ export const iconStyles = StyleSheet.create({
     width: 7.96,
     height: 15.75,
   },
+  addToAlbum: {
+    marginLeft: 3,
+    marginBottom: 2,
+    width: 26,
+    height: 16.95,
+  },
 });

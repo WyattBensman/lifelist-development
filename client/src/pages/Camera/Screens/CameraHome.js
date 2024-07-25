@@ -8,10 +8,10 @@ import {
   Dimensions,
 } from "react-native";
 import { CameraView, useCameraPermissions } from "expo-camera";
-import { filters } from "../../../utils/shaders";
 import { layoutStyles } from "../../../styles/LayoutStyles";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
+import FilteredImage from "../Components/FilteredImage";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useNavigation } from "@react-navigation/native";
 
@@ -24,7 +24,7 @@ export default function CameraHome() {
   const [zoom, setZoom] = useState(1);
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef(null);
-  const [filter, setFilter] = useState(null);
+  const [filter, setFilter] = useState("disposableFilter");
   const [showHeaderOptions, setShowHeaderOptions] = useState(false);
 
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -75,9 +75,11 @@ export default function CameraHome() {
   const handleSelectCameraType = (type) => {
     setCameraType(type);
     if (type === "Analog") {
-      setFilter(filters.analogFilm);
+      setFilter("standardFilter");
     } else if (type === "Disposable") {
-      setFilter(filters.disposableFilm);
+      setFilter("disposableFilter");
+    } else if (type === "Fuji") {
+      setFilter("fujiFilter");
     } else {
       setFilter(null);
     }
@@ -137,6 +139,7 @@ export default function CameraHome() {
           handleZoomChange={handleZoomChange}
           footerHeight={Dimensions.get("window").height - cameraHeight}
           disabled={showHeaderOptions}
+          filter={filter}
         />
       </View>
     </View>

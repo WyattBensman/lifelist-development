@@ -10,6 +10,8 @@ import ProfileStack from "./ProfileStack";
 import SearchNewConversation from "../pages/Inbox/Screens/SearchNewConversation";
 import InviteFriends from "../pages/Profile/Screens/InviteFriends";
 import CollageStack from "./CollageStack";
+import AddParticipants from "../pages/CreateCollage/Screens/AddParticipants";
+import ChangeCoverImage from "../pages/CreateCollage/Screens/ChangeCoverImage";
 
 const Stack = createNativeStackNavigator();
 
@@ -61,6 +63,16 @@ export default function MainFeedStack() {
       <Stack.Screen
         name="CollagePreview"
         component={Preview}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ChangeCoverImage"
+        component={ChangeCoverImage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddParticipants"
+        component={AddParticipants}
         options={{ headerShown: false }}
       />
       <Stack.Screen

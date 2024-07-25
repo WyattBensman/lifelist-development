@@ -9,6 +9,7 @@ import FlashOutlineIcon from "../Icons/FlashOutlineIcon";
 import FlashSolidIcon from "../Icons/FlashSolidIcon";
 import FlipCameraIcon from "../Icons/FlipCameraIcon";
 import * as FileSystem from "expo-file-system";
+import { captureRef } from "react-native-view-shot";
 import IconLarge from "../../../components/Icons/IconLarge";
 import { iconStyles } from "../../../styles/iconStyles";
 
@@ -22,6 +23,7 @@ export default function Footer({
   handleZoomChange,
   footerHeight,
   disabled,
+  filter,
 }) {
   const navigation = useNavigation();
   const { updateCurrentUser } = useAuth();
@@ -30,22 +32,25 @@ export default function Footer({
   const handleTakePhoto = async () => {
     if (cameraRef.current && !disabled) {
       try {
-        const photo = await cameraRef.current.takePictureAsync();
-        const file = await convertToFile(photo.uri, "photo.jpg");
+        // Step 1: Capture the image
+        const photo = await cameraRef.current.takePictureAsync({
+          quality: 0.8,
+          base64: true,
+        });
 
-        // Apply filter based on cameraType
-        const filteredUri = await applyFilter(file.uri, cameraType);
+        // Step 2: Apply filter to the captured image
+        const filteredUri = await applyFilter(photo.uri, filter);
 
-        const filteredFile = await convertToFile(
-          filteredUri,
-          "filtered_photo.jpg"
-        );
+        // Step 3: Convert filtered image to a file
+        const file = await convertToFile(filteredUri, "photo.jpg");
 
+        // Step 4: Upload the file to the server
         const result = await createCameraShot({
           variables: {
-            image: filteredFile,
+            image: file,
           },
         });
+
         if (result.data.createCameraShot.success) {
           updateCurrentUser(result.data.createCameraShot.user);
         }
@@ -53,6 +58,29 @@ export default function Footer({
         console.error("Error taking photo:", error);
       }
     }
+  };
+
+  const applyFilter = async (uri, filter) => {
+    // Create a temporary view to render the image with the filter
+    return new Promise((resolve, reject) => {
+      try {
+        const surface = (
+          <Surface style={{ width: 300, height: 450 }}>
+            <GLImage
+              shader={shaders[filter]}
+              source={{ uri }}
+              resizeMode="cover"
+            />
+          </Surface>
+        );
+
+        // Render the image and get the data URL
+        const dataUrl = surface.toDataURL();
+        resolve(dataUrl);
+      } catch (error) {
+        reject(error);
+      }
+    });
   };
 
   const convertToFile = async (uri, filename) => {

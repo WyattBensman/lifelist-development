@@ -2,7 +2,6 @@ import { View } from "react-native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import EditProfileNavigator from "../Navigators/EditProfileNavigator";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import React, { useCallback, useEffect } from "react";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import Icon from "../../../components/Icons/Icon";
@@ -11,10 +10,9 @@ export default function EditProfile() {
   const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
 
-  useEffect(() => {
+  useFocusEffect(() => {
     setIsTabBarVisible(false);
-    return () => setIsTabBarVisible(true);
-  }, [setIsTabBarVisible]);
+  });
 
   return (
     <View style={layoutStyles.wrapper}>

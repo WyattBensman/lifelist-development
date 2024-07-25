@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
 import { useAuth } from "../../../contexts/AuthContext";
 import { iconStyles, layoutStyles } from "../../../styles";
@@ -8,12 +8,18 @@ import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import Icon from "../../../components/Icons/Icon";
 import { GET_ALL_USERS } from "../../../utils/queries/userQueries";
 import SearchUserCard from "../Cards/SearchUserCard";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function SearchNewConversation() {
   const { currentUser } = useAuth();
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const { setIsTabBarVisible } = useNavigationContext();
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   const { data, loading, error } = useQuery(GET_ALL_USERS);
 

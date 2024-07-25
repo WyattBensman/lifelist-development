@@ -17,7 +17,6 @@ export const GET_COLLAGE_BY_ID = gql`
         }
         createdAt
       }
-      locations
       isLikedByCurrentUser
       isRepostedByCurrentUser
       isSavedByCurrentUser

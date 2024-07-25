@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
@@ -13,10 +13,9 @@ export default function Inbox() {
   const { setIsTabBarVisible } = useNavigationContext();
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
+  useFocusEffect(() => {
     setIsTabBarVisible(false);
-    return () => setIsTabBarVisible(true);
-  }, [setIsTabBarVisible]);
+  });
 
   return (
     <View style={layoutStyles.wrapper}>

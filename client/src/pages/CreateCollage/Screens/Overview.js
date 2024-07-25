@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import {
   Text,
   View,
@@ -7,21 +8,64 @@ import {
   Pressable,
 } from "react-native";
 import { layoutStyles, formStyles, iconStyles } from "../../../styles";
-import { useNavigation } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { useState } from "react";
 import { BASE_URL } from "../../../utils/config";
 import Icon from "../../../components/Icons/Icon";
 import IconStatic from "../../../components/Icons/IconStatic";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function Overview({ route }) {
   const navigation = useNavigation();
-  const { selectedImages } = route.params;
+  const { selectedImages, coverImage, taggedUsers = [] } = route.params; // Get coverImage and taggedUsers if they exist
   const [caption, setCaption] = useState("");
+  const { setIsTabBarVisible } = useNavigationContext();
 
-  // Pass caption along with selectedImages to the Preview screen
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
+
+  // State to store the current cover image
+  const [currentCoverImage, setCurrentCoverImage] = useState(
+    coverImage || selectedImages[0].image
+  );
+
+  // Update the cover image if it changes in the route params
+  useEffect(() => {
+    if (coverImage) {
+      setCurrentCoverImage(coverImage);
+    }
+  }, [coverImage]);
+
+  // Pass caption along with selectedImages and taggedUsers to the Preview screen
   const handlePreview = () => {
-    navigation.navigate("CollagePreview", { selectedImages, caption });
+    navigation.navigate("CollagePreview", {
+      selectedImages,
+      caption,
+      taggedUsers,
+      coverImage: currentCoverImage,
+    });
+  };
+
+  // Navigate to AddParticipants screen
+  const handleAddParticipants = () => {
+    navigation.navigate("AddParticipants", {
+      selectedImages,
+      caption,
+      taggedUsers,
+    });
+  };
+
+  // Navigate to ChangeCoverImage screen
+  const handleChangeCoverImage = () => {
+    navigation.navigate("ChangeCoverImage", {
+      selectedImages,
+      currentCoverImage,
+    });
   };
 
   return (
@@ -46,15 +90,18 @@ export default function Overview({ route }) {
         }
       />
       <View style={[formStyles.formContainer, layoutStyles.marginTopLg]}>
-        <View style={[layoutStyles.marginBtmMd, { alignSelf: "center" }]}>
+        <Pressable
+          style={[layoutStyles.marginBtmMd, { alignSelf: "center" }]}
+          onPress={handleChangeCoverImage}
+        >
           <Image
-            source={{ uri: `${BASE_URL}${selectedImages[0].image}` }}
+            source={{ uri: `${BASE_URL}${currentCoverImage}` }}
             style={styles.image}
           />
           <Text style={[layoutStyles.marginTopXs, { color: "#fff" }]}>
             Change Cover Image
           </Text>
-        </View>
+        </Pressable>
         <View style={styles.row}>
           <Text style={styles.label}>Caption</Text>
           <TextInput
@@ -74,13 +121,17 @@ export default function Overview({ route }) {
             />
             <Text style={styles.buttonText}>Add Locations</Text>
           </Pressable>
-          <Pressable style={styles.buttonContainer}>
+          <Pressable
+            style={styles.buttonContainer}
+            onPress={handleAddParticipants}
+          >
             <IconStatic
               name="plus.circle"
               style={iconStyles.plusCircle}
               tintColor={"#fff"}
+              onPress={handleAddParticipants}
             />
-            <Text style={styles.buttonText}>Add Participants</Text>
+            <Text style={styles.buttonText}>Tag Users</Text>
           </Pressable>
           <Pressable style={styles.buttonContainer}>
             <IconStatic

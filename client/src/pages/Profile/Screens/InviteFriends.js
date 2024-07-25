@@ -6,17 +6,16 @@ import { useNavigationContext } from "../../../contexts/NavigationContext";
 import SearchBarStandard from "../../../components/SearchBars/SearchBarStandard";
 import InviteFriendsNavigator from "../Navigators/InviteFriendsNavigator";
 import { layoutStyles, iconStyles } from "../../../styles";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 export default function InviteFriends() {
   const navigation = useNavigation();
-  const { setIsTabBarVisible } = useNavigationContext();
   const [searchQuery, setSearchQuery] = useState("");
+  const { setIsTabBarVisible } = useNavigationContext();
 
-  useEffect(() => {
+  useFocusEffect(() => {
     setIsTabBarVisible(false);
-    return () => setIsTabBarVisible(true);
-  }, [setIsTabBarVisible]);
+  });
 
   return (
     <View style={layoutStyles.wrapper}>

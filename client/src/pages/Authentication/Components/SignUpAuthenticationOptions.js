@@ -10,35 +10,38 @@ export default function SignUpAuthenticationOptions({ onSignUpOption }) {
     <View style={layoutStyles.container}>
       <SolidButton
         text={"Phone Number or Email"}
-        backgroundColor={"#ececec"}
+        textColor={"#ffffff"}
+        backgroundColor={"#1c1c1c"}
         marginTop={12}
         icon={
           <Image
             source={require("../Icons/PhoneEmailIcon.png")}
-            style={{ height: 17.5, width: 17.5 }}
+            style={{ height: 17.5, width: 17.5, marginRight: 2 }}
           />
         }
         onPress={onSignUpOption}
       />
       <SolidButton
         text={"Sign up with Gmail"}
-        backgroundColor={"#ececec"}
+        textColor={"#ffffff"}
+        backgroundColor={"#1c1c1c"}
         marginTop={12}
         icon={
           <Image
             source={require("../Icons/GmailIcon.png")}
-            style={{ height: 17.5, width: 17.5 }}
+            style={{ height: 17.5, width: 17.5, marginRight: 2 }}
           />
         }
       />
       <SolidButton
         text={"Sign up with Facebook"}
-        backgroundColor={"#ececec"}
+        textColor={"#ffffff"}
+        backgroundColor={"#1c1c1c"}
         marginTop={12}
         icon={
           <Image
             source={require("../Icons/FacebookIcon.png")}
-            style={{ height: 17.5, width: 17.5 }}
+            style={{ height: 17.5, width: 17.5, marginRight: 2 }}
           />
         }
       />

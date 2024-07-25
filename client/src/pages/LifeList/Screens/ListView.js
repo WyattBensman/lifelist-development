@@ -38,10 +38,9 @@ export default function ListView({ navigation }) {
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedExperienceId, setSelectedExperienceId] = useState(null);
 
-  useEffect(() => {
+  useFocusEffect(() => {
     setIsTabBarVisible(false);
-    return () => setIsTabBarVisible(true);
-  }, [setIsTabBarVisible]);
+  });
 
   useEffect(() => {
     if (route.params?.editMode) {

@@ -10,7 +10,7 @@ import {
   Animated,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import { iconStyles, layoutStyles } from "../../../styles";
 import Icon from "../../../components/Icons/Icon";
@@ -19,6 +19,7 @@ import ViewShotCard from "../Cards/ViewShotCard";
 import * as Sharing from "expo-sharing";
 import { BASE_URL } from "../../../utils/config";
 import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
+import { DELETE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
 
 const { width } = Dimensions.get("window");
 const aspectRatio = 3 / 2;
@@ -28,10 +29,11 @@ export default function ViewShot() {
   const navigation = useNavigation();
   const route = useRoute();
   const { shotId } = route.params;
-  const { data, loading, error } = useQuery(GET_ALL_CAMERA_SHOTS);
+  const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_SHOTS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const [deleteCameraShot] = useMutation(DELETE_CAMERA_SHOT);
 
   useEffect(() => {
     if (data) {
@@ -89,18 +91,44 @@ export default function ViewShot() {
     setIsMenuVisible(!isMenuVisible);
   };
 
+  const handleDeletePress = async () => {
+    try {
+      const { data } = await deleteCameraShot({
+        variables: { shotId: currentShot._id },
+      });
+      if (data.deleteCameraShot.success) {
+        const newShotsData = shotsData.filter(
+          (shot) => shot._id !== currentShot._id
+        );
+        if (newShotsData.length > 0) {
+          setCurrentIndex((prevIndex) =>
+            prevIndex === newShotsData.length ? prevIndex - 1 : prevIndex
+          );
+        } else {
+          navigation.goBack(); // If no shots are left, go back
+        }
+        refetch(); // Refetch to get the updated list of shots
+      } else {
+        alert(data.deleteCameraShot.message);
+      }
+    } catch (error) {
+      console.error("Error deleting shot:", error);
+      alert("Failed to delete shot. Please try again.");
+    }
+  };
+
   const dropdownItems = [
     {
       icon: "trash",
       style: iconStyles.deleteIcon,
-      label: "Delete",
-      onPress: () => console.log("Delete"),
+      label: "Delete Shot",
+      onPress: handleDeletePress,
       backgroundColor: "#FF634730",
       tintColor: "#FF6347",
     },
     {
-      icon: "folder-plus",
-      style: iconStyles.addAlbumIcon,
+      icon: "folder.badge.plus",
+      style: iconStyles.addToAlbum,
       label: "Add to Album",
       onPress: () => console.log("Add to Album"),
       backgroundColor: "#5FC4ED30",
@@ -109,7 +137,7 @@ export default function ViewShot() {
     {
       icon: "plus",
       style: iconStyles.addExperienceIcon,
-      label: "Add to Experience",
+      label: "Add to Exp",
       onPress: () => console.log("Add to Experience"),
       backgroundColor: "#6AB95230",
       tintColor: "#6AB952",

@@ -9,12 +9,18 @@ import { useQuery, useMutation } from "@apollo/client";
 import Icon from "../../../components/Icons/Icon";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import { DELETE_PRIVACY_GROUP } from "../../../utils/mutations/index";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function PrivacyGroups() {
   const navigation = useNavigation();
+  const { setIsTabBarVisible } = useNavigationContext();
   const [isEditMode, setIsEditMode] = useState(false);
   const { data, loading, error, refetch } = useQuery(GET_ALL_PRIVACY_GROUPS);
   const [deletePrivacyGroup] = useMutation(DELETE_PRIVACY_GROUP);
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   useFocusEffect(
     useCallback(() => {

@@ -386,7 +386,7 @@ type User {
     setAudience(collageId: ID!, audience: PrivacySetting!): CollageCreationResponse!
     tagUsers(collageId: ID!, userIds: [ID]): CollageCreationResponse!
     untagUsers(collageId: ID!, userIds: [ID]): CollageCreationResponse!
-    postCollage(collageId: ID!): Collage
+    createCollage(caption: String, images: [String]!, taggedUsers: [ID]): CollageCreationResponse!
 
     # Collage Actions Mutations
     saveCollage(collageId: ID!): ActionResponse!

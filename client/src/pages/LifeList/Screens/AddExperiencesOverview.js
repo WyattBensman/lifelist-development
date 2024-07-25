@@ -1,6 +1,10 @@
 import React, { useState } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useMutation, useQuery } from "@apollo/client";
 import { iconStyles, layoutStyles } from "../../../styles";
 import AddExperienceCard from "../Cards/AddExperienceCard";
@@ -10,6 +14,7 @@ import { ADD_EXPERIENCE_TO_LIFELIST } from "../../../utils/mutations";
 import { GET_USER_PROFILE } from "../../../utils/queries/userQueries";
 import { useCallbackContext } from "../../../contexts/CallbackContext";
 import Icon from "../../../components/Icons/Icon";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function AddExperiencesOverview() {
   const { currentUser, updateCurrentUser } = useAuth();
@@ -18,6 +23,11 @@ export default function AddExperiencesOverview() {
   const { addedExperiences, lifeListId } = route.params;
   const [experiences, setExperiences] = useState(addedExperiences);
   const [addExperienceToLifeList] = useMutation(ADD_EXPERIENCE_TO_LIFELIST);
+  const { setIsTabBarVisible } = useNavigationContext();
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   const { refetch: refetchUserProfile } = useQuery(GET_USER_PROFILE, {
     variables: { userId: currentUser._id },

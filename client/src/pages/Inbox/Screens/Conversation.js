@@ -32,8 +32,7 @@ export default function Conversation({ route, navigation }) {
 
   useFocusEffect(() => {
     setIsTabBarVisible(false);
-    return () => setIsTabBarVisible(true);
-  }, [setIsTabBarVisible]);
+  });
 
   useEffect(() => {
     if (data?.getConversation?.messages) {

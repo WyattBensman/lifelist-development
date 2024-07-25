@@ -4,17 +4,23 @@ import { useQuery } from "@apollo/client";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import ShotCard from "../Cards/ShotCard";
 import SelectedShotCard from "../Cards/SelectedShotCard";
 import Icon from "../../../components/Icons/Icon";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import MediaPlaceholder from "../Components/MediaPlaceholder";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function Media() {
   const navigation = useNavigation();
   const { data, loading, error } = useQuery(GET_ALL_CAMERA_SHOTS);
   const [selectedShots, setSelectedShots] = useState([]);
+  const { setIsTabBarVisible } = useNavigationContext();
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;

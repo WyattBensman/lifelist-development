@@ -42,6 +42,7 @@
     "expo-symbols": "^0.1.4",
     "gl-react": "^4.1.0",
     "gl-react-expo": "^5.2.1",
+    "gl-react-image": "^3.2.0",
     "graphql": "^15.8.0",
     "jwt-decode": "^4.0.0",
     "react": "18.2.0",
@@ -60,6 +61,7 @@
     "react-native-svg": "15.2.0",
     "react-native-tab-view": "^3.5.2",
     "react-native-vector-icons": "^10.0.3",
+    "react-native-view-shot": "^3.8.0",
     "react-native-web": "~0.19.10"
   },
   "devDependencies": {

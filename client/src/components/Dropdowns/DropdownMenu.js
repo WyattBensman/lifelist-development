@@ -26,22 +26,23 @@ const DropdownMenu = ({ items, containerStyle }) => {
 
 const styles = StyleSheet.create({
   dropdownContainer: {
-    flex: 1,
-    backgroundColor: "#121212",
     flexDirection: "row",
     justifyContent: "space-evenly",
-    zIndex: 1,
+    backgroundColor: "#121212",
+    padding: 10,
   },
   dropdownItemContainer: {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
+    width: 100, // Set a fixed width for each dropdown item
   },
   dropdownLabel: {
     marginTop: 3,
     fontSize: 12,
     fontWeight: "500",
     color: "#fff",
+    textAlign: "center",
   },
 });
 

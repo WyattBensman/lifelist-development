@@ -14,12 +14,18 @@ import { useQuery } from "@apollo/client";
 import { GET_ARCHIVED_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
 import Icon from "../../../components/Icons/Icon";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 const { height: screenHeight } = Dimensions.get("window");
 
 export default function Archived() {
   const navigation = useNavigation();
   const { data, loading, error, refetch } = useQuery(GET_ARCHIVED_COLLAGES);
+  const { setIsTabBarVisible } = useNavigationContext();
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   useFocusEffect(
     useCallback(() => {
