@@ -38,13 +38,13 @@ const deleteCameraShot = async (_, { shotId }, { user }) => {
     console.log("Removed from User");
 
     // Delete the image file from the filesystem
-    const filePath = path.join(__dirname, shot.image);
+    /*     const filePath = path.join(__dirname, shot.image);
     try {
       await fs.unlink(filePath);
     } catch (err) {
       console.error("Failed to delete image file:", err);
       throw new Error("Failed to delete image file.");
-    }
+    } */
 
     // Delete the camera shot
     await CameraShot.findByIdAndDelete(shotId);
