@@ -2,6 +2,8 @@ import fs from "fs/promises";
 import path from "path";
 import { CameraShot, CameraAlbum, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
+import { fileURLToPath } from "url";
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const deleteCameraShot = async (_, { shotId }, { user }) => {
   try {
@@ -12,6 +14,7 @@ const deleteCameraShot = async (_, { shotId }, { user }) => {
     if (!shot) {
       return { success: false, message: "Camera shot not found." };
     }
+    console.log("Found Shot");
 
     // Ensure the user is authorized to delete this shot
     /* if (shot.author.toString() !== user._id.toString()) {
@@ -26,14 +29,16 @@ const deleteCameraShot = async (_, { shotId }, { user }) => {
       { shots: shotId },
       { $pull: { shots: shotId } }
     );
+    console.log("Removed from Camera Albums");
 
     // Remove the shot ID from the user's cameraShots field
     await User.findByIdAndUpdate("663a3129e0ffbeff092b81d4", {
       $pull: { cameraShots: shotId },
     });
+    console.log("Removed from User");
 
     // Delete the image file from the filesystem
-    const filePath = path.join(shot.image);
+    const filePath = path.join(__dirname, shot.image);
     try {
       await fs.unlink(filePath);
     } catch (err) {
