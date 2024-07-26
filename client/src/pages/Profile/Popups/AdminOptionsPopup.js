@@ -118,7 +118,9 @@ export default function AdminOptionsPopup({
         </Pressable>
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
-          onPress={() => handleNavigate("InviteFriends")}
+          onPress={() =>
+            handleNavigate("InviteFriends", { initialTab: "Invite" })
+          }
         >
           <View style={layoutStyles.flexRow}>
             <IconStatic name="envelope.circle" style={iconStyles.popupIcon} />

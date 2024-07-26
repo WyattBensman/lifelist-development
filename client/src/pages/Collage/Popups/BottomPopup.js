@@ -11,16 +11,16 @@ import {
 
 const { height: screenHeight } = Dimensions.get("window");
 
-const BottomPopup = ({ visible, children, onRequestClose, height }) => {
+const BottomPopup = ({ visible, children, onRequestClose, initialHeight }) => {
   const [showModal, setShowModal] = useState(visible);
-  const animatedHeight = useRef(new Animated.Value(height)).current;
+  const animatedHeight = useRef(new Animated.Value(initialHeight)).current;
   const lastGestureDy = useRef(0);
-  const currentHeight = useRef(height);
-  const TOP_PADDING = 50; // Define a top padding
+  const TOP_PADDING = 57.5; // Define a top padding
+  const currentHeight = useRef(initialHeight);
 
   useEffect(() => {
     toggleModal();
-  }, [visible, height]);
+  }, [visible, initialHeight]);
 
   const panResponder = PanResponder.create({
     onStartShouldSetPanResponder: () => true,
@@ -30,14 +30,16 @@ const BottomPopup = ({ visible, children, onRequestClose, height }) => {
     },
     onPanResponderMove: (event, gestureState) => {
       let newHeight = currentHeight.current - gestureState.dy;
-      if (newHeight >= TOP_PADDING && newHeight <= height) {
+      if (newHeight >= TOP_PADDING && newHeight <= screenHeight - TOP_PADDING) {
         animatedHeight.setValue(newHeight);
       }
       lastGestureDy.current = gestureState.dy;
     },
     onPanResponderRelease: () => {
-      if (lastGestureDy.current > 50) {
+      if (lastGestureDy.current > 150) {
         onRequestClose();
+      } else if (lastGestureDy.current < -150) {
+        expandModal();
       } else {
         resetModalHeight();
       }
@@ -48,22 +50,30 @@ const BottomPopup = ({ visible, children, onRequestClose, height }) => {
     if (visible) {
       setShowModal(true);
       Animated.timing(animatedHeight, {
-        toValue: height,
+        toValue: initialHeight,
         duration: 500,
         useNativeDriver: false,
       }).start();
     } else {
       Animated.timing(animatedHeight, {
-        toValue: 0,
+        toValue: TOP_PADDING,
         duration: 500,
         useNativeDriver: false,
       }).start(() => setShowModal(false));
     }
   };
 
+  const expandModal = () => {
+    Animated.timing(animatedHeight, {
+      toValue: screenHeight - TOP_PADDING,
+      duration: 500,
+      useNativeDriver: false,
+    }).start();
+  };
+
   const resetModalHeight = () => {
     Animated.timing(animatedHeight, {
-      toValue: height,
+      toValue: initialHeight,
       duration: 500,
       useNativeDriver: false,
     }).start();

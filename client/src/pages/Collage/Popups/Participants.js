@@ -1,43 +1,66 @@
-import React from "react";
-import { Text, View, FlatList, StyleSheet } from "react-native";
+import React, { useState, useCallback } from "react";
+import {
+  Text,
+  View,
+  StyleSheet,
+  FlatList,
+  ActivityIndicator,
+  Dimensions,
+} from "react-native";
 import { useQuery } from "@apollo/client";
+import { useFocusEffect } from "@react-navigation/native";
 import { GET_TAGGED_USERS } from "../../../utils/queries"; // Ensure correct import path
-import { headerStyles, layoutStyles, popupStyles } from "../../../styles";
-import BottomPopup from "../../Profile/Popups/BottomPopup";
+import { headerStyles, layoutStyles } from "../../../styles";
+import BottomPopup from "./BottomPopup";
 import ParticipantCard from "../Cards/ParticipantCard";
 
+const { height: screenHeight } = Dimensions.get("window");
+
 export default function Participants({ visible, onRequestClose, collageId }) {
-  const { data, loading, error } = useQuery(GET_TAGGED_USERS, {
+  const { data, loading, error, refetch } = useQuery(GET_TAGGED_USERS, {
     variables: { collageId },
     skip: !visible, // Skip the query if the popup is not visible
   });
 
-  // Calculate the height based on the number of participants
-  const numberOfParticipants = data?.getTaggedUsers?.length || 0;
-  const dynamicHeight = 115 + numberOfParticipants * 60; // Adjust 60 based on the height of each participant card
+  useFocusEffect(
+    useCallback(() => {
+      if (visible) {
+        refetch();
+      }
+    }, [visible, refetch])
+  );
 
   return (
     <BottomPopup
       visible={visible}
       onRequestClose={onRequestClose}
-      height={dynamicHeight}
+      initialHeight={screenHeight * 0.6}
     >
       <View style={styles.container}>
         <View style={styles.popupContainer}>
           <Text style={headerStyles.headerMedium}>Participants</Text>
           <View style={styles.separator} />
-          <FlatList
-            data={data?.getTaggedUsers || []}
-            renderItem={({ item }) =>
-              item ? (
-                <View style={[styles.cardContainer, layoutStyles.flex]}>
-                  <ParticipantCard participant={item} />
-                </View>
-              ) : null
-            }
-            keyExtractor={(item) => item._id}
-            ListEmptyComponent={<Text>No participants found.</Text>}
-          />
+          {loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : error ? (
+            <Text>Error: {error.message}</Text>
+          ) : (
+            <FlatList
+              data={data?.getTaggedUsers || []}
+              renderItem={({ item }) =>
+                item ? (
+                  <View style={[styles.cardContainer, layoutStyles.flex]}>
+                    <ParticipantCard
+                      participant={item}
+                      onRequestClose={onRequestClose}
+                    />
+                  </View>
+                ) : null
+              }
+              keyExtractor={(item) => item._id}
+              ListEmptyComponent={<Text>No participants found.</Text>}
+            />
+          )}
         </View>
       </View>
     </BottomPopup>

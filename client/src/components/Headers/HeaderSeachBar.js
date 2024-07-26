@@ -29,12 +29,17 @@ export default function HeaderSearchBar({
         {arrowIcon}
       </View>
       <SearchBarHeader
-        style={[styles.searchBar, !showIcons && styles.fullWidth]}
+        style={[styles.searchBar]}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         handleSearch={handleSearch}
         onFocusChange={onSearchFocusChange}
       />
+      {!showIcons && isSearchFocused && (
+        <View style={styles.rightIconsContainer}>
+          <View style={[styles.icon, styles.iconSpacing]}></View>
+        </View>
+      )}
       {showIcons && !isSearchFocused && (
         <View style={styles.rightIconsContainer}>
           {icon1 && (

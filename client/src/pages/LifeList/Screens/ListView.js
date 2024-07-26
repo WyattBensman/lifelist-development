@@ -10,7 +10,7 @@ import { REMOVE_EXPERIENCE_FROM_LIFELIST } from "../../../utils/mutations";
 import { useAuth } from "../../../contexts/AuthContext";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import LoadingScreen from "../../Loading/LoadingScreen";
-import DeleteConfirmation from "../Modals/DeleteConfirmation";
+import CustomAlert from "../../../components/Alerts/CustomAlert";
 import Icon from "../../../components/Icons/Icon";
 
 export default function ListView({ navigation }) {
@@ -182,10 +182,11 @@ export default function ListView({ navigation }) {
         navigation={navigation}
         onDelete={handleDeleteExperience} // Ensure onDelete is passed
       />
-      <DeleteConfirmation
+      <CustomAlert
         visible={isModalVisible}
+        onRequestClose={() => setModalVisible(false)}
+        message="Are you sure you want to delete this experience?"
         onConfirm={confirmDeleteExperience}
-        onCancel={() => setModalVisible(false)}
       />
     </View>
   );

@@ -87,8 +87,6 @@ export default function ViewShot() {
     }
   };
 
-  console.log(currentShot._id);
-
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
   };
@@ -108,10 +106,10 @@ export default function ViewShot() {
           setCurrentIndex((prevIndex) =>
             prevIndex === newShotsData.length ? prevIndex - 1 : prevIndex
           );
+          refetch(); // Refetch to get the updated list of shots
         } else {
           navigation.goBack(); // If no shots are left, go back
         }
-        refetch(); // Refetch to get the updated list of shots
       } else {
         alert(data.deleteCameraShot.message);
       }
@@ -157,54 +155,66 @@ export default function ViewShot() {
 
   return (
     <View style={layoutStyles.wrapper}>
-      <ViewShotHeader
-        arrow={
-          <Icon
-            name="xmark"
-            style={iconStyles.exit}
-            onPress={() => navigation.goBack()}
-            weight={"semibold"}
+      {shotsData.length > 0 && (
+        <>
+          <ViewShotHeader
+            arrow={
+              <Icon
+                name="xmark"
+                style={iconStyles.exit}
+                onPress={() => navigation.goBack()}
+                weight={"semibold"}
+              />
+            }
+            date={new Date(currentShot.capturedAt).toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            })}
+            time={new Date(currentShot.capturedAt).toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "numeric",
+              hour12: true,
+            })}
+            ellipsis={
+              <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+                <Icon
+                  name="ellipsis"
+                  style={iconStyles.ellipsis}
+                  weight="bold"
+                  onPress={toggleMenu}
+                />
+              </Animated.View>
+            }
+            hasBorder={false}
+            dropdownVisible={isMenuVisible}
+            dropdownContent={dropdownContent}
           />
-        }
-        date={date}
-        time={time}
-        ellipsis={
-          <Animated.View style={{ transform: [{ rotate: rotation }] }}>
-            <Icon
-              name="ellipsis"
-              style={iconStyles.ellipsis}
-              weight="bold"
-              onPress={toggleMenu}
+          <View style={{ height: imageHeight }}>
+            <FlatList
+              data={shotsData}
+              renderItem={({ item }) => (
+                <View style={{ width }}>
+                  <ViewShotCard imageUrl={item.image} />
+                </View>
+              )}
+              keyExtractor={(item) => item._id.toString()}
+              horizontal
+              pagingEnabled
+              onViewableItemsChanged={handleViewableItemsChanged}
+              showsHorizontalScrollIndicator={false}
+              snapToAlignment="start"
+              decelerationRate="fast"
+              initialScrollIndex={currentIndex}
+              getItemLayout={(data, index) => ({
+                length: width,
+                offset: width * index,
+                index,
+              })}
             />
-          </Animated.View>
-        }
-        hasBorder={false}
-        dropdownVisible={isMenuVisible}
-        dropdownContent={dropdownContent}
-      />
-      <View style={{ height: imageHeight }}>
-        <FlatList
-          data={shotsData}
-          renderItem={({ item }) => (
-            <View style={{ width }}>
-              <ViewShotCard imageUrl={item.image} />
-            </View>
-          )}
-          keyExtractor={(item) => item._id.toString()}
-          horizontal
-          pagingEnabled
-          onViewableItemsChanged={handleViewableItemsChanged}
-          showsHorizontalScrollIndicator={false}
-          snapToAlignment="start"
-          decelerationRate="fast"
-          initialScrollIndex={currentIndex}
-          getItemLayout={(data, index) => ({
-            length: width,
-            offset: width * index,
-            index,
-          })}
-        />
-      </View>
+          </View>
+        </>
+      )}
       <View style={styles.bottomContainer}>
         <Pressable style={styles.iconButton} onPress={handleSharePress}>
           <Icon

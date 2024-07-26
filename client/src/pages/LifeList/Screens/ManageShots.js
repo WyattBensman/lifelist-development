@@ -12,10 +12,12 @@ import { UPDATE_ASSOCIATED_SHOTS } from "../../../utils/mutations";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function ManageShots() {
   const route = useRoute();
   const navigation = useNavigation();
+  const { setIsTabBarVisible } = useNavigationContext();
   const { experienceId, associatedShots } = route.params;
   const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_SHOTS);
   const [updateShots] = useMutation(UPDATE_ASSOCIATED_SHOTS);
@@ -23,6 +25,10 @@ export default function ManageShots() {
   const [selectedShots, setSelectedShots] = useState([]);
   const [isModified, setIsModified] = useState(false);
   const [title, setTitle] = useState("Manage Shots");
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   useEffect(() => {
     if (associatedShots) {

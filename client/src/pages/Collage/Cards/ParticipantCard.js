@@ -1,15 +1,25 @@
 import React from "react";
-import { Image, Text, View, StyleSheet } from "react-native";
+import { Image, Text, View, StyleSheet, Pressable } from "react-native";
 import { BASE_URL } from "../../../utils/config";
 import IconStatic from "../../../components/Icons/IconStatic";
 import { iconStyles } from "../../../styles";
+import { useNavigation } from "@react-navigation/native";
 
-export default function ParticipantCard({ participant }) {
+export default function ParticipantCard({ participant, onRequestClose }) {
+  const navigation = useNavigation();
   const profilePictureUrl = `${BASE_URL}${participant.profilePicture}`;
+
+  const handleProfilePress = () => {
+    navigation.navigate("ProfileStack", {
+      screen: "Profile",
+      params: { userId: participant._id },
+    });
+    onRequestClose();
+  };
 
   return (
     <View style={styles.listItemContainer}>
-      <View style={styles.contentContainer}>
+      <Pressable onPress={handleProfilePress} style={styles.contentContainer}>
         <Image source={{ uri: profilePictureUrl }} style={styles.imageMd} />
         <View style={styles.textContainer}>
           <Text style={styles.primaryText}>{participant.fullName}</Text>
@@ -24,7 +34,7 @@ export default function ParticipantCard({ participant }) {
             weight={"semibold"}
           />
         </View>
-      </View>
+      </Pressable>
     </View>
   );
 }

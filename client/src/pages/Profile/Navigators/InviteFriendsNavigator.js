@@ -16,9 +16,9 @@ const tabs = [
   { name: "Invite", component: InviteFriends },
 ];
 
-export default function InviteFriendsNavigator({ searchQuery }) {
-  const [activeTab, setActiveTab] = useState("Suggested");
-  const translateX = useSharedValue(0);
+export default function InviteFriendsNavigator({ searchQuery, initialTab }) {
+  const [activeTab, setActiveTab] = useState(initialTab); // Set initialTab as the initial active tab
+  const translateX = useSharedValue(initialTab === "Suggested" ? 0 : -width);
 
   useEffect(() => {
     translateX.value = activeTab === "Suggested" ? 0 : -width;

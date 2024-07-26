@@ -6,12 +6,19 @@ import { useNavigationContext } from "../../../contexts/NavigationContext";
 import SearchBarStandard from "../../../components/SearchBars/SearchBarStandard";
 import InviteFriendsNavigator from "../Navigators/InviteFriendsNavigator";
 import { layoutStyles, iconStyles } from "../../../styles";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 
 export default function InviteFriends() {
   const navigation = useNavigation();
+  const route = useRoute();
   const [searchQuery, setSearchQuery] = useState("");
   const { setIsTabBarVisible } = useNavigationContext();
+
+  const initialTab = route.params?.initialTab || "Suggested"; // Get initialTab from route params
 
   useFocusEffect(() => {
     setIsTabBarVisible(false);
@@ -41,7 +48,10 @@ export default function InviteFriends() {
           onFocusChange={() => {}}
         />
       </View>
-      <InviteFriendsNavigator searchQuery={searchQuery} />
+      <InviteFriendsNavigator
+        searchQuery={searchQuery}
+        initialTab={initialTab}
+      />
     </View>
   );
 }

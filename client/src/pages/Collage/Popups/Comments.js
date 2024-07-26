@@ -9,14 +9,17 @@ import {
   Pressable,
   KeyboardAvoidingView,
   Platform,
+  Dimensions,
 } from "react-native";
 import { useQuery, useMutation } from "@apollo/client";
 import { useFocusEffect } from "@react-navigation/native";
 import { GET_COMMENTS } from "../../../utils/queries";
 import { CREATE_COMMENT, DELETE_COMMENT } from "../../../utils/mutations";
 import { headerStyles, layoutStyles } from "../../../styles";
-import BottomPopup from "../../Profile/Popups/BottomPopup";
+import BottomPopup from "./BottomPopup";
 import CommentCard from "../Cards/CommentCard";
+
+const { height: screenHeight } = Dimensions.get("window");
 
 export default function Comments({
   visible,
@@ -27,7 +30,7 @@ export default function Comments({
   const [comment, setComment] = useState("");
   const { data, loading, error, refetch } = useQuery(GET_COMMENTS, {
     variables: { collageId },
-    skip: !visible, // Skip the query if the popup is not visible
+    skip: !visible,
   });
 
   useFocusEffect(
@@ -81,7 +84,11 @@ export default function Comments({
   };
 
   return (
-    <BottomPopup visible={visible} onRequestClose={onRequestClose} height={400}>
+    <BottomPopup
+      visible={visible}
+      onRequestClose={onRequestClose}
+      initialHeight={screenHeight * 0.6}
+    >
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
