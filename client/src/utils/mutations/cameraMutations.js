@@ -83,29 +83,41 @@ export const DELETE_CAMERA_ALBUM = gql`
 `;
 
 // Add shots to a camera album
-export const ADD_SHOTS_TO_ALBUM = gql`
-  mutation AddShotsToAlbum($albumId: ID!, $shotIds: [ID]!) {
-    addShotsToAlbum(albumId: $albumId, shotIds: $shotIds) {
-      _id
-      title
-      shots {
-        _id
-        image
-      }
+export const ADD_SHOT_TO_ALBUM = gql`
+  mutation AddShotToAlbum($albumId: ID!, $shotId: ID!) {
+    addShotToAlbum(albumId: $albumId, shotId: $shotId) {
+      success
+      message
     }
   }
 `;
 
 // Remove shots from a camera album
-export const REMOVE_SHOTS_FROM_ALBUM = gql`
-  mutation RemoveShotsFromAlbum($albumId: ID!, $shotIds: [ID]!) {
-    removeShotsFromAlbum(albumId: $albumId, shotIds: $shotIds) {
-      _id
-      title
-      shots {
-        _id
-        image
-      }
+export const REMOVE_SHOT_FROM_ALBUM = gql`
+  mutation RemoveShotFromAlbum($albumId: ID!, $shotId: ID!) {
+    removeShotFromAlbum(albumId: $albumId, shotId: $shotId) {
+      success
+      message
+    }
+  }
+`;
+
+// Add shot to an experience
+export const ADD_SHOT_TO_EXPERIENCE = gql`
+  mutation AddShotToExperience($experienceId: ID!, $shotId: ID!) {
+    addShotToExperience(experienceId: $experienceId, shotId: $shotId) {
+      success
+      message
+    }
+  }
+`;
+
+// Remove shot from an experience
+export const REMOVE_SHOT_FROM_EXPERIENCE = gql`
+  mutation RemoveShotFromExperience($experienceId: ID!, $shotId: ID!) {
+    removeShotFromExperience(experienceId: $experienceId, shotId: $shotId) {
+      success
+      message
     }
   }
 `;

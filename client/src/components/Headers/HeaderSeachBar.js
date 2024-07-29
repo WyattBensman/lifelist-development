@@ -35,7 +35,7 @@ export default function HeaderSearchBar({
         handleSearch={handleSearch}
         onFocusChange={onSearchFocusChange}
       />
-      {!showIcons && isSearchFocused && (
+      {isSearchFocused && (
         <View style={styles.rightIconsContainer}>
           <View style={[styles.icon, styles.iconSpacing]}></View>
         </View>

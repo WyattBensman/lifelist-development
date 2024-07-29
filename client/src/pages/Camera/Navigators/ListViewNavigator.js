@@ -1,9 +1,9 @@
-// ListViewNavigator.js
 import React, { useState } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
-import AllExperiencesList from "../Screens/TabScreens/AllExperiencesList";
-import CategoryExperiencesList from "../Screens/TabScreens/CategoryExperiencesList";
+import AllExperiencesList from "../Screens/AllExperiencesList";
+import CategoryExperiencesList from "../Screens/CategoryExperiencesList";
 import { layoutStyles } from "../../../styles";
+import AddShotToExperienceCard from "../Cards/AddShotToExperienceCard";
 
 const categories = [
   "All",
@@ -21,11 +21,9 @@ const categories = [
 
 export default function ListViewNavigator({
   lifeList,
-  viewType,
-  editMode,
   searchQuery,
   navigation,
-  onDelete,
+  cardComponent: CardComponent,
 }) {
   const [activeTab, setActiveTab] = useState("All");
 
@@ -34,11 +32,10 @@ export default function ListViewNavigator({
       return (
         <AllExperiencesList
           lifeList={lifeList}
-          viewType={viewType}
-          editMode={editMode}
+          viewType="EXPERIENCED"
           searchQuery={searchQuery}
           navigation={navigation}
-          onDelete={onDelete}
+          cardComponent={CardComponent}
         />
       );
     } else {
@@ -46,11 +43,10 @@ export default function ListViewNavigator({
         <CategoryExperiencesList
           lifeList={lifeList}
           category={activeTab.toUpperCase().replace(/ /g, "_")}
-          viewType={viewType}
-          editMode={editMode}
+          viewType="EXPERIENCED"
           searchQuery={searchQuery}
           navigation={navigation}
-          onDelete={onDelete}
+          cardComponent={CardComponent}
         />
       );
     }
@@ -69,20 +65,14 @@ export default function ListViewNavigator({
               key={category}
               style={[
                 styles.navigatorButton,
-                activeTab === category &&
-                  (viewType === "EXPERIENCED"
-                    ? styles.activeNavigatorButtonExperienced
-                    : styles.activeNavigatorButtonWishlisted),
+                activeTab === category && styles.activeNavigatorButton,
               ]}
               onPress={() => setActiveTab(category)}
             >
               <Text
                 style={[
                   styles.navigatorText,
-                  activeTab === category &&
-                    (viewType === "EXPERIENCED"
-                      ? styles.activeNavigatorTextExperienced
-                      : styles.activeNavigatorTextWishlisted),
+                  activeTab === category && styles.activeNavigatorText,
                 ]}
               >
                 {category}
@@ -117,26 +107,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  activeNavigatorButtonExperienced: {
+  activeNavigatorButton: {
     backgroundColor: "#6AB95230",
     borderWidth: 1,
     borderColor: "#6AB95250",
-  },
-  activeNavigatorButtonWishlisted: {
-    backgroundColor: "#5FC4ED30",
-    borderWidth: 1,
-    borderColor: "#5FC4ED50",
   },
   navigatorText: {
     color: "#696969",
     fontWeight: "500",
   },
-  activeNavigatorTextExperienced: {
+  activeNavigatorText: {
     color: "#6AB952",
-    fontWeight: "500",
-  },
-  activeNavigatorTextWishlisted: {
-    color: "#5FC4ED",
     fontWeight: "500",
   },
   screenContainer: {

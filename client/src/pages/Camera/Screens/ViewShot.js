@@ -97,12 +97,10 @@ export default function ViewShot() {
         variables: { shotId: currentShot._id },
       });
       if (data.deleteCameraShot.success) {
-        console.log("Success");
         const newShotsData = shotsData.filter(
           (shot) => shot._id !== currentShot._id
         );
         if (newShotsData.length > 0) {
-          console.log("Double Success");
           setCurrentIndex((prevIndex) =>
             prevIndex === newShotsData.length ? prevIndex - 1 : prevIndex
           );
@@ -119,6 +117,14 @@ export default function ViewShot() {
     }
   };
 
+  const handleAddToExperiencePress = () => {
+    navigation.navigate("AddShotToExperience", { shotId: currentShot._id });
+  };
+
+  const handleAddToAlbumPress = () => {
+    navigation.navigate("AddShotToAlbum", { shotId: currentShot._id });
+  };
+
   const dropdownItems = [
     {
       icon: "trash",
@@ -132,7 +138,7 @@ export default function ViewShot() {
       icon: "folder.badge.plus",
       style: iconStyles.addToAlbum,
       label: "Add to Album",
-      onPress: () => console.log("Add to Album"),
+      onPress: handleAddToAlbumPress,
       backgroundColor: "#5FC4ED30",
       tintColor: "#5FC4ED",
     },
@@ -140,7 +146,7 @@ export default function ViewShot() {
       icon: "plus",
       style: iconStyles.addExperienceIcon,
       label: "Add to Exp",
-      onPress: () => console.log("Add to Experience"),
+      onPress: handleAddToExperiencePress,
       backgroundColor: "#6AB95230",
       tintColor: "#6AB952",
     },
@@ -166,16 +172,8 @@ export default function ViewShot() {
                 weight={"semibold"}
               />
             }
-            date={new Date(currentShot.capturedAt).toLocaleDateString("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-            })}
-            time={new Date(currentShot.capturedAt).toLocaleTimeString("en-US", {
-              hour: "numeric",
-              minute: "numeric",
-              hour12: true,
-            })}
+            date={date}
+            time={time}
             ellipsis={
               <Animated.View style={{ transform: [{ rotate: rotation }] }}>
                 <Icon
@@ -216,13 +214,12 @@ export default function ViewShot() {
         </>
       )}
       <View style={styles.bottomContainer}>
-        <Pressable style={styles.iconButton} onPress={handleSharePress}>
-          <Icon
-            name="paperplane"
-            style={iconStyles.shareIcon}
-            weight="bold"
-            onPress={handleSharePress}
-          />
+        <Pressable
+          style={[styles.iconButton, isMenuVisible && styles.disabledButton]}
+          onPress={!isMenuVisible ? handleSharePress : null}
+          disabled={isMenuVisible}
+        >
+          <Icon name="paperplane" style={iconStyles.shareIcon} weight="bold" />
         </Pressable>
       </View>
     </View>
@@ -245,5 +242,8 @@ const styles = StyleSheet.create({
     padding: 12,
     justifyContent: "center",
     alignItems: "center",
+  },
+  disabledButton: {
+    opacity: 0.5,
   },
 });

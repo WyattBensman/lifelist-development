@@ -216,4 +216,8 @@ export const iconStyles = StyleSheet.create({
     width: 26,
     height: 16.95,
   },
+  checkmark: {
+    height: 15,
+    width: 15,
+  },
 });

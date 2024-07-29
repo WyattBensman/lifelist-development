@@ -1,7 +1,6 @@
 import React from "react";
 import { View, FlatList } from "react-native";
-import { layoutStyles } from "../../../../styles";
-import ListItemCard from "../../Cards/ListItemCard";
+import { layoutStyles } from "../../../styles";
 
 const sortByTitle = (a, b) =>
   a.experience.title.localeCompare(b.experience.title);
@@ -13,6 +12,7 @@ export default function CategoryExperiencesList({
   editMode,
   searchQuery,
   onDelete,
+  cardComponent: CardComponent = ListItemCard,
 }) {
   const filteredList = lifeList.experiences
     .filter(
@@ -24,7 +24,7 @@ export default function CategoryExperiencesList({
     .sort(sortByTitle);
 
   const renderExperience = ({ item }) => (
-    <ListItemCard experience={item} editMode={editMode} onDelete={onDelete} />
+    <CardComponent experience={item} editMode={editMode} onDelete={onDelete} />
   );
 
   return (

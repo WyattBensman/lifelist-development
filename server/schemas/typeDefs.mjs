@@ -431,8 +431,10 @@ type User {
     createCameraAlbum(title: String!, description: String, shots: [ID]): CameraAlbum
     editCameraAlbum(albumId: ID!, title: String, description: String): CameraAlbum
     deleteCameraAlbum(albumId: ID!): StandardResponse
-    addShotsToAlbum(albumId: ID!, shotIds: [ID]): CameraAlbum
-    removeShotsFromAlbum(albumId: ID!, shotIds: [ID]): CameraAlbum
+    addShotToAlbum(albumId: ID!, shotId: ID!): StandardResponse
+    removeShotFromAlbum(albumId: ID!, shotId: ID!): StandardResponse
+    addShotToExperience(experienceId: ID!, shotId: ID!): StandardResponse
+    removeShotFromExperience(experienceId: ID!, shotId: ID!): StandardResponse
 
     # Privacy Group Mutations
     createPrivacyGroup(groupName: String!, userIds: [ID]!): PrivacyGroup

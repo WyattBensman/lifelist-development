@@ -5,6 +5,8 @@ import DevelopingRoll from "../pages/Camera/Screens/DevelopingRoll";
 import CreateAlbum from "../pages/Camera/Screens/CreateAlbum";
 import ViewShot from "../pages/Camera/Screens/ViewShot";
 import ViewAlbum from "../pages/Camera/Screens/ViewAlbum";
+import AddShotToExperience from "../pages/Camera/Screens/AddShotToExperience";
+import AddShotToAlbum from "../pages/Camera/Screens/AddShotToAlbum";
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +48,16 @@ export default function CameraStack() {
       <Stack.Screen
         name="ViewAlbum"
         component={ViewAlbum}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddShotToExperience"
+        component={AddShotToExperience}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddShotToAlbum"
+        component={AddShotToAlbum}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
