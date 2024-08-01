@@ -121,3 +121,13 @@ export const REMOVE_SHOT_FROM_EXPERIENCE = gql`
     }
   }
 `;
+
+// Update shots in album
+export const UPDATE_ALBUM_SHOTS = gql`
+  mutation UpdateAlbumShots($albumId: ID!, $shotIds: [ID]!) {
+    updateAlbumShots(albumId: $albumId, shotIds: $shotIds) {
+      success
+      message
+    }
+  }
+`;

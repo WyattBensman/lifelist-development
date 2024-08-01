@@ -435,6 +435,7 @@ type User {
     removeShotFromAlbum(albumId: ID!, shotId: ID!): StandardResponse
     addShotToExperience(experienceId: ID!, shotId: ID!): StandardResponse
     removeShotFromExperience(experienceId: ID!, shotId: ID!): StandardResponse
+    updateAlbumShots(albumId: ID!, shotIds: [ID]!): StandardResponse
 
     # Privacy Group Mutations
     createPrivacyGroup(groupName: String!, userIds: [ID]!): PrivacyGroup

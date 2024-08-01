@@ -1,24 +1,34 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, FlatList, StyleSheet, Animated } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import ShotCard from "../Cards/ShotCard";
-import { GET_CAMERA_ALBUM } from "../../../utils/queries/cameraQueries";
+import {
+  GET_CAMERA_ALBUM,
+  GET_ALL_CAMERA_ALBUMS,
+} from "../../../utils/queries/cameraQueries";
 import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
 import Icon from "../../../components/Icons/Icon";
 import NavigableShotCard from "../Cards/NavigableShotCard";
+import { DELETE_CAMERA_ALBUM } from "../../../utils/mutations";
+import CustomAlert from "../../../components/Alerts/CustomAlert";
 
 export default function ViewAlbum() {
   const navigation = useNavigation();
   const route = useRoute();
   const { albumId } = route.params;
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const { data, loading, error } = useQuery(GET_CAMERA_ALBUM, {
     variables: { albumId },
+  });
+
+  const [deleteAlbum] = useMutation(DELETE_CAMERA_ALBUM, {
+    refetchQueries: [{ query: GET_ALL_CAMERA_ALBUMS }],
+    awaitRefetchQueries: true,
   });
 
   useEffect(() => {
@@ -42,12 +52,35 @@ export default function ViewAlbum() {
     setDropdownVisible(!dropdownVisible);
   };
 
+  const handleDeleteAlbum = () => {
+    setAlertVisible(true);
+  };
+
+  const confirmDeleteAlbum = async () => {
+    setAlertVisible(false);
+    try {
+      const { data } = await deleteAlbum({ variables: { albumId } });
+      if (data.deleteCameraAlbum.success) {
+        navigation.goBack(); // Navigate back to the previous screen
+      } else {
+        Alert.alert("Error", data.deleteCameraAlbum.message);
+      }
+    } catch (error) {
+      console.error("Failed to delete album:", error);
+      Alert.alert("Error", "Failed to delete album.");
+    }
+  };
+
   const dropdownItems = [
     {
       icon: "plus",
       style: iconStyles.plus,
       label: "Add Shots",
-      onPress: () => console.log("Add Shots to Album"),
+      onPress: () =>
+        navigation.navigate("ManageAlbumShots", {
+          albumId: album._id,
+          associatedShots: album.shots,
+        }),
       backgroundColor: "#6AB95230", // Add backgroundColor
       tintColor: "#6AB952", // Add tintColor
     },
@@ -55,7 +88,11 @@ export default function ViewAlbum() {
       icon: "pencil.slash",
       style: iconStyles.removeShots,
       label: "Remove Shots",
-      onPress: () => console.log("Remove Shots from Album"),
+      onPress: () =>
+        navigation.navigate("RemoveShotsFromAlbum", {
+          albumId: album._id,
+          associatedShots: album.shots,
+        }),
       backgroundColor: "#5FC4ED30", // Add backgroundColor
       tintColor: "#5FC4ED", // Add tintColor
     },
@@ -63,7 +100,7 @@ export default function ViewAlbum() {
       icon: "trash",
       style: iconStyles.trash,
       label: "Delete Album",
-      onPress: () => console.log("Delete Album"),
+      onPress: handleDeleteAlbum,
       backgroundColor: "#E5393530", // Very Light Pink Background
       tintColor: "#E53935", // Slightly Darker Red
     },
@@ -104,6 +141,12 @@ export default function ViewAlbum() {
         renderItem={renderShot}
         keyExtractor={(item) => item._id}
         numColumns={3}
+      />
+      <CustomAlert
+        visible={alertVisible}
+        onRequestClose={() => setAlertVisible(false)}
+        message="Are you sure you want to delete this album? This action cannot be undone."
+        onConfirm={confirmDeleteAlbum}
       />
     </View>
   );

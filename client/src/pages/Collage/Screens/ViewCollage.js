@@ -63,16 +63,6 @@ export default function ViewCollage() {
               weight="semibold"
             />
           }
-          button1={
-            <Icon
-              name="ellipsis"
-              style={iconStyles.ellipsis}
-              weight="bold"
-              onPress={() => {
-                /* handle ellipsis action for the collage */
-              }}
-            />
-          }
         />
       </View>
       <FlatList

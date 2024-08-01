@@ -8,6 +8,7 @@ import addShotToAlbum from "./addShotToAlbum.mjs";
 import removeShotFromAlbum from "./removeShotFromAlbum.mjs";
 import addShotToExperience from "./addShotToExperience.mjs";
 import removeShotFromExperience from "./removeShotFromExperience.mjs";
+import updateAlbumShots from "./updateAlbumShots.mjs";
 
 export {
   createCameraAlbum,
@@ -20,4 +21,5 @@ export {
   removeShotFromAlbum,
   addShotToExperience,
   removeShotFromExperience,
+  updateAlbumShots,
 };

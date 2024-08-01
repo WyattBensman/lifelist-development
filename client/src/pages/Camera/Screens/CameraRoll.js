@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { FlatList, Text, View, StyleSheet, ScrollView } from "react-native";
 import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
 import {
   GET_ALL_CAMERA_ALBUMS,
@@ -21,12 +21,24 @@ export default function CameraRoll() {
     data: albumsData,
     loading: albumsLoading,
     error: albumsError,
-  } = useQuery(GET_ALL_CAMERA_ALBUMS);
+    refetch: refetchAlbums,
+  } = useQuery(GET_ALL_CAMERA_ALBUMS, {
+    variables: { userId: currentUser._id },
+  });
+
   const {
     data: shotsData,
     loading: shotsLoading,
     error: shotsError,
-  } = useQuery(GET_ALL_CAMERA_SHOTS);
+  } = useQuery(GET_ALL_CAMERA_SHOTS, {
+    variables: { userId: currentUser._id },
+  });
+
+  useFocusEffect(
+    useCallback(() => {
+      refetchAlbums();
+    }, [refetchAlbums])
+  );
 
   if (albumsLoading || shotsLoading) return <Text>Loading...</Text>;
   if (albumsError) return <Text>Error: {albumsError.message}</Text>;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, ScrollView } from "react-native";
 import {
   useFocusEffect,
   useNavigation,
@@ -37,7 +37,6 @@ export default function AddExperiencesOverview() {
   const { setUpdateShotsCallback, setUpdateCollagesCallback } =
     useCallbackContext();
 
-  // Check if all experiences have a list selected
   const allExperiencesHaveList = experiences.every(
     (experience) => experience.list !== null
   );
@@ -46,7 +45,6 @@ export default function AddExperiencesOverview() {
     if (!allExperiencesHaveList) return;
 
     try {
-      // Iterate over each experience and add them to the LifeList
       for (const exp of experiences) {
         const response = await addExperienceToLifeList({
           variables: {
@@ -65,12 +63,12 @@ export default function AddExperiencesOverview() {
             "Failed to add experience:",
             response.data.addExperienceToLifeList.message
           );
-          return; // Stop the process if any experience fails to be added
+          return;
         }
       }
 
-      const updatedUser = await refetchUserProfile(); // Fetch updated user data
-      updateCurrentUser(updatedUser.data.getUserProfileById); // Update current user in AuthContext
+      const updatedUser = await refetchUserProfile();
+      updateCurrentUser(updatedUser.data.getUserProfileById);
       navigation.navigate("AdminLifeList");
     } catch (error) {
       console.error("Error adding experiences:", error);
@@ -128,7 +126,7 @@ export default function AddExperiencesOverview() {
           </View>
         }
       />
-      <View style={{ marginTop: 8 }}>
+      <ScrollView style={{ marginTop: 8, flex: 1 }}>
         <FlatList
           data={experiences}
           renderItem={({ item }) => (
@@ -139,7 +137,7 @@ export default function AddExperiencesOverview() {
                 setUpdateShotsCallback(
                   () => (newShots) => handleUpdateShots(expId, newShots)
                 );
-                navigation.navigate("ManageShots", {
+                navigation.navigate("ManageTempShots", {
                   experienceId: expId,
                   associatedShots: shots,
                 });
@@ -148,7 +146,7 @@ export default function AddExperiencesOverview() {
           )}
           keyExtractor={(item) => item._id}
         />
-      </View>
+      </ScrollView>
     </View>
   );
 }

@@ -18,6 +18,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import Icon from "../../../components/Icons/Icon";
 import IconStatic from "../../../components/Icons/IconStatic";
+import CustomAlert from "../../../components/Alerts/CustomAlert"; // Import CustomAlert
 
 export default function ListItemCard({ experience, editMode, onDelete }) {
   const navigation = useNavigation();
@@ -25,6 +26,7 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
   const [isEditMode, setIsEditMode] = useState(editMode);
   const [listStatus, setListStatus] = useState(experience.list);
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const [isAlertVisible, setIsAlertVisible] = useState(false); // State for alert visibility
 
   const imageUrl = `${BASE_URL}${experience.experience.image}`;
   const truncatedTitle = truncateText(experience.experience.title, 40);
@@ -47,6 +49,26 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
   };
 
   const handleToggleListStatus = async () => {
+    if (listStatus === "EXPERIENCED" && associatedShots.length > 0) {
+      setIsAlertVisible(true);
+    } else {
+      const newListStatus =
+        listStatus === "EXPERIENCED" ? "WISHLISTED" : "EXPERIENCED";
+      setListStatus(newListStatus);
+      try {
+        await updateListStatus({
+          variables: {
+            lifeListExperienceId: _id,
+            newListStatus,
+          },
+        });
+      } catch (error) {
+        console.error("Failed to update list status:", error);
+      }
+    }
+  };
+
+  const confirmChangeListStatus = async () => {
     const newListStatus =
       listStatus === "EXPERIENCED" ? "WISHLISTED" : "EXPERIENCED";
     setListStatus(newListStatus);
@@ -57,8 +79,20 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
           newListStatus,
         },
       });
+      if (listStatus === "EXPERIENCED") {
+        await updateShots({
+          variables: {
+            lifeListExperienceId: _id,
+            shotIds: [],
+          },
+        });
+      }
+      setIsAlertVisible(false);
     } catch (error) {
-      console.error("Failed to update list status:", error);
+      console.error(
+        "Failed to update list status or clear associated shots:",
+        error
+      );
     }
   };
 
@@ -165,6 +199,12 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
           </View>
         )}
       </Pressable>
+      <CustomAlert
+        visible={isAlertVisible}
+        onRequestClose={() => setIsAlertVisible(false)}
+        message="Are you sure you want to change the list? Your associated shots will be cleared."
+        onConfirm={confirmChangeListStatus}
+      />
     </View>
   );
 }
@@ -196,7 +236,7 @@ const styles = StyleSheet.create({
   },
   secondaryText: {
     fontSize: 12,
-    color: "#696969", //#8A8A8E
+    color: "#696969",
     marginTop: 1.5,
   },
   optionsContainer: {

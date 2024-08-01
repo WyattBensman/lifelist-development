@@ -6,6 +6,7 @@ import ManageCollages from "../pages/LifeList/Screens/ManageCollages";
 import UpdateShots from "../pages/LifeList/Screens/UpdateShots";
 import AdminLifeList from "../pages/LifeList/Screens/AdminLifeList";
 import LifeListStack from "./LifeListStack";
+import ManageTempShots from "../pages/LifeList/Screens/ManageTempShots";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,11 @@ export default function AdminLifeListStack() {
       <Stack.Screen
         name="AddExperiencesOverview"
         component={AddExperiencesOverview}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ManageTempShots"
+        component={ManageTempShots}
         options={{ headerShown: false }}
       />
       <Stack.Screen

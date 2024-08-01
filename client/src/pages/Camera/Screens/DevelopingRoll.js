@@ -7,19 +7,19 @@ import { useQuery } from "@apollo/client";
 import { GET_DEVELOPING_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import Icon from "../../../components/Icons/Icon";
 import BlurredShotCard from "../Cards/BlurredShotCard";
-import DropdownInfo from "../../../components/Dropdowns/DropdownInfo";
+import SimpleAlert from "../../../components/Alerts/SimpleAlert";
 
 export default function DevelopingRoll() {
   const navigation = useNavigation();
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [alertVisible, setAlertVisible] = useState(false);
 
   const { data, loading, error } = useQuery(GET_DEVELOPING_CAMERA_SHOTS);
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
 
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
+  const toggleAlert = () => {
+    setAlertVisible(!alertVisible);
   };
 
   return (
@@ -39,17 +39,9 @@ export default function DevelopingRoll() {
             name="info"
             style={iconStyles.info}
             weight="semibold"
-            onPress={toggleDropdown} // Add onPress handler
+            onPress={toggleAlert}
           />
         }
-        dropdownVisible={dropdownVisible}
-        dropdownContent={
-          <DropdownInfo
-            lineOne="Camera Shots will be fully developed by 6am tomorrow!"
-            lineTwo="We'll let you know when they're available."
-          />
-        }
-        toggleDropdown={toggleDropdown}
       />
       <View style={layoutStyles.marginTopSm}>
         <FlatList
@@ -61,6 +53,11 @@ export default function DevelopingRoll() {
           showsVerticalScrollIndicator={false}
         />
       </View>
+      <SimpleAlert
+        visible={alertVisible}
+        onRequestClose={toggleAlert}
+        message="Camera Shots will be fully developed by 6am tomorrow!"
+      />
     </View>
   );
 }

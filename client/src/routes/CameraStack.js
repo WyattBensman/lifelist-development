@@ -7,6 +7,8 @@ import ViewShot from "../pages/Camera/Screens/ViewShot";
 import ViewAlbum from "../pages/Camera/Screens/ViewAlbum";
 import AddShotToExperience from "../pages/Camera/Screens/AddShotToExperience";
 import AddShotToAlbum from "../pages/Camera/Screens/AddShotToAlbum";
+import ManageAlbumShots from "../pages/Camera/Screens/ManageAlbumShots";
+import RemoveShotsFromAlbum from "../pages/Camera/Screens/RemoveShotsFromAlbum.mjs";
 
 const Stack = createNativeStackNavigator();
 
@@ -58,6 +60,16 @@ export default function CameraStack() {
       <Stack.Screen
         name="AddShotToAlbum"
         component={AddShotToAlbum}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ManageAlbumShots"
+        component={ManageAlbumShots}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="RemoveShotsFromAlbum"
+        component={RemoveShotsFromAlbum}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

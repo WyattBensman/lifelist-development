@@ -1,5 +1,10 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import SearchBarHeader from "../SearchBars/SearchBarHeader";
 import { useNavigation } from "@react-navigation/native";
 
@@ -17,38 +22,45 @@ export default function HeaderSearchBar({
   const showIcons = arrowIcon || icon1 || icon2;
   const navigation = useNavigation();
 
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+    onSearchFocusChange(false);
+  };
+
   return (
-    <View
-      style={[
-        styles.headerContainer,
-        hasBorder && styles.border,
-        !icon1 && !icon2 && styles.paddingRight,
-      ]}
-    >
-      <View style={[styles.icon, arrowIcon ? styles.iconSpacing : {}]}>
-        {arrowIcon}
+    <TouchableWithoutFeedback onPress={dismissKeyboard}>
+      <View
+        style={[
+          styles.headerContainer,
+          hasBorder && styles.border,
+          !icon1 && !icon2 && styles.paddingRight,
+        ]}
+      >
+        <View style={[styles.icon, arrowIcon ? styles.iconSpacing : {}]}>
+          {arrowIcon}
+        </View>
+        <SearchBarHeader
+          style={[styles.searchBar]}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          handleSearch={handleSearch}
+          onFocusChange={onSearchFocusChange}
+        />
+        {isSearchFocused && (
+          <View style={styles.rightIconsContainer}>
+            <View style={[styles.icon, styles.iconSpacing]}></View>
+          </View>
+        )}
+        {showIcons && !isSearchFocused && (
+          <View style={styles.rightIconsContainer}>
+            {icon1 && (
+              <View style={[styles.icon, styles.iconSpacing]}>{icon1}</View>
+            )}
+            {icon2 && <View style={styles.icon}>{icon2}</View>}
+          </View>
+        )}
       </View>
-      <SearchBarHeader
-        style={[styles.searchBar]}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        handleSearch={handleSearch}
-        onFocusChange={onSearchFocusChange}
-      />
-      {isSearchFocused && (
-        <View style={styles.rightIconsContainer}>
-          <View style={[styles.icon, styles.iconSpacing]}></View>
-        </View>
-      )}
-      {showIcons && !isSearchFocused && (
-        <View style={styles.rightIconsContainer}>
-          {icon1 && (
-            <View style={[styles.icon, styles.iconSpacing]}>{icon1}</View>
-          )}
-          {icon2 && <View style={styles.icon}>{icon2}</View>}
-        </View>
-      )}
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 

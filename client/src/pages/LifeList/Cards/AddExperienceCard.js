@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Image, Text, View, Pressable, StyleSheet } from "react-native";
 import { cardStyles, iconStyles } from "../../../styles";
 import { truncateText, capitalizeText } from "../../../utils/utils";
 import { BASE_URL } from "../../../utils/config";
-import IconStatic from "../../../icons/IconStatic";
+import IconStatic from "../../../components/Icons/IconStatic";
+import CustomAlert from "../../../components/Alerts/CustomAlert";
 
 export default function AddExperienceCard({
   experience,
@@ -11,18 +12,33 @@ export default function AddExperienceCard({
   onListSelect,
   onUpdateShots,
 }) {
-  const [listStatus, setListStatus] = useState("");
-  const [isDropdownVisible, setDropdownVisible] = useState(false);
+  const [listStatus, setListStatus] = useState(experience.list || "");
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
 
   const imageUrl = `${BASE_URL}${experience.experience.image}`;
   const truncatedTitle = truncateText(experience.experience.title, 30);
   const capitalizedCategory = capitalizeText(experience.experience.category);
   const associatedShots = experience.associatedShots;
+  console.log(associatedShots);
+
+  useEffect(() => {
+    setListStatus(experience.list || "");
+  }, [experience]);
 
   const handleSelectList = (list) => {
-    setListStatus(list);
-    onListSelect(experience.experience._id, list);
-    setDropdownVisible(false);
+    if (list === "WISHLISTED" && associatedShots.length > 0) {
+      setIsAlertVisible(true);
+    } else {
+      setListStatus(list);
+      onListSelect(experience.experience._id, list);
+    }
+  };
+
+  const confirmChangeListStatus = () => {
+    setListStatus("WISHLISTED");
+    onListSelect(experience.experience._id, "WISHLISTED");
+    onUpdateShots(experience.experience._id, []);
+    setIsAlertVisible(false);
   };
 
   const handleManageShots = () => {
@@ -46,57 +62,64 @@ export default function AddExperienceCard({
           onPress={() => onDelete(experience.experience._id)}
         />
         <View style={styles.buttonsContainer}>
-          {listStatus !== "WISHLISTED" && (
+          {listStatus !== "EXPERIENCED" && listStatus !== "WISHLISTED" && (
+            <>
+              <Pressable
+                style={[styles.optionsButton, styles.spacer]}
+                onPress={() => handleSelectList("EXPERIENCED")}
+              >
+                <Text style={styles.optionsText}>Experienced</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.optionsButton, styles.spacer]}
+                onPress={() => handleSelectList("WISHLISTED")}
+              >
+                <Text style={styles.optionsText}>Wish Listed</Text>
+              </Pressable>
+            </>
+          )}
+          {listStatus === "EXPERIENCED" && (
+            <>
+              <Pressable
+                style={[styles.optionsButton, styles.spacer]}
+                onPress={handleManageShots}
+              >
+                <Text style={styles.optionsText}>
+                  {associatedShots.length === 0 ? "Add Shots" : "Manage Shots"}
+                </Text>
+              </Pressable>
+              <Pressable
+                style={[
+                  styles.optionsButton,
+                  styles.experiencedButton,
+                  styles.spacer,
+                ]}
+                onPress={() => handleSelectList("WISHLISTED")}
+              >
+                <Text style={[styles.optionsText, styles.experiencedColor]}>
+                  Experienced
+                </Text>
+              </Pressable>
+            </>
+          )}
+          {listStatus === "WISHLISTED" && (
             <Pressable
-              style={[styles.optionsButton, styles.spacer]}
-              onPress={handleManageShots}
+              style={[styles.optionsButton, styles.wishListedButton]}
+              onPress={() => handleSelectList("EXPERIENCED")}
             >
-              <Text style={styles.optionsText}>
-                {associatedShots.length === 0 ? "Add Shots" : "Manage Shots"}
+              <Text style={[styles.optionsText, styles.wishlistedColor]}>
+                Wish Listed
               </Text>
             </Pressable>
           )}
-          <Pressable
-            style={[
-              styles.optionsButton,
-              styles.spacer,
-              listStatus === "EXPERIENCED" && styles.experiencedButton,
-              listStatus === "WISHLISTED" && styles.wishListedButton,
-            ]}
-            onPress={() => setDropdownVisible(!isDropdownVisible)}
-          >
-            <Text
-              style={[
-                styles.optionsText,
-                listStatus === "EXPERIENCED" && styles.experiencedColor,
-                listStatus === "WISHLISTED" && styles.wishlistedColor,
-              ]}
-            >
-              {listStatus === "EXPERIENCED"
-                ? "Experienced"
-                : listStatus === "WISHLISTED"
-                ? "Wish Listed"
-                : "Select List"}
-            </Text>
-          </Pressable>
-          {isDropdownVisible && (
-            <View style={styles.dropdown}>
-              <Pressable
-                style={styles.dropdownOption}
-                onPress={() => handleSelectList("EXPERIENCED")}
-              >
-                <Text style={styles.dropdownOptionText}>Experienced</Text>
-              </Pressable>
-              <Pressable
-                style={styles.dropdownOption}
-                onPress={() => handleSelectList("WISHLISTED")}
-              >
-                <Text style={styles.dropdownOptionText}>Wish Listed</Text>
-              </Pressable>
-            </View>
-          )}
         </View>
       </View>
+      <CustomAlert
+        visible={isAlertVisible}
+        onRequestClose={() => setIsAlertVisible(false)}
+        message="Are you sure you want to change the list? Your associated shots will be cleared."
+        onConfirm={confirmChangeListStatus}
+      />
     </View>
   );
 }
@@ -158,25 +181,6 @@ const styles = StyleSheet.create({
   },
   spacer: {
     marginLeft: 8,
-  },
-  dropdown: {
-    position: "absolute",
-    top: 32,
-    left: 0,
-    backgroundColor: "white",
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    zIndex: 1,
-  },
-  dropdownOption: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  dropdownOptionText: {
-    color: "#000",
   },
   experiencedButton: {
     backgroundColor: "#6AB95230",
