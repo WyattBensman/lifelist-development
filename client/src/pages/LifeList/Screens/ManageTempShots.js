@@ -8,7 +8,6 @@ import {
 } from "@react-navigation/native";
 import ShotCard from "../../../components/Cards/ShotCard";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries";
-import { UPDATE_ASSOCIATED_SHOTS } from "../../../utils/mutations";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
@@ -18,9 +17,8 @@ export default function ManageTempShots() {
   const route = useRoute();
   const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
-  const { experienceId, associatedShots } = route.params;
+  const { experienceId, associatedShots, onUpdateShots } = route.params;
   const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_SHOTS);
-  const [updateShots] = useMutation(UPDATE_ASSOCIATED_SHOTS);
 
   const [selectedShots, setSelectedShots] = useState([]);
   const [isModified, setIsModified] = useState(false);
@@ -57,19 +55,10 @@ export default function ManageTempShots() {
     });
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!isModified) return;
-    try {
-      await updateShots({
-        variables: {
-          lifeListExperienceId: experienceId,
-          shotIds: selectedShots.map((shot) => shot._id),
-        },
-      });
-      navigation.goBack();
-    } catch (error) {
-      console.error("Failed to update associated shots:", error);
-    }
+    onUpdateShots(experienceId, selectedShots);
+    navigation.goBack();
   };
 
   useFocusEffect(

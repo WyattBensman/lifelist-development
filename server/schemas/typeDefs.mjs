@@ -123,6 +123,11 @@ type User {
     list: LifeListListEnum
     associatedShots: [CameraShotInfo]
     associatedCollages: [Collage]
+    year: Int
+    venue: Experience
+    performers: [Experience]
+    opponent: Experience
+    score: [Score]
   }
   
   enum LifeListListEnum {
@@ -145,18 +150,70 @@ type User {
     collages: [Collage]
   }
 
-  enum ExperienceCategory {
-    ATTRACTIONS
-    DESTINATIONS
-    EVENTS
-    COURSES
-    VENUES
-    FESTIVALS
-    HIKES_AND_TRAILS
-    RESORTS
-    CONCERTS
-    ARTISTS
+  type Experience {
+    _id: ID!
+    title: String
+    image: String
+    address: String
+    city: String
+    state: String
+    country: String
+    postalCode: String
+    latitude: Float
+    longitude: Float
+    category: ExperienceCategory
+    subCategory: ExperienceSubCategory
+    collages: [Collage]
   }
+
+enum ExperienceCategory {
+  ATTRACTIONS
+  CONCERTS
+  DESTINATIONS
+  EVENTS
+  FESTIVALS
+  TRAILS
+  RESORTS
+  VENUES
+  PERFORMERS
+  COURSES
+}
+
+enum ExperienceSubCategory {
+  ATTRACTION
+  CONCERT
+  DESTINATION
+  SPORTING_EVENT
+  THEATRE_AND_PERFORMING_ARTS_EVENT
+  PARADE
+  MUSIC_FESTIVAL
+  CULTURAL_FESTIVAL
+  RELIGIOUS_FESTIVAL
+  FOOD_AND_DRINK_FESTIVAL
+  ART_FESTIVAL
+  HISTORICAL_FESTIVAL
+  FLOWER_FESTIVAL
+  SEASONAL_FESTIVAL
+  TRAIL
+  MOUNTAIN_RESORT
+  BEACH_RESORT
+  GOLF_RESORT
+  ISLAND_RESORT
+  VENUE
+  ARTIST
+  COMEDIAN
+  GOLF_COURSE
+  FOOTBALL
+  BASKETBALL
+  BASEBALL
+  VOLLEYBALL
+  SOCCER
+}
+
+type Score {
+  team: String
+  score: Int
+}
 
   type Coordinates {
     latitude: Float

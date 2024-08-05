@@ -1,4 +1,3 @@
-// ListViewNavigator.js
 import React, { useState } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import AllExperiencesList from "../Screens/TabScreens/AllExperiencesList";
@@ -14,9 +13,9 @@ const categories = [
   "Courses",
   "Venues",
   "Festivals",
-  "Hikes and Trails",
+  "Trails",
   "Resorts",
-  "Artists",
+  "Performers",
 ];
 
 export default function ListViewNavigator({
@@ -37,7 +36,6 @@ export default function ListViewNavigator({
           viewType={viewType}
           editMode={editMode}
           searchQuery={searchQuery}
-          navigation={navigation}
           onDelete={onDelete}
         />
       );
@@ -45,11 +43,10 @@ export default function ListViewNavigator({
       return (
         <CategoryExperiencesList
           lifeList={lifeList}
-          category={activeTab.toUpperCase().replace(/ /g, "_")}
+          category={activeTab.toUpperCase()}
           viewType={viewType}
           editMode={editMode}
           searchQuery={searchQuery}
-          navigation={navigation}
           onDelete={onDelete}
         />
       );
@@ -69,20 +66,14 @@ export default function ListViewNavigator({
               key={category}
               style={[
                 styles.navigatorButton,
-                activeTab === category &&
-                  (viewType === "EXPERIENCED"
-                    ? styles.activeNavigatorButtonExperienced
-                    : styles.activeNavigatorButtonWishlisted),
+                activeTab === category && styles.activeNavigatorButton,
               ]}
               onPress={() => setActiveTab(category)}
             >
               <Text
                 style={[
                   styles.navigatorText,
-                  activeTab === category &&
-                    (viewType === "EXPERIENCED"
-                      ? styles.activeNavigatorTextExperienced
-                      : styles.activeNavigatorTextWishlisted),
+                  activeTab === category && styles.activeNavigatorText,
                 ]}
               >
                 {category}
@@ -101,8 +92,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   navigatorWrapper: {
-    marginTop: 10,
-    marginBottom: 6,
+    flex: 0.085,
   },
   navigatorContainer: {
     flexDirection: "row",
@@ -117,26 +107,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  activeNavigatorButtonExperienced: {
+  activeNavigatorButton: {
     backgroundColor: "#6AB95230",
     borderWidth: 1,
     borderColor: "#6AB95250",
-  },
-  activeNavigatorButtonWishlisted: {
-    backgroundColor: "#5FC4ED30",
-    borderWidth: 1,
-    borderColor: "#5FC4ED50",
   },
   navigatorText: {
     color: "#696969",
     fontWeight: "500",
   },
-  activeNavigatorTextExperienced: {
+  activeNavigatorText: {
     color: "#6AB952",
-    fontWeight: "500",
-  },
-  activeNavigatorTextWishlisted: {
-    color: "#5FC4ED",
     fontWeight: "500",
   },
   screenContainer: {

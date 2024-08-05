@@ -32,6 +32,27 @@ const lifeListExperienceSchema = new Schema({
       ref: "Collage",
     },
   ],
+  year: {
+    type: Number,
+  },
+  venue: {
+    type: Schema.Types.ObjectId,
+    ref: "Experience",
+  },
+  performers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Experience",
+    },
+  ],
+  opponent: {
+    type: Schema.Types.ObjectId,
+    ref: "Experience",
+  },
+  score: {
+    type: Map,
+    of: Number,
+  },
 });
 
 const LifeListExperience = model(

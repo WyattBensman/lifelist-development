@@ -1,43 +1,29 @@
 import React from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  StyleSheet,
-  Image,
-  Dimensions,
-} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { useQuery } from "@apollo/client";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
-import { BASE_URL } from "../../../utils/config";
 import { GET_LIFELIST_EXPERIENCE } from "../../../utils/queries/lifeListQueries";
 import { iconStyles, layoutStyles } from "../../../styles";
 import Icon from "../../../components/Icons/Icon";
-
-const { width } = Dimensions.get("window");
-const imageWidth = width / 2;
-const imageHeight = (imageWidth * 3) / 2;
+import ExperienceNavigator from "../Navigation/ExperienceNavigator";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function ViewExperience({ route, navigation }) {
+  const { setIsTabBarVisible } = useNavigationContext();
   const { experienceId } = route.params;
   const { data, loading, error } = useQuery(GET_LIFELIST_EXPERIENCE, {
     variables: { experienceId },
+  });
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
   });
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
 
   const { experience, associatedShots } = data.getLifeListExperience;
-
-  const renderItem = ({ item }) => (
-    <View style={styles.imageContainer}>
-      <Image
-        source={{ uri: `${BASE_URL}${item.shot.image}` }}
-        style={styles.image}
-      />
-    </View>
-  );
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -52,12 +38,11 @@ export default function ViewExperience({ route, navigation }) {
           />
         }
         onPress={() => navigation.goBack()}
+        hasBorder={false}
       />
-      <FlatList
-        data={associatedShots}
-        keyExtractor={(item) => item.shot._id}
-        renderItem={renderItem}
-        numColumns={2}
+      <ExperienceNavigator
+        experienceId={experienceId}
+        associatedShots={associatedShots}
       />
     </View>
   );
@@ -66,14 +51,5 @@ export default function ViewExperience({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
-  },
-  imageContainer: {
-    width: imageWidth,
-    height: imageHeight,
-  },
-  image: {
-    width: "100%",
-    height: "100%",
   },
 });

@@ -75,6 +75,11 @@ export default function Header({
             </Animated.View>
           </Pressable>
         </View>
+        <View style={styles.sideContainer}>
+          <View style={styles.shotsLeftContainer}>
+            <Text style={styles.shotsLeftText}>5 Left</Text>
+          </View>
+        </View>
       </View>
       <Animated.View style={[styles.animatedContainer, { height: heightAnim }]}>
         {showOptions && (
@@ -210,5 +215,24 @@ const styles = StyleSheet.create({
   },
   selectedOption: {
     color: "#5FC4ED",
+  },
+  shotsLeftContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#1C1C1C",
+    /* backgroundColor: "#252525", */
+    borderRadius: 50,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  /* shotsLeftText: {
+    color: "#ffffff",
+    fontSize: 12,
+    fontWeight: "500",
+  }, */
+  shotsLeftText: {
+    color: "#696969", // Light grey text
+    fontSize: 12,
+    fontWeight: "500",
   },
 });

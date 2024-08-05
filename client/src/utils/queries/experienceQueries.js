@@ -7,12 +7,15 @@ export const GET_EXPERIENCE = gql`
       _id
       title
       image
-      location
-      coordinates {
-        latitude
-        longitude
-      }
+      address
+      city
+      state
+      country
+      postalCode
+      latitude
+      longitude
       category
+      subCategory
       collages {
         _id
         coverImage
@@ -29,6 +32,7 @@ export const GET_ALL_EXPERIENCES = gql`
       title
       image
       category
+      subCategory
     }
   }
 `;

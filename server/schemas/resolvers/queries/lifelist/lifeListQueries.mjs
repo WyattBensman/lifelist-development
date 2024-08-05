@@ -11,7 +11,7 @@ export const getCurrentUserLifeList = async (_, __, { user }) => {
       path: "experiences",
       populate: {
         path: "experience",
-        select: "_id title image category",
+        select: "_id title image category subCategory",
       },
     })
     .exec();
@@ -20,7 +20,7 @@ export const getCurrentUserLifeList = async (_, __, { user }) => {
 };
 
 export const getUserLifeList = async (_, { userId }, { user }) => {
-  /* isUser(user); */
+  isUser(user);
 
   const lifeList = await LifeList.findOne({ author: userId })
     .populate({
@@ -28,7 +28,7 @@ export const getUserLifeList = async (_, { userId }, { user }) => {
       populate: [
         {
           path: "experience",
-          select: "_id title image category",
+          select: "_id title image category subCategory",
         },
         {
           path: "associatedCollages",
@@ -56,7 +56,7 @@ export const getExperiencedList = async (_, { lifeListId }) => {
   })
     .populate({
       path: "experience",
-      select: "_id image title category", // Only select specific fields
+      select: "_id image title category subCategory",
     })
     .exec();
   return experiencedList;
@@ -72,7 +72,7 @@ export const getWishListedList = async (_, { lifeListId }) => {
   })
     .populate({
       path: "experience",
-      select: "_id image title category", // Only select specific fields
+      select: "_id image title category subCategory",
     })
     .exec();
   return wishListedList;
@@ -90,7 +90,7 @@ export const getLifeListExperience = async (_, { experienceId }) => {
     })
     .populate({
       path: "experience",
-      select: "_id image title category", // Only select specific fields
+      select: "_id image title category subCategory", // Only select specific fields
     })
     .exec();
   if (!experience) throw new Error("LifeList experience not found.");
@@ -108,7 +108,7 @@ export const getLifeListExperiencesByExperienceIds = async (
     })
       .populate({
         path: "experience",
-        select: "_id title image category",
+        select: "_id title image category subCategory",
       })
       .populate({
         path: "associatedShots.shot",

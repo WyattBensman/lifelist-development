@@ -24,7 +24,7 @@ export default function ExperienceCard({
 
   const imageUrl = `${BASE_URL}${experience.image}`;
   const truncatedTitle = truncateText(experience.title, 20);
-  const capitalizedCategory = capitalizeText(experience.category);
+  const capitalizedCategory = capitalizeText(experience.subCategory);
 
   const handlePress = () => {
     if (associatedShots && associatedShots.length > 0) {
@@ -51,7 +51,7 @@ export default function ExperienceCard({
           source={{ uri: imageUrl }}
           style={[styles.image, { height: imageHeight }]}
         />
-        {associatedShots && associatedShots.length > 0 && (
+        {/* {associatedShots && associatedShots.length > 0 && (
           <View style={styles.photoCircleIcon}>
             <SymbolView
               name="photo.on.rectangle"
@@ -60,10 +60,20 @@ export default function ExperienceCard({
               tintColor="#ececec"
             />
           </View>
-        )}
+        )} */}
         <View style={styles.spacer}>
           <Text style={styles.title}>{truncatedTitle}</Text>
-          <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
+          <View style={styles.secondaryTextContainer}>
+            <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
+            {associatedShots && associatedShots.length > 0 && (
+              <SymbolView
+                name="photo.on.rectangle"
+                style={styles.photoIcon}
+                type="monochrome"
+                tintColor="#696969"
+              />
+            )}
+          </View>
         </View>
       </View>
     </Pressable>
@@ -85,10 +95,19 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: "#fff",
   },
+  secondaryTextContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 1.5,
+  },
   secondaryText: {
     fontSize: 12,
-    marginTop: 1.5,
     color: "#696969",
+  },
+  photoIcon: {
+    marginLeft: 6,
+    width: 15,
+    height: 12.04,
   },
   spacer: {
     marginLeft: 8,
@@ -104,9 +123,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  photoIcon: {
+  /* photoIcon: {
     marginLeft: 1,
     width: 15,
     height: 12.04,
-  },
+  }, */
 });

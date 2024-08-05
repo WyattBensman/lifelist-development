@@ -11,7 +11,11 @@ const cardHeight = imageHeight + 44;
 const sortByTitle = (a, b) =>
   a.experience.title.localeCompare(b.experience.title);
 
-export default function CategoryExperiences({ lifeList, category }) {
+export default function CategoryExperiences({
+  lifeList,
+  category,
+  navigation,
+}) {
   const filteredList = useMemo(
     () =>
       lifeList.experiences.filter(
@@ -37,7 +41,9 @@ export default function CategoryExperiences({ lifeList, category }) {
   const renderExperience = ({ item }) => (
     <ExperienceCard
       experience={item.experience}
+      lifeListExperienceId={item._id}
       associatedShots={item.associatedShots}
+      navigation={navigation}
     />
   );
 

@@ -18,8 +18,8 @@ import ViewShotHeader from "../../../components/Headers/ViewShotHeader";
 import ViewShotCard from "../Cards/ViewShotCard";
 import * as Sharing from "expo-sharing";
 import { BASE_URL } from "../../../utils/config";
-import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
 import { DELETE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
+import DropdownMenuShot from "../../../components/Dropdowns/DropdownMenuShot";
 
 const { width } = Dimensions.get("window");
 const aspectRatio = 3 / 2;
@@ -153,7 +153,7 @@ export default function ViewShot() {
   ];
 
   const dropdownContent = (
-    <DropdownMenu
+    <DropdownMenuShot
       items={dropdownItems}
       containerStyle={{ alignItems: "flex-start" }}
     />

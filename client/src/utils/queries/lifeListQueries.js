@@ -18,6 +18,7 @@ export const GET_CURRENT_USER_LIFELIST = gql`
           title
           image
           category
+          subCategory
         }
       }
     }
@@ -47,6 +48,7 @@ export const GET_USER_LIFELIST = gql`
           title
           image
           category
+          subCategory
         }
       }
     }
@@ -63,6 +65,7 @@ export const GET_EXPERIENCED_LIST = gql`
         category
         title
         image
+        subCategory
       }
       associatedCollages {
         _id
@@ -84,6 +87,7 @@ export const GET_WISHLISTED_LIST = gql`
         category
         title
         image
+        subCategory
       }
       associatedCollages {
         _id
@@ -105,6 +109,7 @@ export const GET_LIFELIST_EXPERIENCE = gql`
         image
         title
         category
+        subCategory
       }
       associatedCollages {
         _id
@@ -139,6 +144,7 @@ export const GET_LIFELIST_EXPERIENCES_BY_EXPERIENCE_IDS = gql`
         title
         image
         category
+        subCategory
       }
       list
       associatedShots {

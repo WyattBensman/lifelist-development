@@ -18,7 +18,8 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import Icon from "../../../components/Icons/Icon";
 import IconStatic from "../../../components/Icons/IconStatic";
-import CustomAlert from "../../../components/Alerts/CustomAlert"; // Import CustomAlert
+import CustomAlert from "../../../components/Alerts/CustomAlert";
+import { SymbolView } from "expo-symbols"; // Import SymbolView
 
 export default function ListItemCard({ experience, editMode, onDelete }) {
   const navigation = useNavigation();
@@ -26,11 +27,11 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
   const [isEditMode, setIsEditMode] = useState(editMode);
   const [listStatus, setListStatus] = useState(experience.list);
   const rotateAnim = useRef(new Animated.Value(0)).current;
-  const [isAlertVisible, setIsAlertVisible] = useState(false); // State for alert visibility
+  const [isAlertVisible, setIsAlertVisible] = useState(false);
 
   const imageUrl = `${BASE_URL}${experience.experience.image}`;
   const truncatedTitle = truncateText(experience.experience.title, 40);
-  const capitalizedCategory = capitalizeText(experience.experience.category);
+  const capitalizedCategory = capitalizeText(experience.experience.subCategory);
   const { _id, associatedShots } = experience;
 
   const [updateListStatus] = useMutation(
@@ -41,6 +42,11 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
   const handlePress = () => {
     if (isEditMode) {
       setIsSelected(!isSelected);
+    } else if (associatedShots && associatedShots.length > 0) {
+      navigation.navigate("LifeListStack", {
+        screen: "ViewExperience",
+        params: { experienceId: _id },
+      });
     }
   };
 
@@ -132,14 +138,24 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
   return (
     <View>
       <Pressable
-        onPress={isEditMode ? handlePress : null}
+        onPress={handlePress}
         style={[styles.listItemContainer, isSelected && styles.selected]}
       >
         <View style={styles.contentContainer}>
           <Image source={{ uri: imageUrl }} style={cardStyles.imageMd} />
           <View style={styles.textContainer}>
             <Text style={styles.title}>{truncatedTitle}</Text>
-            <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
+            <View style={styles.secondaryTextContainer}>
+              <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
+              {associatedShots && associatedShots.length > 0 && (
+                <SymbolView
+                  name="photo.on.rectangle"
+                  style={styles.photoIcon}
+                  type="monochrome"
+                  tintColor="#696969"
+                />
+              )}
+            </View>
           </View>
           {!editMode && (
             <Animated.View style={{ transform: [{ rotate: rotation }] }}>
@@ -234,10 +250,19 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#fff",
   },
+  secondaryTextContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 1.5,
+  },
   secondaryText: {
     fontSize: 12,
     color: "#696969",
-    marginTop: 1.5,
+  },
+  photoIcon: {
+    marginLeft: 6,
+    width: 15,
+    height: 12.04,
   },
   optionsContainer: {
     flexDirection: "row",

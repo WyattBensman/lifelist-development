@@ -1,4 +1,3 @@
-// NavigatorContainer.js
 import React, { useState } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import AllExperiences from "../Screens/TabScreens/AllExperiences";
@@ -11,12 +10,12 @@ const categories = [
   "Concerts",
   "Destinations",
   "Events",
-  "Courses",
-  "Venues",
   "Festivals",
-  "Hikes and Trails",
+  "Performers",
   "Resorts",
-  "Artists",
+  "Trails",
+  "Venues",
+  "Courses",
 ];
 
 export default function NavigatorContainer({ lifeList, navigation }) {
@@ -29,7 +28,7 @@ export default function NavigatorContainer({ lifeList, navigation }) {
       return (
         <CategoryExperiences
           lifeList={lifeList}
-          category={activeTab.toUpperCase().replace(/ /g, "_")}
+          category={activeTab.toUpperCase()}
           navigation={navigation}
         />
       );

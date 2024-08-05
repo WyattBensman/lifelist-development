@@ -140,6 +140,7 @@ export default function AddExperiencesOverview() {
                 navigation.navigate("ManageTempShots", {
                   experienceId: expId,
                   associatedShots: shots,
+                  onUpdateShots: handleUpdateShots,
                 });
               }}
             />

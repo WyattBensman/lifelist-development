@@ -17,9 +17,8 @@ export default function AddExperienceCard({
 
   const imageUrl = `${BASE_URL}${experience.experience.image}`;
   const truncatedTitle = truncateText(experience.experience.title, 30);
-  const capitalizedCategory = capitalizeText(experience.experience.category);
+  const capitalizedCategory = capitalizeText(experience.experience.subCategory);
   const associatedShots = experience.associatedShots;
-  console.log(associatedShots);
 
   useEffect(() => {
     setListStatus(experience.list || "");

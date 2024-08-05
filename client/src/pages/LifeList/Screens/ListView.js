@@ -40,6 +40,7 @@ export default function ListView({ navigation }) {
 
   useFocusEffect(() => {
     setIsTabBarVisible(false);
+    return () => setIsTabBarVisible(true);
   });
 
   useEffect(() => {
