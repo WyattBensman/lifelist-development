@@ -41,6 +41,7 @@ const experienceSchema = new Schema({
       "RESORTS",
       "CONCERTS",
       "PERFORMERS",
+      "ARTISTS",
     ],
     required: true,
   },

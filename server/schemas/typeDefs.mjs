@@ -177,6 +177,7 @@ enum ExperienceCategory {
   VENUES
   PERFORMERS
   COURSES
+  ARTISTS
 }
 
 enum ExperienceSubCategory {
