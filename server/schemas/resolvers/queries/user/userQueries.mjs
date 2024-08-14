@@ -5,8 +5,9 @@ export const getUserProfileById = async (_, { userId }, { user }) => {
   try {
     const foundUser = await User.findById(userId)
       .populate("collages", "_id coverImage")
-      .populate("notifications", "_id read")
+      .populate("repostedCollages", "_id coverImage")
       .exec();
+
     if (!foundUser) {
       throw new Error("User not found.");
     }

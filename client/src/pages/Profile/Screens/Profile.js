@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, Text, View } from "react-native";
+import { Animated, Text, View, FlatList, StyleSheet } from "react-native";
 import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
 import HeaderMain from "../../../components/Headers/HeaderMain";
 import OptionsIcon from "../Icons/OptionsIcon";
@@ -63,6 +63,7 @@ export default function Profile() {
 
   return (
     <View style={layoutStyles.wrapper}>
+      {/* Fixed Header */}
       <HeaderStack
         arrow={
           <Icon
@@ -84,18 +85,30 @@ export default function Profile() {
           </Animated.View>
         }
       />
-      <ProfileOverview
-        profile={profile}
-        isAdminView={isAdminView}
-        isAdminScreen={false}
-      />
-      <CustomProfileNavigator
-        userId={profile._id}
-        isAdmin={isAdminView}
-        isAdminScreen={false}
-        navigation={navigation}
+
+      {/* Scrollable Content */}
+      <FlatList
+        data={[{ key: "profile" }]}
+        keyExtractor={(item) => item.key}
+        renderItem={() => (
+          <>
+            <ProfileOverview
+              profile={profile}
+              isAdminView={isAdminView}
+              isAdminScreen={false}
+            />
+            <CustomProfileNavigator
+              userId={profile._id}
+              isAdmin={isAdminView}
+              isAdminScreen={false}
+              navigation={navigation}
+            />
+          </>
+        )}
+        style={layoutStyles.wrapper}
       />
 
+      {/* Options Popup */}
       {isAdminView ? (
         <AdminOptionsPopup
           visible={optionsPopupVisible}

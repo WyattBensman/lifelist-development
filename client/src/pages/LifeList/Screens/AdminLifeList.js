@@ -75,8 +75,6 @@ export default function AdminLifeList() {
         style: iconStyles.addExperience,
         label: "Add Experiences",
         onPress: () => navigation.navigate("AddExperiences"),
-        backgroundColor: "#6AB95230", // Add backgroundColor
-        tintColor: "#6AB952", // Add tintColor
       },
       {
         icon: "pencil",
@@ -90,8 +88,6 @@ export default function AdminLifeList() {
               fromScreen: "EditExperiences",
             },
           }),
-        backgroundColor: "#5FC4ED30", // Add backgroundColor
-        tintColor: "#5FC4ED", // Add tintColor
       },
     ],
     [navigation, data]

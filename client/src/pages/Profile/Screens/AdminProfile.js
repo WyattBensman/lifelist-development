@@ -1,5 +1,5 @@
 import React, { useCallback, useState, useEffect, useRef } from "react";
-import { Text, View, Animated } from "react-native";
+import { Text, View, Animated, FlatList, StyleSheet } from "react-native";
 import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
 import HeaderMain from "../../../components/Headers/HeaderMain";
 import ProfileOverview from "../Components/ProfileOverview";
@@ -50,6 +50,11 @@ export default function AdminProfile() {
   const profile = data.getUserProfileById;
   const isAdminView = true;
 
+  const collagesData = [
+    { key: "Collages", component: CustomProfileNavigator },
+    // Add other sections if needed
+  ];
+
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderMain
@@ -67,16 +72,27 @@ export default function AdminProfile() {
           </Animated.View>
         }
       />
-      <ProfileOverview
-        profile={profile}
-        isAdminView={isAdminView}
-        isAdminScreen={true}
-      />
-      <CustomProfileNavigator
-        userId={profile._id}
-        isAdmin={true}
-        isAdminScreen={true}
-        navigation={navigation}
+
+      {/* Scrollable Content */}
+      <FlatList
+        data={collagesData}
+        keyExtractor={(item) => item.key}
+        renderItem={() => (
+          <CustomProfileNavigator
+            userId={profile._id}
+            isAdmin={true}
+            isAdminScreen={true}
+            navigation={navigation}
+          />
+        )}
+        ListHeaderComponent={() => (
+          <ProfileOverview
+            profile={profile}
+            isAdminView={isAdminView}
+            isAdminScreen={true}
+          />
+        )}
+        style={layoutStyles.wrapper}
       />
 
       <AdminOptionsPopup

@@ -209,6 +209,9 @@ enum ExperienceSubCategory {
   BASEBALL
   VOLLEYBALL
   SOCCER
+  BEACH
+  LAKE
+  AMUSEMENT_PARK
 }
 
 type Score {

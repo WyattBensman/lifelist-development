@@ -15,7 +15,8 @@ export default function SearchItemCard({
 
   const imageUrl = `${BASE_URL}${experience.image}`;
   const truncatedTitle = truncateText(experience.title, 30);
-  const capitalizedCategory = capitalizeText(experience.subCategory);
+  // CHANGE TO SUBCATEGORY
+  const capitalizedCategory = capitalizeText(experience.category);
 
   useEffect(() => {
     setIsChecked(isSelected);

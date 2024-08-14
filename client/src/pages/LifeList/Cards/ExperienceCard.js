@@ -24,7 +24,8 @@ export default function ExperienceCard({
 
   const imageUrl = `${BASE_URL}${experience.image}`;
   const truncatedTitle = truncateText(experience.title, 20);
-  const capitalizedCategory = capitalizeText(experience.subCategory);
+  // CHANGE TO SUBCATEGORY
+  const capitalizedCategory = capitalizeText(experience.category);
 
   const handlePress = () => {
     if (associatedShots && associatedShots.length > 0) {

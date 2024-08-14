@@ -12,9 +12,9 @@ export const GET_USER_PROFILE = gql`
         _id
         coverImage
       }
-      notifications {
+      repostedCollages {
         _id
-        read
+        coverImage
       }
       followers {
         _id

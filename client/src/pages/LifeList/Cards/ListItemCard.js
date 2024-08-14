@@ -31,7 +31,8 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
 
   const imageUrl = `${BASE_URL}${experience.experience.image}`;
   const truncatedTitle = truncateText(experience.experience.title, 40);
-  const capitalizedCategory = capitalizeText(experience.experience.subCategory);
+  // CHANGE TO SUBCATEGORY
+  const capitalizedCategory = capitalizeText(experience.experience.category);
   const { _id, associatedShots } = experience;
 
   const [updateListStatus] = useMutation(

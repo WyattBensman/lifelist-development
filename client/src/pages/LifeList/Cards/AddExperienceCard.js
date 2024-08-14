@@ -17,7 +17,8 @@ export default function AddExperienceCard({
 
   const imageUrl = `${BASE_URL}${experience.experience.image}`;
   const truncatedTitle = truncateText(experience.experience.title, 30);
-  const capitalizedCategory = capitalizeText(experience.experience.subCategory);
+  // CHANGE TO SUBCATEGORY
+  const capitalizedCategory = capitalizeText(experience.experience.category);
   const associatedShots = experience.associatedShots;
 
   useEffect(() => {

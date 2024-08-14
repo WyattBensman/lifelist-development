@@ -5,21 +5,32 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/lifelist-icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "splash": {
       "image": "./assets/lifelist-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.lifelist",
+      "buildNumber": "1.0.0",
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "This app needs access to your photo library to upload images."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -29,11 +40,15 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow LifeList to access your camera",
-          "microphonePermission": "Allow LifeList to access your microphone",
-          "recordAudioAndroid": true
+          "cameraPermission": "Allow LifeList to access your camera"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "4fa51d41-7f46-4644-8ed9-4ff160efb297"
+      }
+    },
+    "owner": "wyattbensman"
   }
 }
