@@ -46,7 +46,6 @@ app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 12 }));
 
 // Directory paths
 const uploadDir = path.join(__dirname, "/uploads");
-console.log(`Upload Directory Path: ${uploadDir}`);
 
 // Verify if the directory exists and is writable
 try {
@@ -96,39 +95,3 @@ const startServer = async () => {
 };
 
 startServer();
-
-// HOME ACCESS
-/* app.use(
-  cors({
-    origin: ["http://192.168.1.205:8081", "exp://192.168.1.205:8081"],
-  })
-); */
-
-// MIDDLE POOL ACCESS
-/* app.use(
-  cors({
-    origin: ["http://192.168.1.205:8081", "exp://192.168.1.79:8081"],
-  })
-); */
-
-// POOL ACCESS
-/* app.use(
-  cors({
-    origin: ["http://10.5.50.98:8081", "exp://10.5.50.98:8081"],
-  })
-); */
-
-// SPARKMAN WHARF ACCESS
-/* app.use(
-  cors({
-    origin: ["http://100.66.6.237:8081", "exp://100.66.6.237:8081"],
-  })
-); */
-
-/* if (process.env.NODE_ENV === "production") {
-    app.use(express.static(path.join(__dirname, "../client/dist")));
-    app.use("/images", express.static(path.join(__dirname, "/images")));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(__dirname, "../client/dist/index.html"));
-    });
-  } */

@@ -1,98 +1,24 @@
 import React from "react";
 import { View, StyleSheet, Text, Pressable, Animated } from "react-native";
-import { useMutation } from "@apollo/client";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
-import { useAuth } from "../../../contexts/AuthContext";
 import FlashOutlineIcon from "../Icons/FlashOutlineIcon";
 import FlashSolidIcon from "../Icons/FlashSolidIcon";
 import FlipCameraIcon from "../Icons/FlipCameraIcon";
-import * as FileSystem from "expo-file-system";
-import { captureRef } from "react-native-view-shot";
 import IconLarge from "../../../components/Icons/IconLarge";
 import { iconStyles } from "../../../styles/iconStyles";
 
 export default function Footer({
-  cameraRef,
   rotation,
-  cameraType,
   flash,
   toggleFlash,
   toggleCameraFacing,
   handleZoomChange,
   footerHeight,
   disabled,
-  filter,
+  handleTakePhoto,
 }) {
   const navigation = useNavigation();
-  const { updateCurrentUser } = useAuth();
-  const [createCameraShot] = useMutation(CREATE_CAMERA_SHOT);
-
-  const handleTakePhoto = async () => {
-    if (cameraRef.current && !disabled) {
-      try {
-        // Step 1: Capture the image
-        const photo = await cameraRef.current.takePictureAsync({
-          quality: 0.8,
-          base64: true,
-        });
-
-        // Step 2: Apply filter to the captured image
-        const filteredUri = await applyFilter(photo.uri, filter);
-
-        // Step 3: Convert filtered image to a file
-        const file = await convertToFile(filteredUri, "photo.jpg");
-
-        // Step 4: Upload the file to the server
-        const result = await createCameraShot({
-          variables: {
-            image: file,
-          },
-        });
-
-        if (result.data.createCameraShot.success) {
-          updateCurrentUser(result.data.createCameraShot.user);
-        }
-      } catch (error) {
-        console.error("Error taking photo:", error);
-      }
-    }
-  };
-
-  const applyFilter = async (uri, filter) => {
-    // Create a temporary view to render the image with the filter
-    return new Promise((resolve, reject) => {
-      try {
-        const surface = (
-          <Surface style={{ width: 300, height: 450 }}>
-            <GLImage
-              shader={shaders[filter]}
-              source={{ uri }}
-              resizeMode="cover"
-            />
-          </Surface>
-        );
-
-        // Render the image and get the data URL
-        const dataUrl = surface.toDataURL();
-        resolve(dataUrl);
-      } catch (error) {
-        reject(error);
-      }
-    });
-  };
-
-  const convertToFile = async (uri, filename) => {
-    const file = await FileSystem.readAsStringAsync(uri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-    return {
-      uri,
-      name: filename,
-      type: "image/jpeg",
-    };
-  };
 
   const navigateToCameraRoll = () => {
     if (!disabled) {
@@ -127,26 +53,6 @@ export default function Footer({
         </Pressable>
         <View style={styles.zoomContainer}>
           <Pressable
-            onPress={() => handleZoomPress(0.5)}
-            style={[
-              styles.zoomButton,
-              zoomLevel === 0.5 && styles.activeZoomButton,
-              disabled && styles.disabledButton,
-            ]}
-            disabled={disabled}
-          >
-            <Text
-              style={[
-                styles.zoomText,
-                zoomLevel === 0.5 && styles.activeZoomText,
-                disabled && styles.disabledText,
-              ]}
-            >
-              0.5x
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => handleZoomPress(1)}
             style={[
               styles.zoomButton,
               zoomLevel === 1 && styles.activeZoomButton,
@@ -162,25 +68,6 @@ export default function Footer({
               ]}
             >
               1x
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => handleZoomPress(3)}
-            style={[
-              styles.zoomButton,
-              zoomLevel === 3 && styles.activeZoomButton,
-              disabled && styles.disabledButton,
-            ]}
-            disabled={disabled}
-          >
-            <Text
-              style={[
-                styles.zoomText,
-                zoomLevel === 3 && styles.activeZoomText,
-                disabled && styles.disabledText,
-              ]}
-            >
-              3x
             </Text>
           </Pressable>
         </View>
@@ -255,19 +142,23 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     paddingVertical: 1,
     marginTop: 8,
-    marginBottom: 27,
-    width: "70%",
+    marginBottom: 28,
+    width: "60%",
   },
   disabled: {
     opacity: 0.5,
   },
   zoomContainer: {
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center", // Center the zoom buttons
     borderRadius: 25,
     paddingHorizontal: 8,
   },
   zoomButton: {
     padding: 10,
+    alignItems: "center", // Center text within button
+    justifyContent: "center", // Center text within button
   },
   activeZoomButton: {
     backgroundColor: "#6AB95230",
@@ -276,13 +167,15 @@ const styles = StyleSheet.create({
   zoomText: {
     color: "#fff",
     fontSize: 12,
+    textAlign: "center", // Ensure text is centered
   },
   activeZoomText: {
     fontWeight: "bold",
   },
   rowIcon: {
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center", // Center icon vertically and horizontally
+    width: 45,
   },
   container: {
     flexDirection: "row",
@@ -294,29 +187,24 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center", // Center icons vertically and horizontally
     width: 75,
   },
-  iconText: {
-    color: "#fff",
-    fontSize: 12,
-    marginTop: 1,
-  },
   circleContainer: {
+    justifyContent: "center", // Center circle vertically
+    alignItems: "center", // Center circle horizontally
     position: "absolute",
     left: 0,
     right: 0,
     top: 0,
     bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
   },
   circleOutline: {
     width: 72,
     height: 72,
     borderRadius: 50,
     justifyContent: "center",
-    alignItems: "center",
+    alignItems: "center", // Center circle content
   },
   disabledCircle: {
     opacity: 0.5,

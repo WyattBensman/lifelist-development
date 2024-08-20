@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FlatList, Text, View, Animated } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useQuery, useMutation } from "@apollo/client";
 import { iconStyles, layoutStyles } from "../../../styles";
 import UserPrivacyGroupCard from "../Cards/UserPrivacyGroupCard";
@@ -16,6 +20,7 @@ import {
   DELETE_PRIVACY_GROUP,
   REMOVE_USERS_FROM_PRIVACY_GROUP,
 } from "../../../utils/mutations/index";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function PrivacyGroup() {
   const navigation = useNavigation();
@@ -28,6 +33,11 @@ export default function PrivacyGroup() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const { setIsTabBarVisible } = useNavigationContext();
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   const { data, loading, error, refetch } = useQuery(GET_PRIVACY_GROUP, {
     variables: { privacyGroupId },

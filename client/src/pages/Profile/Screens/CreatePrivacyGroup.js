@@ -7,7 +7,7 @@ import {
   Pressable,
   StyleSheet,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useQuery, useMutation } from "@apollo/client";
 import { layoutStyles, iconStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
@@ -17,6 +17,7 @@ import { CREATE_PRIVACY_GROUP } from "../../../utils/mutations/index";
 import Icon from "../../../components/Icons/Icon";
 import { useAuth } from "../../../contexts/AuthContext"; // Import AuthContext
 import SearchBarStandard from "../../../components/SearchBars/SearchBarStandard";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function CreatePrivacyGroup() {
   const navigation = useNavigation();
@@ -28,6 +29,11 @@ export default function CreatePrivacyGroup() {
   const [changesMade, setChangesMade] = useState(false);
   const [limit] = useState(20); // Set the limit as required
   const [offset] = useState(0); // Set the offset as required
+  const { setIsTabBarVisible } = useNavigationContext();
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   const {
     data: allUsersData,

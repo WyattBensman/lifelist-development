@@ -78,7 +78,10 @@ export default function CameraRoll() {
           />
         }
       />
-      <ScrollView style={layoutStyles.paddingTopSm}>
+      <ScrollView
+        style={layoutStyles.paddingTopSm}
+        showsVerticalScrollIndicator={false}
+      >
         <Text style={[headerStyles.headerMedium, { marginLeft: 4 }]}>
           Albums
         </Text>

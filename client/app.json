@@ -42,7 +42,8 @@
         {
           "cameraPermission": "Allow LifeList to access your camera"
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "extra": {
       "eas": {

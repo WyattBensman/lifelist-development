@@ -77,7 +77,7 @@ export default function Header({
         </View>
         <View style={styles.sideContainer}>
           <View style={styles.shotsLeftContainer}>
-            <Text style={styles.shotsLeftText}>5 Left</Text>
+            <Text style={styles.shotsLeftText}>10 Left</Text>
           </View>
         </View>
       </View>

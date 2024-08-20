@@ -2,18 +2,21 @@ import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   StyleSheet,
-  Text,
-  Button,
   Animated,
   Dimensions,
+  Alert,
+  Text,
+  Button,
 } from "react-native";
-import { CameraView, useCameraPermissions } from "expo-camera";
 import { layoutStyles } from "../../../styles/LayoutStyles";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
-import FilteredImage from "../Components/FilteredImage";
+import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useNavigation } from "@react-navigation/native";
+import { useMutation } from "@apollo/client";
+import { applyFilter } from "../../../utils/cameraUtils/applyFilter";
+import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
 
 export default function CameraHome() {
   const navigation = useNavigation();
@@ -21,11 +24,12 @@ export default function CameraHome() {
   const [facing, setFacing] = useState("back");
   const [flash, setFlash] = useState("off");
   const [cameraType, setCameraType] = useState("Disposable");
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(0);
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef(null);
   const [filter, setFilter] = useState("disposableFilter");
   const [showHeaderOptions, setShowHeaderOptions] = useState(false);
+  const [createCameraShot] = useMutation(CREATE_CAMERA_SHOT);
 
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const screenWidth = Dimensions.get("window").width;
@@ -65,24 +69,11 @@ export default function CameraHome() {
   }
 
   const toggleCameraFacing = () => {
-    setFacing((current) => (current === "back" ? "front" : "back"));
+    setFacing(facing === "back" ? "front" : "back");
   };
 
   const toggleFlash = () => {
-    setFlash((current) => (current === "off" ? "on" : "off"));
-  };
-
-  const handleSelectCameraType = (type) => {
-    setCameraType(type);
-    if (type === "Analog") {
-      setFilter("standardFilter");
-    } else if (type === "Disposable") {
-      setFilter("disposableFilter");
-    } else if (type === "Fuji") {
-      setFilter("fujiFilter");
-    } else {
-      setFilter(null);
-    }
+    setFlash(flash === "off" ? "on" : "off");
   };
 
   const handleZoomChange = (zoomLevel) => {
@@ -91,6 +82,69 @@ export default function CameraHome() {
 
   const handleToggleHeaderOptions = () => {
     setShowHeaderOptions((prev) => !prev);
+  };
+
+  const handleSelectCameraType = (type) => {
+    setCameraType(type);
+
+    switch (type) {
+      case "Standard":
+        setFilter("standardFilter");
+        break;
+      case "Disposable":
+        setFilter("disposableFilter");
+        break;
+      case "Fuji":
+        setFilter("fujiFilter");
+        break;
+      default:
+        setFilter("standardFilter");
+        break;
+    }
+  };
+
+  const handleTakePhoto = async () => {
+    if (cameraRef.current) {
+      try {
+        const photo = await cameraRef.current.takePictureAsync({
+          base64: true,
+          quality: 1,
+          exif: true,
+          skipProcessing: true,
+        });
+
+        const filterOutputUri = await applyFilter(photo.uri, cameraType);
+
+        const { data } = await createCameraShot({
+          variables: {
+            image: {
+              uri: filterOutputUri,
+              type: "image/jpeg",
+              name: "photo.jpg",
+            },
+          },
+        });
+
+        if (data.createCameraShot.success) {
+          Alert.alert(
+            "Success",
+            data.createCameraShot.message || "Photo added to developing shots!",
+            [{ text: "OK" }]
+          );
+        } else {
+          throw new Error(
+            data.createCameraShot.message || "Failed to add photo."
+          );
+        }
+      } catch (error) {
+        console.error("Error taking photo:", error);
+        Alert.alert(
+          "Error",
+          error.message || "There was an error while taking the photo.",
+          [{ text: "OK" }]
+        );
+      }
+    }
   };
 
   return (
@@ -140,6 +194,7 @@ export default function CameraHome() {
           footerHeight={Dimensions.get("window").height - cameraHeight}
           disabled={showHeaderOptions}
           filter={filter}
+          handleTakePhoto={handleTakePhoto}
         />
       </View>
     </View>

@@ -5,8 +5,8 @@ import Messages from "../Screens/TabScreens/Messages";
 import { layoutStyles } from "../../../styles";
 
 const tabs = [
-  { name: "Notifications", component: Notifications },
   { name: "Messages", component: Messages },
+  { name: "Notifications", component: Notifications },
 ];
 
 export default function InboxNavigator({ searchQuery, initialTab }) {

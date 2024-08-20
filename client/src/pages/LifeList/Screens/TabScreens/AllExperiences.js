@@ -44,8 +44,9 @@ export default function AllExperiences({ lifeList, navigation }) {
   );
 
   return (
-    <View style={layoutStyles.wrapper}>
-      <View>
+    <View style={styles.container}>
+      {/* ROW 1 */}
+      <View style={styles.section}>
         <Text style={[headerStyles.headerMedium, layoutStyles.paddingLeftXxs]}>
           Experienced
         </Text>
@@ -60,7 +61,8 @@ export default function AllExperiences({ lifeList, navigation }) {
           style={layoutStyles.paddingLeftXxs}
         />
       </View>
-      <View style={{ marginTop: 7 }}>
+      {/* ROW 2 */}
+      <View style={styles.section}>
         <Text style={[headerStyles.headerMedium, layoutStyles.paddingLeftXxs]}>
           Wish Listed
         </Text>
@@ -80,6 +82,13 @@ export default function AllExperiences({ lifeList, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  section: {
+    flex: 1,
+  },
   placeholderCard: {
     marginRight: 6,
     backgroundColor: "transparent",

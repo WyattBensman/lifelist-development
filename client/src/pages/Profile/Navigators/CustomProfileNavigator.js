@@ -4,9 +4,7 @@ import Collages from "../Screens/Collages";
 import Reposts from "../Screens/Reposts";
 import { layoutStyles } from "../../../styles";
 import Animated, {
-  Easing,
   useSharedValue,
-  withTiming,
   useAnimatedStyle,
 } from "react-native-reanimated";
 
@@ -49,10 +47,7 @@ export default function CustomProfileNavigator({
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
       {
-        translateX: withTiming(translateX.value, {
-          duration: 300,
-          easing: Easing.inOut(Easing.ease),
-        }),
+        translateX: translateX.value, // Directly assign the value without animation
       },
     ],
   }));

@@ -1,4 +1,4 @@
-import fs from "fs";
+import { promises as fs } from "fs";
 import { v4 as uuidv4 } from "uuid";
 import sanitizeFilename from "sanitize-filename";
 import path from "path";
@@ -7,13 +7,10 @@ export const uploadSingleImage = async (image, uploadDir) => {
   try {
     const { createReadStream, filename } = await image;
     const uniqueFilename = `${uuidv4()}-${sanitizeFilename(filename)}`;
-
     const filePath = path.join(uploadDir, uniqueFilename);
 
-    // Ensure the uploads directory exists
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir, { recursive: true });
-    }
+    // Ensure the uploads directory exists (async/await approach)
+    await fs.mkdir(uploadDir, { recursive: true });
 
     const stream = createReadStream();
     const writeStream = fs.createWriteStream(filePath);

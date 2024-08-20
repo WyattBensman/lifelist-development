@@ -1,8 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Animated, Text, View, FlatList, StyleSheet } from "react-native";
-import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
-import HeaderMain from "../../../components/Headers/HeaderMain";
-import OptionsIcon from "../Icons/OptionsIcon";
+import { iconStyles, layoutStyles } from "../../../styles";
 import ProfileOverview from "../Components/ProfileOverview";
 import CustomProfileNavigator from "../Navigators/CustomProfileNavigator";
 import AdminOptionsPopup from "../Popups/AdminOptionsPopup";
@@ -14,9 +12,11 @@ import {
 } from "@react-navigation/native";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useQuery } from "@apollo/client";
-import { GET_USER_PROFILE } from "../../../utils/queries/userQueries";
+import {
+  GET_USER_PROFILE,
+  GET_FOLLOWING,
+} from "../../../utils/queries/userQueries";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import Icon from "../../../components/Icons/Icon";
 
 export default function Profile() {
@@ -32,10 +32,19 @@ export default function Profile() {
     variables: { userId },
   });
 
+  // Fetch current user's following list
+  const { data: followingData, refetch: refetchFollowing } = useQuery(
+    GET_FOLLOWING,
+    {
+      variables: { userId: currentUser._id },
+    }
+  );
+
   useFocusEffect(
     useCallback(() => {
-      refetch();
-    }, [refetch])
+      refetch(); // Refetch the profile data
+      refetchFollowing(); // Refetch the following list to update the follow status
+    }, [refetch, refetchFollowing])
   );
 
   useEffect(() => {
@@ -55,11 +64,16 @@ export default function Profile() {
     setOptionsPopupVisible(!optionsPopupVisible);
   };
 
-  if (loading) return <Text>Loading...</Text>;
+  if (loading || !followingData) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
 
   const profile = data.getUserProfileById;
   const isAdminView = profile._id === currentUser._id;
+
+  // Determine if the current user is following this profile
+  const isFollowing = followingData.getFollowing.some(
+    (followedUser) => followedUser._id === profile._id
+  );
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -96,6 +110,7 @@ export default function Profile() {
               profile={profile}
               isAdminView={isAdminView}
               isAdminScreen={false}
+              isFollowing={isFollowing}
             />
             <CustomProfileNavigator
               userId={profile._id}

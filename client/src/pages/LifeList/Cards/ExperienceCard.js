@@ -19,7 +19,7 @@ export default function ExperienceCard({
 }) {
   const screenWidth = Dimensions.get("window").width;
   const cardWidth = screenWidth * 0.44;
-  const imageHeight = cardWidth * 1.33;
+  const imageHeight = cardWidth * 1.3375;
   const cardHeight = imageHeight + 44;
 
   const imageUrl = `${BASE_URL}${experience.image}`;
@@ -52,16 +52,6 @@ export default function ExperienceCard({
           source={{ uri: imageUrl }}
           style={[styles.image, { height: imageHeight }]}
         />
-        {/* {associatedShots && associatedShots.length > 0 && (
-          <View style={styles.photoCircleIcon}>
-            <SymbolView
-              name="photo.on.rectangle"
-              style={styles.photoIcon}
-              type="monochrome"
-              tintColor="#ececec"
-            />
-          </View>
-        )} */}
         <View style={styles.spacer}>
           <Text style={styles.title}>{truncatedTitle}</Text>
           <View style={styles.secondaryTextContainer}>
@@ -124,9 +114,4 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  /* photoIcon: {
-    marginLeft: 1,
-    width: 15,
-    height: 12.04,
-  }, */
 });

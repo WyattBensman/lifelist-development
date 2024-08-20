@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 
+// Get User
 export const GET_USER_PROFILE = gql`
   query GetUserProfileById($userId: ID!) {
     getUserProfileById(userId: $userId) {

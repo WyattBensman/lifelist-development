@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { View, FlatList, Dimensions, StyleSheet } from "react-native";
-import { iconStyles, layoutStyles } from "../../../styles";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Collage from "./Collage";
 import Icon from "../../../components/Icons/Icon";
+import { iconStyles, layoutStyles } from "../../../styles";
 
 const { height: screenHeight } = Dimensions.get("window");
 
@@ -31,8 +31,7 @@ export default function ViewCollage() {
   }, [headerHeight]);
 
   const calculateContentHeight = (headerHeight, navigationBarHeight) => {
-    const newContentHeight =
-      screenHeight - headerHeight - (navigationBarHeight - 7);
+    const newContentHeight = screenHeight - headerHeight - navigationBarHeight;
     setContentHeight(newContentHeight);
   };
 

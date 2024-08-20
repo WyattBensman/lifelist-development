@@ -11,7 +11,8 @@ const createCameraShot = async (_, { image }, { user }) => {
     const uploadDir = path.join(__dirname, "../../../../uploads");
 
     // Save the uploaded image file
-    const filePath = await uploadSingleImage(image.file, uploadDir);
+    /* const filePath = await uploadSingleImage(image.file, uploadDir); */
+    const filePath = await uploadSingleImage(image, uploadDir);
 
     // Construct the URL to access the uploaded image
     const baseUrl = process.env.API_URL;
@@ -21,6 +22,7 @@ const createCameraShot = async (_, { image }, { user }) => {
     const newShot = new CameraShot({
       author: user._id,
       image: fileUrl,
+      capturedAt: new Date(),
     });
     await newShot.save();
 

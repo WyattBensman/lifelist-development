@@ -7,6 +7,7 @@ import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import Icon from "../../../components/Icons/Icon";
 import { GET_ALL_USERS } from "../../../utils/queries/userQueries";
+import { GET_USER_CONVERSATIONS } from "../../../utils/queries/inboxQueries";
 import SearchUserCard from "../Cards/SearchUserCard";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 
@@ -22,8 +23,14 @@ export default function SearchNewConversation() {
   });
 
   const { data, loading, error } = useQuery(GET_ALL_USERS);
+  const { data: conversationsData } = useQuery(GET_USER_CONVERSATIONS, {
+    variables: { userId: currentUser._id },
+  });
+  console.log(data);
+  console.log(conversationsData);
 
   const allUsers = data?.getAllUsers || [];
+  const userConversations = conversationsData?.getUserConversations || [];
 
   const filteredUsers = useMemo(() => {
     if (!searchQuery) return [];
@@ -36,7 +43,23 @@ export default function SearchNewConversation() {
   if (error) return <Text>Error: {error.message}</Text>;
 
   const handleUserPress = (user) => {
-    navigation.navigate("Conversation", { user });
+    // Check if there's an existing conversation with the selected user
+    const existingConversation = userConversations.find((conversation) =>
+      conversation.participants.some(
+        (participant) => participant._id === user._id
+      )
+    );
+
+    if (existingConversation) {
+      // Navigate to the existing conversation
+      navigation.navigate("Conversation", {
+        conversationId: existingConversation._id,
+        user,
+      });
+    } else {
+      // Navigate to create a new conversation
+      navigation.navigate("Conversation", { user });
+    }
   };
 
   return (

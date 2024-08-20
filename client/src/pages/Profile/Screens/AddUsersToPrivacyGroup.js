@@ -1,6 +1,10 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { useQuery, useMutation } from "@apollo/client";
 import { useAuth } from "../../../contexts/AuthContext";
 import SearchUsersCard from "../Cards/SearchUsersCard";
@@ -11,10 +15,12 @@ import { GET_PRIVACY_GROUP } from "../../../utils/queries/privacyGroupQueries";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import AddUsersBottomContainer from "../Popups/AddUsersBottomContainer";
 import { ADD_USERS_TO_PRIVACY_GROUP } from "../../../utils/mutations/privacyGroupsMutations";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function AddUsersToPrivacyGroup() {
   const { currentUser } = useAuth();
   const navigation = useNavigation();
+  const { setIsTabBarVisible } = useNavigationContext();
   const route = useRoute();
   const privacyGroupId = route.params.privacyGroupId;
 
@@ -23,6 +29,10 @@ export default function AddUsersToPrivacyGroup() {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [limit] = useState(20); // Set the limit as required
   const [offset] = useState(0); // Set the offset as required
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   const {
     data: allUsersData,

@@ -40,9 +40,10 @@ import { isUser } from "../../../../utils/auth.mjs";
   return conversations;
 }; */
 
-export const getUserConversations = async (_, __ /* { user } */) => {
+export const getUserConversations = async (_, __, { user }) => {
   try {
-    const foundUser = await User.findById("663a3129e0ffbeff092b81d4").populate({
+    // Find the authenticated user and populate the conversations
+    const foundUser = await User.findById(user._id).populate({
       path: "conversations.conversation",
       populate: [
         {

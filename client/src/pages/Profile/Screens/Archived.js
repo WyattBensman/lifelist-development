@@ -8,7 +8,6 @@ import {
 } from "react-native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useQuery } from "@apollo/client";
 import { GET_ARCHIVED_COLLAGES } from "../../../utils/queries/userQueries";
