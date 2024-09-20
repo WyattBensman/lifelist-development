@@ -16,7 +16,7 @@ export default function ViewShotHeader({
 
   useEffect(() => {
     Animated.timing(dropdownHeight, {
-      toValue: dropdownVisible ? 70 : 0, // Adjust the height as needed
+      toValue: dropdownVisible ? 70 : 0,
       duration: 300,
       useNativeDriver: false,
     }).start();

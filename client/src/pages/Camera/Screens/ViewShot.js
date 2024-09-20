@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   FlatList,
@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useMutation, useQuery } from "@apollo/client";
-import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import { iconStyles, layoutStyles } from "../../../styles";
 import Icon from "../../../components/Icons/Icon";
 import ViewShotHeader from "../../../components/Headers/ViewShotHeader";
@@ -19,7 +18,10 @@ import ViewShotCard from "../Cards/ViewShotCard";
 import * as Sharing from "expo-sharing";
 import { BASE_URL } from "../../../utils/config";
 import { DELETE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
+import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import DropdownMenuShot from "../../../components/Dropdowns/DropdownMenuShot";
+import CustomAlert from "../../../components/Alerts/CustomAlert";
+import OptionsAlert from "../../../components/Alerts/OptionsAlert"; // Import OptionsAlert
 
 const { width } = Dimensions.get("window");
 const aspectRatio = 3 / 2;
@@ -28,12 +30,14 @@ const imageHeight = width * aspectRatio;
 export default function ViewShot() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { shotId } = route.params;
+  const { shotId, fromAlbum } = route.params; // Add fromAlbum to determine if this is an album context
   const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_SHOTS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [deleteCameraShot] = useMutation(DELETE_CAMERA_SHOT);
+  const [isDeleteAlertVisible, setIsDeleteAlertVisible] = useState(false);
+  const [isOptionsAlertVisible, setIsOptionsAlertVisible] = useState(false); // State for OptionsAlert
 
   useEffect(() => {
     if (data) {
@@ -91,7 +95,17 @@ export default function ViewShot() {
     setIsMenuVisible(!isMenuVisible);
   };
 
-  const handleDeletePress = async () => {
+  // Handle Options Alert actions
+  const handleDeletePress = () => {
+    setIsDeleteAlertVisible(true); // Show CustomAlert for deletion confirmation
+  };
+
+  const handleRemoveFromAlbumPress = () => {
+    alert("Remove from Camera Album (implement logic)");
+    setIsOptionsAlertVisible(false);
+  };
+
+  const confirmDelete = async () => {
     try {
       const { data } = await deleteCameraShot({
         variables: { shotId: currentShot._id },
@@ -115,6 +129,7 @@ export default function ViewShot() {
       console.error("Error deleting shot:", error);
       alert("Failed to delete shot. Please try again.");
     }
+    setIsDeleteAlertVisible(false);
   };
 
   const handleAddToExperiencePress = () => {
@@ -125,12 +140,15 @@ export default function ViewShot() {
     navigation.navigate("AddShotToAlbum", { shotId: currentShot._id });
   };
 
+  // Dropdown items
   const dropdownItems = [
     {
       icon: "trash",
       style: iconStyles.deleteIcon,
       label: "Delete Shot",
-      onPress: handleDeletePress,
+      onPress: fromAlbum
+        ? () => setIsOptionsAlertVisible(true) // Show OptionsAlert if from album
+        : handleDeletePress, // Show delete confirmation otherwise
       backgroundColor: "#FF634730",
       tintColor: "#FF6347",
     },
@@ -222,6 +240,23 @@ export default function ViewShot() {
           <Icon name="paperplane" style={iconStyles.shareIcon} weight="bold" />
         </Pressable>
       </View>
+
+      {/* Custom Alert for Delete Confirmation */}
+      <CustomAlert
+        visible={isDeleteAlertVisible}
+        onRequestClose={() => setIsDeleteAlertVisible(false)}
+        title="Delete Camera Shot"
+        message="Are you sure you want to delete this shot?"
+        onConfirm={confirmDelete}
+      />
+
+      {/* Options Alert for Album */}
+      <OptionsAlert
+        visible={isOptionsAlertVisible}
+        onRequestClose={() => setIsOptionsAlertVisible(false)}
+        onRemoveFromAlbum={handleRemoveFromAlbumPress}
+        onDeleteShot={handleDeletePress}
+      />
     </View>
   );
 }

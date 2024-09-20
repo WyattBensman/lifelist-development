@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   Text,
   View,
@@ -7,9 +7,8 @@ import {
   FlatList,
   ActivityIndicator,
   Pressable,
-  KeyboardAvoidingView,
-  Platform,
   Dimensions,
+  Keyboard,
 } from "react-native";
 import { useQuery, useMutation } from "@apollo/client";
 import { useFocusEffect } from "@react-navigation/native";
@@ -28,6 +27,8 @@ export default function Comments({
   collageAuthorId,
 }) {
   const [comment, setComment] = useState("");
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+
   const { data, loading, error, refetch } = useQuery(GET_COMMENTS, {
     variables: { collageId },
     skip: !visible,
@@ -61,6 +62,7 @@ export default function Comments({
     if (comment.trim()) {
       try {
         await createComment({ variables: { collageId, text: comment } });
+        Keyboard.dismiss(); // Dismiss the keyboard after submitting
       } catch (error) {
         console.error("Error submitting comment:", error.message);
       }
@@ -83,65 +85,82 @@ export default function Comments({
     refetch(); // Refresh comments after a comment is updated
   };
 
+  useEffect(() => {
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      (event) => {
+        setKeyboardHeight(event.endCoordinates.height);
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => {
+        setKeyboardHeight(0);
+      }
+    );
+
+    return () => {
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
+    };
+  }, []);
+
+  const isKeyboardActive = keyboardHeight > 0;
+
   return (
     <BottomPopup
       visible={visible}
       onRequestClose={onRequestClose}
       initialHeight={screenHeight * 0.6}
     >
-      <KeyboardAvoidingView
-        style={styles.container}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
-        <View style={styles.popupContainer}>
-          <Text style={[headerStyles.headerMedium, { paddingHorizontal: 16 }]}>
-            Comments
-          </Text>
-          <View style={styles.separator} />
-          {loading ? (
-            <ActivityIndicator size="large" color="#0000ff" />
-          ) : error ? (
-            <Text>Error: {error.message}</Text>
-          ) : (
-            <FlatList
-              data={data?.getComments || []}
-              renderItem={({ item }) => (
-                <View style={[layoutStyles.flex, styles.cardContainer]}>
-                  <CommentCard
-                    comment={item}
-                    onDelete={handleDeleteComment}
-                    onUpdate={updateComment}
-                    collageAuthorId={collageAuthorId}
-                    onRequestClose={onRequestClose}
-                  />
-                </View>
-              )}
-              keyExtractor={(item) => item._id}
-              ListEmptyComponent={
-                <Text style={styles.emptyText}>No comments yet.</Text>
-              }
-              contentContainerStyle={styles.flatListContent}
-            />
-          )}
-        </View>
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Add a comment..."
-            placeholderTextColor="#a1a1a1"
-            value={comment}
-            onChangeText={handleCommentChange}
-            editable={!mutationLoading} // Disable input during mutation
+      <View style={styles.popupContainer}>
+        <Text style={[headerStyles.headerMedium, { paddingHorizontal: 16 }]}>
+          Comments
+        </Text>
+        <View style={styles.separator} />
+        {loading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : error ? (
+          <Text>Error: {error.message}</Text>
+        ) : (
+          <FlatList
+            data={data?.getComments || []}
+            renderItem={({ item }) => (
+              <View style={[layoutStyles.flex, styles.cardContainer]}>
+                <CommentCard
+                  comment={item}
+                  onDelete={handleDeleteComment}
+                  onUpdate={updateComment}
+                  collageAuthorId={collageAuthorId}
+                  onRequestClose={onRequestClose}
+                />
+              </View>
+            )}
+            keyExtractor={(item) => item._id}
+            ListEmptyComponent={
+              <Text style={styles.emptyText}>No comments yet.</Text>
+            }
+            contentContainerStyle={styles.flatListContent}
           />
-          {mutationLoading ? (
-            <ActivityIndicator size="small" color="#0000ff" />
-          ) : (
-            <Pressable style={styles.postButton} onPress={handleCommentSubmit}>
-              <Text style={styles.postButtonText}>Post</Text>
-            </Pressable>
-          )}
-        </View>
-      </KeyboardAvoidingView>
+        )}
+      </View>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Add a comment..."
+          placeholderTextColor="#aaa"
+          value={comment}
+          onChangeText={handleCommentChange}
+          editable={!mutationLoading} // Disable input during mutation
+        />
+        {mutationLoading ? (
+          <ActivityIndicator size="small" color="#0000ff" />
+        ) : (
+          <Pressable style={styles.postButton} onPress={handleCommentSubmit}>
+            <Text style={styles.postButtonText}>Post</Text>
+          </Pressable>
+        )}
+      </View>
     </BottomPopup>
   );
 }
@@ -172,7 +191,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingTop: 12,
-    paddingBottom: 24,
+    paddingBottom: 32,
     borderTopWidth: 1,
     borderTopColor: "#696969",
     backgroundColor: "#1C1C1C",
@@ -181,15 +200,17 @@ const styles = StyleSheet.create({
     flex: 1,
     borderWidth: 1,
     borderColor: "#1c1c1c",
+    fontSize: 14,
     borderRadius: 20,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 9,
     backgroundColor: "#252525",
     color: "#ffffff",
+    paddingHorizontal: 20,
   },
   postButton: {
     marginLeft: 8,
-    paddingVertical: 8,
+    paddingVertical: 9,
     paddingHorizontal: 16,
     backgroundColor: "#6AB95230",
     borderRadius: 20,
@@ -204,3 +225,12 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
+
+{
+  /* <KeyboardAvoidingView
+style={styles.container}
+behavior="padding"
+keyboardVerticalOffset={keyboardHeight}
+>
+</KeyboardAvoidingView> */
+}

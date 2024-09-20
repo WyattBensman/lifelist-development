@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import {
   useNavigation,
   useFocusEffect,
@@ -85,13 +85,13 @@ export default function ManageTempShots() {
         button1={
           <Pressable
             onPress={handleSave}
-            style={[
-              styles.buttonContainer,
-              isModified && styles.buttonContainerActive,
-            ]}
+            disabled={!isModified} // Disable button if no changes
           >
             <Text
-              style={[styles.buttonText, isModified && styles.buttonTextActive]}
+              style={[
+                styles.buttonText,
+                isModified && styles.buttonTextActive, // Apply active styles only if modified
+              ]}
             >
               Save
             </Text>
@@ -117,21 +117,14 @@ export default function ManageTempShots() {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    backgroundColor: "#1C1C1C",
-    paddingVertical: 6,
-    paddingHorizontal: 13,
-    borderRadius: 12,
-  },
   buttonText: {
-    color: "#696969",
-  },
-  buttonContainerActive: {
-    backgroundColor: "#6AB95230",
-    fontWeight: "500",
+    fontSize: 12,
+    color: "#696969", // Inactive color
+    fontWeight: "600",
   },
   buttonTextActive: {
-    color: "#6AB952",
+    color: "#6AB952", // Active color
+    fontWeight: "600",
   },
   columnWrapper: {
     justifyContent: "space-between",

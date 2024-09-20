@@ -7,14 +7,12 @@ const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const createCameraShot = async (_, { image }, { user }) => {
   try {
-    // Ensure the uploads directory exists in the root
     const uploadDir = path.join(__dirname, "../../../../uploads");
 
     // Save the uploaded image file
-    /* const filePath = await uploadSingleImage(image.file, uploadDir); */
     const filePath = await uploadSingleImage(image, uploadDir);
+    console.log("Image uploaded to:", filePath);
 
-    // Construct the URL to access the uploaded image
     const baseUrl = process.env.API_URL;
     const fileUrl = `${baseUrl}/uploads/${path.basename(filePath)}`;
 
@@ -24,9 +22,9 @@ const createCameraShot = async (_, { image }, { user }) => {
       image: fileUrl,
       capturedAt: new Date(),
     });
+
     await newShot.save();
 
-    // Update the User model to include the new camera shot in their cameraShots field
     await User.findByIdAndUpdate(user._id, {
       $addToSet: { developingCameraShots: newShot._id },
     });
@@ -36,9 +34,9 @@ const createCameraShot = async (_, { image }, { user }) => {
       message: "Added to developing shots.",
     };
   } catch (error) {
-    console.error("Error creating camera shot:", error);
+    console.error("Error creating camera shot:", error.message, error.stack);
     throw new Error("Failed to create camera shot.");
   }
 };
 
-export default createCameraShot;
+/* const filePath = await uploadSingleImage(image.file, uploadDir); */

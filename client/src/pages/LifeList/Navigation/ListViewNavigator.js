@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
   activeNavigatorButton: {
     backgroundColor: "#6AB95230",
     borderWidth: 1,
+    paddingVertical: 9,
     borderColor: "#6AB95250",
   },
   navigatorText: {

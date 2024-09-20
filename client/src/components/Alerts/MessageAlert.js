@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { BlurView } from "expo-blur";
 
-const SimpleAlert = ({ visible, onRequestClose, message }) => {
+const MessageAlert = ({ visible, onRequestClose, message }) => {
   return (
     <Modal
       animationType="fade"
@@ -83,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SimpleAlert;
+export default MessageAlert;

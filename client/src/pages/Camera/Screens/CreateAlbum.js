@@ -1,39 +1,35 @@
 import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  Pressable,
-  StyleSheet,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import { useQuery, useMutation } from "@apollo/client";
 import { headerStyles, layoutStyles, iconStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import SelectableShotCard from "../Cards/SelectableShotCard";
 import { CREATE_CAMERA_ALBUM } from "../../../utils/mutations/cameraMutations";
-import { useAuth } from "../../../contexts/AuthContext"; // Import AuthContext
+import { useAuth } from "../../../contexts/AuthContext";
 import Icon from "../../../components/Icons/Icon";
 
 export default function CreateAlbum() {
   const navigation = useNavigation();
-  const { currentUser, updateCurrentUser } = useAuth(); // Get currentUser and updateCurrentUser
-  const [title, setTitle] = useState("");
+  const { currentUser, updateCurrentUser } = useAuth();
   const [selectedShots, setSelectedShots] = useState([]);
   const [changesMade, setChangesMade] = useState(false);
+
+  // Get album title from route params
+  const route = useRoute();
+  const { albumTitle } = route.params;
 
   const { data, loading, error } = useQuery(GET_ALL_CAMERA_SHOTS);
   const [createCameraAlbum] = useMutation(CREATE_CAMERA_ALBUM);
 
   useEffect(() => {
-    if (title && selectedShots.length > 0) {
+    if (selectedShots.length > 0) {
       setChangesMade(true);
     } else {
       setChangesMade(false);
     }
-  }, [title, selectedShots]);
+  }, [selectedShots]);
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
@@ -50,7 +46,7 @@ export default function CreateAlbum() {
     try {
       const { data } = await createCameraAlbum({
         variables: {
-          title,
+          title: albumTitle, // Use the album title passed from the modal
           shots: selectedShots,
         },
       });
@@ -61,9 +57,8 @@ export default function CreateAlbum() {
         cameraAlbums: [...currentUser.cameraAlbums, data.createCameraAlbum],
       });
 
-      console.log("Album created:", data.createCameraAlbum);
-
-      navigation.navigate("Album"); // Navigate to the CameraRoll
+      // Navigate to the newly created album's view page by passing albumId
+      navigation.navigate("ViewAlbum", { albumId: newAlbum._id });
     } catch (error) {
       console.error("Error creating camera album:", error);
     }
@@ -80,7 +75,7 @@ export default function CreateAlbum() {
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
-        title="New Album"
+        title={albumTitle}
         arrow={
           <Icon
             name="chevron.backward"
@@ -90,18 +85,11 @@ export default function CreateAlbum() {
           />
         }
         button1={
-          <Pressable
-            onPress={saveChanges}
-            disabled={!changesMade}
-            style={[
-              styles.createButtonContainer,
-              changesMade && styles.createButtonActiveContainer,
-            ]}
-          >
+          <Pressable onPress={saveChanges} disabled={!changesMade}>
             <Text
               style={[
                 styles.createButtonText,
-                changesMade && styles.createButtonActiveText,
+                changesMade && styles.createButtonTextActive,
               ]}
             >
               Create
@@ -109,72 +97,35 @@ export default function CreateAlbum() {
           </Pressable>
         }
       />
-      <View
-        style={[
-          {
-            margin: 16,
-          },
-        ]}
-      >
-        <View style={styles.row}>
-          <Text style={styles.label}>Title</Text>
-          <TextInput
-            style={styles.input}
-            value={title}
-            onChangeText={(text) => {
-              setTitle(text);
-            }}
-          />
-        </View>
-      </View>
-      <Text style={[headerStyles.headerMedium, { marginLeft: 4 }]}>
-        Select Shots
-      </Text>
+
       <FlatList
         data={data.getAllCameraShots}
         renderItem={renderShot}
         keyExtractor={(item) => item._id}
         numColumns={3}
+        ListHeaderComponent={
+          <Text
+            style={[
+              headerStyles.headerMedium,
+              { marginLeft: 10, marginTop: 8 },
+            ]}
+          >
+            {`Selected Shots (${selectedShots.length})`}
+          </Text>
+        }
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  label: {
-    width: 72,
-    color: "#ffffff",
-    fontWeight: "500",
-  },
-  input: {
-    flex: 1, // Make input take the remaining space
-    color: "#ececec",
-    height: 42,
-    paddingHorizontal: 10, // Adjust padding as needed
-    borderRadius: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#252525",
-  },
-  createButtonContainer: {
-    backgroundColor: "#252525",
-    paddingVertical: 6,
-    paddingHorizontal: 13,
-    borderRadius: 12,
-  },
   createButtonText: {
+    fontSize: 12,
     color: "#696969",
     fontWeight: "600",
   },
-  createButtonActiveContainer: {
-    backgroundColor: "#6AB95230",
-  },
-  createButtonActiveText: {
+  createButtonTextActive: {
     color: "#6AB952",
-    fontWeight: "500",
+    fontWeight: "600",
   },
 });

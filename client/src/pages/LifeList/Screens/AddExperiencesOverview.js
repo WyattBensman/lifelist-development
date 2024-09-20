@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, FlatList, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+} from "react-native";
 import {
   useFocusEffect,
   useNavigation,
@@ -108,22 +115,19 @@ export default function AddExperiencesOverview() {
         }
         title={"New Experiences"}
         button1={
-          <View
-            style={[
-              styles.buttonContainer,
-              allExperiencesHaveList && styles.addButtonActiveContainer,
-            ]}
+          <Pressable
+            onPress={handleAddExperiences}
+            disabled={!allExperiencesHaveList}
           >
             <Text
               style={[
-                styles.addButton,
-                allExperiencesHaveList && styles.addButtonActive,
+                styles.createButtonText,
+                allExperiencesHaveList && styles.createButtonTextActive,
               ]}
-              onPress={handleAddExperiences}
             >
               Add
             </Text>
-          </View>
+          </Pressable>
         }
       />
       <ScrollView style={{ marginTop: 8, flex: 1 }}>
@@ -153,20 +157,13 @@ export default function AddExperiencesOverview() {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    backgroundColor: "#1C1C1C",
-    paddingVertical: 6,
-    paddingHorizontal: 13,
-    borderRadius: 12,
-  },
-  addButton: {
+  createButtonText: {
+    fontSize: 12,
     color: "#696969",
+    fontWeight: "600",
   },
-  addButtonActiveContainer: {
-    backgroundColor: "#6AB95230",
-  },
-  addButtonActive: {
+  createButtonTextActive: {
     color: "#6AB952",
-    fontWeight: "500",
+    fontWeight: "600",
   },
 });

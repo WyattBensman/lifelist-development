@@ -1,22 +1,26 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   View,
   Text,
   Pressable,
+  TextInput,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
 import { BlurView } from "expo-blur";
 
-const CustomAlert = ({
-  visible,
-  onRequestClose,
-  title,
-  message,
-  onConfirm,
-}) => {
+const FormAlert = ({ visible, onRequestClose, title, subheader, onSave }) => {
+  const [inputValue, setInputValue] = useState("");
+
+  const handleSave = () => {
+    if (inputValue.trim()) {
+      onSave(inputValue);
+      setInputValue(""); // Reset input after saving
+    }
+  };
+
   return (
     <Modal
       animationType="fade"
@@ -42,10 +46,20 @@ const CustomAlert = ({
                 onPress={(e) => e.stopPropagation()}
               >
                 {title && <Text style={styles.modalHeader}>{title}</Text>}
-                <Text style={styles.modalSubheader}>{message}</Text>
+                {subheader && (
+                  <Text style={styles.modalSubheader}>{subheader}</Text>
+                )}
+                <TextInput
+                  style={styles.input}
+                  value={inputValue}
+                  onChangeText={setInputValue}
+                  placeholder="Title" // The placeholder text
+                  placeholderTextColor="#aaaaaa"
+                  autoFocus={true} // Auto-focus the TextInput when modal opens
+                />
                 <View style={styles.actionButtons}>
-                  <Pressable style={styles.confirmButton} onPress={onConfirm}>
-                    <Text style={styles.confirmButtonText}>Confirm</Text>
+                  <Pressable style={styles.saveButton} onPress={handleSave}>
+                    <Text style={styles.saveButtonText}>Save</Text>
                   </Pressable>
                   <Pressable
                     style={styles.cancelButton}
@@ -107,30 +121,40 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     color: "#aaaaaa",
   },
+  input: {
+    width: "100%",
+    padding: 9,
+    borderRadius: 8,
+    backgroundColor: "#252525",
+    color: "#fff",
+    fontSize: 14,
+    textAlign: "left",
+    marginTop: 16,
+    marginBottom: 20,
+  },
   actionButtons: {
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",
-    marginTop: 16,
   },
-  confirmButton: {
+  saveButton: {
     width: "44%",
-    height: 35,
-    borderRadius: 8, // Keeping the same radius as other buttons
+    height: 33,
+    borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#6AB95230", // Transparent green
-    borderColor: "#6AB95250", // Matching border color
+    backgroundColor: "#6AB95230",
+    borderColor: "#6AB95250",
     borderWidth: 1,
   },
-  confirmButtonText: {
+  saveButtonText: {
     textAlign: "center",
-    color: "#6AB952", // Matching the text color of the green buttons
+    color: "#6AB952",
     fontWeight: "500",
   },
   cancelButton: {
     width: "44%",
-    height: 35,
+    height: 33,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
@@ -144,4 +168,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomAlert;
+export default FormAlert;

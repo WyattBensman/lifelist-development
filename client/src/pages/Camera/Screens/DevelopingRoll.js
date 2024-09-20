@@ -7,7 +7,7 @@ import { useQuery } from "@apollo/client";
 import { GET_DEVELOPING_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import Icon from "../../../components/Icons/Icon";
 import BlurredShotCard from "../Cards/BlurredShotCard";
-import SimpleAlert from "../../../components/Alerts/SimpleAlert";
+import MessageAlert from "../../../components/Alerts/MessageAlert";
 
 export default function DevelopingRoll() {
   const navigation = useNavigation();
@@ -53,7 +53,7 @@ export default function DevelopingRoll() {
           showsVerticalScrollIndicator={false}
         />
       </View>
-      <SimpleAlert
+      <MessageAlert
         visible={alertVisible}
         onRequestClose={toggleAlert}
         message="Camera Shots will be fully developed by 6am tomorrow!"

@@ -15,7 +15,6 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "@apollo/client";
-import { applyFilter } from "../../../utils/cameraUtils/applyFilter";
 import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
 
 export default function CameraHome() {
@@ -112,20 +111,25 @@ export default function CameraHome() {
           exif: true,
           skipProcessing: true,
         });
+        console.log("photo URI:", photo.uri);
 
-        const filterOutputUri = await applyFilter(photo.uri, cameraType);
+        console.log("Data passed to mutation:", {
+          uri: photo.uri,
+          type: "image/jpeg",
+          name: "photo.jpg",
+        });
 
         const { data } = await createCameraShot({
           variables: {
             image: {
-              uri: filterOutputUri,
+              uri: photo.uri,
               type: "image/jpeg",
               name: "photo.jpg",
             },
           },
         });
 
-        if (data.createCameraShot.success) {
+        if (data?.createCameraShot?.success) {
           Alert.alert(
             "Success",
             data.createCameraShot.message || "Photo added to developing shots!",
@@ -320,3 +324,7 @@ const styles = StyleSheet.create({
     transform: [{ translateX: 25 }, { translateY: 10 }],
   },
 });
+
+/* const filterOutputUri = await applyFilter(photo.uri, cameraType);
+        if (!filterOutputUri) throw new Error("Failed to apply filter");
+        console.log("Filtered photo URI:", filterOutputUri); */

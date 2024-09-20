@@ -164,7 +164,10 @@ export default function AdminOptionsPopup({
           style={[popupStyles.cardContainer, layoutStyles.flex]}
         >
           <Text
-            style={[popupStyles.spacer, { color: "red", fontWeight: "600" }]}
+            style={[
+              popupStyles.spacer,
+              { color: "#FF3B30", fontWeight: "600" },
+            ]}
           >
             Sign Out
           </Text>

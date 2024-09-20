@@ -31,7 +31,7 @@ export default function ButtonSkinny({
 const styling = StyleSheet.create({
   button: {
     paddingVertical: 8,
-    borderRadius: 12,
+    borderRadius: 8,
   },
   buttonMessage: {
     textAlign: "center",

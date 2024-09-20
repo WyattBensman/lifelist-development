@@ -7,14 +7,13 @@ import {
   StyleSheet,
   Text,
 } from "react-native";
-import LifeListLogo from "../Icons/LifeListLogo";
 import HeaderMain from "../../../components/Headers/HeaderMain";
 import { useAuth } from "../../../contexts/AuthContext";
 import Collage from "../../Collage/Screens/Collage";
 import { useLazyQuery } from "@apollo/client";
 import { GET_MAIN_FEED } from "../../../utils/queries";
 import { useNavigation } from "@react-navigation/native";
-import { iconStyles, layoutStyles } from "../../../styles";
+import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
 import Icon from "../../../components/Icons/Icon";
 
 const { height: screenHeight } = Dimensions.get("window");
@@ -28,6 +27,9 @@ export default function MainFeed() {
   const [headerHeight, setHeaderHeight] = useState(0);
   const [navigationBarHeight, setNavigationBarHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(screenHeight);
+  console.log(headerHeight);
+  console.log(navigationBarHeight);
+  console.log(contentHeight);
 
   const [fetchMainFeed, { loading, error, data, fetchMore }] = useLazyQuery(
     GET_MAIN_FEED,
@@ -118,7 +120,9 @@ export default function MainFeed() {
     <View style={layoutStyles.wrapper}>
       <View onLayout={onHeaderLayout}>
         <HeaderMain
-          titleComponent={<LifeListLogo />}
+          titleComponent={
+            <Text style={[headerStyles.headerHeavy]}>LifeList</Text>
+          }
           icon1={
             <Icon
               name="plus"

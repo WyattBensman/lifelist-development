@@ -10,24 +10,30 @@ import {
   Pressable,
 } from "react-native";
 import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
-import { useState, useEffect } from "react";
-import BottomButtonContainer from "../../../../components/Containers/BottomButtonContainer";
-import SolidButton from "../../../../components/SolidButton";
-import OutlinedButton from "../../../../components/OutlinedButton";
+import { useState, useEffect, useCallback } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import * as ImagePicker from "expo-image-picker";
 import { UPDATE_PROFILE, UPDATE_IDENTITY } from "../../../../utils/mutations";
-import { GET_USER_PROFILE_INFORMATION } from "../../../../utils/queries"; // import your query
+import { GET_USER_PROFILE_INFORMATION } from "../../../../utils/queries";
 import { BASE_URL } from "../../../../utils/config";
 import { Picker } from "@react-native-picker/picker";
 import Modal from "react-native-modal";
-import { MaterialIcons } from "@expo/vector-icons"; // Import the icon
+import DateTimePicker from "@react-native-community/datetimepicker";
+import IconStatic from "../../../../components/Icons/IconStatic";
+import EditProfileBottomContainer from "../../Components/EditProfileBottomContainer";
 
-export default function EditProfileTab() {
-  const { loading, error, data } = useQuery(GET_USER_PROFILE_INFORMATION);
+export default function EditProfileTab({
+  setUnsavedChanges,
+  registerResetChanges,
+}) {
+  const { loading, error, data, refetch } = useQuery(
+    GET_USER_PROFILE_INFORMATION
+  );
   const [changesMade, setChangesMade] = useState(false);
   const [showGenderPicker, setShowGenderPicker] = useState(false);
+  const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
   const [temporaryGender, setTemporaryGender] = useState("");
+  const [temporaryBirthday, setTemporaryBirthday] = useState(null);
 
   const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
@@ -39,7 +45,7 @@ export default function EditProfileTab() {
   const [updateProfileMutation] = useMutation(UPDATE_PROFILE);
   const [updateIdentityMutation] = useMutation(UPDATE_IDENTITY);
 
-  useEffect(() => {
+  const initializeProfileInfo = useCallback(() => {
     if (data) {
       const { getUserProfileInformation } = data;
       setFullName(getUserProfileInformation.fullName);
@@ -51,19 +57,39 @@ export default function EditProfileTab() {
     }
   }, [data]);
 
+  // Register the resetChanges function with the navigator
+  useEffect(() => {
+    registerResetChanges(initializeProfileInfo);
+  }, [registerResetChanges, initializeProfileInfo]);
+
+  useEffect(() => {
+    initializeProfileInfo();
+  }, [data, initializeProfileInfo]);
+
   useEffect(() => {
     if (data) {
       const { getUserProfileInformation } = data;
-      setChangesMade(
+      const hasChanges =
         fullName !== getUserProfileInformation.fullName ||
-          username !== getUserProfileInformation.username ||
-          bio !== getUserProfileInformation.bio ||
-          birthday !== getUserProfileInformation.birthday ||
-          gender !== getUserProfileInformation.gender ||
-          profilePicture !== getUserProfileInformation.profilePicture
-      );
+        username !== getUserProfileInformation.username ||
+        bio !== getUserProfileInformation.bio ||
+        birthday !== getUserProfileInformation.birthday ||
+        gender !== getUserProfileInformation.gender ||
+        profilePicture !== getUserProfileInformation.profilePicture;
+
+      setChangesMade(hasChanges);
+      setUnsavedChanges(hasChanges);
     }
-  }, [fullName, username, bio, birthday, gender, profilePicture, data]);
+  }, [
+    fullName,
+    username,
+    bio,
+    birthday,
+    gender,
+    profilePicture,
+    data,
+    setUnsavedChanges,
+  ]);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -91,7 +117,8 @@ export default function EditProfileTab() {
         updateProfileVariables.profilePicture = photo;
       }
 
-      const capitalize = (str) => str.toUpperCase();
+      const capitalize = (str) =>
+        str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
       const { data: profileData } = await updateProfileMutation({
         variables: updateProfileVariables,
@@ -101,7 +128,6 @@ export default function EditProfileTab() {
         variables: { gender: capitalize(gender), birthday },
       });
 
-      // Manually update the values on the screen
       setFullName(profileData.updateProfile.fullName);
       setUsername(profileData.updateProfile.username);
       setBio(profileData.updateProfile.bio);
@@ -110,28 +136,59 @@ export default function EditProfileTab() {
       setBirthday(identityData.updateIdentity.birthday);
 
       setChangesMade(false);
+      setUnsavedChanges(false);
     } catch (error) {
       console.error("Failed to update profile information", error);
     }
   };
 
   const discardChanges = () => {
-    if (data) {
-      const { getUserProfileInformation } = data;
-      setFullName(getUserProfileInformation.fullName || "");
-      setUsername(getUserProfileInformation.username || "");
-      setBio(getUserProfileInformation.bio || "");
-      setBirthday(getUserProfileInformation.birthday || "");
-      setGender(getUserProfileInformation.gender || "");
-      setProfilePicture(getUserProfileInformation.profilePicture || "");
-      setChangesMade(false);
+    initializeProfileInfo(); // Reset to original values
+    setChangesMade(false);
+    setUnsavedChanges(false);
+  };
+
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    const options = { year: "numeric", month: "long", day: "numeric" };
+    const formattedDate = date.toLocaleDateString("en-US", options);
+    const [month, day, year] = formattedDate.split(" ");
+    const dayWithSuffix = day
+      .replace(",", "")
+      .concat(getDaySuffix(parseInt(day)));
+    return `${month} ${dayWithSuffix}, ${year}`;
+  };
+
+  const getDaySuffix = (day) => {
+    if (day > 3 && day < 21) return "th";
+    switch (day % 10) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
     }
   };
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error! {error.message}</Text>;
+  const handleBirthdaySave = () => {
+    if (temporaryBirthday) {
+      setBirthday(temporaryBirthday);
+      setShowBirthdayPicker(false);
+    }
+  };
+
+  const handleBirthdayDiscard = () => {
+    setShowBirthdayPicker(false);
+    setTemporaryBirthday(null);
+  };
 
   const profilePictureUrl = `${BASE_URL}${profilePicture}`;
+
+  if (loading) return <Text>Loading...</Text>;
+  if (error) return <Text>Error! {error.message}</Text>;
 
   return (
     <KeyboardAvoidingView
@@ -142,7 +199,9 @@ export default function EditProfileTab() {
         style={formStyles.formContainer}
         keyboardDismissMode="on-drag"
       >
-        <Text style={headerStyles.headerMedium}>Profile Information</Text>
+        <Text style={[headerStyles.headerMedium, { marginBottom: 12 }]}>
+          Profile Information
+        </Text>
         <Pressable
           onPress={pickImage}
           style={[layoutStyles.marginBtmSm, styles.profileContainer]}
@@ -191,47 +250,52 @@ export default function EditProfileTab() {
           <Pressable
             style={styles.input}
             onPress={() => {
-              setTemporaryGender(gender); // Initialize temporary gender
+              setTemporaryGender(gender);
               setShowGenderPicker(true);
             }}
           >
-            <Text style={{ color: gender ? "#ececec" : "#d4d4d4" }}>
-              {gender ? gender : "Select your gender"}
+            <Text style={{ color: gender ? "#fff" : "#d4d4d4" }}>
+              {gender
+                ? gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase()
+                : "Select your gender"}
             </Text>
-            <MaterialIcons name="arrow-drop-down" size={24} color="#d4d4d4" />
+            <IconStatic
+              name="chevron.down"
+              style={styles.icon}
+              tintColor="#d4d4d4"
+              weight="regular"
+            />
           </Pressable>
         </View>
         <View style={styles.row}>
           <Text style={styles.label}>Birthday</Text>
-          <TextInput
+          <Pressable
             style={styles.input}
-            value={birthday}
-            onChangeText={setBirthday}
-            placeholder="Enter your birthday"
-            placeholderTextColor="#d4d4d4"
-          />
+            onPress={() => {
+              setTemporaryBirthday(new Date(birthday));
+              setShowBirthdayPicker(true);
+            }}
+          >
+            <Text style={{ color: birthday ? "#fff" : "#d4d4d4" }}>
+              {birthday ? formatDate(birthday) : "Select your birthday"}
+            </Text>
+            <IconStatic
+              name="chevron.down"
+              style={styles.icon}
+              tintColor="#d4d4d4"
+              weight="regular"
+            />
+          </Pressable>
         </View>
       </ScrollView>
       {changesMade && (
-        <BottomButtonContainer
-          topButton={
-            <SolidButton
-              backgroundColor={"#6AB952"}
-              text={"Save Changes"}
-              textColor={"#ffffff"}
-              onPress={saveChanges}
-            />
-          }
-          bottomButton={
-            <OutlinedButton
-              borderColor={"#d4d4d4"}
-              text={"Discard"}
-              onPress={discardChanges}
-            />
-          }
+        <EditProfileBottomContainer
+          saveChanges={saveChanges}
+          discardChanges={discardChanges}
         />
       )}
 
+      {/* Gender Picker Modal */}
       <Modal
         isVisible={showGenderPicker}
         onBackdropPress={() => setShowGenderPicker(false)}
@@ -251,9 +315,7 @@ export default function EditProfileTab() {
           <View style={styles.buttonRow}>
             <Pressable
               style={styles.discardButton}
-              onPress={() => {
-                setShowGenderPicker(false);
-              }}
+              onPress={() => setShowGenderPicker(false)}
             >
               <Text style={styles.discardButtonText}>Discard</Text>
             </Pressable>
@@ -269,6 +331,42 @@ export default function EditProfileTab() {
           </View>
         </View>
       </Modal>
+
+      {/* Birthday Picker Modal */}
+      {showBirthdayPicker && (
+        <Modal
+          isVisible={showBirthdayPicker}
+          onBackdropPress={handleBirthdayDiscard}
+          style={styles.modal}
+        >
+          <View style={styles.pickerContainer}>
+            <DateTimePicker
+              value={temporaryBirthday || new Date()}
+              mode="date"
+              display="spinner"
+              textColor="#fff"
+              onChange={(event, selectedDate) =>
+                setTemporaryBirthday(selectedDate)
+              }
+              style={{ width: "100%" }}
+            />
+            <View style={styles.buttonRow}>
+              <Pressable
+                style={styles.discardButton}
+                onPress={handleBirthdayDiscard}
+              >
+                <Text style={styles.discardButtonText}>Discard</Text>
+              </Pressable>
+              <Pressable
+                style={styles.confirmButton}
+                onPress={handleBirthdaySave}
+              >
+                <Text style={styles.confirmButtonText}>Confirm</Text>
+              </Pressable>
+            </View>
+          </View>
+        </Modal>
+      )}
     </KeyboardAvoidingView>
   );
 }
@@ -297,21 +395,26 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   label: {
-    width: 72,
+    width: 76,
     color: "#ffffff",
     fontWeight: "500",
   },
   input: {
-    flex: 1, // Make input take the remaining space
-    color: "#ececec",
-    height: 42,
-    paddingHorizontal: 10, // Adjust padding as needed
+    flex: 1,
+    padding: 9,
     borderRadius: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#252525",
+    backgroundColor: "#252525",
+    color: "#fff",
+    fontSize: 14,
+    textAlign: "left",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between", // Space between text and icon
+    justifyContent: "space-between",
+  },
+  icon: {
+    width: 16,
+    height: 10,
+    marginRight: 2,
   },
   modal: {
     justifyContent: "flex-end",
@@ -330,30 +433,36 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     marginHorizontal: 20,
-    marginTop: 20,
+    marginTop: 8,
   },
   discardButton: {
-    backgroundColor: "#d4d4d4",
-    padding: 10,
+    flex: 1,
+    height: 35,
+    marginRight: 10,
+    backgroundColor: "#252525",
+    borderColor: "#d4d4d4",
+    borderWidth: 1,
     borderRadius: 8,
     alignItems: "center",
-    flex: 1,
-    marginRight: 10,
+    justifyContent: "center",
   },
   discardButtonText: {
-    color: "#252525",
+    color: "#d4d4d4",
     fontWeight: "500",
   },
   confirmButton: {
-    backgroundColor: "#6AB952",
-    padding: 10,
+    flex: 1,
+    height: 35,
+    marginLeft: 10,
+    backgroundColor: "#6AB95230",
+    borderColor: "#6AB95250",
+    borderWidth: 1,
     borderRadius: 8,
     alignItems: "center",
-    flex: 1,
-    marginLeft: 10,
+    justifyContent: "center",
   },
   confirmButtonText: {
-    color: "#ffffff",
+    color: "#6AB952",
     fontWeight: "500",
   },
 });

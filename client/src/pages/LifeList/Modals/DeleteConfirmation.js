@@ -1,5 +1,3 @@
-// ConfirmationModal.js
-import React from "react";
 import { Modal, View, Text, Button, StyleSheet } from "react-native";
 
 export default function DeleteConfirmation({ visible, onConfirm, onCancel }) {

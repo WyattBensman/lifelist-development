@@ -280,7 +280,6 @@ const styles = StyleSheet.create({
   optionsButton: {
     borderWidth: 1,
     borderColor: "#696969",
-    flexDirection: "row",
     paddingVertical: 6,
     paddingHorizontal: 12,
     borderRadius: 12,

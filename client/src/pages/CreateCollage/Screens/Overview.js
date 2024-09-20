@@ -16,12 +16,11 @@ import {
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { BASE_URL } from "../../../utils/config";
 import Icon from "../../../components/Icons/Icon";
-import IconStatic from "../../../components/Icons/IconStatic";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function Overview({ route }) {
   const navigation = useNavigation();
-  const { selectedImages, coverImage, taggedUsers = [] } = route.params; // Get coverImage and taggedUsers if they exist
+  const { selectedImages, coverImage, taggedUsers = [] } = route.params;
   const [caption, setCaption] = useState("");
   const { setIsTabBarVisible } = useNavigationContext();
 
@@ -81,12 +80,13 @@ export default function Overview({ route }) {
           />
         }
         button1={
-          <Pressable
+          <Icon
+            name="chevron.forward"
             onPress={handlePreview}
-            style={styles.previewButtonContainer}
-          >
-            <Text style={styles.previewButtonText}>Preview</Text>
-          </Pressable>
+            weight="heavy" // Always active, use the heavy weight
+            tintColor="#6AB952" // Green color for active state
+            style={iconStyles.backArrow} // Reuse style from back arrow for consistency
+          />
         }
       />
       <View style={[formStyles.formContainer, layoutStyles.marginTopLg]}>
@@ -114,7 +114,7 @@ export default function Overview({ route }) {
         </View>
         <View style={styles.bottomButtonContainer}>
           <Pressable style={styles.buttonContainer}>
-            <IconStatic
+            <Icon
               name="plus.circle"
               style={iconStyles.plusCircle}
               tintColor={"#fff"}
@@ -125,16 +125,15 @@ export default function Overview({ route }) {
             style={styles.buttonContainer}
             onPress={handleAddParticipants}
           >
-            <IconStatic
+            <Icon
               name="plus.circle"
               style={iconStyles.plusCircle}
               tintColor={"#fff"}
-              onPress={handleAddParticipants}
             />
             <Text style={styles.buttonText}>Tag Users</Text>
           </Pressable>
           <Pressable style={styles.buttonContainer}>
-            <IconStatic
+            <Icon
               name="plus.circle"
               style={iconStyles.plusCircle}
               tintColor={"#fff"}
@@ -159,7 +158,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginBottom: 12,
-    height: 40,
+    height: 37,
     backgroundColor: "#252525",
     borderRadius: 8,
     flexDirection: "row",
@@ -172,23 +171,6 @@ const styles = StyleSheet.create({
     marginLeft: 6,
     color: "#fff",
   },
-  previewButtonContainer: {
-    backgroundColor: "#252525",
-    paddingVertical: 6,
-    paddingHorizontal: 13,
-    borderRadius: 12,
-  },
-  previewButtonText: {
-    color: "#6AB952",
-    fontWeight: "600",
-  },
-  previewButtonActiveContainer: {
-    backgroundColor: "#6AB95230",
-  },
-  previewButtonActiveText: {
-    color: "#6AB952",
-    fontWeight: "500",
-  },
   row: {
     flexDirection: "row",
     alignItems: "center",
@@ -200,12 +182,15 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   input: {
-    flex: 1, // Make input take the remaining space
-    color: "#ececec",
-    height: 42,
-    paddingHorizontal: 10, // Adjust padding as needed
+    flex: 1,
+    padding: 9,
     borderRadius: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#252525",
+    backgroundColor: "#252525",
+    color: "#fff",
+    fontSize: 14,
+    textAlign: "left",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 });

@@ -9,13 +9,13 @@ export const formStyles = StyleSheet.create({
     marginBottom: 16,
   },
   input: {
-    height: 42,
-    color: "#ececec",
+    flex: 1,
+    height: 40,
+    color: "#252525",
     borderWidth: 1,
     padding: 10,
     borderRadius: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: "#252525",
+    backgroundColor: "#252525",
   },
   label: {
     fontWeight: "500",

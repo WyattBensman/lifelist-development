@@ -61,7 +61,6 @@ export default function AddShotToExperience({ navigation, route }) {
             weight="semibold"
           />
         }
-        hasBorder={false}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         isSearchFocused={isSearchFocused}

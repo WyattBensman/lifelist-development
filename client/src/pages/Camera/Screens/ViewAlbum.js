@@ -45,7 +45,7 @@ export default function ViewAlbum() {
   const album = data.getCameraAlbum;
 
   const renderShot = ({ item }) => (
-    <NavigableShotCard shot={item} navigation={navigation} />
+    <NavigableShotCard shot={item} navigation={navigation} fromAlbum={true} />
   );
 
   const toggleDropdown = () => {

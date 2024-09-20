@@ -43,7 +43,7 @@ export default function ViewCollage() {
 
   const renderCollage = useCallback(
     ({ item }) => (
-      <View style={{ height: contentHeight }}>
+      <View style={[styles.collageContainer, { height: contentHeight }]}>
         <Collage collageId={item._id} isViewCollageScreen={true} />
       </View>
     ),
@@ -80,14 +80,17 @@ export default function ViewCollage() {
           offset: contentHeight * index,
           index,
         })}
+        style={styles.flatList} // Ensure FlatList covers the remaining space
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: "#FBFBFE",
+  collageContainer: {
+    width: "100%", // Ensure it fills the width
+  },
+  flatList: {
+    flex: 1, // Ensure FlatList takes the full remaining space
   },
 });

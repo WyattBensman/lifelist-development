@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     width: "45%",
     paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 16,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 6,
@@ -219,6 +219,7 @@ const styles = StyleSheet.create({
   },
   experiencedSelectedButton: {
     backgroundColor: "#6AB95230", // Light green with opacity
+    paddingVertical: 7,
     borderWidth: 1,
     borderColor: "#6AB95250",
   },
@@ -227,6 +228,7 @@ const styles = StyleSheet.create({
   },
   wishlistedSelectedButton: {
     backgroundColor: "#5FC4ED30", // Light blue with opacity
+    paddingVertical: 7,
     borderWidth: 1,
     borderColor: "#5FC4ED50",
   },

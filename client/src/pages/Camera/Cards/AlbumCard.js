@@ -1,5 +1,4 @@
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import { layoutStyles } from "../../../styles";
+import { Image, Pressable, StyleSheet, Text } from "react-native";
 import { BASE_URL } from "../../../utils/config";
 import { truncateText } from "../../../utils/utils";
 

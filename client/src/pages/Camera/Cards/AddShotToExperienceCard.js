@@ -61,11 +61,13 @@ export default function AddShotToExperienceCard({ experience, shotId }) {
               style={
                 isShotAdded
                   ? styles.addedButtonContainer
-                  : styles.buttonContainer
+                  : styles.addButtonContainer
               }
             >
               <Text
-                style={isShotAdded ? styles.addedButtonText : styles.buttonText}
+                style={
+                  isShotAdded ? styles.addedButtonText : styles.addButtonText
+                }
               >
                 {isShotAdded ? "Added" : "Add"}
               </Text>
@@ -86,6 +88,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     flex: 1,
     padding: 8,
+    paddingRight: 16,
     backgroundColor: "#1C1C1C",
     borderRadius: 8,
   },
@@ -104,33 +107,36 @@ const styles = StyleSheet.create({
   },
   secondaryText: {
     fontSize: 12,
-    color: "#696969",
+    color: "#aaa",
     marginTop: 1.5,
   },
-  buttonContainer: {
-    backgroundColor: "#696969",
-    marginRight: 8,
-    borderRadius: 16,
+  // "Add" button uses the dark background and white text (similar to commentsButton)
+  addButtonContainer: {
+    backgroundColor: "#252525", // Darker background for the "Add" button
+    borderRadius: 24, // Rounded corners
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
-  buttonText: {
-    textAlign: "center",
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    fontWeight: "500",
-    color: "#6AB952",
+  addButtonText: {
+    color: "#aaa", // White text for the "Add" button
     fontSize: 12,
+    fontWeight: "500",
   },
   addedButtonContainer: {
-    backgroundColor: "#6AB952",
-    marginRight: 8,
-    borderRadius: 16,
+    backgroundColor: "#6AB95230", // Light green background
+    borderRadius: 24, // Rounded corners
+    borderWidth: 1,
+    borderColor: "#6AB95250",
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
   },
   addedButtonText: {
-    textAlign: "center",
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    fontWeight: "500",
-    color: "#fff",
+    color: "#6AB952", // Green text color for the "Added" button
     fontSize: 12,
+    fontWeight: "500",
   },
 });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
 import EditProfile from "../Screens/TabScreens/EditProfile";
 import EditContact from "../Screens/TabScreens/EditContact";
@@ -11,6 +11,7 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
 } from "react-native-reanimated";
+import CustomAlert from "../../../components/Alerts/CustomAlert";
 
 const { width } = Dimensions.get("window");
 
@@ -24,7 +25,11 @@ export default function EditProfileNavigator() {
   const route = useRoute();
   const initialTab = route.params?.initialTab || "Profile";
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [pendingTab, setPendingTab] = useState(null); // Track the tab the user is trying to switch to
+  const [showAlert, setShowAlert] = useState(false); // Control alert visibility
+  const [unsavedChanges, setUnsavedChanges] = useState(false); // Track unsaved changes
   const translateX = useSharedValue(0);
+  const resetChangesRef = useRef({}); // Store resetChanges functions for each tab
 
   useEffect(() => {
     if (route.params?.initialTab) {
@@ -36,16 +41,23 @@ export default function EditProfileNavigator() {
     translateX.value = tabs.findIndex((tab) => tab.name === activeTab) * -width;
   }, [activeTab, translateX]);
 
-  const renderScreen = () => {
-    return tabs.map((tab) => (
-      <View key={tab.name} style={styles.screen}>
-        {React.createElement(tab.component)}
-      </View>
-    ));
+  const handleTabPress = (tabName) => {
+    if (unsavedChanges) {
+      // If there are unsaved changes, show the alert before switching tabs
+      setPendingTab(tabName);
+      setShowAlert(true);
+    } else {
+      // No unsaved changes, allow immediate tab switch
+      setActiveTab(tabName);
+    }
   };
 
-  const handleTabPress = (tabName) => {
-    setActiveTab(tabName);
+  const handleDiscardChanges = () => {
+    // Call the resetChanges function for the current active tab
+    resetChangesRef.current[activeTab]?.();
+    setUnsavedChanges(false);
+    setActiveTab(pendingTab);
+    setShowAlert(false);
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -58,6 +70,19 @@ export default function EditProfileNavigator() {
       },
     ],
   }));
+
+  const renderScreen = () => {
+    return tabs.map((tab) => (
+      <View key={tab.name} style={styles.screen}>
+        {React.createElement(tab.component, {
+          setUnsavedChanges,
+          registerResetChanges: (resetFn) => {
+            resetChangesRef.current[tab.name] = resetFn;
+          },
+        })}
+      </View>
+    ));
+  };
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -85,14 +110,21 @@ export default function EditProfileNavigator() {
       <Animated.View style={[styles.screenContainer, animatedStyle]}>
         {renderScreen()}
       </Animated.View>
+
+      {/* Custom Alert for unsaved changes */}
+      <CustomAlert
+        visible={showAlert}
+        onRequestClose={() => setShowAlert(false)}
+        title="Unsaved Changes"
+        message="You have unsaved changes. Are you sure you want to leave without saving?"
+        onConfirm={handleDiscardChanges} // Discard changes and switch tabs
+        onCancel={() => setShowAlert(false)} // Cancel and stay on the current tab
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   navigatorWrapper: {
     flexDirection: "row",
     justifyContent: "center",
@@ -104,7 +136,7 @@ const styles = StyleSheet.create({
   },
   navigatorButton: {
     width: "26%",
-    paddingVertical: 8,
+    paddingVertical: 7,
     paddingHorizontal: 12,
     borderRadius: 16,
     justifyContent: "center",
@@ -128,10 +160,10 @@ const styles = StyleSheet.create({
   screenContainer: {
     flexDirection: "row",
     width: width * tabs.length,
-    height: "100%",
+    flex: 1,
   },
   screen: {
     width: width,
-    height: "100%",
+    flex: 1,
   },
 });

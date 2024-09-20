@@ -3,7 +3,6 @@ import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import AllExperiencesList from "../Screens/AllExperiencesList";
 import CategoryExperiencesList from "../Screens/CategoryExperiencesList";
 import { layoutStyles } from "../../../styles";
-import AddShotToExperienceCard from "../Cards/AddShotToExperienceCard";
 
 const categories = [
   "All",
@@ -14,9 +13,9 @@ const categories = [
   "Courses",
   "Venues",
   "Festivals",
-  "Hikes and Trails",
+  "Trails",
   "Resorts",
-  "Artists",
+  "Performers",
 ];
 
 export default function ListViewNavigator({
@@ -91,8 +90,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   navigatorWrapper: {
-    marginTop: 10,
-    marginBottom: 6,
+    flex: 0.085, // Mimics the height from the first navigator
   },
   navigatorContainer: {
     flexDirection: "row",
@@ -111,6 +109,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#6AB95230",
     borderWidth: 1,
     borderColor: "#6AB95250",
+    paddingVertical: 9, // Same padding style as in the first file
   },
   navigatorText: {
     color: "#696969",

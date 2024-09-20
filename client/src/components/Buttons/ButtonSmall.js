@@ -29,3 +29,18 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
 });
+
+/* const styles = StyleSheet.create({
+  buttonContainer: {
+    borderRadius: 12,
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderWidth: 1,
+    borderColor: "#aaa",
+  },
+  buttonText: {
+    fontWeight: "500",
+    fontSize: 12,
+    color: "#aaa",
+  },
+}); */

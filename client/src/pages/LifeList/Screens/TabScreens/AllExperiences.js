@@ -5,7 +5,7 @@ import ExperienceCard from "../../Cards/ExperienceCard";
 
 const { width: screenWidth } = Dimensions.get("window");
 const cardWidth = screenWidth * 0.44;
-const imageHeight = cardWidth * 1.33;
+const imageHeight = cardWidth * 1.3375;
 const cardHeight = imageHeight + 44;
 
 const sortByTitle = (a, b) =>
@@ -44,9 +44,9 @@ export default function AllExperiences({ lifeList, navigation }) {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={layoutStyles.wrapper}>
       {/* ROW 1 */}
-      <View style={styles.section}>
+      <View>
         <Text style={[headerStyles.headerMedium, layoutStyles.paddingLeftXxs]}>
           Experienced
         </Text>
@@ -62,7 +62,7 @@ export default function AllExperiences({ lifeList, navigation }) {
         />
       </View>
       {/* ROW 2 */}
-      <View style={styles.section}>
+      <View style={{ marginTop: 7 }}>
         <Text style={[headerStyles.headerMedium, layoutStyles.paddingLeftXxs]}>
           Wish Listed
         </Text>
@@ -82,13 +82,6 @@ export default function AllExperiences({ lifeList, navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-between",
-  },
-  section: {
-    flex: 1,
-  },
   placeholderCard: {
     marginRight: 6,
     backgroundColor: "transparent",

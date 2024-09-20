@@ -8,7 +8,7 @@ const FilteredImage = forwardRef(({ image, shader }, ref) => {
   const height = (screenWidth * 3) / 2;
 
   return (
-    <Surface ref={ref} style={{ width: screenWidth, height }}>
+    <Surface ref={ref} style={{ width: 300, height: 450 }}>
       <Node shader={shader} uniforms={{ image }} />
     </Surface>
   );

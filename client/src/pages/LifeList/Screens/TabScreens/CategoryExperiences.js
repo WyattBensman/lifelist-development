@@ -5,7 +5,7 @@ import ExperienceCard from "../../Cards/ExperienceCard";
 
 const { width: screenWidth } = Dimensions.get("window");
 const cardWidth = screenWidth * 0.44;
-const imageHeight = cardWidth * 1.33;
+const imageHeight = cardWidth * 1.3375;
 const cardHeight = imageHeight + 44;
 
 const sortByTitle = (a, b) =>

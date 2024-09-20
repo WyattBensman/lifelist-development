@@ -76,11 +76,8 @@ export default function CollagePreview() {
           />
         }
         button1={
-          <Pressable
-            onPress={handlePostCollage}
-            style={styles.previewButtonContainer}
-          >
-            <Text style={styles.previewButtonText}>Post</Text>
+          <Pressable onPress={handlePostCollage}>
+            <Text style={styles.createButtonTextActive}>Post</Text>
           </Pressable>
         }
       />
@@ -346,13 +343,12 @@ const styles = StyleSheet.create({
   activeIndicator: {
     opacity: 1,
   },
-  previewButtonContainer: {
-    backgroundColor: "#252525",
-    paddingVertical: 6,
-    paddingHorizontal: 13,
-    borderRadius: 12,
+  createButtonText: {
+    fontSize: 12,
+    color: "#696969",
+    fontWeight: "600",
   },
-  previewButtonText: {
+  createButtonTextActive: {
     color: "#6AB952",
     fontWeight: "600",
   },

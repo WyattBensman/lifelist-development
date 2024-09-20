@@ -1,3 +1,4 @@
+// NavigableShotCard.js
 import React from "react";
 import { Dimensions, Image, StyleSheet, View, Pressable } from "react-native";
 import { BASE_URL } from "../../../utils/config";
@@ -7,12 +8,23 @@ const spacing = 1.5;
 const shotWidth = (width - spacing * 2) / 3; // Adjusted to account for the spacing
 const shotHeight = (shotWidth * 3) / 2;
 
-export default function NavigableShotCard({ shot, navigation, index }) {
+export default function NavigableShotCard({
+  shot,
+  navigation,
+  index,
+  fromAlbum,
+}) {
+  // Accept 'fromAlbum' prop
   const imageUrl = `${BASE_URL}${shot.image}`;
 
   return (
     <Pressable
-      onPress={() => navigation.navigate("ViewShot", { shotId: shot._id })}
+      onPress={() =>
+        navigation.navigate("ViewShot", {
+          shotId: shot._id,
+          fromAlbum, // Pass the 'fromAlbum' parameter
+        })
+      }
       style={[
         styles.container,
         {

@@ -42,6 +42,15 @@ export default function ViewExperience({ route, navigation }) {
 
   const { experience, associatedShots } = data.getLifeListExperience;
 
+  // Function to truncate title to 24 characters and remove trailing spaces before appending '...'
+  const truncateTitle = (title, maxLength) => {
+    if (title.length <= maxLength) return title;
+    const trimmedTitle = title.substring(0, maxLength).trimEnd();
+    return `${trimmedTitle}...`;
+  };
+
+  const truncatedTitle = truncateTitle(experience.title, 24);
+
   const dropdownItems = [
     {
       icon: "pencil",
@@ -64,7 +73,7 @@ export default function ViewExperience({ route, navigation }) {
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
-        title={experience.title}
+        title={truncatedTitle}
         arrow={
           <Icon
             name="chevron.backward"

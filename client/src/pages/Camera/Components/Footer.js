@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     marginBottom: 28,
     width: "60%",
+    height: 35,
   },
   disabled: {
     opacity: 0.5,
