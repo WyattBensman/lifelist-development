@@ -1,4 +1,4 @@
-const { User, InvitedFriend } = require("../../../../models/index.mjs");
+import { User, InvitedFriend } from "../../../../models/index.mjs";
 
 // Helper function to generate a unique 8-character invite code
 const generateUniqueInviteCode = async () => {

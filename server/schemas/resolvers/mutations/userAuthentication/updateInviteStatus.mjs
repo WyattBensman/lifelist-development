@@ -1,4 +1,4 @@
-const { InvitedFriend } = require("../../../../models/index.mjs");
+import { User, InvitedFriend } from "../../../../models/index.mjs";
 
 const updateInviteStatus = async (_, { inviteCode }) => {
   try {
