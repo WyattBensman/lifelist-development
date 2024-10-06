@@ -14,8 +14,6 @@ export const getMainFeed = async (_, { page = 1 }, { user }) => {
     return acc.concat(followee.repostedCollages);
   }, []);
 
-  console.log(followingReposts);
-
   const collages = await Collage.find({
     archived: false,
     $or: [

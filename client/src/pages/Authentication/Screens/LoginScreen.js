@@ -25,7 +25,7 @@ export default function LoginScreen() {
   // Apollo login mutation
   const [loginUser, { loading, error }] = useMutation(LOGIN, {
     onCompleted: (data) => {
-      login(data.login.token); // Use login from the AuthContext to store token
+      login(data.login.token);
     },
     onError: (err) => {
       Alert.alert("Login Error", err.message);

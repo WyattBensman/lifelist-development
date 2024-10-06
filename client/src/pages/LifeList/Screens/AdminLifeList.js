@@ -28,7 +28,7 @@ export default function AdminLifeList() {
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
-    variables: { userId: currentUser._id },
+    variables: { userId: currentUser },
   });
 
   useFocusEffect(

@@ -27,9 +27,6 @@ export default function MainFeed() {
   const [headerHeight, setHeaderHeight] = useState(0);
   const [navigationBarHeight, setNavigationBarHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(screenHeight);
-  console.log(headerHeight);
-  console.log(navigationBarHeight);
-  console.log(contentHeight);
 
   const [fetchMainFeed, { loading, error, data, fetchMore }] = useLazyQuery(
     GET_MAIN_FEED,
@@ -40,7 +37,7 @@ export default function MainFeed() {
 
   useEffect(() => {
     if (currentUser) {
-      fetchMainFeed({ variables: { userId: currentUser._id, page: 1 } });
+      fetchMainFeed({ variables: { userId: currentUser, page: 1 } });
     }
   }, [currentUser]);
 
@@ -61,7 +58,7 @@ export default function MainFeed() {
     if (hasMore && !loading) {
       fetchMore({
         variables: {
-          userId: currentUser._id,
+          userId: currentUser,
           page: page + 1,
         },
         updateQuery: (previousResult, { fetchMoreResult }) => {

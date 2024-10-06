@@ -18,7 +18,7 @@ export default function AdminProfile() {
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const { data, loading, error, refetch } = useQuery(GET_USER_PROFILE, {
-    variables: { userId: currentUser._id },
+    variables: { userId: currentUser },
   });
 
   useFocusEffect(

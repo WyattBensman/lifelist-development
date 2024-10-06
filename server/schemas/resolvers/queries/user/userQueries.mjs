@@ -80,7 +80,7 @@ export const getLikedCollages = async (_, __, { user }) => {
 
 export const getSavedCollages = async (_, __, { user }) => {
   isUser(user);
-  const foundUser = await User.findById(user._id)
+  const foundUser = await User.findById(user)
     .populate("savedCollages", "_id coverImage archived")
     .exec();
   if (!foundUser) throw new Error("User not found for the provided ID.");

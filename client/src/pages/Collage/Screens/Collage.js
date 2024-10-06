@@ -301,7 +301,7 @@ export default function Collage({
         collageId={collageId}
         isSaved={isSaved}
         handleSavePress={handleSavePress}
-        currentUserId={currentUser._id} // Pass the current user ID
+        currentUserId={currentUser} // Pass the current user ID
         collageAuthorId={author._id} // Pass the collage author ID
       />
     </View>

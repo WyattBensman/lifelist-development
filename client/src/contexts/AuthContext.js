@@ -23,12 +23,18 @@ export const AuthProvider = ({ children }) => {
       setIsAuthenticated(isLoggedIn);
 
       if (isLoggedIn) {
-        const userData = await AuthService.getUser(); // Fetch user details if logged in
+        const userData = await AuthService.getUser();
+        // Fetch user details if logged in
         setCurrentUser(userData);
       }
 
+      // Check registration status
       const progress = await AuthService.getRegistrationProgress();
       setRegistrationProgress(progress || "initial");
+
+      // Check if registration is complete
+      const isComplete = await AuthService.isRegistrationComplete();
+      setRegistrationComplete(isComplete);
     };
 
     checkAuthStatus();
@@ -36,20 +42,25 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (token) => {
     console.log("Login started");
-    await AuthService.saveToken(token); // Wait for the token to be saved
+    await AuthService.saveToken(token); // Save the token
 
     console.log("Token storage complete, setting isAuthenticated");
     setIsAuthenticated(true);
 
     const userData = await AuthService.getUser();
-    setCurrentUser(userData); // Update user details in context
+    setCurrentUser(userData);
+
+    // Mark registration as complete
+    await AuthService.setRegistrationComplete();
+    setRegistrationComplete(true);
   };
 
   const logout = async () => {
     await AuthService.logout();
     setIsAuthenticated(false);
-    setCurrentUser(null); // Clear user details on logout
+    setCurrentUser(null);
     setRegistrationProgress(""); // Reset registration progress if applicable
+    setRegistrationComplete(false); // Reset registrationComplete
 
     // Reset navigation state to ensure user can't go back
     navigationRef.current?.dispatch(

@@ -54,6 +54,24 @@ class AuthService {
   async getRegistrationProgress() {
     return await SecureStore.getItemAsync("registrationProgress");
   }
+
+  async setRegistrationComplete() {
+    try {
+      await SecureStore.setItemAsync("registrationProgress", "Complete");
+    } catch (error) {
+      console.error("Error setting registration as complete", error);
+    }
+  }
+
+  async isRegistrationComplete() {
+    try {
+      const progress = await this.getRegistrationProgress();
+      return progress === "Complete";
+    } catch (error) {
+      console.error("Error checking registration completion", error);
+      return false;
+    }
+  }
 }
 
 export default new AuthService();
