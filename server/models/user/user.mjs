@@ -108,7 +108,6 @@ const userSchema = new Schema({
   // Onboarding & Permissions
   isOnboardingComplete: { type: Boolean, default: false },
   hasAcceptedPermissions: { type: Boolean, default: false },
-  invitedFriends: [invitedFriendSchema],
   hasAcceptedTerms: { type: Boolean, default: false },
 
   // Verification

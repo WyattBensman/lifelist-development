@@ -10,7 +10,6 @@ import CameraAlbum from "./camera/cameraAlbum.mjs";
 import Notification from "./inbox/notification.mjs";
 import Conversation from "./inbox/conversation.mjs";
 import Message from "./inbox/message.mjs";
-import InvitedFriend from "./user/invitedFriend.mjs";
 
 export {
   User,
@@ -25,5 +24,4 @@ export {
   LifeList,
   LifeListExperience,
   PrivacyGroup,
-  InvitedFriend,
 };
