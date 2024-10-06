@@ -27,7 +27,7 @@ export default function BlockedUsers() {
       if (data.unblockUser.success) {
         // Update the state to remove the unblocked user
         setBlockedUsers((currentUsers) =>
-          currentUsers.filter((user) => user._id !== data.unblockUser.userId)
+          currentUsers.filter((user) => user !== data.unblockUser.userId)
         );
       }
     },

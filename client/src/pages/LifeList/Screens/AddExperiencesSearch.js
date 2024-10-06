@@ -27,7 +27,7 @@ export default function AddExperiencesSearch() {
   const { data: lifeListData, refetch: refetchLifeList } = useQuery(
     GET_USER_LIFELIST,
     {
-      variables: { userId: currentUser._id },
+      variables: { userId: currentUser },
     }
   );
 

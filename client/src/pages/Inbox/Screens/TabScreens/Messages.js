@@ -44,7 +44,7 @@ export default function Messages({ searchQuery }) {
           conversation &&
           conversation.participants.some(
             (participant) =>
-              participant._id !== currentUser._id &&
+              participant._id !== currentUser &&
               participant.fullName
                 .toLowerCase()
                 .includes(searchQuery.toLowerCase())
@@ -74,7 +74,7 @@ export default function Messages({ searchQuery }) {
     if (!item) return null; // Skip null items
 
     const otherParticipant = item.participants.find(
-      (participant) => participant._id !== currentUser._id
+      (participant) => participant._id !== currentUser
     );
 
     return (

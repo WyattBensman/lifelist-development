@@ -16,7 +16,7 @@ export default function AddShotToAlbum({ navigation }) {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { currentUser } = useAuth();
-  const userId = currentUser._id;
+  const userId = currentUser;
 
   const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_ALBUMS, {
     variables: { userId },

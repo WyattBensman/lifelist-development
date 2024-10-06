@@ -28,7 +28,7 @@ export default function Suggested({ searchQuery }) {
     error: errorFollowing,
     data: followingData,
   } = useQuery(GET_FOLLOWING, {
-    variables: { userId: currentUser._id },
+    variables: { userId: currentUser },
   });
 
   const [followUser] = useMutation(FOLLOW_USER);

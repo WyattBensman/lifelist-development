@@ -46,7 +46,7 @@ export default function Conversation({ route, navigation }) {
       content: messageContent,
       sentAt: new Date().toISOString(),
       sender: {
-        _id: currentUser._id,
+        _id: currentUser,
         username: currentUser.username,
         fullName: currentUser.fullName,
         profilePicture: currentUser.profilePicture,
@@ -93,7 +93,7 @@ export default function Conversation({ route, navigation }) {
   };
 
   const otherParticipant = data?.getConversation?.participants?.find(
-    (participant) => participant._id !== currentUser._id
+    (participant) => participant._id !== currentUser
   );
 
   const displayUser = user || otherParticipant;
@@ -121,7 +121,7 @@ export default function Conversation({ route, navigation }) {
           <MessageBubble
             key={item._id}
             message={item}
-            isCurrentUser={item.sender._id === currentUser._id}
+            isCurrentUser={item.sender._id === currentUser}
           />
         )}
         keyExtractor={(item) => item._id}

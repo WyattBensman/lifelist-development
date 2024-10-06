@@ -26,7 +26,7 @@ export default function CameraRoll() {
     error: albumsError,
     refetch: refetchAlbums,
   } = useQuery(GET_ALL_CAMERA_ALBUMS, {
-    variables: { userId: currentUser._id },
+    variables: { userId: currentUser },
   });
 
   const {

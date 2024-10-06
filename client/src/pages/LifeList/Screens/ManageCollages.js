@@ -22,7 +22,7 @@ export default function ManageCollages() {
   const { updateCollagesCallback } = useCallbackContext(); // Get the callback from context
 
   const { data, loading, error, refetch } = useQuery(GET_USER_COLLAGES, {
-    variables: { userId: currentUser._id },
+    variables: { userId: currentUser },
   });
 
   const initialCollages = associatedCollages

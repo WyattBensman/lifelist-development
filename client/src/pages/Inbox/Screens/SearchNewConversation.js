@@ -24,7 +24,7 @@ export default function SearchNewConversation() {
 
   const { data, loading, error } = useQuery(GET_ALL_USERS);
   const { data: conversationsData } = useQuery(GET_USER_CONVERSATIONS, {
-    variables: { userId: currentUser._id },
+    variables: { userId: currentUser },
   });
   console.log(data);
   console.log(conversationsData);

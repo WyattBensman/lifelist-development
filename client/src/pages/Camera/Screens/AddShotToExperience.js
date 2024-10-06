@@ -17,7 +17,7 @@ export default function AddShotToExperience({ navigation, route }) {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { currentUser } = useAuth();
-  const userId = currentUser._id;
+  const userId = currentUser;
   const shotId = route.params.shotId;
 
   const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {

@@ -14,7 +14,7 @@ import Icon from "../../../components/Icons/Icon";
 export default function LifeList({ route }) {
   const { currentUser } = useAuth();
   const navigation = useNavigation();
-  const { userId } = route.params || currentUser._id; // Extract userId from route params
+  const { userId } = route.params || currentUser; // Extract userId from route params
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [searchBarVisible, setSearchBarVisible] = useState(false);
@@ -26,9 +26,9 @@ export default function LifeList({ route }) {
 
   useEffect(() => {
     if (data) {
-      setIsAdmin(userId === currentUser._id);
+      setIsAdmin(userId === currentUser);
     }
-  }, [data, userId, currentUser._id]);
+  }, [data, userId, currentUser]);
 
   const lifeList = data?.getUserLifeList || { experiences: [] };
 

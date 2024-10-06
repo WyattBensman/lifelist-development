@@ -37,7 +37,7 @@ export default function AddExperiencesOverview() {
   });
 
   const { refetch: refetchUserProfile } = useQuery(GET_USER_PROFILE, {
-    variables: { userId: currentUser._id },
+    variables: { userId: currentUser },
     skip: true,
   });
 

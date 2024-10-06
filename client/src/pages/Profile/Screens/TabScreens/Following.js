@@ -31,7 +31,7 @@ export default function Following({ userId, searchQuery }) {
     error: errorCurrentUserFollowing,
     refetch: refetchCurrentUserFollowing,
   } = useQuery(GET_FOLLOWING, {
-    variables: { userId: currentUser._id },
+    variables: { userId: currentUser },
   });
 
   useFocusEffect(
@@ -93,9 +93,7 @@ export default function Following({ userId, searchQuery }) {
       )
     ) {
       action = "Following";
-    } else if (
-      item.followRequests.some((req) => req.userId === currentUser._id)
-    ) {
+    } else if (item.followRequests.some((req) => req.userId === currentUser)) {
       action = "Requested";
     }
 

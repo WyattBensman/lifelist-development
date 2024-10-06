@@ -36,7 +36,7 @@ export default function Profile() {
   const { data: followingData, refetch: refetchFollowing } = useQuery(
     GET_FOLLOWING,
     {
-      variables: { userId: currentUser._id },
+      variables: { userId: currentUser },
     }
   );
 
@@ -68,7 +68,7 @@ export default function Profile() {
   if (error) return <Text>Error: {error.message}</Text>;
 
   const profile = data.getUserProfileById;
-  const isAdminView = profile._id === currentUser._id;
+  const isAdminView = profile._id === currentUser;
 
   // Determine if the current user is following this profile
   const isFollowing = followingData.getFollowing.some(
