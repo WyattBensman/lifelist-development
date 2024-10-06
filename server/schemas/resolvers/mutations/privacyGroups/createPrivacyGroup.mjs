@@ -13,14 +13,14 @@ const createPrivacyGroup = async (_, { groupName, userIds }, { user }) => {
 
     // Create a new PrivacyGroup
     const newPrivacyGroup = await PrivacyGroup.create({
-      author: user._id,
+      author: user,
       groupName,
       users: userIds,
     });
 
     // Link PrivacyGroup to the user's profile
     await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $push: { privacyGroups: newPrivacyGroup._id } },
       { new: true }
     );

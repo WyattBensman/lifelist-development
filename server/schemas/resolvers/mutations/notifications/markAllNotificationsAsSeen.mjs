@@ -7,7 +7,7 @@ const markAllNotificationsAsSeen = async (_, __, { user }) => {
 
     // Update all unread notifications to 'read' status for the current user
     await Notification.updateMany(
-      { recipient: user._id, read: false },
+      { recipient: user, read: false },
       { $set: { read: true } }
     );
 

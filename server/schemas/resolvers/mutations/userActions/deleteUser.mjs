@@ -16,7 +16,7 @@ const deleteUser = async (_, __, { user }) => {
     isUser(user);
 
     // Find the user to delete
-    const userToDelete = await User.findByIdAndDelete(user._id);
+    const userToDelete = await User.findByIdAndDelete(user);
 
     // Check if the user exists
     if (!userToDelete) {
@@ -25,49 +25,40 @@ const deleteUser = async (_, __, { user }) => {
     }
 
     // Delete the user's lifelist
-    await LifeList.deleteOne({ author: user._id });
+    await LifeList.deleteOne({ author: user });
 
     // Delete all privacy groups where the user is the owner
-    await PrivacyGroup.deleteMany({ author: user._id });
+    await PrivacyGroup.deleteMany({ author: user });
 
     // Delete all messages sent by the user
-    await Message.deleteMany({ sender: user._id });
+    await Message.deleteMany({ sender: user });
 
     // Delete all conversations the user is in
-    await Conversation.deleteMany({ participants: user._id });
+    await Conversation.deleteMany({ participants: user });
 
     // Delete all collages the user has posted
-    await Collage.deleteMany({ author: user._id });
+    await Collage.deleteMany({ author: user });
 
     // Delete all camera albums the user has created
-    await CameraAlbum.deleteMany({ author: user._id });
+    await CameraAlbum.deleteMany({ author: user });
 
     // Delete all camera shots associated with the user
-    await CameraShot.deleteMany({ user: user._id });
+    await CameraShot.deleteMany({ user: user });
 
     // Remove the user from the followers' following field
-    await User.updateMany(
-      { followers: user._id },
-      { $pull: { following: user._id } }
-    );
+    await User.updateMany({ followers: user }, { $pull: { following: user } });
 
     // Remove the user from the following users' followers field
-    await User.updateMany(
-      { following: user._id },
-      { $pull: { followers: user._id } }
-    );
+    await User.updateMany({ following: user }, { $pull: { followers: user } });
 
     // Untag the user from all tagged collages
-    await Collage.updateMany(
-      { tagged: user._id },
-      { $pull: { tagged: user._id } }
-    );
+    await Collage.updateMany({ tagged: user }, { $pull: { tagged: user } });
 
     // Delete all comments associated with the user and remove them from collages
-    await Comment.deleteMany({ author: user._id });
+    await Comment.deleteMany({ author: user });
 
     // Remove the user's comments from all collages
-    await Collage.updateMany({}, { $pull: { comments: { author: user._id } } });
+    await Collage.updateMany({}, { $pull: { comments: { author: user } } });
 
     return {
       success: true,

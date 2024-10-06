@@ -7,7 +7,7 @@ const blockUser = async (_, { userIdToBlock }, { user }) => {
 
     // Check if the user is already blocked
     const isAlreadyBlocked = await User.exists({
-      _id: user._id,
+      _id: user,
       blocked: userIdToBlock,
     });
 
@@ -20,7 +20,7 @@ const blockUser = async (_, { userIdToBlock }, { user }) => {
 
     // Updates to block the user and remove from followers and following lists
     await User.findByIdAndUpdate(
-      user._id,
+      user,
       {
         $push: { blocked: userIdToBlock },
         $pull: { followers: userIdToBlock, following: userIdToBlock },
@@ -33,8 +33,8 @@ const blockUser = async (_, { userIdToBlock }, { user }) => {
       userIdToBlock,
       {
         $pull: {
-          followers: user._id,
-          following: user._id,
+          followers: user,
+          following: user,
         },
       },
       { new: true, runValidators: true }

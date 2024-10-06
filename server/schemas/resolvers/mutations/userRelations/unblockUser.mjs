@@ -7,7 +7,7 @@ const unblockUser = async (_, { userIdToUnblock }, { user }) => {
 
     // Attempt to unblock the user by removing them from the blocked list
     await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $pull: { blocked: userIdToUnblock } },
       { new: true, runValidators: true }
     );

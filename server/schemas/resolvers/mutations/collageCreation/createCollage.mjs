@@ -23,10 +23,10 @@ const createCollage = async (_, { caption, images, taggedUsers }, { user }) => {
 
     // Create a new collage document
     const collage = new Collage({
-      author: user._id,
+      author: user,
       caption,
       images: imageUrls,
-      tagged: taggedUsers.map((user) => user._id),
+      tagged: taggedUsers.map((user) => user),
       posted: true,
     });
 
@@ -44,7 +44,7 @@ const createCollage = async (_, { caption, images, taggedUsers }, { user }) => {
     for (const taggedUserId of taggedUserIds) {
       await createNotification({
         recipientId: taggedUserId,
-        senderId: user._id,
+        senderId: user,
         type: "TAG",
         message: `${user.fullName} tagged you in a collage.`,
       });

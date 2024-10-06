@@ -7,7 +7,7 @@ const denyFollowRequest = async (_, { userIdToDeny }, { user }) => {
 
     // Remove the follow request made by userIdToDeny from the current user's followRequests list
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $pull: { followRequests: { userId: userIdToDeny } } },
       { new: true }
     );
@@ -19,7 +19,7 @@ const denyFollowRequest = async (_, { userIdToDeny }, { user }) => {
     // Remove the current user from the pendingFriendRequests list of the user whose request is being denied
     await User.findByIdAndUpdate(
       userIdToDeny,
-      { $pull: { pendingFriendRequests: user._id } },
+      { $pull: { pendingFriendRequests: user } },
       { new: true }
     );
 

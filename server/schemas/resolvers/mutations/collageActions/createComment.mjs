@@ -11,7 +11,7 @@ const createComment = async (_, { collageId, text }, { user }) => {
 
     // Create a new comment and add it to the database
     const newComment = await Comment.create({
-      author: user._id,
+      author: user,
       text,
       createdAt: new Date(),
     });
@@ -24,7 +24,7 @@ const createComment = async (_, { collageId, text }, { user }) => {
     // Send notification to the collage author
     await createNotification({
       recipientId: collage.author,
-      senderId: user._id,
+      senderId: user,
       type: "COMMENT",
       collageId,
       message: `${user.fullName} commented on your collage.`,

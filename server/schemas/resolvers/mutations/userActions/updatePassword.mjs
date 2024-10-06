@@ -10,7 +10,7 @@ const updatePassword = async (
     isUser(user);
 
     // Fetch the current user data
-    const currentUser = await User.findById(user._id);
+    const currentUser = await User.findById(user);
     if (!currentUser) {
       throw new AuthenticationError("User not found.");
     }

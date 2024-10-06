@@ -14,7 +14,7 @@ const deletePrivacyGroup = async (_, { privacyGroupId }, { user }) => {
     }
 
     // Update user to remove reference to the deleted PrivacyGroup
-    await User.findByIdAndUpdate(user._id, {
+    await User.findByIdAndUpdate(user, {
       $pull: { privacyGroups: privacyGroupId },
     });
 

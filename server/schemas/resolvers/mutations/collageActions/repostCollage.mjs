@@ -12,7 +12,7 @@ const repostCollage = async (_, { collageId }, { user }) => {
 
     // Add the collage to the user's repostedCollages and update the collage's reposts
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $addToSet: { repostedCollages: collageId } },
       { new: true }
     );
@@ -20,7 +20,7 @@ const repostCollage = async (_, { collageId }, { user }) => {
     // Add the user to the collage's reposts
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $addToSet: { reposts: user._id } },
+      { $addToSet: { reposts: user } },
       { new: true }
     );
 
@@ -32,7 +32,7 @@ const repostCollage = async (_, { collageId }, { user }) => {
     // Create a notification for the original author of the collage
     await createNotification({
       recipientId: collage.author,
-      senderId: user._id,
+      senderId: user,
       type: "COLLAGE_REPOST",
       collageId: collageId,
       message: `${user.fullName} reposted your collage.`,

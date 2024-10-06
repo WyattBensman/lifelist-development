@@ -24,7 +24,7 @@ const setProfilePictureAndBio = async (
 
     // Update the user's profile picture and bio
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { profilePicture: fileUrl, bio },
       { new: true, runValidators: true }
     );

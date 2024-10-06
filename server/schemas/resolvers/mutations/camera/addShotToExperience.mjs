@@ -10,7 +10,7 @@ const addShotToExperience = async (_, { experienceId, shotId }, { user }) => {
     if (!experience) {
       throw new Error("Experience not found.");
     }
-    if (experience.lifeList.author.toString() !== user._id.toString()) {
+    if (experience.lifeList.author.toString() !== user.toString()) {
       throw new Error("Not authorized to add shots to this experience.");
     }
 

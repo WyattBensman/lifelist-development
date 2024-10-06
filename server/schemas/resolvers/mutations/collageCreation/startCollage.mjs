@@ -22,13 +22,13 @@ const startCollage = async (_, { images }, { user }) => {
 
     // Create a new collage document
     const newCollage = await Collage.create({
-      author: user._id,
+      author: user,
       images: imageUrls,
     });
 
     // Update the user's collages array with the new collage ID
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $push: { collages: newCollage._id } },
       { new: true }
     );

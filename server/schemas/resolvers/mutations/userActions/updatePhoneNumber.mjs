@@ -8,7 +8,7 @@ const updatePhoneNumber = async (_, { phoneNumber }, { user }) => {
 
     // Update the user's phone number
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { phoneNumber },
       { new: true, runValidators: true }
     );

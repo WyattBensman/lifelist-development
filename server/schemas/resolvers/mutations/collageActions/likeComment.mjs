@@ -8,7 +8,7 @@ const likeComment = async (_, { commentId }, { user }) => {
     const comment = await Comment.findByIdAndUpdate(
       commentId,
       {
-        $addToSet: { likedBy: user._id },
+        $addToSet: { likedBy: user },
         $inc: { likes: 1 },
       },
       { new: true }

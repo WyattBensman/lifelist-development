@@ -11,11 +11,11 @@ const deleteConversation = async (_, { conversationId }, { user }) => {
       throw new Error("Conversation not found");
     }
 
-    await User.findByIdAndUpdate(user._id, {
+    await User.findByIdAndUpdate(user, {
       $pull: { conversations: { conversation: conversationId } },
     });
 
-    const updatedUser = await User.findById(user._id)
+    const updatedUser = await User.findById(user)
       .populate({
         path: "conversations.conversation",
         model: "Conversation",

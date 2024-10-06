@@ -9,14 +9,14 @@ const reportComment = async (_, { commentId, reason }, { user }) => {
 
     // Check if the reporter has already reported the comment
     const alreadyReported = comment.reports.some(
-      (report) => report.reporter.toString() === user._id.toString()
+      (report) => report.reporter.toString() === user.toString()
     );
     if (alreadyReported) {
       throw new Error("You have already reported this comment.");
     }
 
     // Update the reports field of the comment with the new report
-    comment.reports.push({ reporter: user._id, reason });
+    comment.reports.push({ reporter: user, reason });
     await comment.save();
 
     return {

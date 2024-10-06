@@ -16,7 +16,7 @@ const deleteCameraShot = async (_, { shotId }, { user }) => {
     }
 
     // Ensure the user is authorized to delete this shot
-    if (shot.author.toString() !== user._id.toString()) {
+    if (shot.author.toString() !== user.toString()) {
       return {
         success: false,
         message: "User not authorized to delete this camera shot.",
@@ -30,7 +30,7 @@ const deleteCameraShot = async (_, { shotId }, { user }) => {
     );
 
     // Remove the shot ID from the user's cameraShots field
-    await User.findByIdAndUpdate(user._id, {
+    await User.findByIdAndUpdate(user, {
       $pull: { cameraShots: shotId },
     });
 

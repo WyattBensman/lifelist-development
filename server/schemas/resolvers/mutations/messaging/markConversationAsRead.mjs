@@ -6,7 +6,7 @@ const markConversationAsRead = async (_, { conversationId }, { user }) => {
     isUser(user);
 
     await User.updateOne(
-      { _id: user._id, "conversations.conversation": conversationId },
+      { _id: user, "conversations.conversation": conversationId },
       { $set: { "conversations.$.isRead": true } }
     );
 

@@ -11,7 +11,7 @@ const saveCollage = async (_, { collageId }, { user }) => {
 
     // Update the user's savedCollages and collage's saves using $addToSet to prevent duplicates
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $addToSet: { savedCollages: collageId } },
       { new: true }
     );
@@ -19,7 +19,7 @@ const saveCollage = async (_, { collageId }, { user }) => {
     // Add the user to the collage's saves
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $addToSet: { saves: user._id } },
+      { $addToSet: { saves: user } },
       { new: true }
     );
 

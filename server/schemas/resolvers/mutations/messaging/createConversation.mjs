@@ -7,19 +7,19 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
     isUser(user);
 
     let conversation = await Conversation.findOneAndUpdate(
-      { participants: { $all: [user._id, recipientId] } },
+      { participants: { $all: [user, recipientId] } },
       {},
       { new: true, populate: "messages" }
     );
 
     if (!conversation) {
       conversation = new Conversation({
-        participants: [user._id, recipientId],
+        participants: [user, recipientId],
       });
       await conversation.save();
 
       await User.updateMany(
-        { _id: { $in: [user._id, recipientId] } },
+        { _id: { $in: [user, recipientId] } },
         {
           $addToSet: {
             conversations: { conversation: conversation._id, isRead: false },
@@ -29,7 +29,7 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
     } else {
       await User.updateMany(
         {
-          _id: { $in: [user._id, recipientId] },
+          _id: { $in: [user, recipientId] },
           "conversations.conversation": { $ne: conversation._id },
         },
         {
@@ -41,7 +41,7 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
     }
 
     const newMessage = await Message.create({
-      sender: user._id,
+      sender: user,
       content: message,
       conversation: conversation._id,
       sentAt: new Date(),
@@ -53,7 +53,7 @@ const createConversation = async (_, { recipientId, message }, { user }) => {
 
     await createNotification({
       recipientId,
-      senderId: user._id,
+      senderId: user,
       type: "MESSAGE",
       message: `You received a new message from ${user.fullName}`,
     });

@@ -11,7 +11,7 @@ const unlikeCollage = async (_, { collageId }, { user }) => {
 
     // Remove the collage from user's liked list
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $pull: { likedCollages: collageId } },
       { new: true }
     );
@@ -19,7 +19,7 @@ const unlikeCollage = async (_, { collageId }, { user }) => {
     // Remove the user from collage's liked users list
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $pull: { likes: user._id } },
+      { $pull: { likes: user } },
       { new: true }
     );
 

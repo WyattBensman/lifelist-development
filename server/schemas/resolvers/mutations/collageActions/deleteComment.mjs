@@ -17,8 +17,8 @@ const deleteComment = async (_, { commentId, collageId }, { user }) => {
 
     // Ensure the current user is authorized to delete the comment (either comment author or collage author)
     /* if (
-      comment.author.toString() !== user._id.toString() &&
-      collage.author.toString() !== user._id.toString()
+      comment.author.toString() !== user.toString() &&
+      collage.author.toString() !== user.toString()
     ) {
       throw new Error("Not authorized to delete this comment.");
     } */

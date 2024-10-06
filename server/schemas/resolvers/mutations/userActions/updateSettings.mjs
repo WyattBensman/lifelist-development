@@ -11,7 +11,7 @@ const updateSettings = async (
 
     // Update the user's settings
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       {
         settings: {
           isProfilePrivate,

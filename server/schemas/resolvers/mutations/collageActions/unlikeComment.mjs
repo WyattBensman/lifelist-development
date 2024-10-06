@@ -8,7 +8,7 @@ const unlikeComment = async (_, { commentId }, { user }) => {
     const comment = await Comment.findByIdAndUpdate(
       commentId,
       {
-        $pull: { likedBy: user._id },
+        $pull: { likedBy: user },
         $inc: { likes: -1 },
       },
       { new: true }

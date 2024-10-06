@@ -51,7 +51,7 @@ export const isUser = ensureAuthenticatedUser;
 
 export const isCurrentUser = (user, userId) => {
   ensureAuthenticatedUser(user);
-  if (user.id !== userId) {
+  if (user !== userId) {
     throw new AuthenticationError("Not authorized to perform this action");
   }
 };
@@ -59,7 +59,7 @@ export const isCurrentUser = (user, userId) => {
 export const isCurrentAuthor = async (user, collageId) => {
   ensureAuthenticatedUser(user);
   const collage = await Collage.findById(collageId);
-  if (!collage || user._id.toString() !== collage.author.toString()) {
+  if (!collage || user.toString() !== collage.author.toString()) {
     throw new AuthenticationError("Not authorized to perform this action");
   }
 };
@@ -67,7 +67,7 @@ export const isCurrentAuthor = async (user, collageId) => {
 export const isCurrentLifeListAuthor = async (user, lifeListId) => {
   ensureAuthenticatedUser(user);
   const lifeList = await LifeList.findById(lifeListId);
-  if (!lifeList || user._id.toString() !== lifeList.author.toString()) {
+  if (!lifeList || user.toString() !== lifeList.author.toString()) {
     throw new AuthenticationError("Not authorized to perform this action");
   }
 };
@@ -75,7 +75,7 @@ export const isCurrentLifeListAuthor = async (user, lifeListId) => {
 export const isCurrentPrivacyGroupAuthor = async (user, privacyGroupId) => {
   ensureAuthenticatedUser(user);
   const privacyGroup = await PrivacyGroup.findById(privacyGroupId);
-  if (!privacyGroup || privacyGroup.author.toString() !== user._id.toString()) {
+  if (!privacyGroup || privacyGroup.author.toString() !== user.toString()) {
     throw new AuthenticationError(
       "User is not authorized to edit this privacy group."
     );
@@ -85,7 +85,7 @@ export const isCurrentPrivacyGroupAuthor = async (user, privacyGroupId) => {
 export const isLifeListAuthor = async (user, lifeListId) => {
   ensureAuthenticatedUser(user);
   const lifeList = await LifeList.findById(lifeListId);
-  if (!lifeList || user._id.toString() !== lifeList.author.toString()) {
+  if (!lifeList || user.toString() !== lifeList.author.toString()) {
     throw new AuthenticationError("Not authorized to perform this action");
   }
 };

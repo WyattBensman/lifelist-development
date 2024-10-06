@@ -11,7 +11,7 @@ const sendMessage = async (
     isUser(user);
 
     const newMessage = await Message.create({
-      sender: user._id,
+      sender: user,
       content,
     });
 

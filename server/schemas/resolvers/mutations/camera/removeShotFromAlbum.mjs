@@ -9,7 +9,7 @@ const removeShotFromAlbum = async (_, { albumId, shotId }, { user }) => {
     if (!album) {
       throw new Error("Camera album not found.");
     }
-    if (album.author.toString() !== user._id.toString()) {
+    if (album.author.toString() !== user.toString()) {
       throw new Error("Not authorized to remove shots from this album.");
     }
 

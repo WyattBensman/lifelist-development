@@ -12,7 +12,7 @@ const likeCollage = async (_, { collageId }, { user }) => {
 
     // Update user's liked collages to prevent duplicates
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $addToSet: { likedCollages: collageId } },
       { new: true }
     );
@@ -20,7 +20,7 @@ const likeCollage = async (_, { collageId }, { user }) => {
     // Update collage's liked users list to prevent duplicates
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $addToSet: { likes: user._id } },
+      { $addToSet: { likes: user } },
       { new: true }
     );
 
@@ -32,7 +32,7 @@ const likeCollage = async (_, { collageId }, { user }) => {
     // Create a notification for the original author of the collage
     await createNotification({
       recipientId: collage.author,
-      senderId: user._id,
+      senderId: user,
       type: "COLLAGE_LIKE",
       collageId: collageId,
       message: `${user.fullName} liked your collage.`,

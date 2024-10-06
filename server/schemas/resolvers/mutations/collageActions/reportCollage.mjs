@@ -9,14 +9,14 @@ const reportCollage = async (_, { collageId, reason }, { user }) => {
 
     // Check if the reporter has already reported the collage
     const alreadyReported = collage.reports.some(
-      (report) => report.reporter.toString() === user._id.toString()
+      (report) => report.reporter.toString() === user.toString()
     );
     if (alreadyReported) {
       throw new Error("You have already reported this collage.");
     }
 
     // Add the report to the collage
-    collage.reports.push({ reporter: user._id, reason });
+    collage.reports.push({ reporter: user, reason });
     await collage.save();
 
     return {

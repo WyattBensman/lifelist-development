@@ -7,7 +7,7 @@ const updateEmail = async (_, { email }, { user }) => {
 
     // Update the user's email address
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { email },
       { new: true, runValidators: true }
     );

@@ -11,7 +11,7 @@ const unrepostCollage = async (_, { collageId }, { user }) => {
 
     // Remove the collage from the user's repostedCollages
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $pull: { repostedCollages: collageId } },
       { new: true }
     );
@@ -19,7 +19,7 @@ const unrepostCollage = async (_, { collageId }, { user }) => {
     // Remove the user from the collage's reposts
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
-      { $pull: { reposts: user._id } },
+      { $pull: { reposts: user } },
       { new: true }
     );
 

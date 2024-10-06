@@ -22,7 +22,7 @@ export default function ListView({ navigation }) {
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
   const { currentUser } = useAuth();
-  const userId = route.params?.userId || currentUser._id;
+  const userId = route.params?.userId || currentUser;
 
   const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
     variables: { userId },

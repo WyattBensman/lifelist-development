@@ -7,7 +7,7 @@ const updateIdentity = async (_, { gender, birthday }, { user }) => {
 
     // Update the user's identity information
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       {
         gender,
         birthday,

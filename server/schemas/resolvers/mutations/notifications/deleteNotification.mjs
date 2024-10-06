@@ -6,7 +6,7 @@ const deleteNotification = async (_, { notificationId }, { user }) => {
     isUser(user);
 
     // Remove notification from the user's notifications list
-    await User.findByIdAndUpdate(user._id, {
+    await User.findByIdAndUpdate(user, {
       $pull: { notifications: notificationId },
     });
 

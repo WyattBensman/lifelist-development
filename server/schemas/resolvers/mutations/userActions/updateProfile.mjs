@@ -32,7 +32,7 @@ const updateProfile = async (
     }
 
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       {
         profilePicture: fileUrl,
         fullName,

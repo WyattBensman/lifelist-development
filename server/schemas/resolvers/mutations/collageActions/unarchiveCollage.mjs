@@ -11,7 +11,7 @@ const unarchiveCollage = async (_, { collageId }, { user }) => {
 
     // Remove the collage from user's archived list
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $pull: { archivedCollages: collageId } },
       { new: true }
     );

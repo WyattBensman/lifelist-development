@@ -8,7 +8,7 @@ const editComment = async (_, { commentId, newText }, { user }) => {
     const comment = await findCommentById(commentId);
 
     // Check if the current user is the author of the comment
-    if (comment.author.toString() !== user._id) {
+    if (comment.author.toString() !== user) {
       throw new Error("Not authorized to edit this comment.");
     }
 

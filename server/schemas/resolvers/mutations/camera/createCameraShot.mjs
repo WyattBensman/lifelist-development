@@ -18,14 +18,14 @@ const createCameraShot = async (_, { image }, { user }) => {
 
     // Create the new CameraShot
     const newShot = new CameraShot({
-      author: user._id,
+      author: user,
       image: fileUrl,
       capturedAt: new Date(),
     });
 
     await newShot.save();
 
-    await User.findByIdAndUpdate(user._id, {
+    await User.findByIdAndUpdate(user, {
       $addToSet: { developingCameraShots: newShot._id },
     });
 

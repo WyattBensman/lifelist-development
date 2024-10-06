@@ -11,7 +11,7 @@ const archiveCollage = async (_, { collageId }, { user }) => {
 
     // Update user's archived collages to prevent duplicates
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $addToSet: { archivedCollages: collageId } },
       { new: true }
     );

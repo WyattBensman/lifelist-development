@@ -2,7 +2,6 @@ import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 const setLoginInformation = async (_, { username, password }, { user }) => {
-  console.log("Context User ID:", user);
   isUser(user);
 
   // Input validation

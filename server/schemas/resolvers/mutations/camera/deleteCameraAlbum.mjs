@@ -12,7 +12,7 @@ const deleteCameraAlbum = async (_, { albumId }, { user }) => {
     }
 
     // Ensure the user is authorized to delete this album
-    if (album.author.toString() !== user._id.toString()) {
+    if (album.author.toString() !== user.toString()) {
       return {
         success: false,
         message: "User not authorized to delete this camera album.",
@@ -23,7 +23,7 @@ const deleteCameraAlbum = async (_, { albumId }, { user }) => {
     await CameraAlbum.findByIdAndDelete(albumId);
 
     // Additionally, remove this album from the user's cameraAlbums field
-    await User.findByIdAndUpdate(user._id, {
+    await User.findByIdAndUpdate(user, {
       $pull: { cameraAlbums: albumId },
     });
 

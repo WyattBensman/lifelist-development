@@ -7,7 +7,7 @@ const unfollowUser = async (_, { userIdToUnfollow }, { user }) => {
 
     // Removes the user from the current user's following list
     await User.findByIdAndUpdate(
-      user._id,
+      user,
       { $pull: { following: userIdToUnfollow } },
       { new: true }
     );
@@ -15,7 +15,7 @@ const unfollowUser = async (_, { userIdToUnfollow }, { user }) => {
     // Removes the current user from the unfollowed user's followers list
     await User.findByIdAndUpdate(
       userIdToUnfollow,
-      { $pull: { followers: user._id } },
+      { $pull: { followers: user } },
       { new: true }
     );
 

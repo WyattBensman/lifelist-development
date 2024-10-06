@@ -11,7 +11,7 @@ const deleteMessage = async (_, { conversationId, messageId }, { user }) => {
       throw new Error("Message not found");
     }
 
-    if (user._id.toString() !== messageToDelete.sender.toString()) {
+    if (user.toString() !== messageToDelete.sender.toString()) {
       throw new Error("You are not the sender of this message");
     }
 

@@ -15,7 +15,7 @@ const setBasicInformation = async (_, { fullName, gender }, { user }) => {
   try {
     // Update user information
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      user,
       { fullName, gender },
       { new: true, runValidators: true } // Ensure updated document is returned and validators run
     );

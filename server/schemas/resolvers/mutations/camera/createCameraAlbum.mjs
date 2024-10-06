@@ -10,7 +10,7 @@ const createCameraAlbum = async (
     isUser(user);
 
     const newAlbum = new CameraAlbum({
-      author: user._id,
+      author: user,
       title,
       description,
       shots,
@@ -19,7 +19,7 @@ const createCameraAlbum = async (
     await newAlbum.save();
 
     // Update the User model to include the new album in their cameraAlbums field
-    await User.findByIdAndUpdate(user._id, {
+    await User.findByIdAndUpdate(user, {
       $push: { cameraAlbums: newAlbum._id },
     });
 

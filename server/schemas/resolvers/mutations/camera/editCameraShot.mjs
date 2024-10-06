@@ -11,7 +11,7 @@ const editCameraShot = async (_, { shotId, image }, { user }) => {
     }
 
     // Check if the logged-in user is the author of the camera shot
-    if (shot.author.toString() !== user._id.toString()) {
+    if (shot.author.toString() !== user.toString()) {
       throw new Error("User not authorized to edit this camera shot.");
     }
 

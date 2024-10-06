@@ -13,9 +13,9 @@ const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
     }
 
     const alreadyRequested = targetUser.followRequests.some((request) =>
-      request.userId.equals(user._id)
+      request.userId.equals(user)
     );
-    const isFollowing = targetUser.followers.includes(user._id);
+    const isFollowing = targetUser.followers.includes(user);
 
     if (alreadyRequested || isFollowing) {
       throw new Error(
@@ -28,8 +28,8 @@ const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
       userIdToFollow,
       {
         $addToSet: {
-          followRequests: { userId: user._id, status: "PENDING" },
-          pendingFriendRequests: user._id,
+          followRequests: { userId: user, status: "PENDING" },
+          pendingFriendRequests: user,
         },
       },
       { new: true }
@@ -38,7 +38,7 @@ const sendFollowRequest = async (_, { userIdToFollow }, { user }) => {
     // Send a notification for the follow request
     await createNotification({
       recipientId: userIdToFollow,
-      senderId: user._id,
+      senderId: user,
       type: "FOLLOW_REQUEST",
       message: `has sent you a follow request.`,
     });

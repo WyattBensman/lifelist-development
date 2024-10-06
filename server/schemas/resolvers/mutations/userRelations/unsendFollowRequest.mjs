@@ -9,7 +9,7 @@ const unsendFollowRequest = async (_, { userIdToUnfollow }, { user }) => {
     // Check if the follow request exists
     const followRequestExists = await User.findOne({
       _id: userIdToUnfollow,
-      "followRequests.userId": user._id,
+      "followRequests.userId": user,
     });
 
     if (!followRequestExists) {
@@ -19,7 +19,7 @@ const unsendFollowRequest = async (_, { userIdToUnfollow }, { user }) => {
     // Optionally, find and delete the related notification
     const notification = await Notification.findOne({
       recipientId: userIdToUnfollow,
-      senderId: user._id,
+      senderId: user,
       type: "FOLLOW_REQUEST",
     });
 
@@ -37,8 +37,8 @@ const unsendFollowRequest = async (_, { userIdToUnfollow }, { user }) => {
       userIdToUnfollow,
       {
         $pull: {
-          followRequests: { userId: user._id },
-          pendingFriendRequests: user._id,
+          followRequests: { userId: user },
+          pendingFriendRequests: user,
         },
       },
       { new: true }
