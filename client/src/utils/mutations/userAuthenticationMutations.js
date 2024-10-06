@@ -78,3 +78,23 @@ export const LOGIN = gql`
     }
   }
 `;
+
+// Mutation to invite a friend
+export const INVITE_FRIEND = gql`
+  mutation InviteFriend($name: String!, $phoneNumber: String!) {
+    inviteFriend(name: $name, phoneNumber: $phoneNumber) {
+      success
+      message
+    }
+  }
+`;
+
+// Mutation to update the invite status
+export const UPDATE_INVITE_STATUS = gql`
+  mutation UpdateInviteStatus($inviteCode: String!) {
+    updateInviteStatus(inviteCode: $inviteCode) {
+      success
+      message
+    }
+  }
+`;

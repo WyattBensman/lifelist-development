@@ -32,6 +32,10 @@ type User {
   settings: UserSettings
   privacyGroups: [PrivacyGroup]
   blocked: [User]
+  isOnboardingComplete: Boolean
+  hasAcceptedPermissions: Boolean
+  hasAcceptedTerms: Boolean
+  invitedFriends: [InvitedFriend]
   verified: Boolean
   emailVerification: VerificationStatus
   phoneVerification: VerificationStatus
@@ -43,6 +47,20 @@ type User {
     token: ID!
     user: User
   }
+
+  type InvitedFriend {
+  _id: ID
+  name: String
+  phoneNumber: String
+  status: InviteStatus
+  inviteCode: String
+  invitedAt: String
+}
+
+enum InviteStatus {
+  INVITED
+  JOINED
+}
 
   type UserSettings {
     isProfilePrivate: Boolean
@@ -419,6 +437,8 @@ type Score {
     setLoginInformation(username: String!, password: String!): UserResponse!
     setProfilePictureAndBio(profilePicture: Upload, bio: String): UserResponse!
     setProfileInformation(fullName: String!, gender: String!, profilePicture: Upload, bio: String): UserResponse!
+    inviteFriend(name: String!, phoneNumber: String!): StandardResponse
+    updateInviteStatus(inviteCode: String!): StandardResponse
 
     # User Actions Mutations
     updatePhoneNumber(phoneNumber: String!): UpdatePhoneNumberResponse!

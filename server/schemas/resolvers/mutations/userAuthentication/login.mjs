@@ -24,8 +24,8 @@ const login = async (_, { usernameOrEmailOrPhone, password }) => {
     }
 
     // Generate and return JWT token
-    const token = generateToken(user);
-    return { token, user };
+    const token = generateToken(user._id);
+    return { token };
   } catch (error) {
     console.error(`Error during login: ${error.message}`);
     throw new AuthenticationError(

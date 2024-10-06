@@ -1,7 +1,8 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
-import userSettingsSchema from "./userSettings.mjs";
 import { LifeList, Message } from "../index.mjs";
+import invitedFriendSchema from "./invitedFriend.mjs";
+import userSettingsSchema from "./userSettings.mjs";
 
 // Regular expression constants for validation
 const emailRegex = /^\S+@\S+\.\S+$/;
@@ -103,6 +104,12 @@ const userSchema = new Schema({
   },
   privacyGroups: [{ type: Schema.Types.ObjectId, ref: "PrivacyGroup" }],
   blocked: [{ type: Schema.Types.ObjectId, ref: "User" }],
+
+  // Onboarding & Permissions
+  isOnboardingComplete: { type: Boolean, default: false },
+  hasAcceptedPermissions: { type: Boolean, default: false },
+  invitedFriends: [invitedFriendSchema],
+  hasAcceptedTerms: { type: Boolean, default: false },
 
   // Verification
   verified: {

@@ -112,11 +112,18 @@ export default function Comments({
       visible={visible}
       onRequestClose={onRequestClose}
       initialHeight={screenHeight * 0.6}
-    >
-      <View style={styles.popupContainer}>
-        <Text style={[headerStyles.headerMedium, { paddingHorizontal: 16 }]}>
+      draggableHeader={
+        <Text
+          style={[
+            headerStyles.headerMedium,
+            { paddingHorizontal: 16, marginTop: 16 },
+          ]}
+        >
           Comments
         </Text>
+      }
+    >
+      <View style={styles.popupContainer}>
         <View style={styles.separator} />
         {loading ? (
           <ActivityIndicator size="large" color="#0000ff" />
@@ -184,7 +191,6 @@ const styles = StyleSheet.create({
   },
   popupContainer: {
     flex: 1,
-    paddingTop: 16,
   },
   inputContainer: {
     flexDirection: "row",
@@ -225,12 +231,3 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-
-{
-  /* <KeyboardAvoidingView
-style={styles.container}
-behavior="padding"
-keyboardVerticalOffset={keyboardHeight}
->
-</KeyboardAvoidingView> */
-}

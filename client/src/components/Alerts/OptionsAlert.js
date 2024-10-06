@@ -1,71 +1,157 @@
 import React from "react";
-import { View, Text, Modal, Pressable, StyleSheet } from "react-native";
+import {
+  Modal,
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
+import { BlurView } from "expo-blur";
 
-export default function OptionsAlert({
+const OptionsAlert = ({
   visible,
   onRequestClose,
-  onRemoveFromAlbum,
-  onDeleteShot,
-}) {
+  title,
+  button1Text,
+  button2Text,
+  onButton1Press,
+  onButton2Press,
+}) => {
   return (
-    <Modal visible={visible} transparent={true} animationType="fade">
-      <View style={styles.overlay}>
-        <View style={styles.alertBox}>
-          {/* Remove from Album Button */}
-          <Pressable
-            style={[styles.button, { marginBottom: 8 }]}
-            onPress={onRemoveFromAlbum}
-          >
-            <Text style={styles.buttonText}>Remove from Camera Album</Text>
-          </Pressable>
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onRequestClose}
+    >
+      <Pressable style={styles.absolute} onPress={onRequestClose}>
+        <BlurView
+          style={styles.absolute}
+          intensity={50}
+          tint="dark"
+          reducedTransparencyFallbackColor="black"
+        >
+          <View style={styles.centeredView}>
+            <KeyboardAvoidingView
+              style={styles.fullWidth}
+              behavior={Platform.OS === "ios" ? "padding" : "height"}
+              keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+            >
+              <Pressable
+                style={styles.modalView}
+                onPress={(e) => e.stopPropagation()}
+              >
+                <Text style={styles.modalHeader}>Options</Text>
+                <View style={styles.actionButtons}>
+                  {/* First Action Button */}
+                  <Pressable style={styles.button} onPress={onButton1Press}>
+                    <Text style={styles.buttonText}>{button1Text}</Text>
+                  </Pressable>
 
-          {/* Delete Camera Shot Button */}
-          <Pressable
-            style={[styles.button, { marginBottom: 16 }]}
-            onPress={onDeleteShot}
-          >
-            <Text style={styles.buttonText}>Delete Camera Shot</Text>
-          </Pressable>
+                  {/* Second Action Button */}
+                  <Pressable style={styles.button} onPress={onButton2Press}>
+                    <Text style={styles.buttonText}>{button2Text}</Text>
+                  </Pressable>
 
-          {/* Cancel Button */}
-          <Pressable onPress={onRequestClose}>
-            <Text style={{ color: "#d4d4d4" }}>Cancel</Text>
-          </Pressable>
-        </View>
-      </View>
+                  {/* Cancel Button */}
+                  <Pressable
+                    style={styles.cancelButton}
+                    onPress={onRequestClose}
+                  >
+                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                  </Pressable>
+                </View>
+              </Pressable>
+            </KeyboardAvoidingView>
+          </View>
+        </BlurView>
+      </Pressable>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  overlay: {
+  centeredView: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Background overlay
   },
-  alertBox: {
+  absolute: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+  },
+  fullWidth: {
+    width: "100%",
+  },
+  modalView: {
+    margin: 24,
     backgroundColor: "#1c1c1c",
-    padding: 20,
-    borderRadius: 10,
-    width: "85%", // Adjust width to make it fit better
+    borderRadius: 20,
+    padding: 30,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  alertTitle: {
+  modalHeader: {
+    marginBottom: 16,
+    textAlign: "center",
     fontSize: 18,
     fontWeight: "bold",
     color: "#fff",
-    marginBottom: 20, // Adjusted spacing for better layout
+  },
+  actionButtons: {
+    justifyContent: "center",
+    width: "100%",
   },
   button: {
-    paddingVertical: 9, // Adjusted padding for a better button size
-    borderRadius: 8, // Same as your input styling
-    backgroundColor: "#252525", // Dark background for buttons
-    alignItems: "center",
+    width: "100%",
+    height: 35,
+    borderRadius: 8,
     justifyContent: "center",
-    width: "100%", // Full width buttons
+    alignItems: "center",
+    borderColor: "#aaaaaa", // Matching green border
+    borderWidth: 1,
+    marginBottom: 12, // Add margin to separate the buttons
   },
   buttonText: {
-    color: "#fff",
+    color: "#aaaaaa",
+    fontWeight: "500",
+  },
+  deleteButton: {
+    width: "100%",
+    height: 35,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FF3B3030", // Transparent green
+    borderColor: "#FF3B3050", // Matching green border
+    borderWidth: 1,
+    marginBottom: 12, // Add margin to separate the buttons
+  },
+  deleteButtonText: {
+    color: "#FF3B30",
+    fontWeight: "500",
+  },
+  cancelButtonText: {
+    paddingVertical: 8,
+    paddingBottom: 0,
+    paddingHorizontal: 16,
+    color: "#aaaaaa",
+    fontWeight: "500",
+    fontSize: 12,
+    textAlign: "center",
   },
 });
+
+export default OptionsAlert;

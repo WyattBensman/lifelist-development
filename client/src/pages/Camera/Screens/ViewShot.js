@@ -254,8 +254,10 @@ export default function ViewShot() {
       <OptionsAlert
         visible={isOptionsAlertVisible}
         onRequestClose={() => setIsOptionsAlertVisible(false)}
-        onRemoveFromAlbum={handleRemoveFromAlbumPress}
-        onDeleteShot={handleDeletePress}
+        button1Text="Remove from Camera Album"
+        button2Text="Delete Camera Shot"
+        onButton1Press={handleRemoveFromAlbumPress}
+        onButton2Press={handleDeletePress}
       />
     </View>
   );

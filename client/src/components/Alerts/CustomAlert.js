@@ -15,7 +15,10 @@ const CustomAlert = ({
   onRequestClose,
   title,
   message,
-  onConfirm,
+  onConfirm, // Function to call on confirm button press
+  onCancel = onRequestClose, // Optional: Fallback to onRequestClose if not provided
+  confirmButtonText = "Confirm", // Default text for confirm button
+  cancelButtonText = "Cancel", // Default text for cancel button
 }) => {
   return (
     <Modal
@@ -44,14 +47,17 @@ const CustomAlert = ({
                 {title && <Text style={styles.modalHeader}>{title}</Text>}
                 <Text style={styles.modalSubheader}>{message}</Text>
                 <View style={styles.actionButtons}>
+                  {/* Confirm Button */}
                   <Pressable style={styles.confirmButton} onPress={onConfirm}>
-                    <Text style={styles.confirmButtonText}>Confirm</Text>
+                    <Text style={styles.confirmButtonText}>
+                      {confirmButtonText}
+                    </Text>
                   </Pressable>
-                  <Pressable
-                    style={styles.cancelButton}
-                    onPress={onRequestClose}
-                  >
-                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                  {/* Cancel Button */}
+                  <Pressable style={styles.cancelButton} onPress={onCancel}>
+                    <Text style={styles.cancelButtonText}>
+                      {cancelButtonText}
+                    </Text>
                   </Pressable>
                 </View>
               </Pressable>
@@ -139,7 +145,7 @@ const styles = StyleSheet.create({
   },
   cancelButtonText: {
     textAlign: "center",
-    color: "#aaaaaa", // Matching red tone
+    color: "#aaaaaa", // Matching gray tone
     fontWeight: "500",
   },
 });

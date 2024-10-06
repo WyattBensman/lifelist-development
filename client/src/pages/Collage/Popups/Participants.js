@@ -35,10 +35,19 @@ export default function Participants({ visible, onRequestClose, collageId }) {
       visible={visible}
       onRequestClose={onRequestClose}
       initialHeight={screenHeight * 0.6}
+      draggableHeader={
+        <Text
+          style={[
+            headerStyles.headerMedium,
+            { paddingHorizontal: 16, marginTop: 16 },
+          ]}
+        >
+          Participants
+        </Text>
+      }
     >
       <View style={styles.container}>
         <View style={styles.popupContainer}>
-          <Text style={headerStyles.headerMedium}>Participants</Text>
           <View style={styles.separator} />
           {loading ? (
             <ActivityIndicator size="large" color="#0000ff" />
@@ -75,6 +84,7 @@ const styles = StyleSheet.create({
   popupContainer: {
     flex: 1,
     padding: 16,
+    paddingTop: 0,
   },
   cardContainer: {
     paddingBottom: 12,

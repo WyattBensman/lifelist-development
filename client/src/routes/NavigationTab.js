@@ -15,14 +15,26 @@ const Tab = createMaterialBottomTabNavigator();
 export default function NavigationTab() {
   const theme = useTheme();
   theme.colors.secondaryContainer = "";
-  const { isTabBarVisible, setIsTabBarVisible } = useNavigationContext();
 
   const state = useNavigationState((state) => state);
+  const { isTabBarVisible, setIsTabBarVisible } = useNavigationContext();
+
+  // Define routes where the TabBar should be hidden
+  const hiddenTabBarRoutes = [
+    "Camera",
+    "CreateCollage",
+    "EditProfile",
+    "Saved",
+    "Archived",
+    "ViewShot",
+    "ViewExperience",
+  ];
 
   useEffect(() => {
     if (state?.routes) {
       const currentRouteName = state.routes[state.index]?.name;
-      if (currentRouteName === "Camera") {
+      // Check if the current route is in the hiddenTabBarRoutes array
+      if (hiddenTabBarRoutes.includes(currentRouteName)) {
         setIsTabBarVisible(false);
       } else {
         setIsTabBarVisible(true);
@@ -33,7 +45,7 @@ export default function NavigationTab() {
   return (
     <Tab.Navigator
       barStyle={{
-        backgroundColor: "#252525", // 262828 or 111
+        backgroundColor: "#252525",
         flex: isTabBarVisible ? 0.095 : 0,
         overflow: "hidden",
         display: isTabBarVisible ? "flex" : "none",
