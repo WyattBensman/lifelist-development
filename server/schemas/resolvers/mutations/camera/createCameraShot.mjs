@@ -39,4 +39,6 @@ const createCameraShot = async (_, { image }, { user }) => {
   }
 };
 
+export default createCameraShot;
+
 /* const filePath = await uploadSingleImage(image.file, uploadDir); */
