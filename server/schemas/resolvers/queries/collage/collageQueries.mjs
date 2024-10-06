@@ -16,13 +16,13 @@ export const getCollageById = async (_, { collageId }, { user }) => {
   if (!collage) throw new Error("Collage not found.");
 
   const isLikedByCurrentUser = collage.likes.some((like) =>
-    like._id.equals(user._id)
+    like._id.equals(user)
   );
   const isRepostedByCurrentUser = collage.reposts.some((repost) =>
-    repost._id.equals(user._id)
+    repost._id.equals(user)
   );
   const isSavedByCurrentUser = collage.saves.some((save) =>
-    save._id.equals(user._id)
+    save._id.equals(user)
   );
 
   return {

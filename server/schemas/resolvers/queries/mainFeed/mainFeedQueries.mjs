@@ -5,7 +5,7 @@ export const getMainFeed = async (_, { page = 1 }, { user }) => {
   isUser(user);
 
   const collagesPerPage = 10; // Adjust as needed
-  const foundUser = await User.findById(user._id).populate("following");
+  const foundUser = await User.findById(user).populate("following");
   const followingIds = foundUser.following.map(
     (followingUser) => followingUser._id
   );
@@ -17,7 +17,7 @@ export const getMainFeed = async (_, { page = 1 }, { user }) => {
   const collages = await Collage.find({
     archived: false,
     $or: [
-      { author: user._id },
+      { author: user },
       { author: { $in: followingIds } },
       { _id: { $in: foundUser.repostedCollages } },
       { _id: { $in: followingReposts } },
@@ -32,7 +32,7 @@ export const getMainFeed = async (_, { page = 1 }, { user }) => {
   const totalCollages = await Collage.countDocuments({
     archived: false,
     $or: [
-      { author: user._id },
+      { author: user },
       { author: { $in: followingIds } },
       { _id: { $in: foundUser.repostedCollages } },
       { _id: { $in: followingReposts } },

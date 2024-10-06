@@ -6,7 +6,7 @@ import { isUser } from "../../../../utils/auth.mjs";
   isUser(user);
 
   // Find the authenticated user
-  const currentUser = await User.findById(user._id).populate(
+  const currentUser = await User.findById(user).populate(
     "conversations.conversation"
   );
 
@@ -43,7 +43,7 @@ import { isUser } from "../../../../utils/auth.mjs";
 export const getUserConversations = async (_, __, { user }) => {
   try {
     // Find the authenticated user and populate the conversations
-    const foundUser = await User.findById(user._id).populate({
+    const foundUser = await User.findById(user).populate({
       path: "conversations.conversation",
       populate: [
         {
@@ -92,7 +92,7 @@ export const getConversation = async (_, { conversationId }, { user }) => {
 
 export const getUnreadMessagesCount = async (_, __, { user }) => {
   isUser(user);
-  const userWithUnreadCount = await User.findById(user._id)
+  const userWithUnreadCount = await User.findById(user)
     .select("unreadMessagesCount")
     .exec();
   if (!userWithUnreadCount)
@@ -103,7 +103,7 @@ export const getUnreadMessagesCount = async (_, __, { user }) => {
 /* NOTIFICATION QUERIES */
 export const getUserNotifications = async (_, __, { user }) => {
   isUser(user);
-  const foundUser = await User.findById(user._id)
+  const foundUser = await User.findById(user)
     .populate({
       path: "notifications",
       populate: {
@@ -119,7 +119,7 @@ export const getUserNotifications = async (_, __, { user }) => {
 
 export const getFollowRequests = async (_, __, { user }) => {
   isUser(user);
-  const foundUser = await User.findById(user._id)
+  const foundUser = await User.findById(user)
     .populate("followRequests", "_id username fullName profilePicture")
     .exec();
   if (!foundUser) throw new Error("User not found for the provided ID.");

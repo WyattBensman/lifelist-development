@@ -5,7 +5,7 @@ export const getCurrentUserLifeList = async (_, __, { user }) => {
   isUser(user);
 
   const lifeList = await LifeList.findOne({
-    author: user._id,
+    author: user,
   })
     .populate({
       path: "experiences",

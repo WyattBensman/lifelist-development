@@ -71,7 +71,7 @@ export const getTaggedCollages = async (_, { userId }, { user }) => {
 
 export const getLikedCollages = async (_, __, { user }) => {
   isUser(user);
-  const foundUser = await User.findById(user._id)
+  const foundUser = await User.findById(user)
     .populate("likedCollages", "_id coverImage archived")
     .exec();
   if (!foundUser) throw new Error("User not found.");
@@ -89,7 +89,7 @@ export const getSavedCollages = async (_, __, { user }) => {
 
 export const getArchivedCollages = async (_, __, { user }) => {
   isUser(user);
-  const foundUser = await User.findById(user._id)
+  const foundUser = await User.findById(user)
     .populate("archivedCollages", "_id coverImage")
     .exec();
   if (!foundUser) throw new Error("User not found for the provided ID.");
@@ -98,7 +98,7 @@ export const getArchivedCollages = async (_, __, { user }) => {
 
 export const getBlockedUsers = async (_, __, { user }) => {
   isUser(user);
-  const foundUser = await User.findById(user._id)
+  const foundUser = await User.findById(user)
     .populate("blocked", "_id username fullName profilePicture")
     .exec();
   if (!foundUser) throw new Error("User not found for the provided ID.");
@@ -108,24 +108,24 @@ export const getBlockedUsers = async (_, __, { user }) => {
 export const getUserProfileInformation = async (_, __, { user }) => {
   isUser(user);
   return User.findById(
-    user._id,
+    user,
     "profilePicture fullName username bio birthday gender"
   ).exec();
 };
 
 export const getUserContactInformation = async (_, __, { user }) => {
   isUser(user);
-  return User.findById(user._id, "email phoneNumber").exec();
+  return User.findById(user, "email phoneNumber").exec();
 };
 
 export const getUserIdentityInformation = async (_, __, { user }) => {
   isUser(user);
-  return User.findById(user._id, "birthday gender").exec();
+  return User.findById(user, "birthday gender").exec();
 };
 
 export const getUserSettingsInformation = async (_, __, { user }) => {
   isUser(user);
-  const userData = await User.findById(user._id).exec();
+  const userData = await User.findById(user).exec();
   return userData.settings;
 };
 
