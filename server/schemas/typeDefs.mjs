@@ -34,6 +34,7 @@ type User {
   blocked: [User]
   isOnboardingComplete: Boolean
   hasAcceptedPermissions: Boolean
+  invitedFriends: [InvitedFriend]
   hasAcceptedTerms: Boolean
   verified: Boolean
   emailVerification: VerificationStatus
@@ -46,6 +47,22 @@ type User {
     token: ID!
     user: User
   }
+
+  type InvitedFriend {
+  _id: ID!
+  name: String!
+  phoneNumber: String!
+  status: InviteStatus!
+  inviteCode: String!
+  invitedAt: String!
+  expiresAt: String!
+}
+
+enum InviteStatus {
+  INVITED
+  JOINED
+  EXPIRED
+}
 
   type UserSettings {
     isProfilePrivate: Boolean

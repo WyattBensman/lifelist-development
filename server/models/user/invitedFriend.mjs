@@ -16,4 +16,6 @@ const invitedFriendSchema = new Schema({
   },
 });
 
+const InvitedFriend = model("InvitedFriend", invitedFriendSchema);
+
 export default InvitedFriend;

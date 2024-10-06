@@ -108,6 +108,7 @@ const userSchema = new Schema({
   // Onboarding & Permissions
   isOnboardingComplete: { type: Boolean, default: false },
   hasAcceptedPermissions: { type: Boolean, default: false },
+  invitedFriends: [{ type: Schema.Types.ObjectId, ref: "InvitedFriend" }],
   hasAcceptedTerms: { type: Boolean, default: false },
 
   // Verification
