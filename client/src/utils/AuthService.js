@@ -33,8 +33,7 @@ class AuthService {
   async getUser() {
     const token = await this.getToken();
     const decoded = token ? jwtDecode(token) : null;
-    console.log("Decoded user data:", decoded);
-    return decoded ? { id: decoded.id, email: decoded.email } : null;
+    return decoded ? decoded.id : null;
   }
 
   // Check if the token is expired

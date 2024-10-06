@@ -5,6 +5,7 @@ import SetLoginInformationScreen from "../pages/Authentication/Screens/SetLoginI
 import SetProfileInformationScreen from "../pages/Authentication/Screens/SetProfileInformationScreen";
 import SetPermissionsScreen from "../pages/Authentication/Screens/SetPermissionsScreen";
 import ShareEarlyAccessScreen from "../pages/Authentication/Screens/ShareEarlyAccessScreen";
+import EarlyAccessScreen from "../pages/Authentication/Screens/EarlyAccessScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -13,6 +14,11 @@ export default function AuthenticationStack({
 }) {
   return (
     <Stack.Navigator initialRouteName={initialRouteName}>
+      <Stack.Screen
+        name="EarlyAccess"
+        component={EarlyAccessScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="CreateAccount"
         component={CreateAccountScreen}

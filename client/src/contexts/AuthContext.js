@@ -36,8 +36,6 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (token) => {
     console.log("Login started");
-    console.log(token);
-
     await AuthService.saveToken(token); // Wait for the token to be saved
 
     console.log("Token storage complete, setting isAuthenticated");

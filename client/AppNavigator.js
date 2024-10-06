@@ -77,13 +77,6 @@ export default function AppNavigator() {
     await clearIncompleteOnboardingData(); // Clear any stored onboarding data
     setRegistrationProgress("CreateAccount"); // Reset to initial step
     setShowResumeModal(false); // Close the alert
-
-    // Render the initial onboarding screen by invoking renderCreateAccount function.
-    renderCreateAccount();
-  };
-
-  const renderCreateAccount = () => {
-    return <AuthenticationStack initialRouteName={"CreateAccount"} />;
   };
 
   const renderNavigator = () => {
