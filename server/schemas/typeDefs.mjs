@@ -469,7 +469,7 @@ type Score {
     setAudience(collageId: ID!, audience: PrivacySetting!): CollageCreationResponse!
     tagUsers(collageId: ID!, userIds: [ID]): CollageCreationResponse!
     untagUsers(collageId: ID!, userIds: [ID]): CollageCreationResponse!
-    createCollage(caption: String, images: [String]!, taggedUsers: [ID]): CollageCreationResponse!
+    createCollage(caption: String, images: [String]!, taggedUsers: [ID]): StandardResponse!
 
     # Collage Actions Mutations
     saveCollage(collageId: ID!): ActionResponse!
