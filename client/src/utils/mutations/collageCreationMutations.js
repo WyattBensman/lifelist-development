@@ -91,7 +91,6 @@ export const CREATE_COLLAGE = gql`
     ) {
       success
       message
-      collageId
     }
   }
 `;
