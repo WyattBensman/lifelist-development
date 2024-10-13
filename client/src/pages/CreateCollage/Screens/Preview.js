@@ -27,6 +27,13 @@ export default function CollagePreview() {
   const navigation = useNavigation();
   const route = useRoute();
   const { selectedImages, caption, taggedUsers } = route.params;
+  console.log(selectedImages);
+  console.log(caption);
+  console.log(taggedUsers);
+  console.log(
+    "Posting images:",
+    selectedImages.map((image) => image.image)
+  );
 
   const [showParticipants, setShowParticipants] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
