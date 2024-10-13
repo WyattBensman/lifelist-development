@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   StyleSheet,
   Text,
+  RefreshControl,
 } from "react-native";
 import HeaderMain from "../../../components/Headers/HeaderMain";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -24,6 +25,7 @@ export default function MainFeed() {
   const [collages, setCollages] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [refreshing, setRefreshing] = useState(false); // State to track refreshing
   const [headerHeight, setHeaderHeight] = useState(0);
   const [navigationBarHeight, setNavigationBarHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(screenHeight);
@@ -53,6 +55,15 @@ export default function MainFeed() {
     setNavigationBarHeight(tabBarHeight);
     calculateContentHeight(headerHeight, tabBarHeight);
   }, [headerHeight]);
+
+  // Handle the refresh logic
+  const handleRefresh = () => {
+    setRefreshing(true); // Start the refreshing indicator
+    fetchMainFeed({
+      variables: { userId: currentUser, page: 1 },
+      onCompleted: () => setRefreshing(false), // Stop the refreshing indicator when done
+    });
+  };
 
   const handleLoadMore = () => {
     if (hasMore && !loading) {
@@ -101,20 +112,13 @@ export default function MainFeed() {
     setContentHeight(newContentHeight);
   };
 
-  if (!currentUser) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
-  if (loading && page === 1) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
   if (error) {
     return <Text>Error: {error.message}</Text>;
   }
 
   return (
     <View style={layoutStyles.wrapper}>
+      {/* Top Header */}
       <View onLayout={onHeaderLayout}>
         <HeaderMain
           titleComponent={
@@ -138,6 +142,8 @@ export default function MainFeed() {
           }
         />
       </View>
+
+      {/* Main Feed with Pull-to-Refresh */}
       <FlatList
         data={collages}
         renderItem={renderCollage}
@@ -148,11 +154,16 @@ export default function MainFeed() {
         snapToInterval={contentHeight}
         decelerationRate="fast"
         onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          loading && page > 1 ? (
-            <ActivityIndicator size="small" color="#0000ff" />
-          ) : null
+        onEndReachedThreshold={1}
+        // Pull-to-refresh control
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#fff" // Change spinner color
+            colors={["#fff"]} // Android only, set to same color as tint
+            progressViewOffset={0} // Offset position of the spinner
+          />
         }
         contentContainerStyle={styles.flatListContent}
       />

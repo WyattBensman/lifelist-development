@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Text, View, StyleSheet, FlatList } from "react-native";
 import { layoutStyles } from "../../../styles";
 import ExploreHeader from "../../../components/Headers/ExploreHeader";
@@ -10,11 +10,41 @@ import {
 import { useQuery } from "@apollo/client";
 import SearchExperienceCard from "../Cards/SearchExperienceCard";
 import SearchUserCard from "../Cards/SearchUserCard";
+import LoadingScreen from "../../Loading/LoadingScreen";
+import { useFocusEffect } from "@react-navigation/native";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
+import LoadingIcon from "../../Loading/loadingIcon";
 
 export default function ExploreHome({ navigation }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeTab, setActiveTab] = useState("All");
+  const [isLoading, setIsLoading] = useState(true); // New state to manage the loading screen
+  const { setIsTabBarVisible } = useNavigationContext(); // Access the navigation context
+
+  // Hide the tab bar when the screen is focused and `isLoading` is true
+  useFocusEffect(
+    useCallback(() => {
+      if (isLoading) {
+        setIsTabBarVisible(false); // Hide tab bar during loading
+      }
+
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 10000); // 10-second delay
+
+      return () => {
+        clearTimeout(timer);
+      };
+    }, [isLoading, setIsTabBarVisible])
+  );
+
+  // Show the tab bar again when loading is completed
+  useEffect(() => {
+    if (!isLoading) {
+      setIsTabBarVisible(true); // Show tab bar after loading completes
+    }
+  }, [isLoading, setIsTabBarVisible]);
 
   const handleSearch = () => {
     console.log("Search:", searchQuery);
@@ -58,6 +88,10 @@ export default function ExploreHome({ navigation }) {
     );
   }, [searchQuery, allExperiencesData, activeTab]);
 
+  if (isLoading) {
+    return <LoadingScreen />; // Render the LoadingScreen during the loading period
+  }
+
   return (
     <View style={layoutStyles.wrapper}>
       <ExploreHeader
@@ -66,6 +100,7 @@ export default function ExploreHome({ navigation }) {
         handleSearch={handleSearch}
         onSearchFocusChange={handleSearchFocusChange}
       />
+      <Text style={styles.loadingText}>Loading...</Text>
       {isSearchFocused && (
         <ExploreNavigator activeTab={activeTab} setActiveTab={setActiveTab} />
       )}

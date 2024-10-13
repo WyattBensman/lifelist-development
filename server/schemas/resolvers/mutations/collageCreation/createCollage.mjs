@@ -1,6 +1,5 @@
 import { Collage, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
-import { uploadMultipleImages } from "../../../../utils/uploadImages.mjs";
 import createNotification from "../notifications/createNotification.mjs";
 
 const createCollage = async (_, { caption, images, taggedUsers }, { user }) => {
@@ -17,9 +16,8 @@ const createCollage = async (_, { caption, images, taggedUsers }, { user }) => {
       throw new Error("A collage can have at most 12 images.");
     }
 
-    // Upload the images and get their URLs
-    const uploadDir = "./uploads";
-    const imageUrls = await uploadMultipleImages(images, uploadDir);
+    // Directly use the provided image paths (no need to modify them)
+    const imageUrls = images;
 
     // Create a new collage document
     const collage = new Collage({

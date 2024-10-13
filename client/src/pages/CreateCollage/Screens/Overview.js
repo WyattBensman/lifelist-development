@@ -17,6 +17,7 @@ import HeaderStack from "../../../components/Headers/HeaderStack";
 import { BASE_URL } from "../../../utils/config";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
+import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 
 export default function Overview({ route }) {
   const navigation = useNavigation();
@@ -102,7 +103,7 @@ export default function Overview({ route }) {
             Change Cover Image
           </Text>
         </Pressable>
-        <View style={styles.row}>
+        <View style={styles.inputWrapper}>
           <Text style={styles.label}>Caption</Text>
           <TextInput
             style={styles.input}
@@ -112,34 +113,35 @@ export default function Overview({ route }) {
             placeholderTextColor="#d4d4d4"
           />
         </View>
+
         <View style={styles.bottomButtonContainer}>
-          <Pressable style={styles.buttonContainer}>
-            <Icon
-              name="plus.circle"
-              style={iconStyles.plusCircle}
-              tintColor={"#fff"}
-            />
-            <Text style={styles.buttonText}>Add Locations</Text>
-          </Pressable>
-          <Pressable
-            style={styles.buttonContainer}
+          <ButtonSolid
+            backgroundColor="#252525" // Background color for button
+            textColor="#fff" // Text color for button
+            borderColor="#252525" // Optional border color
+            width="94%" // Match input width
+            text="Add Locations"
+            marginTop={12}
+            onPress={() => console.log("Add Locations pressed")}
+          />
+          <ButtonSolid
+            backgroundColor="#252525" // Background color for button
+            textColor="#fff" // Text color for button
+            borderColor="#252525" // Optional border color
+            width="94%" // Match input width
+            text="Tag Users"
+            marginTop={12}
             onPress={handleAddParticipants}
-          >
-            <Icon
-              name="plus.circle"
-              style={iconStyles.plusCircle}
-              tintColor={"#fff"}
-            />
-            <Text style={styles.buttonText}>Tag Users</Text>
-          </Pressable>
-          <Pressable style={styles.buttonContainer}>
-            <Icon
-              name="plus.circle"
-              style={iconStyles.plusCircle}
-              tintColor={"#fff"}
-            />
-            <Text style={styles.buttonText}>Set Audience</Text>
-          </Pressable>
+          />
+          <ButtonSolid
+            backgroundColor="#252525" // Background color for button
+            textColor="#fff" // Text color for button
+            borderColor="#252525" // Optional border color
+            width="94%" // Match input width
+            text="Set Audience"
+            marginTop={12}
+            onPress={() => console.log("Add Locations pressed")}
+          />
         </View>
       </View>
     </View>
@@ -155,6 +157,8 @@ const styles = StyleSheet.create({
   },
   bottomButtonContainer: {
     marginTop: 32,
+    justifyContent: "center",
+    alignItems: "center",
   },
   buttonContainer: {
     marginBottom: 12,
@@ -165,6 +169,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+
   buttonText: {
     fontWeight: "500",
     textAlign: "center",
@@ -176,21 +181,25 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 16,
   },
+  inputWrapper: {
+    width: "94%",
+    marginBottom: 16,
+    alignSelf: "center",
+  },
   label: {
-    width: 72,
-    color: "#ffffff",
+    color: "#fff",
     fontWeight: "500",
+    marginBottom: 8,
+    textAlign: "left",
   },
   input: {
-    flex: 1,
-    padding: 9,
-    borderRadius: 8,
     backgroundColor: "#252525",
     color: "#fff",
-    fontSize: 14,
-    textAlign: "left",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#1c1c1c",
+    width: "100%",
   },
 });

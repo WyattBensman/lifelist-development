@@ -9,7 +9,7 @@ import {
   Dimensions,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { iconStyles, layoutStyles } from "../../../styles";
 import { BASE_URL } from "../../../utils/config";
 import IconCollage from "../../../components/Icons/IconCollage";
@@ -18,11 +18,12 @@ import Participants from "../Popups/Participants";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { CREATE_COLLAGE } from "../../../utils/mutations/collageCreationMutations";
+import { GET_USER_PROFILE } from "../../../utils/queries";
 
 const { width } = Dimensions.get("window");
 
 export default function CollagePreview() {
-  const { currentUser } = useAuth();
+  const { currentUser } = useAuth(); // Access currentUser ID from AuthContext
   const navigation = useNavigation();
   const route = useRoute();
   const { selectedImages, caption, taggedUsers } = route.params;
@@ -30,6 +31,13 @@ export default function CollagePreview() {
   const [showParticipants, setShowParticipants] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Fetch the user's profile using the currentUser's ID
+  const { data, loading, error } = useQuery(GET_USER_PROFILE, {
+    variables: { userId: currentUser },
+    skip: !currentUser,
+  });
+
+  // Mutation to create the collage
   const [createCollage] = useMutation(CREATE_COLLAGE, {
     onCompleted: () => {
       navigation.navigate("MainFeed", { refresh: true });
@@ -39,6 +47,7 @@ export default function CollagePreview() {
     },
   });
 
+  // Render each selected image in the preview
   const renderItem = ({ item }) => (
     <Image
       style={styles.image}
@@ -48,11 +57,13 @@ export default function CollagePreview() {
     />
   );
 
+  // Handle scroll to update the current image index
   const handleScroll = (event) => {
     const index = Math.floor(event.nativeEvent.contentOffset.x / width);
     setCurrentIndex(index);
   };
 
+  // Handle the action to post the collage
   const handlePostCollage = () => {
     createCollage({
       variables: {
@@ -63,8 +74,15 @@ export default function CollagePreview() {
     });
   };
 
+  if (loading) return <Text>Loading...</Text>;
+  if (error) return <Text>Error: {error.message}</Text>;
+
+  // Extract user profile data
+  const userProfile = data?.getUserProfileById || {};
+
   return (
     <View style={layoutStyles.wrapper}>
+      {/* Header Section */}
       <HeaderStack
         title={"Preview"}
         arrow={
@@ -81,6 +99,8 @@ export default function CollagePreview() {
           </Pressable>
         }
       />
+
+      {/* Image Preview Section */}
       <View style={styles.imageContainer}>
         <FlatList
           data={selectedImages}
@@ -104,18 +124,20 @@ export default function CollagePreview() {
             ))}
           </View>
         )}
+
+        {/* User Information and Actions */}
         <View style={styles.topContainer}>
           <View style={styles.topLeftContainer}>
             <Pressable>
               <Image
                 style={styles.profilePicture}
                 source={{
-                  uri: `${BASE_URL}${currentUser.profilePicture}`,
+                  uri: `${BASE_URL}${userProfile.profilePicture}`,
                 }}
               />
             </Pressable>
             <View style={styles.userInfo}>
-              <Text style={styles.fullName}>{currentUser.fullName}</Text>
+              <Text style={styles.fullName}>{userProfile.fullName}</Text>
               <Text style={styles.location}>Location unknown</Text>
             </View>
           </View>
@@ -159,19 +181,21 @@ export default function CollagePreview() {
           </Pressable>
         </View>
       </View>
+
+      {/* Caption Section */}
       <View style={styles.bottomContainer}>
         <View style={styles.captionContainer}>
           <Pressable>
             <Image
               style={styles.smallProfilePicture}
               source={{
-                uri: `${BASE_URL}${currentUser.profilePicture}`,
+                uri: `${BASE_URL}${userProfile.profilePicture}`,
               }}
             />
           </Pressable>
           <View style={styles.captionTextContainer}>
             <Text style={styles.caption}>
-              <Text style={styles.username}>{currentUser.username} </Text>
+              <Text style={styles.username}>{userProfile.username} </Text>
               {caption}
             </Text>
           </View>
@@ -196,6 +220,8 @@ export default function CollagePreview() {
           </View>
         </View>
       </View>
+
+      {/* Participants Popup */}
       <Participants
         visible={showParticipants}
         onRequestClose={() => setShowParticipants(false)}

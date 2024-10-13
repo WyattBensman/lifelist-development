@@ -14,6 +14,7 @@ import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import Checkbox from "expo-checkbox";
 import { BASE_URL } from "../../../utils/config";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 const screenWidth = Dimensions.get("window").width;
 const spacing = 1.5;
@@ -27,6 +28,11 @@ export default function ChangeCoverImage() {
   const [selectedCoverImage, setSelectedCoverImage] =
     useState(currentCoverImage);
   const [isModified, setIsModified] = useState(false);
+  const { setIsTabBarVisible } = useNavigationContext();
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   const handleSelectCoverImage = (image) => {
     setSelectedCoverImage(image);
@@ -70,13 +76,7 @@ export default function ChangeCoverImage() {
           />
         }
         button1={
-          <Pressable
-            onPress={handleSaveCoverImage}
-            style={[
-              styles.saveButtonContainer,
-              isModified && styles.saveButtonContainerActive,
-            ]}
-          >
+          <Pressable onPress={handleSaveCoverImage}>
             <Text
               style={[
                 styles.saveButtonText,
@@ -120,23 +120,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 12,
   },
-  saveButtonContainer: {
-    backgroundColor: "#1c1c1c",
-    paddingVertical: 6,
-    paddingHorizontal: 13,
-    borderRadius: 12,
+  flatListContent: {
+    padding: spacing,
   },
   saveButtonText: {
     color: "#696969",
-    fontWeight: "500",
-  },
-  saveButtonContainerActive: {
-    backgroundColor: "#6AB95230",
+    fontWeight: "600",
   },
   saveButtonTextActive: {
     color: "#6AB952",
-  },
-  flatListContent: {
-    padding: spacing,
   },
 });

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
 import { layoutStyles, iconStyles } from "../../../styles";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
@@ -8,18 +8,24 @@ import SearchUserCard from "../Cards/SearchUserCard";
 import AddParticipantsBottomContainer from "../Components/AddParticipantsBottomContainer";
 import { GET_ALL_USERS } from "../../../utils/queries/userQueries";
 import Icon from "../../../components/Icons/Icon";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function AddParticipants({ route }) {
   const {
     selectedImages,
     caption,
     taggedUsers: initialTaggedUsers = [],
-  } = route.params; // Get initial tagged users if they exist
+  } = route.params;
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [selectedUsers, setSelectedUsers] = useState(initialTaggedUsers);
   const [hasChanges, setHasChanges] = useState(false);
+  const { setIsTabBarVisible } = useNavigationContext();
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+  });
 
   const { data: allUsersData, loading, error } = useQuery(GET_ALL_USERS);
 
@@ -36,8 +42,11 @@ export default function AddParticipants({ route }) {
     if (!searchQuery) return [];
     return (allUsersData?.getAllUsers || []).filter(
       (user) =>
-        user.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        user.username.toLowerCase().includes(searchQuery.toLowerCase())
+        // Use nullish coalescing to ensure no null/undefined error
+        (user.fullName?.toLowerCase() ?? "").includes(
+          searchQuery.toLowerCase()
+        ) ||
+        (user.username?.toLowerCase() ?? "").includes(searchQuery.toLowerCase())
     );
   }, [searchQuery, allUsersData]);
 
