@@ -11,7 +11,7 @@ const uploadDir = path.join(__dirname, "../../../../uploads");
 const deleteCameraShot = async (_, { shotId } /* { user } */) => {
   try {
     /* isUser(user); */
-    const user = "670d641a1b3834ae3fd06cab";
+    const user = "663a3129e0ffbeff092b81d4";
 
     // Retrieve the camera shot from the database
     const shot = await CameraShot.findById(shotId);
