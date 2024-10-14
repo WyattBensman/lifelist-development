@@ -26,23 +26,13 @@ const deleteCollage = async (_, { collageId }, { user }) => {
       }
     );
 
-    // Delete all comments and notifications associated with the collage
+    // Delete all comments associated with the collage
     await Comment.deleteMany({ collage: collageId });
+
+    // Delete all notifications related to the collage
     await Notification.deleteMany({ collage: collageId });
 
-    // Delete the image files associated with the collage
-    if (collage.images && collage.images.length > 0) {
-      collage.images.forEach((imagePath) => {
-        const fullPath = path.join(imagePath); // Ensure this path is correct
-        fs.unlink(fullPath, (err) => {
-          if (err) {
-            console.error("Failed to delete image file:", err);
-          }
-        });
-      });
-    }
-
-    // Delete the collage
+    // Finally, delete the collage itself
     await Collage.findByIdAndDelete(collageId);
 
     return {

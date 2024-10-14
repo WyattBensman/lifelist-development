@@ -30,6 +30,11 @@ const createCollage = async (_, { caption, images, taggedUsers }, { user }) => {
 
     await collage.save();
 
+    // Add the collage to the current user's collages
+    await User.findByIdAndUpdate(user, {
+      $addToSet: { collages: collage._id },
+    });
+
     // Send notifications to tagged users
     const taggedUserIds = taggedUsers.map((taggedUser) => taggedUser._id);
 
