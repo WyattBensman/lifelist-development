@@ -1,8 +1,6 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
-import formDataAppendFile from "apollo-upload-client/formDataAppendFile.mjs";
-import isExtractableFile from "apollo-upload-client/isExtractableFile.mjs";
 import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
 import * as SecureStore from "expo-secure-store";
 

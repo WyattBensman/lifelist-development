@@ -57,13 +57,20 @@ try {
 app.use("/uploads", express.static(uploadDir));
 
 // Universal CORS configuration
-app.use(cors());
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === "production" ? process.env.CLIENT_URL : "*", // In dev allow all origins
+    credentials: true, // Allow cookies and credentials if needed
+  })
+);
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  introspection: true, // Enable introspection
-  playground: true, // Enable GraphQL Playground in production
+  introspection: process.env.NODE_ENV !== "production", // Disable in production
+  playground: process.env.NODE_ENV !== "production", // Disable in production
+  uploads: true,
   context: async ({ req }) => {
     await authMiddleware(req);
     return { user: req.user };

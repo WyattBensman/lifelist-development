@@ -114,6 +114,21 @@ export default function CameraHome() {
     }
   };
 
+  // Utility function to convert URI to File object
+  const uriToFile = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob(); // Convert URI to Blob
+
+    // Extract the file extension from the MIME type (e.g., 'image/jpeg' becomes 'jpeg')
+    const fileExtension = blob.type.split("/")[1];
+    const fileName = `filtered_image.${fileExtension}`; // Dynamic filename based on MIME type
+
+    const file = new File([blob], fileName, { type: blob.type }); // Create File object
+    console.log(`FILE: ${file}`);
+
+    return file;
+  };
+
   // Handle file upload to GraphQL server
   const handleUploadPhoto = async (imageUri) => {
     try {
@@ -138,14 +153,6 @@ export default function CameraHome() {
     } catch (error) {
       console.error("Error uploading image:", error);
     }
-  };
-
-  // Utility function to convert URI to File object
-  const uriToFile = async (uri) => {
-    const response = await fetch(uri);
-    const blob = await response.blob(); // Convert URI to Blob
-    const file = new File([blob], "filtered_image.png", { type: blob.type }); // Create File object
-    return file;
   };
 
   return (

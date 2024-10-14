@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { FlatList, Text, View, StyleSheet } from "react-native";
-import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
 import { GET_DEVELOPING_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import Icon from "../../../components/Icons/Icon";
@@ -13,7 +13,17 @@ export default function DevelopingRoll() {
   const navigation = useNavigation();
   const [alertVisible, setAlertVisible] = useState(false);
 
-  const { data, loading, error } = useQuery(GET_DEVELOPING_CAMERA_SHOTS);
+  // Use Apollo's useQuery hook to get data and the refetch function
+  const { data, loading, error, refetch } = useQuery(
+    GET_DEVELOPING_CAMERA_SHOTS
+  );
+
+  // Refetch data whenever the screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch])
+  );
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
