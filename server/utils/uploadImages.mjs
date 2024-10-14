@@ -1,4 +1,4 @@
-import { promises as fs } from "fs";
+import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import sanitizeFilename from "sanitize-filename";
 import path from "path";
@@ -23,13 +23,13 @@ export const uploadSingleImage = async (
     const filePath = path.join(uploadDir, uniqueFilename);
 
     // Ensure the uploads directory exists
-    await fs.mkdir(uploadDir, { recursive: true });
+    await fs.promises.mkdir(uploadDir, { recursive: true }); // Use promises for mkdir
 
     console.log(`Uploading to path: ${filePath}`); // Log the file path
 
     // Stream the file data to the file system
     const stream = createReadStream();
-    const writeStream = fs.createWriteStream(filePath);
+    const writeStream = fs.createWriteStream(filePath); // Use standard fs.createWriteStream
 
     await new Promise((resolve, reject) => {
       stream.pipe(writeStream).on("finish", resolve).on("error", reject);
