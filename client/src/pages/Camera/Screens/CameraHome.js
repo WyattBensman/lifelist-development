@@ -120,6 +120,11 @@ export default function CameraHome() {
       // Convert the image URI into a file that can be uploaded
       const imageFile = await uriToFile(imageUri);
 
+      // Log file information on the frontend
+      console.log("File Name (Frontend):", imageFile.name);
+      console.log("MIME Type (Frontend):", imageFile.type);
+      console.log("File Size (Frontend):", imageFile.size);
+
       // Execute the mutation to upload the file
       const { data: result } = await createCameraShot({
         variables: { image: imageFile },
