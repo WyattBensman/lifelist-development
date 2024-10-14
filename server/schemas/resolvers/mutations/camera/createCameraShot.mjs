@@ -5,10 +5,9 @@ import * as url from "url";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
-const createCameraShot = async (_, { image } /* { user } */) => {
+const createCameraShot = async (_, { image }, { user }) => {
   try {
     const uploadDir = path.join(__dirname, "../../../../uploads");
-    const user = "663a3129e0ffbeff092b81d4";
 
     // Await the promise to resolve and extract the file information
     const { createReadStream, filename, mimetype } = await image.promise;

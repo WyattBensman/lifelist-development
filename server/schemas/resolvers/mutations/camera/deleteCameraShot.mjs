@@ -8,9 +8,10 @@ import * as url from "url";
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 const uploadDir = path.join(__dirname, "../../../../uploads");
 
-const deleteCameraShot = async (_, { shotId }, { user }) => {
+const deleteCameraShot = async (_, { shotId } /* { user } */) => {
   try {
-    isUser(user); // Verify if the user is authenticated
+    /* isUser(user); */
+    const user = "670d641a1b3834ae3fd06cab";
 
     // Retrieve the camera shot from the database
     const shot = await CameraShot.findById(shotId);
@@ -19,7 +20,7 @@ const deleteCameraShot = async (_, { shotId }, { user }) => {
     }
 
     // Ensure the user is authorized to delete this shot
-    if (shot.author.toString() !== user._id.toString()) {
+    if (shot.author.toString() !== user.toString()) {
       return {
         success: false,
         message: "User not authorized to delete this camera shot.",
@@ -33,7 +34,7 @@ const deleteCameraShot = async (_, { shotId }, { user }) => {
     );
 
     // Remove the shot ID from the user's cameraShots field (assuming it exists in the User schema)
-    await User.findByIdAndUpdate(user._id, {
+    await User.findByIdAndUpdate(user, {
       $pull: { cameraShots: shotId },
     });
 
