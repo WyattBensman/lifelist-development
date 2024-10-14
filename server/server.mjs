@@ -64,7 +64,6 @@ const server = new ApolloServer({
   resolvers,
   introspection: true, // Enable introspection
   playground: true, // Enable GraphQL Playground in production
-  uploads: false, // Ensure file uploads are handled by graphql-upload
   context: async ({ req }) => {
     await authMiddleware(req);
     return { user: req.user };

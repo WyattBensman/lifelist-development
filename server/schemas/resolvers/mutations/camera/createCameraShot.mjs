@@ -10,6 +10,9 @@ const createCameraShot = async (_, { image } /* { user } */) => {
     const uploadDir = path.join(__dirname, "../../../../uploads");
     const user = "663a3129e0ffbeff092b81d4";
 
+    console.log(`Image Passed: ${image}`);
+    console.log(`Upload Dir Passed: ${uploadDir}`);
+
     // Save the uploaded image file
     const filePath = await uploadSingleImage(image, uploadDir);
     console.log("Image uploaded to:", filePath);
