@@ -4,10 +4,11 @@ import sanitizeFilename from "sanitize-filename";
 import path from "path";
 
 // Single image upload function
-export const uploadSingleImage = async (image, uploadDir) => {
+export const uploadSingleImage = async (
+  { createReadStream, filename },
+  uploadDir
+) => {
   try {
-    const { createReadStream, filename } = await image;
-
     // Log to check the structure of the incoming image object
     console.log("Image details:", { createReadStream, filename });
 
@@ -17,14 +18,16 @@ export const uploadSingleImage = async (image, uploadDir) => {
       );
     }
 
+    // Generate a unique filename to avoid conflicts
     const uniqueFilename = `${uuidv4()}-${sanitizeFilename(filename)}`;
     const filePath = path.join(uploadDir, uniqueFilename);
 
-    // Ensure the uploads directory exists (async/await approach)
+    // Ensure the uploads directory exists
     await fs.mkdir(uploadDir, { recursive: true });
 
     console.log(`Uploading to path: ${filePath}`); // Log the file path
 
+    // Stream the file data to the file system
     const stream = createReadStream();
     const writeStream = fs.createWriteStream(filePath);
 

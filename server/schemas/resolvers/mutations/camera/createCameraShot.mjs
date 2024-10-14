@@ -24,7 +24,10 @@ const createCameraShot = async (_, { image } /* { user } */) => {
     console.log(`Upload Dir Passed: ${uploadDir}`); */
 
     // Save the uploaded image file
-    const filePath = await uploadSingleImage(image, uploadDir);
+    const filePath = await uploadSingleImage(
+      { createReadStream, filename },
+      uploadDir
+    );
     console.log("Image uploaded to:", filePath);
 
     const baseUrl = process.env.API_URL;
