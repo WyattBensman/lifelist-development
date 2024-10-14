@@ -11,9 +11,10 @@ const createCameraShot = async (_, { image } /* { user } */) => {
     const user = "663a3129e0ffbeff092b81d4";
 
     console.log(`Image Passed: ${image}`);
-    console.log(`Create Read Stream Passed: ${image.createReadStream}`);
+    console.log(`Image Passed: ${JSON.stringify(image, null, 2)}`);
+    /* console.log(`Create Read Stream Passed: ${image.createReadStream}`);
     console.log(`File Name Passed: ${image.filename}`);
-    console.log(`Upload Dir Passed: ${uploadDir}`);
+    console.log(`Upload Dir Passed: ${uploadDir}`); */
 
     // Save the uploaded image file
     const filePath = await uploadSingleImage(image, uploadDir);
