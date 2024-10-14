@@ -15,13 +15,8 @@ if (process.env.NODE_ENV !== "production") {
 // Use the Heroku server URL
 const graphqlUri = "https://lifelist-server-6ad435fbc893.herokuapp.com/graphql";
 
-console.log(`Environment: ${process.env.NODE_ENV}`);
-console.log(`GraphQL URI: ${graphqlUri}`);
-
 const uploadLink = createUploadLink({
   uri: graphqlUri,
-  formDataAppendFile,
-  isExtractableFile,
 });
 
 const authLink = setContext(async (_, { headers }) => {

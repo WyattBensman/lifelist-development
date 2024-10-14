@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Animated,
   Dimensions,
-  Alert,
   Text,
   Button,
 } from "react-native";
@@ -16,18 +15,20 @@ import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "@apollo/client";
 import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
+import { applyFilterToImage } from "../../../utils/cameraUtils/applyFilterToImage";
 
 export default function CameraHome() {
-  const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
+  const [showHeaderOptions, setShowHeaderOptions] = useState(false);
+  const [permission, requestPermission] = useCameraPermissions();
   const [facing, setFacing] = useState("back");
   const [flash, setFlash] = useState("off");
-  const [cameraType, setCameraType] = useState("Disposable");
   const [zoom, setZoom] = useState(0);
-  const [permission, requestPermission] = useCameraPermissions();
-  const cameraRef = useRef(null);
+  const [cameraType, setCameraType] = useState("Disposable");
   const [filter, setFilter] = useState("disposableFilter");
-  const [showHeaderOptions, setShowHeaderOptions] = useState(false);
+  const [capturedImage, setCapturedImage] = useState(null); // Captured photo
+  const [filteredUri, setFilteredUri] = useState(null); // Filtered image
+  const cameraRef = useRef(null);
   const [createCameraShot] = useMutation(CREATE_CAMERA_SHOT);
 
   const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -84,70 +85,59 @@ export default function CameraHome() {
   };
 
   const handleSelectCameraType = (type) => {
-    setCameraType(type);
+    setFilter(
+      type === "Standard"
+        ? "standardFilter"
+        : type === "Disposable"
+        ? "disposableFilter"
+        : "fujiFilter"
+    );
+  };
 
-    switch (type) {
-      case "Standard":
-        setFilter("standardFilter");
-        break;
-      case "Disposable":
-        setFilter("disposableFilter");
-        break;
-      case "Fuji":
-        setFilter("fujiFilter");
-        break;
-      default:
-        setFilter("standardFilter");
-        break;
+  // Capture the photo
+  const handleTakePhoto = async () => {
+    if (cameraRef.current) {
+      const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+
+      setCapturedImage(photo.uri); // Store captured image URI
+      applyFilter(photo.uri); // Apply filter based on selected cameraType
     }
   };
 
-  const handleTakePhoto = async () => {
-    if (cameraRef.current) {
-      try {
-        const photo = await cameraRef.current.takePictureAsync({
-          base64: true,
-          quality: 1,
-          exif: true,
-          skipProcessing: true,
-        });
-        console.log("photo URI:", photo.uri);
+  // Apply filter using the utility function and upload the result
+  const applyFilter = async (imageUri) => {
+    try {
+      const filteredImageUri = await applyFilterToImage(imageUri, filter); // Apply correct filter
+      setFilteredUri(filteredImageUri); // Store filtered image URI
+      handleUploadPhoto(filteredImageUri); // Upload filtered image
+    } catch (error) {
+      console.error("Error applying filter:", error);
+    }
+  };
 
-        console.log("Data passed to mutation:", {
-          uri: photo.uri,
-          type: "image/jpeg",
-          name: "photo.jpg",
-        });
+  const handleUploadPhoto = async (imageUri) => {
+    try {
+      const file = {
+        uri: imageUri,
+        name: "filtered_photo.png",
+        type: "image/png",
+      };
 
-        const { data } = await createCameraShot({
-          variables: {
-            image: {
-              uri: photo.uri,
-              type: "image/jpeg",
-              name: "photo.jpg",
-            },
-          },
-        });
+      console.log(`File URI: ${file.uri}`);
+      console.log(`File Name: ${file.name}`);
+      console.log(`File Type: ${file.type}`);
 
-        if (data?.createCameraShot?.success) {
-          Alert.alert(
-            "Success",
-            data.createCameraShot.message || "Photo added to developing shots!",
-            [{ text: "OK" }]
-          );
-        } else {
-          throw new Error(
-            data.createCameraShot.message || "Failed to add photo."
-          );
-        }
-      } catch (error) {
-        console.error("Error taking photo:", error);
-        Alert.alert(
-          "Error",
-          error.message || "There was an error while taking the photo.",
-          [{ text: "OK" }]
-        );
+      const result = await createCameraShot({
+        variables: { image: file },
+      });
+
+      if (result.data.createCameraShot.success) {
+        console.log("Image uploaded successfully!");
+      } else {
+        console.error("Upload failed:", result.data.createCameraShot.message);
       }
+    } catch (error) {
+      console.error("Error uploading image:", error);
     }
   };
 
@@ -328,3 +318,63 @@ const styles = StyleSheet.create({
 /* const filterOutputUri = await applyFilter(photo.uri, cameraType);
         if (!filterOutputUri) throw new Error("Failed to apply filter");
         console.log("Filtered photo URI:", filterOutputUri); */
+
+/*   const handleTakePhoto = async () => {
+    if (cameraRef.current) {
+      try {
+        const photo = await cameraRef.current.takePictureAsync({
+          base64: true,
+          quality: 1,
+          exif: true,
+          skipProcessing: true,
+        });
+        console.log("photo URI:", photo.uri);
+
+        console.log("Data passed to mutation:", {
+          uri: photo.uri,
+          type: "image/jpeg",
+          name: "photo.jpg",
+        });
+
+        const { data } = await createCameraShot({
+          variables: {
+            image: {
+              uri: photo.uri,
+              type: "image/jpeg",
+              name: "photo.jpg",
+            },
+          },
+        });
+
+        if (data?.createCameraShot?.success) {
+          Alert.alert(
+            "Success",
+            data.createCameraShot.message || "Photo added to developing shots!",
+            [{ text: "OK" }]
+          );
+        } else {
+          throw new Error(
+            data.createCameraShot.message || "Failed to add photo."
+          );
+        }
+      } catch (error) {
+        console.error("Error taking photo:", error);
+        Alert.alert(
+          "Error",
+          error.message || "There was an error while taking the photo.",
+          [{ text: "OK" }]
+        );
+      }
+    }
+  }; */
+
+/*   const handleTakePhoto = async () => {
+    if (cameraRef.current) {
+      const photo = await cameraRef.current.takePictureAsync({
+        quality: 1,
+        base64: false,
+      });
+      setCapturedImage(photo.uri); // Capture the photo and store URI
+      handleUploadPhoto(photo.uri); // Immediately trigger upload
+    }
+  }; */

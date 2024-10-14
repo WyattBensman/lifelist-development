@@ -29,17 +29,6 @@ const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
 const PORT = process.env.PORT || 3001;
 const app = express();
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  introspection: true, // Enable introspection
-  playground: true, // Enable GraphQL Playground in production
-  uploads: false, // Ensure file uploads are handled by graphql-upload
-  context: async ({ req }) => {
-    await authMiddleware(req);
-    return { user: req.user };
-  },
-});
 
 // Middleware for file uploads
 app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 12 }));
@@ -69,6 +58,18 @@ app.use("/uploads", express.static(uploadDir));
 
 // Universal CORS configuration
 app.use(cors());
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection: true, // Enable introspection
+  playground: true, // Enable GraphQL Playground in production
+  uploads: false, // Ensure file uploads are handled by graphql-upload
+  context: async ({ req }) => {
+    await authMiddleware(req);
+    return { user: req.user };
+  },
+});
 
 const startServer = async () => {
   try {

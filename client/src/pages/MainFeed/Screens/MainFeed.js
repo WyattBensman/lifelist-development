@@ -8,24 +8,24 @@ import {
   Text,
   RefreshControl,
 } from "react-native";
-import HeaderMain from "../../../components/Headers/HeaderMain";
-import { useAuth } from "../../../contexts/AuthContext";
-import Collage from "../../Collage/Screens/Collage";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useLazyQuery } from "@apollo/client";
+import { useAuth } from "../../../contexts/AuthContext";
 import { GET_MAIN_FEED } from "../../../utils/queries";
-import { useNavigation } from "@react-navigation/native";
-import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
+import Collage from "../../Collage/Screens/Collage";
+import HeaderMain from "../../../components/Headers/HeaderMain";
 import Icon from "../../../components/Icons/Icon";
+import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
 
 const { height: screenHeight } = Dimensions.get("window");
 
-export default function MainFeed() {
+export default function MainFeed({ route }) {
   const navigation = useNavigation();
   const { currentUser } = useAuth();
   const [collages, setCollages] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [refreshing, setRefreshing] = useState(false); // State to track refreshing
+  const [refreshing, setRefreshing] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(0);
   const [navigationBarHeight, setNavigationBarHeight] = useState(0);
   const [contentHeight, setContentHeight] = useState(screenHeight);
@@ -37,12 +37,14 @@ export default function MainFeed() {
     }
   );
 
+  // Fetch the initial data when component is mounted
   useEffect(() => {
     if (currentUser) {
       fetchMainFeed({ variables: { userId: currentUser, page: 1 } });
     }
   }, [currentUser]);
 
+  // When data is fetched, update collages and hasMore state
   useEffect(() => {
     if (data) {
       setCollages(data.getMainFeed.collages);
@@ -50,37 +52,36 @@ export default function MainFeed() {
     }
   }, [data]);
 
+  // Adjust content height when header or navigation bar height changes
   useEffect(() => {
     const tabBarHeight = screenHeight * 0.095;
     setNavigationBarHeight(tabBarHeight);
     calculateContentHeight(headerHeight, tabBarHeight);
   }, [headerHeight]);
 
-  // Handle the refresh logic
+  // Handle refresh logic for pull-to-refresh
   const handleRefresh = () => {
-    setRefreshing(true); // Start the refreshing indicator
+    setRefreshing(true);
     fetchMainFeed({
       variables: { userId: currentUser, page: 1 },
-      onCompleted: () => setRefreshing(false), // Stop the refreshing indicator when done
+      onCompleted: () => setRefreshing(false),
     });
   };
 
+  // Handle loading more items when reaching the end of the list
   const handleLoadMore = () => {
     if (hasMore && !loading) {
       fetchMore({
-        variables: {
-          userId: currentUser,
-          page: page + 1,
-        },
-        updateQuery: (previousResult, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return previousResult;
+        variables: { userId: currentUser, page: page + 1 },
+        updateQuery: (prevResult, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prevResult;
           setPage(page + 1);
           setHasMore(fetchMoreResult.getMainFeed.hasMore);
           return {
             getMainFeed: {
-              __typename: previousResult.getMainFeed.__typename,
+              __typename: prevResult.getMainFeed.__typename,
               collages: [
-                ...previousResult.getMainFeed.collages,
+                ...prevResult.getMainFeed.collages,
                 ...fetchMoreResult.getMainFeed.collages,
               ],
               hasMore: fetchMoreResult.getMainFeed.hasMore,
@@ -90,6 +91,16 @@ export default function MainFeed() {
       });
     }
   };
+
+  // Refresh the feed when navigating back from collage creation
+  useFocusEffect(
+    useCallback(() => {
+      if (route.params?.refresh) {
+        handleRefresh(); // Trigger a refresh when coming back
+        navigation.setParams({ refresh: false }); // Reset the refresh flag
+      }
+    }, [route.params?.refresh])
+  );
 
   const renderCollage = useCallback(
     ({ item }) => (
@@ -155,14 +166,13 @@ export default function MainFeed() {
         decelerationRate="fast"
         onEndReached={handleLoadMore}
         onEndReachedThreshold={1}
-        // Pull-to-refresh control
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={handleRefresh}
-            tintColor="#fff" // Change spinner color
-            colors={["#fff"]} // Android only, set to same color as tint
-            progressViewOffset={0} // Offset position of the spinner
+            tintColor="#fff"
+            colors={["#fff"]}
+            progressViewOffset={0}
           />
         }
         contentContainerStyle={styles.flatListContent}

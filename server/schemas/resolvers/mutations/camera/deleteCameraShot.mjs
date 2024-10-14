@@ -1,13 +1,16 @@
-import fs from "fs/promises";
 import path from "path";
 import { CameraShot, CameraAlbum, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
-import { fileURLToPath } from "url";
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import fs from "fs/promises";
+import * as url from "url";
+
+// Define the directory for uploads
+const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+const uploadDir = path.join(__dirname, "../../../../uploads");
 
 const deleteCameraShot = async (_, { shotId }, { user }) => {
   try {
-    isUser(user);
+    isUser(user); // Verify if the user is authenticated
 
     // Retrieve the camera shot from the database
     const shot = await CameraShot.findById(shotId);
@@ -16,7 +19,7 @@ const deleteCameraShot = async (_, { shotId }, { user }) => {
     }
 
     // Ensure the user is authorized to delete this shot
-    if (shot.author.toString() !== user.toString()) {
+    if (shot.author.toString() !== user._id.toString()) {
       return {
         success: false,
         message: "User not authorized to delete this camera shot.",
@@ -29,21 +32,23 @@ const deleteCameraShot = async (_, { shotId }, { user }) => {
       { $pull: { shots: shotId } }
     );
 
-    // Remove the shot ID from the user's cameraShots field
-    await User.findByIdAndUpdate(user, {
+    // Remove the shot ID from the user's cameraShots field (assuming it exists in the User schema)
+    await User.findByIdAndUpdate(user._id, {
       $pull: { cameraShots: shotId },
     });
 
-    // Delete the image file from the filesystem
-    /*     const filePath = path.join(__dirname, shot.image);
-    try {
-      await fs.unlink(filePath);
-    } catch (err) {
-      console.error("Failed to delete image file:", err);
-      throw new Error("Failed to delete image file.");
-    } */
+    // Extract the image file path (relative to the uploads directory)
+    const filePath = path.join(uploadDir, path.basename(shot.image));
 
-    // Delete the camera shot
+    // Delete the file from the file system
+    try {
+      await fs.unlink(filePath); // Delete the file from the file system
+      console.log(`File ${filePath} successfully deleted`);
+    } catch (fileError) {
+      console.error(`Error deleting file: ${fileError.message}`);
+    }
+
+    // Delete the camera shot from the database
     await CameraShot.findByIdAndDelete(shotId);
 
     // Return a success message

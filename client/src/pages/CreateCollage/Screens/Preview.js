@@ -47,7 +47,7 @@ export default function CollagePreview() {
   // Mutation to create the collage
   const [createCollage] = useMutation(CREATE_COLLAGE, {
     onCompleted: () => {
-      navigation.navigate("MainFeed", { refresh: true });
+      navigation.navigate("MainFeedHome", { refresh: true });
     },
     onError: (error) => {
       console.error(error.message);
