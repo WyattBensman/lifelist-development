@@ -10,8 +10,15 @@ const createCameraShot = async (_, { image } /* { user } */) => {
     const uploadDir = path.join(__dirname, "../../../../uploads");
     const user = "663a3129e0ffbeff092b81d4";
 
-    console.log(`Image Passed: ${image}`);
-    console.log(`Image Passed: ${JSON.stringify(image, null, 2)}`);
+    // Await the promise to resolve and extract the file information
+    const { createReadStream, filename, mimetype } = await image.promise;
+
+    console.log("Create Read Stream Passed:", createReadStream);
+    console.log("File Name Passed:", filename);
+    console.log("MIME Type Passed:", mimetype);
+
+    /* console.log(`Image Passed: ${image}`);
+    console.log(`Image Passed: ${JSON.stringify(image, null, 2)}`); */
     /* console.log(`Create Read Stream Passed: ${image.createReadStream}`);
     console.log(`File Name Passed: ${image.filename}`);
     console.log(`Upload Dir Passed: ${uploadDir}`); */
