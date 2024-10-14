@@ -12,7 +12,6 @@ import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
-import { useNavigation } from "@react-navigation/native";
 import { useMutation } from "@apollo/client";
 import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
 import { applyFilterToImage } from "../../../utils/cameraUtils/applyFilterToImage";
@@ -115,30 +114,33 @@ export default function CameraHome() {
     }
   };
 
+  // Handle file upload to GraphQL server
   const handleUploadPhoto = async (imageUri) => {
     try {
-      const file = {
-        uri: imageUri,
-        name: "filtered_photo.png",
-        type: "image/png",
-      };
+      // Convert the image URI into a file that can be uploaded
+      const imageFile = await uriToFile(imageUri);
 
-      console.log(`File URI: ${file.uri}`);
-      console.log(`File Name: ${file.name}`);
-      console.log(`File Type: ${file.type}`);
-
-      const result = await createCameraShot({
-        variables: { image: file },
+      // Execute the mutation to upload the file
+      const { data: result } = await createCameraShot({
+        variables: { image: imageFile },
       });
 
-      if (result.data.createCameraShot.success) {
+      if (result.createCameraShot.success) {
         console.log("Image uploaded successfully!");
       } else {
-        console.error("Upload failed:", result.data.createCameraShot.message);
+        console.error("Upload failed:", result.createCameraShot.message);
       }
     } catch (error) {
       console.error("Error uploading image:", error);
     }
+  };
+
+  // Utility function to convert URI to File object
+  const uriToFile = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob(); // Convert URI to Blob
+    const file = new File([blob], "filtered_image.png", { type: blob.type }); // Create File object
+    return file;
   };
 
   return (
@@ -378,3 +380,17 @@ const styles = StyleSheet.create({
       handleUploadPhoto(photo.uri); // Immediately trigger upload
     }
   }; */
+
+/*       const file = {
+        uri: imageUri,
+        name: "filtered_photo.png",
+        type: "image/png",
+      };
+
+      console.log(`File URI: ${file.uri}`);
+      console.log(`File Name: ${file.name}`);
+      console.log(`File Type: ${file.type}`);
+
+      const result = await createCameraShot({
+        variables: { image: file },
+      }); */
