@@ -20,6 +20,7 @@ export const GET_COLLAGE_BY_ID = gql`
       isLikedByCurrentUser
       isRepostedByCurrentUser
       isSavedByCurrentUser
+      hasParticipants
     }
   }
 `;

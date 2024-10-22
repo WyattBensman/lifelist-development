@@ -1,66 +1,74 @@
 import React, { useState, useEffect } from "react";
-import { Image, Text, View, Pressable, StyleSheet } from "react-native";
-import { cardStyles, iconStyles } from "../../../styles";
+import { Image, Text, View, Pressable } from "react-native";
+import { useNavigation } from "@react-navigation/native"; // Import navigation hook
 import { truncateText, capitalizeText } from "../../../utils/utils";
 import { BASE_URL } from "../../../utils/config";
 import IconStatic from "../../../components/Icons/IconStatic";
-import CustomAlert from "../../../components/Alerts/CustomAlert";
+import { StyleSheet } from "react-native";
+import { cardStyles, iconStyles } from "../../../styles";
 
 export default function AddExperienceCard({
-  experience,
-  onDelete,
-  onListSelect,
-  onUpdateShots,
+  lifeListExperience, // Expect full lifeListExperience object with experience data
+  onDelete, // Function to handle deletion
+  onListSelect, // Function to handle list status change (experienced/wishlisted)
 }) {
-  const [listStatus, setListStatus] = useState(experience.list || "");
-  const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const navigation = useNavigation(); // Use navigation hook to navigate to other screens
+  const { experience, list, associatedShots } = lifeListExperience; // Destructure from the lifeListExperience object
+  const [listStatus, setListStatus] = useState(list || "");
 
-  const imageUrl = `${BASE_URL}${experience.experience.image}`;
-  const truncatedTitle = truncateText(experience.experience.title, 30);
-  // CHANGE TO SUBCATEGORY
-  const capitalizedCategory = capitalizeText(experience.experience.category);
-  const associatedShots = experience.associatedShots;
+  // Ensure the image URL is constructed properly with BASE_URL
+  const imageUrl = experience?.image ? `${BASE_URL}${experience.image}` : "";
+  const truncatedTitle = truncateText(experience?.title || "", 30);
+  const capitalizedCategory = capitalizeText(experience?.category || "");
 
+  // Sync local listStatus with the experience data
   useEffect(() => {
-    setListStatus(experience.list || "");
-  }, [experience]);
+    setListStatus(list || "");
+  }, [list]);
 
-  const handleSelectList = (list) => {
-    if (list === "WISHLISTED" && associatedShots.length > 0) {
-      setIsAlertVisible(true);
-    } else {
-      setListStatus(list);
-      onListSelect(experience.experience._id, list);
-    }
+  // Handle selecting between EXPERIENCED and WISHLISTED
+  const handleSelectList = (newListStatus) => {
+    setListStatus(newListStatus);
+    onListSelect(newListStatus); // Pass only the list status change
   };
 
-  const confirmChangeListStatus = () => {
-    setListStatus("WISHLISTED");
-    onListSelect(experience.experience._id, "WISHLISTED");
-    onUpdateShots(experience.experience._id, []);
-    setIsAlertVisible(false);
-  };
-
+  // Navigate to ManageTempShots screen with experienceId and associatedShots
   const handleManageShots = () => {
-    onUpdateShots(experience.experience._id, associatedShots);
+    navigation.navigate("ManageTempShots", {
+      experienceId: experience._id, // Pass the experience ID
+      associatedShots: associatedShots || [], // Pass the associated shots
+    });
   };
+
+  if (!experience) {
+    return (
+      <View style={cardStyles.placeholderContainer}>
+        <Text>Loading experience...</Text>
+      </View>
+    );
+  }
 
   return (
-    <View style={styles.listItemContainer}>
+    <View style={[cardStyles.cardContainer, styles.listItemContainer]}>
       <View style={styles.contentContainer}>
+        {/* Ensure image is displayed properly */}
         <Image source={{ uri: imageUrl }} style={cardStyles.imageMd} />
         <View style={styles.textContainer}>
           <Text style={styles.title}>{truncatedTitle}</Text>
           <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
         </View>
       </View>
+
       <View style={styles.optionsContainer}>
+        {/* Trash Icon for Deleting Experience */}
         <IconStatic
           name="trash"
           style={iconStyles.trashSm}
           tintColor={"#8A8A8E"}
-          onPress={() => onDelete(experience.experience._id)}
+          onPress={() => onDelete(experience._id)} // Call delete handler with experience._id
         />
+
+        {/* List Status Buttons */}
         <View style={styles.buttonsContainer}>
           {listStatus !== "EXPERIENCED" && listStatus !== "WISHLISTED" && (
             <>
@@ -78,11 +86,12 @@ export default function AddExperienceCard({
               </Pressable>
             </>
           )}
+
           {listStatus === "EXPERIENCED" && (
             <>
               <Pressable
                 style={[styles.optionsButton, styles.spacer]}
-                onPress={handleManageShots}
+                onPress={handleManageShots} // Navigate to ManageTempShots
               >
                 <Text style={styles.optionsText}>
                   {associatedShots.length === 0 ? "Add Shots" : "Manage Shots"}
@@ -102,6 +111,7 @@ export default function AddExperienceCard({
               </Pressable>
             </>
           )}
+
           {listStatus === "WISHLISTED" && (
             <Pressable
               style={[styles.optionsButton, styles.wishListedButton]}
@@ -114,12 +124,6 @@ export default function AddExperienceCard({
           )}
         </View>
       </View>
-      <CustomAlert
-        visible={isAlertVisible}
-        onRequestClose={() => setIsAlertVisible(false)}
-        message="Are you sure you want to change the list? Your associated shots will be cleared."
-        onConfirm={confirmChangeListStatus}
-      />
     </View>
   );
 }

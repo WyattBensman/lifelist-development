@@ -112,6 +112,7 @@ export default function ListView({ navigation }) {
   if (error) return <Text>Error: {error.message}</Text>;
 
   const lifeListData = route.params?.lifeList || lifeList;
+  console.log(lifeListData);
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -181,7 +182,7 @@ export default function ListView({ navigation }) {
         editMode={editMode}
         searchQuery={searchQuery}
         navigation={navigation}
-        onDelete={handleDeleteExperience} // Ensure onDelete is passed
+        onDelete={handleDeleteExperience}
       />
       <CustomAlert
         visible={isModalVisible}

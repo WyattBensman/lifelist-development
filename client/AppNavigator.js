@@ -12,8 +12,8 @@ export default function AppNavigator() {
   const [isEarlyAccessUnlocked, setIsEarlyAccessUnlocked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [registrationProgress, setRegistrationProgress] =
-    useState("CreateAccount"); // Default step is CreateAccount
-  const [showResumeModal, setShowResumeModal] = useState(false); // State to show the resume modal
+    useState("CreateAccount");
+  const [showResumeModal, setShowResumeModal] = useState(false);
   const { isAuthenticated, registrationComplete } = useAuth();
 
   useEffect(() => {

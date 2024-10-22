@@ -103,6 +103,7 @@ export default function Collage({
 
   const {
     collage: { caption, images, author, createdAt },
+    hasParticipants,
   } = data.getCollageById;
 
   const handleProfilePress = () => {
@@ -276,11 +277,15 @@ export default function Collage({
                 <Text style={styles.commentsButtonText}>Comments</Text>
               </View>
             </Pressable>
-            <Pressable onPress={() => setShowParticipants(true)}>
-              <View style={[styles.participantsButton, { marginLeft: 8 }]}>
-                <Text style={styles.participantsButtonText}>Participants</Text>
-              </View>
-            </Pressable>
+            {hasParticipants && (
+              <Pressable onPress={() => setShowParticipants(true)}>
+                <View style={[styles.participantsButton, { marginLeft: 8 }]}>
+                  <Text style={styles.participantsButtonText}>
+                    Participants
+                  </Text>
+                </View>
+              </Pressable>
+            )}
           </View>
         </View>
       </View>

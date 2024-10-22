@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useCallback } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import React, { useState, useMemo, useCallback, useEffect } from "react";
+import { View, Text, FlatList, StyleSheet, Alert } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -7,23 +7,41 @@ import SearchItemCard from "../Cards/SearchItemCard";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import AddExperiencesBottomContainer from "../Components/AddExperiencesBottomContainer";
-import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
-import { GET_ALL_EXPERIENCES } from "../../../utils/queries/experienceQueries";
+import { GET_USER_LIFELIST, GET_ALL_EXPERIENCES } from "../../../utils/queries";
+import CustomAlert from "../../../components/Alerts/CustomAlert";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
+import { useLifeListExperienceContext } from "../../../contexts/LifeListExperienceContext";
 
 export default function AddExperiencesSearch() {
   const { currentUser } = useAuth();
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [selectedExperiences, setSelectedExperiences] = useState([]);
+  const [showAlert, setShowAlert] = useState(false);
   const { setIsTabBarVisible } = useNavigationContext();
+
+  // LifeListExperienceContext methods
+  const {
+    lifeListExperiences,
+    addLifeListExperience,
+    removeLifeListExperience,
+    resetLifeListExperiences,
+    hasModified,
+  } = useLifeListExperienceContext();
 
   useFocusEffect(() => {
     setIsTabBarVisible(false);
   });
 
+  console.log(lifeListExperiences);
+
+  // Reset experiences when the component mounts
+  useEffect(() => {
+    resetLifeListExperiences();
+  }, []);
+
+  // Fetch LifeList data for the current user
   const { data: lifeListData, refetch: refetchLifeList } = useQuery(
     GET_USER_LIFELIST,
     {
@@ -31,12 +49,14 @@ export default function AddExperiencesSearch() {
     }
   );
 
+  // Fetch all experiences from the database
   const {
     data: allExperiencesData,
     loading,
     error,
   } = useQuery(GET_ALL_EXPERIENCES);
 
+  // Refetch lifeList when the screen is focused
   useFocusEffect(
     useCallback(() => {
       refetchLifeList();
@@ -48,6 +68,7 @@ export default function AddExperiencesSearch() {
     lifeList.experiences.map((exp) => exp.experience._id)
   );
 
+  // Filter experiences based on the search query
   const filteredExperiences = useMemo(() => {
     if (!searchQuery) return [];
     return (allExperiencesData?.getAllExperiences || []).filter((exp) =>
@@ -55,39 +76,30 @@ export default function AddExperiencesSearch() {
     );
   }, [searchQuery, allExperiencesData]);
 
+  // Handle selecting/deselecting experiences
   const handleSelect = (experience, isSelected) => {
     if (isSelected) {
-      setSelectedExperiences([...selectedExperiences, experience]);
+      addLifeListExperience(experience); // Add the full experience object here
     } else {
-      setSelectedExperiences(
-        selectedExperiences.filter((exp) => exp._id !== experience._id)
-      );
+      removeLifeListExperience(experience._id); // Remove by experience._id
     }
   };
 
-  const createLifeListExperiences = (experiences) => {
-    return experiences.map((experience) => ({
-      _id: `temp-${experience._id}`, // Temporary ID for the frontend
-      experience,
-      list: null,
-      associatedShots: [],
-      associatedCollages: [],
-    }));
-  };
-
-  const handleAddExperiences = () => {
-    if (selectedExperiences.length > 0) {
-      const lifeListExperiences =
-        createLifeListExperiences(selectedExperiences);
-      navigation.navigate("AddExperiencesOverview", {
-        addedExperiences: lifeListExperiences,
-        lifeListId: lifeList._id,
-      });
+  // Handle back navigation, reset if no changes or fewer than 3 experiences
+  const handleBackNavigation = () => {
+    if (lifeListExperiences.length >= 3 || hasModified) {
+      setShowAlert(true);
+    } else {
+      resetLifeListExperiences();
+      navigation.goBack();
     }
   };
 
-  const handleDeselect = () => {
-    setSelectedExperiences([]);
+  // Confirm leaving with modifications
+  const handleConfirmAlert = () => {
+    setShowAlert(false);
+    resetLifeListExperiences();
+    navigation.goBack();
   };
 
   if (loading) return <Text>Loading...</Text>;
@@ -99,7 +111,7 @@ export default function AddExperiencesSearch() {
         arrowIcon={
           <Icon
             name="chevron.backward"
-            onPress={() => navigation.goBack()}
+            onPress={handleBackNavigation}
             style={iconStyles.backArrow}
             weight="semibold"
           />
@@ -120,7 +132,9 @@ export default function AddExperiencesSearch() {
         renderItem={({ item }) => (
           <SearchItemCard
             experience={item}
-            isSelected={selectedExperiences.some((exp) => exp._id === item._id)}
+            isSelected={lifeListExperiences.some(
+              (exp) => exp.experience._id === item._id // Compare with experience._id
+            )}
             onSelect={handleSelect}
             isPreExisting={userExperienceIds.has(item._id)}
           />
@@ -128,9 +142,21 @@ export default function AddExperiencesSearch() {
         keyExtractor={(item) => item._id}
       />
       <AddExperiencesBottomContainer
-        onAdd={handleAddExperiences}
-        onDeselect={handleDeselect}
-        isAddDisabled={selectedExperiences.length === 0}
+        onAdd={() =>
+          navigation.navigate("AddExperiencesOverview", {
+            lifeListId: lifeList._id,
+          })
+        }
+        onDeselect={() => resetLifeListExperiences()}
+        isAddDisabled={lifeListExperiences.length === 0}
+      />
+
+      <CustomAlert
+        visible={showAlert}
+        onRequestClose={() => setShowAlert(false)}
+        title="Confirm Navigation"
+        message="You have made changes. Do you want to save them before leaving?"
+        onConfirm={handleConfirmAlert}
       />
     </View>
   );

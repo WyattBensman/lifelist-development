@@ -395,6 +395,7 @@ type Score {
     isLikedByCurrentUser: Boolean
     isRepostedByCurrentUser: Boolean
     isSavedByCurrentUser: Boolean
+    hasParticipants: Boolean
   }
 
   type UserProfileInformation {

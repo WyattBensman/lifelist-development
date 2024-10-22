@@ -7,6 +7,8 @@ import { CallbackProvider } from "./src/contexts/CallbackContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemeProvider } from "@react-navigation/native";
 import { theme } from "./src/styles/theme.js";
+import { LifeListExperienceProvider } from "./src/contexts/LifeListExperienceContext.js";
+import { CollageProvider } from "./src/contexts/CollageContext.js";
 import "react-native-gesture-handler";
 
 export default function App() {
@@ -16,9 +18,13 @@ export default function App() {
         <AuthProvider>
           <CallbackProvider>
             <ThemeProvider theme={theme}>
-              <NavigationProvider>
-                <AppNavigator />
-              </NavigationProvider>
+              <CollageProvider>
+                <LifeListExperienceProvider>
+                  <NavigationProvider>
+                    <AppNavigator />
+                  </NavigationProvider>
+                </LifeListExperienceProvider>
+              </CollageProvider>
             </ThemeProvider>
           </CallbackProvider>
         </AuthProvider>

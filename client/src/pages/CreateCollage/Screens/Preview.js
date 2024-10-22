@@ -8,7 +8,7 @@ import {
   FlatList,
   Dimensions,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useMutation, useQuery } from "@apollo/client";
 import { iconStyles, layoutStyles } from "../../../styles";
 import { BASE_URL } from "../../../utils/config";
@@ -19,21 +19,15 @@ import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { CREATE_COLLAGE } from "../../../utils/mutations/collageCreationMutations";
 import { GET_USER_PROFILE } from "../../../utils/queries";
+import { useCollageContext } from "../../../contexts/CollageContext"; // Use CollageContext
 
 const { width } = Dimensions.get("window");
 
 export default function CollagePreview() {
   const { currentUser } = useAuth(); // Access currentUser ID from AuthContext
   const navigation = useNavigation();
-  const route = useRoute();
-  const { selectedImages, caption, taggedUsers } = route.params;
-  console.log(selectedImages);
-  console.log(caption);
-  console.log(taggedUsers);
-  console.log(
-    "Posting images:",
-    selectedImages.map((image) => image.image)
-  );
+  const { collage } = useCollageContext(); // Access collage data from context
+  const { images, caption, taggedUsers } = collage; // Destructure collage data
 
   const [showParticipants, setShowParticipants] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -75,7 +69,7 @@ export default function CollagePreview() {
     createCollage({
       variables: {
         caption,
-        images: selectedImages.map((image) => image.image),
+        images,
         taggedUsers: taggedUsers.map((user) => user._id),
       },
     });
@@ -110,7 +104,7 @@ export default function CollagePreview() {
       {/* Image Preview Section */}
       <View style={styles.imageContainer}>
         <FlatList
-          data={selectedImages}
+          data={images}
           renderItem={renderItem}
           horizontal
           pagingEnabled
@@ -118,9 +112,9 @@ export default function CollagePreview() {
           keyExtractor={(item, index) => index.toString()}
           showsHorizontalScrollIndicator={false}
         />
-        {selectedImages.length > 1 && (
+        {images.length > 1 && (
           <View style={styles.indicatorContainer}>
-            {selectedImages.map((_, index) => (
+            {images.map((_, index) => (
               <View
                 key={index}
                 style={[

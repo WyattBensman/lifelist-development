@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Text,
   View,
@@ -8,68 +8,54 @@ import {
   Pressable,
 } from "react-native";
 import { layoutStyles, formStyles, iconStyles } from "../../../styles";
-import {
-  useFocusEffect,
-  useNavigation,
-  useRoute,
-} from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { BASE_URL } from "../../../utils/config";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
+import { useCollageContext } from "../../../contexts/CollageContext"; // Import CollageContext
 
-export default function Overview({ route }) {
+export default function Overview() {
   const navigation = useNavigation();
-  const { selectedImages, coverImage, taggedUsers = [] } = route.params;
-  const [caption, setCaption] = useState("");
+  const { collage, updateCollage } = useCollageContext(); // Access collage methods
   const { setIsTabBarVisible } = useNavigationContext();
 
-  useFocusEffect(() => {
-    setIsTabBarVisible(false);
-  });
+  // Access caption and coverImage directly from the collage context
+  const { caption, coverImage, images } = collage;
 
-  // State to store the current cover image
-  const [currentCoverImage, setCurrentCoverImage] = useState(
-    coverImage || selectedImages[0].image
-  );
-
-  // Update the cover image if it changes in the route params
+  // Ensure tab bar is hidden when this screen is focused
   useEffect(() => {
-    if (coverImage) {
-      setCurrentCoverImage(coverImage);
-    }
-  }, [coverImage]);
+    setIsTabBarVisible(false);
+  }, []);
 
-  // Pass caption along with selectedImages and taggedUsers to the Preview screen
+  // If there's no cover image yet, use the first image in the collage
+  const currentCoverImage = coverImage || images[0]?.image || null;
+
+  // Handle caption change: Update directly into the collage context
+  const handleCaptionChange = (text) => {
+    updateCollage({ caption: text });
+  };
+
+  // Pass updated collage info to the Preview screen
   const handlePreview = () => {
-    navigation.navigate("CollagePreview", {
-      selectedImages,
-      caption,
-      taggedUsers,
-      coverImage: currentCoverImage,
-    });
+    updateCollage({ coverImage: currentCoverImage });
+    navigation.navigate("CollagePreview");
   };
 
   // Navigate to AddParticipants screen
   const handleAddParticipants = () => {
-    navigation.navigate("AddParticipants", {
-      selectedImages,
-      caption,
-      taggedUsers,
-    });
+    navigation.navigate("AddParticipants");
   };
 
   // Navigate to ChangeCoverImage screen
   const handleChangeCoverImage = () => {
-    navigation.navigate("ChangeCoverImage", {
-      selectedImages,
-      currentCoverImage,
-    });
+    navigation.navigate("ChangeCoverImage"); // No need to pass params; cover image is in the context
   };
 
   return (
     <View style={layoutStyles.wrapper}>
+      {/* Header */}
       <HeaderStack
         title={"Overview"}
         arrow={
@@ -90,57 +76,67 @@ export default function Overview({ route }) {
           />
         }
       />
+
+      {/* Form Section */}
       <View style={[formStyles.formContainer, layoutStyles.marginTopLg]}>
+        {/* Change Cover Image */}
         <Pressable
           style={[layoutStyles.marginBtmMd, { alignSelf: "center" }]}
           onPress={handleChangeCoverImage}
         >
-          <Image
-            source={{ uri: `${BASE_URL}${currentCoverImage}` }}
-            style={styles.image}
-          />
+          {currentCoverImage ? (
+            <Image
+              source={{ uri: `${BASE_URL}${currentCoverImage}` }}
+              style={styles.image}
+            />
+          ) : (
+            <Text style={styles.placeholderText}>No Cover Image Selected</Text>
+          )}
           <Text style={[layoutStyles.marginTopXs, { color: "#fff" }]}>
             Change Cover Image
           </Text>
         </Pressable>
+
+        {/* Caption Input */}
         <View style={styles.inputWrapper}>
           <Text style={styles.label}>Caption</Text>
           <TextInput
             style={styles.input}
-            onChangeText={setCaption}
-            value={caption}
+            onChangeText={handleCaptionChange} // Directly update context on change
+            value={caption} // Use caption from context
             placeholder="Enter your caption"
             placeholderTextColor="#d4d4d4"
           />
         </View>
 
+        {/* Bottom Buttons */}
         <View style={styles.bottomButtonContainer}>
           <ButtonSolid
-            backgroundColor="#252525" // Background color for button
-            textColor="#fff" // Text color for button
-            borderColor="#252525" // Optional border color
-            width="94%" // Match input width
+            backgroundColor="#252525"
+            textColor="#fff"
+            borderColor="#252525"
+            width="94%"
             text="Add Locations"
             marginTop={12}
             onPress={() => console.log("Add Locations pressed")}
           />
           <ButtonSolid
-            backgroundColor="#252525" // Background color for button
-            textColor="#fff" // Text color for button
-            borderColor="#252525" // Optional border color
-            width="94%" // Match input width
+            backgroundColor="#252525"
+            textColor="#fff"
+            borderColor="#252525"
+            width="94%"
             text="Tag Users"
             marginTop={12}
             onPress={handleAddParticipants}
           />
           <ButtonSolid
-            backgroundColor="#252525" // Background color for button
-            textColor="#fff" // Text color for button
-            borderColor="#252525" // Optional border color
-            width="94%" // Match input width
+            backgroundColor="#252525"
+            textColor="#fff"
+            borderColor="#252525"
+            width="94%"
             text="Set Audience"
             marginTop={12}
-            onPress={() => console.log("Add Locations pressed")}
+            onPress={() => console.log("Set Audience pressed")}
           />
         </View>
       </View>
@@ -155,31 +151,19 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     alignSelf: "center",
   },
+  placeholderText: {
+    height: 175,
+    width: 120,
+    textAlign: "center",
+    color: "#d4d4d4",
+    alignSelf: "center",
+    fontWeight: "600",
+    paddingTop: 60,
+  },
   bottomButtonContainer: {
     marginTop: 32,
     justifyContent: "center",
     alignItems: "center",
-  },
-  buttonContainer: {
-    marginBottom: 12,
-    height: 37,
-    backgroundColor: "#252525",
-    borderRadius: 8,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  buttonText: {
-    fontWeight: "500",
-    textAlign: "center",
-    marginLeft: 6,
-    color: "#fff",
-  },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
   },
   inputWrapper: {
     width: "94%",

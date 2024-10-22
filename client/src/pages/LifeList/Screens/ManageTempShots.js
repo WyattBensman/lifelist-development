@@ -12,13 +12,23 @@ import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
+import { useLifeListExperienceContext } from "../../../contexts/LifeListExperienceContext"; // Import LifeListExperienceContext
 
 export default function ManageTempShots() {
   const route = useRoute();
   const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
-  const { experienceId, associatedShots, onUpdateShots } = route.params;
+  const { experienceId } = route.params; // Use experienceId from route params
+
   const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_SHOTS);
+
+  const { lifeListExperiences, updateLifeListExperience } =
+    useLifeListExperienceContext(); // Use LifeListExperienceContext
+
+  // Find the associated shots for this experience
+  const associatedShots =
+    lifeListExperiences.find((exp) => exp.experience._id === experienceId)
+      ?.associatedShots || [];
 
   const [selectedShots, setSelectedShots] = useState([]);
   const [isModified, setIsModified] = useState(false);
@@ -30,7 +40,7 @@ export default function ManageTempShots() {
 
   useEffect(() => {
     if (associatedShots) {
-      setSelectedShots(associatedShots.map((shotInfo) => shotInfo));
+      setSelectedShots([...associatedShots]);
       setTitle(associatedShots.length === 0 ? "Add Shots" : "Manage Shots");
     }
   }, [associatedShots]);
@@ -57,7 +67,12 @@ export default function ManageTempShots() {
 
   const handleSave = () => {
     if (!isModified) return;
-    onUpdateShots(experienceId, selectedShots);
+
+    // Update the LifeListExperience with the new shots
+    updateLifeListExperience(experienceId, {
+      associatedShots: selectedShots,
+    });
+
     navigation.goBack();
   };
 

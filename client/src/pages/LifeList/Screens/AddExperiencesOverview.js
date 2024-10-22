@@ -1,67 +1,89 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
   FlatList,
-  StyleSheet,
   ScrollView,
   Pressable,
+  StyleSheet,
 } from "react-native";
 import {
   useFocusEffect,
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
-import { useMutation, useQuery } from "@apollo/client";
-import { iconStyles, layoutStyles } from "../../../styles";
+import { useMutation } from "@apollo/client";
+import { useAuth } from "../../../contexts/AuthContext";
 import AddExperienceCard from "../Cards/AddExperienceCard";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { useAuth } from "../../../contexts/AuthContext";
-import { ADD_EXPERIENCE_TO_LIFELIST } from "../../../utils/mutations";
-import { GET_USER_PROFILE } from "../../../utils/queries/userQueries";
-import { useCallbackContext } from "../../../contexts/CallbackContext";
 import Icon from "../../../components/Icons/Icon";
+import { layoutStyles, iconStyles } from "../../../styles";
+import { ADD_EXPERIENCE_TO_LIFELIST } from "../../../utils/mutations";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
+import { useLifeListExperienceContext } from "../../../contexts/LifeListExperienceContext";
 
 export default function AddExperiencesOverview() {
-  const { currentUser, updateCurrentUser } = useAuth();
+  const { currentUser } = useAuth();
   const navigation = useNavigation();
-  const route = useRoute();
-  const { addedExperiences, lifeListId } = route.params;
-  const [experiences, setExperiences] = useState(addedExperiences);
-  const [addExperienceToLifeList] = useMutation(ADD_EXPERIENCE_TO_LIFELIST);
   const { setIsTabBarVisible } = useNavigationContext();
 
-  useFocusEffect(() => {
-    setIsTabBarVisible(false);
-  });
+  // Retrieve lifeListId from route params
+  const route = useRoute();
+  const { lifeListId } = route.params;
 
-  const { refetch: refetchUserProfile } = useQuery(GET_USER_PROFILE, {
-    variables: { userId: currentUser },
-    skip: true,
-  });
+  // Access lifeListExperience context
+  const {
+    lifeListExperiences,
+    updateLifeListExperience,
+    removeLifeListExperience,
+  } = useLifeListExperienceContext();
 
-  const { setUpdateShotsCallback, setUpdateCollagesCallback } =
-    useCallbackContext();
+  // Mutation to add experiences to the user's LifeList
+  const [addExperienceToLifeList] = useMutation(ADD_EXPERIENCE_TO_LIFELIST);
 
-  const allExperiencesHaveList = experiences.every(
-    (experience) => experience.list !== null
+  // Focus effect for hiding the tab bar
+  useFocusEffect(
+    React.useCallback(() => {
+      setIsTabBarVisible(false);
+    }, [setIsTabBarVisible])
   );
 
+  // Effect for navigating back if there are no experiences
+  useEffect(() => {
+    if (lifeListExperiences.length === 0) {
+      navigation.goBack();
+    }
+  }, [lifeListExperiences.length, navigation]);
+
+  // Check if all experiences have a selected list
+  const allExperiencesHaveList = lifeListExperiences.every(
+    (exp) => exp.list !== null
+  );
+
+  // Check if there are experiences in the list
+  const hasExperiences = lifeListExperiences.length > 0;
+
+  // Handle deleting an experience by removing it from the context
+  const handleDeleteExperience = (experienceId) => {
+    removeLifeListExperience(experienceId);
+  };
+
   const handleAddExperiences = async () => {
-    if (!allExperiencesHaveList) return;
+    if (!allExperiencesHaveList || !hasExperiences) return;
 
     try {
-      for (const exp of experiences) {
+      for (const exp of lifeListExperiences) {
         const response = await addExperienceToLifeList({
           variables: {
             lifeListId: lifeListId,
-            experienceId: exp.experience._id,
+            experienceId: exp.experience._id, // Correctly referencing experience._id now
             list: exp.list,
-            associatedShots: exp.associatedShots.map((shot) => shot._id),
-            associatedCollages: exp.associatedCollages.map(
-              (collage) => collage._id
-            ),
+            associatedShots: exp.associatedShots
+              ? exp.associatedShots.map((shot) => shot._id)
+              : [],
+            associatedCollages: exp.associatedCollages
+              ? exp.associatedCollages.map((collage) => collage._id)
+              : [],
           },
         });
 
@@ -74,32 +96,11 @@ export default function AddExperiencesOverview() {
         }
       }
 
-      const updatedUser = await refetchUserProfile();
-      updateCurrentUser(updatedUser.data.getUserProfileById);
+      // Navigate to another screen upon success
       navigation.navigate("AdminLifeList");
     } catch (error) {
       console.error("Error adding experiences:", error);
     }
-  };
-
-  const handleUpdateListStatus = (experienceId, newListStatus) => {
-    setExperiences((prevExperiences) =>
-      prevExperiences.map((exp) =>
-        exp.experience._id === experienceId
-          ? { ...exp, list: newListStatus }
-          : exp
-      )
-    );
-  };
-
-  const handleUpdateShots = (experienceId, newShots) => {
-    setExperiences((prevExperiences) =>
-      prevExperiences.map((exp) =>
-        exp.experience._id === experienceId
-          ? { ...exp, associatedShots: newShots }
-          : exp
-      )
-    );
   };
 
   return (
@@ -117,12 +118,14 @@ export default function AddExperiencesOverview() {
         button1={
           <Pressable
             onPress={handleAddExperiences}
-            disabled={!allExperiencesHaveList}
+            disabled={!allExperiencesHaveList || !hasExperiences} // Disable if no experiences or not all have a list
           >
             <Text
               style={[
                 styles.createButtonText,
-                allExperiencesHaveList && styles.createButtonTextActive,
+                allExperiencesHaveList &&
+                  hasExperiences &&
+                  styles.createButtonTextActive,
               ]}
             >
               Add
@@ -132,24 +135,24 @@ export default function AddExperiencesOverview() {
       />
       <ScrollView style={{ marginTop: 8, flex: 1 }}>
         <FlatList
-          data={experiences}
+          data={lifeListExperiences}
           renderItem={({ item }) => (
             <AddExperienceCard
-              experience={item}
-              onListSelect={handleUpdateListStatus}
-              onUpdateShots={(expId, shots) => {
-                setUpdateShotsCallback(
-                  () => (newShots) => handleUpdateShots(expId, newShots)
-                );
-                navigation.navigate("ManageTempShots", {
-                  experienceId: expId,
-                  associatedShots: shots,
-                  onUpdateShots: handleUpdateShots,
-                });
-              }}
+              lifeListExperience={item} // Pass full lifeListExperience object
+              onListSelect={(newListStatus) =>
+                updateLifeListExperience(item.experience._id, {
+                  list: newListStatus,
+                })
+              }
+              onUpdateShots={(newShots) =>
+                updateLifeListExperience(item.experience._id, {
+                  associatedShots: newShots,
+                })
+              }
+              onDelete={handleDeleteExperience} // Pass down the delete handler
             />
           )}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item.experience._id} // Correctly reference experience._id
         />
       </ScrollView>
     </View>
@@ -159,11 +162,11 @@ export default function AddExperiencesOverview() {
 const styles = StyleSheet.create({
   createButtonText: {
     fontSize: 12,
-    color: "#696969",
+    color: "#696969", // Inactive color
     fontWeight: "600",
   },
   createButtonTextActive: {
-    color: "#6AB952",
+    color: "#6AB952", // Active color when all experiences have a list and there's at least one experience
     fontWeight: "600",
   },
 });

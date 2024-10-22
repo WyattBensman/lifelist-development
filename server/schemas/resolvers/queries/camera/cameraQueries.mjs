@@ -8,7 +8,7 @@ export const getDailyCameraShotsLeft = async (_, __, { user }) => {
     .exec();
   if (!currentUser) throw new Error("User not found.");
 
-  const dailyLimit = 12;
+  const dailyLimit = 10;
   const shotsTaken = currentUser.developingCameraShots.length;
   const shotsLeft = dailyLimit - shotsTaken;
 

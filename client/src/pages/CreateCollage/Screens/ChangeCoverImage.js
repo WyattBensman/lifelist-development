@@ -8,27 +8,28 @@ import {
   Text,
   Dimensions,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { layoutStyles, iconStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import Checkbox from "expo-checkbox";
 import { BASE_URL } from "../../../utils/config";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
+import { useCollageContext } from "../../../contexts/CollageContext"; // Use collage context
 
 const screenWidth = Dimensions.get("window").width;
 const spacing = 1.5;
-const shotWidth = (screenWidth - spacing * 2) / 3; // Adjust for 3 columns
-const shotHeight = (shotWidth * 3) / 2; // 2:3 ratio
+const shotWidth = (screenWidth - spacing * 2) / 3;
+const shotHeight = (shotWidth * 3) / 2;
 
 export default function ChangeCoverImage() {
   const navigation = useNavigation();
-  const route = useRoute();
-  const { selectedImages, currentCoverImage } = route.params;
-  const [selectedCoverImage, setSelectedCoverImage] =
-    useState(currentCoverImage);
-  const [isModified, setIsModified] = useState(false);
   const { setIsTabBarVisible } = useNavigationContext();
+  const { collage, updateCollage } = useCollageContext(); // Access collage context
+  const [selectedCoverImage, setSelectedCoverImage] = useState(
+    collage.coverImage || collage.images[0]?.image
+  );
+  const [isModified, setIsModified] = useState(false);
 
   useFocusEffect(() => {
     setIsTabBarVisible(false);
@@ -36,14 +37,12 @@ export default function ChangeCoverImage() {
 
   const handleSelectCoverImage = (image) => {
     setSelectedCoverImage(image);
-    setIsModified(image !== currentCoverImage);
+    setIsModified(image !== collage.coverImage);
   };
 
   const handleSaveCoverImage = () => {
-    navigation.navigate("CollageOverview", {
-      selectedImages,
-      coverImage: selectedCoverImage,
-    });
+    updateCollage({ coverImage: selectedCoverImage }); // Update cover image in context
+    navigation.navigate("CollageOverview"); // Navigate back without passing params, it's now in the context
   };
 
   const renderItem = ({ item }) => (
@@ -89,7 +88,7 @@ export default function ChangeCoverImage() {
         }
       />
       <FlatList
-        data={selectedImages}
+        data={collage.images} // Access images from context
         renderItem={renderItem}
         keyExtractor={(item) => item._id}
         numColumns={3}

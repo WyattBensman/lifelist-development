@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import { useFocusEffect, useRoute } from "@react-navigation/native";
 import { iconStyles, layoutStyles } from "../../../styles";
@@ -46,6 +46,16 @@ export default function AddShotToAlbum({ navigation }) {
     // Add logic to handle check press
   };
 
+  // Filter albums based on the search query
+  const filteredAlbums = useMemo(() => {
+    if (!searchQuery) {
+      return albums; // Return all albums if search query is empty
+    }
+    return albums.filter((album) =>
+      album.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery, albums]);
+
   const renderAlbum = ({ item }) => (
     <AddShotToAlbumCard
       key={item._id}
@@ -74,7 +84,7 @@ export default function AddShotToAlbum({ navigation }) {
         onSearchFocusChange={setIsSearchFocused}
       />
       <FlatList
-        data={albums}
+        data={filteredAlbums} // Use filtered albums for rendering
         renderItem={renderAlbum}
         keyExtractor={(item) => item._id}
       />

@@ -9,40 +9,34 @@ import AddParticipantsBottomContainer from "../Components/AddParticipantsBottomC
 import { GET_ALL_USERS } from "../../../utils/queries/userQueries";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
+import { useCollageContext } from "../../../contexts/CollageContext"; // Use collage context
 
-export default function AddParticipants({ route }) {
-  const {
-    selectedImages,
-    caption,
-    taggedUsers: initialTaggedUsers = [],
-  } = route.params;
+export default function AddParticipants() {
   const navigation = useNavigation();
+  const { setIsTabBarVisible } = useNavigationContext();
+  const { collage, updateCollage } = useCollageContext(); // Access collage context
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [selectedUsers, setSelectedUsers] = useState(initialTaggedUsers);
-  const [hasChanges, setHasChanges] = useState(false);
-  const { setIsTabBarVisible } = useNavigationContext();
+  const [selectedUsers, setSelectedUsers] = useState(collage.taggedUsers || []); // Initialize from context
+  const { data: allUsersData, loading, error } = useQuery(GET_ALL_USERS);
 
   useFocusEffect(() => {
     setIsTabBarVisible(false);
   });
 
-  const { data: allUsersData, loading, error } = useQuery(GET_ALL_USERS);
-
   useEffect(() => {
-    setHasChanges(
-      initialTaggedUsers.length !== selectedUsers.length ||
-        !initialTaggedUsers.every((user) =>
-          selectedUsers.some((selectedUser) => selectedUser._id === user._id)
-        )
-    );
-  }, [initialTaggedUsers, selectedUsers]);
+    const hasChanges =
+      collage.taggedUsers.length !== selectedUsers.length ||
+      !collage.taggedUsers.every((user) =>
+        selectedUsers.some((selectedUser) => selectedUser._id === user._id)
+      );
+    updateCollage({ taggedUsers: selectedUsers }); // Update tagged users in context
+  }, [selectedUsers, collage.taggedUsers]);
 
   const filteredUsers = useMemo(() => {
     if (!searchQuery) return [];
     return (allUsersData?.getAllUsers || []).filter(
       (user) =>
-        // Use nullish coalescing to ensure no null/undefined error
         (user.fullName?.toLowerCase() ?? "").includes(
           searchQuery.toLowerCase()
         ) ||
@@ -60,16 +54,9 @@ export default function AddParticipants({ route }) {
 
   const handleAddUsers = () => {
     if (selectedUsers.length > 0) {
-      navigation.navigate("CollageOverview", {
-        selectedImages,
-        caption,
-        taggedUsers: selectedUsers,
-      });
+      updateCollage({ taggedUsers: selectedUsers }); // Ensure context is updated
+      navigation.navigate("CollageOverview"); // Navigate back
     }
-  };
-
-  const handleDeselect = () => {
-    setSelectedUsers(initialTaggedUsers);
   };
 
   if (loading) return <Text>Loading...</Text>;
@@ -105,9 +92,7 @@ export default function AddParticipants({ route }) {
       />
       <AddParticipantsBottomContainer
         onAdd={handleAddUsers}
-        onDeselect={handleDeselect}
         isAddDisabled={selectedUsers.length === 0}
-        hasPreexistingTaggedUsers={initialTaggedUsers.length > 0}
       />
     </View>
   );

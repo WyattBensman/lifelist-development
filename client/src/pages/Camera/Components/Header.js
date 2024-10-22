@@ -4,10 +4,10 @@ import { layoutStyles } from "../../../styles/LayoutStyles";
 import { useNavigation } from "@react-navigation/native";
 import DownArrowIcon from "../Icons/DownArrowIcon";
 import Icon from "../../../components/Icons/Icon";
+import { iconStyles } from "../../../styles/iconStyles";
 import DisposableCameraIcon from "../Icons/DisposableCameraIcon";
 import OriginalCameraIcon from "../Icons/OriginalCameraIcon";
 import FujiCameraIcon from "../Icons/FujiCameraIcon";
-import { iconStyles } from "../../../styles/iconStyles";
 
 const IconFiller = () => <View style={{ width: 35, height: 35 }} />;
 
@@ -16,6 +16,7 @@ export default function Header({
   onSelectCameraType,
   showOptions,
   onToggleOptions,
+  shotsLeft, // Add shots left prop
 }) {
   const navigation = useNavigation();
   const rotateArrowAnim = useRef(new Animated.Value(0)).current;
@@ -77,7 +78,8 @@ export default function Header({
         </View>
         <View style={styles.sideContainer}>
           <View style={styles.shotsLeftContainer}>
-            <Text style={styles.shotsLeftText}>10 Left</Text>
+            {/* Show the number of shots left */}
+            <Text style={styles.shotsLeftText}>{shotsLeft} Left</Text>
           </View>
         </View>
       </View>
@@ -220,16 +222,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "#1C1C1C",
-    /* backgroundColor: "#252525", */
     borderRadius: 50,
     paddingVertical: 6,
     paddingHorizontal: 12,
   },
-  /* shotsLeftText: {
-    color: "#ffffff",
-    fontSize: 12,
-    fontWeight: "500",
-  }, */
   shotsLeftText: {
     color: "#696969", // Light grey text
     fontSize: 12,

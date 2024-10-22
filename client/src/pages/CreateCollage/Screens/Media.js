@@ -11,50 +11,73 @@ import { useNavigationContext } from "../../../contexts/NavigationContext";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import ShotCard from "../Cards/ShotCard";
 import SelectedShotCard from "../Cards/SelectedShotCard";
+import { useCollageContext } from "../../../contexts/CollageContext"; // Import CollageContext
+import CustomAlert from "../../../components/Alerts/CustomAlert"; // Import the CustomAlert component
 
 export default function Media() {
   const navigation = useNavigation();
   const { data, loading, error } = useQuery(GET_ALL_CAMERA_SHOTS);
-  const [selectedShots, setSelectedShots] = useState([]); // Store selected images
+  const { collage, updateCollage, hasModified } = useCollageContext(); // Access collage methods
   const { setIsTabBarVisible } = useNavigationContext();
+  const [showAlert, setShowAlert] = useState(false); // State to control visibility of the alert
 
   useFocusEffect(() => {
     setIsTabBarVisible(false);
   });
+
+  // Show the alert on back press if more than 3 images or hasModified is true
+  const handleBackPress = () => {
+    if (collage.images.length > 3 || hasModified) {
+      setShowAlert(true); // Show alert if conditions are met
+    } else {
+      navigation.goBack(); // Directly go back if no alert is needed
+    }
+  };
+
+  // Handle confirm in the alert
+  const handleConfirmAlert = () => {
+    setShowAlert(false); // Close alert
+    navigation.goBack(); // Proceed with the back action
+  };
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
 
   // Toggle the checkbox for the image selection
   const handleCheckboxToggle = (id) => {
-    const isSelected = selectedShots.some((shot) => shot._id === id);
+    const isSelected = collage.images.some((shot) => shot._id === id);
     if (isSelected) {
-      // Remove if already selected
-      setSelectedShots(selectedShots.filter((shot) => shot._id !== id));
+      // Remove the image if it is already selected
+      updateCollage(
+        {
+          images: collage.images.filter((shot) => shot._id !== id),
+        },
+        true // Mark this as an image update, not modifying the collage
+      );
     } else {
-      // Add to selected images if not already selected
+      // Add the image to the collage if not already selected
       const selectedShot = data.getAllCameraShots.find(
         (shot) => shot._id === id
       );
-      setSelectedShots([...selectedShots, selectedShot]);
+      updateCollage(
+        {
+          images: [...collage.images, selectedShot],
+        },
+        true // Mark this as an image update, not modifying the collage
+      );
     }
-  };
-
-  // Handle removing an image from the selected images
-  const handleRemoveImage = (id) => {
-    setSelectedShots(selectedShots.filter((shot) => shot._id !== id));
   };
 
   // Handle reordering of selected images
   const handleDragEnd = ({ data }) => {
-    setSelectedShots(data); // Update state with new order
+    updateCollage({ images: data }, true); // Update collage with new order, mark as image update
   };
 
   // Render a single shot item in the gallery
   const renderShotItem = ({ item }) => (
     <ShotCard
       shot={item}
-      isSelected={selectedShots.some((shot) => shot._id === item._id)}
+      isSelected={collage.images.some((shot) => shot._id === item._id)}
       onCheckboxToggle={handleCheckboxToggle}
     />
   );
@@ -63,15 +86,22 @@ export default function Media() {
   const renderSelectedShot = ({ item, drag }) => (
     <SelectedShotCard
       item={item}
-      handleImagePress={handleRemoveImage}
+      handleImagePress={(id) =>
+        updateCollage(
+          {
+            images: collage.images.filter((shot) => shot._id !== id),
+          },
+          true // Mark this as an image update
+        )
+      }
       drag={drag}
     />
   );
 
-  // Navigate to next screen with selected images
+  // Navigate to the next screen with selected images
   const handleNextPage = () => {
-    if (selectedShots.length > 0) {
-      navigation.navigate("CollageOverview", { selectedImages: selectedShots });
+    if (collage.images.length > 0) {
+      navigation.navigate("CollageOverview");
     }
   };
 
@@ -83,7 +113,7 @@ export default function Media() {
         arrow={
           <Icon
             name="chevron.backward"
-            onPress={() => navigation.goBack()}
+            onPress={handleBackPress} // Use handleBackPress to show the alert on back press
             style={iconStyles.backArrow}
             weight="semibold"
           />
@@ -92,21 +122,21 @@ export default function Media() {
           <Icon
             name="chevron.forward"
             onPress={handleNextPage}
-            disabled={selectedShots.length === 0}
+            disabled={collage.images.length === 0}
             style={iconStyles.backArrow}
-            weight={selectedShots.length > 0 ? "heavy" : "semibold"}
-            tintColor={selectedShots.length > 0 ? "#6AB952" : "#696969"}
+            weight={collage.images.length > 0 ? "heavy" : "semibold"}
+            tintColor={collage.images.length > 0 ? "#6AB952" : "#696969"}
           />
         }
       />
 
       {/* Selected Images Section */}
       <View style={styles.selectedContainer}>
-        {selectedShots.length === 0 ? (
+        {collage.images.length === 0 ? (
           <MediaPlaceholder />
         ) : (
           <DraggableFlatList
-            data={selectedShots}
+            data={collage.images}
             renderItem={renderSelectedShot} // Render each selected image in the draggable list
             keyExtractor={(item) => item._id.toString()}
             horizontal // Display selected images in a horizontal list
@@ -125,6 +155,15 @@ export default function Media() {
         numColumns={3} // Display images in a 3-column grid
         columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={styles.flatListContent}
+      />
+
+      {/* Custom Alert for Back Press */}
+      <CustomAlert
+        visible={showAlert}
+        onRequestClose={() => setShowAlert(false)}
+        title="Unsaved Changes"
+        message="You have made changes. Are you sure you want to go back?"
+        onConfirm={handleConfirmAlert}
       />
     </View>
   );
@@ -150,41 +189,3 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 });
-
-/*   const handleCheckboxToggle = (shot) => {
-    setSelectedShots((prevSelectedShots) => {
-      if (prevSelectedShots.find((s) => s._id === shot._id)) {
-        return prevSelectedShots.filter((s) => s._id !== shot._id);
-      } else {
-        return [...prevSelectedShots, shot];
-      }
-    });
-  };
-
-  const handleImagePress = (shot) => {
-    setSelectedShots((prevSelectedShots) =>
-      prevSelectedShots.filter((s) => s._id !== shot._id)
-    );
-  };
-
-  const renderShotItem = ({ item }) => (
-    <ShotCard
-      shot={item}
-      isSelected={selectedShots.some((s) => s._id === item._id)}
-      onCheckboxToggle={() => handleCheckboxToggle(item)}
-      navigation={navigation}
-    />
-  );
-
-  const renderSelectedShotItem = ({ item, drag, isActive }) => (
-    <Pressable
-      onPress={() => handleImagePress(item)}
-      onLongPress={drag}
-      style={{
-        backgroundColor: isActive ? "#e2e2e2" : "#f9f9f9",
-        marginRight: 8,
-      }}
-    >
-      <SelectedShotCard item={item} />
-    </Pressable>
-  ); */
