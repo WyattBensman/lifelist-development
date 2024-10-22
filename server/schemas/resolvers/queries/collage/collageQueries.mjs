@@ -13,7 +13,7 @@ export const getCollageById = async (_, { collageId }, { user }) => {
       select: "_id",
     })
     .populate({
-      path: "participants", // Populate to check participants, but not return it
+      path: "tagged", // Populate to check participants, but not return it
       select: "_id",
     })
     .exec();
@@ -21,7 +21,7 @@ export const getCollageById = async (_, { collageId }, { user }) => {
   if (!collage) throw new Error("Collage not found.");
 
   // Check if the collage has participants
-  const hasParticipants = collage.participants.length > 0;
+  const hasParticipants = collage.tagged.length > 0;
 
   // Check if the collage is liked, reposted, or saved by the current user
   const isLikedByCurrentUser = collage.likes.some((like) =>
