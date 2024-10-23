@@ -23,6 +23,7 @@ type User {
   taggedCollages: [Collage]
   savedCollages: [Collage]
   archivedCollages: [Collage]
+  shotsLeft: Int
   developingCameraShots: [CameraShot]
   cameraShots: [CameraShot]
   cameraAlbums: [CameraAlbum]
@@ -321,6 +322,10 @@ type Score {
     author: User
     image: String
     capturedAt: Date
+    developingTime: Int!
+    isDeveloped: Boolean!
+    readyToReviewAt: Date 
+    transferredToRoll: Boolean!
   }
 
   type Query {
@@ -510,6 +515,7 @@ type Score {
 
     # Camera Mutations
     createCameraShot(image: Upload!): StandardResponse
+    transferCameraShot(shotId: ID!): StandardResponse
     editCameraShot(shotId: ID!, image: String!): StandardResponse
     deleteCameraShot(shotId: ID!): StandardResponse
     createCameraAlbum(title: String!, description: String, shots: [ID]): CameraAlbum

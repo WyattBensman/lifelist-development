@@ -18,8 +18,9 @@ import typeDefs from "./schemas/typeDefs.mjs";
 import resolvers from "./schemas/resolvers.mjs";
 
 // Scheduled tasks
-import { resetCameraShots } from "./tasks/resetCameraShots.mjs";
-import { cleanupExpiredRegistrations } from "./tasks/cleanupExpiredRegistrations.mjs";
+import { resetDailyCameraShots } from "./tasks/resetDailyCameraShots.mjs";
+import { transferShotsAfter24Hours } from "./tasks/transferShotsAfter24Hours.mjs";
+import { checkReadyToReviewShots } from "./tasks/checkReadyToReviewShots.mjs";
 
 // Initialize environment variables
 dotenv.config();
@@ -79,9 +80,12 @@ const startServer = async () => {
       path: "/graphql",
     });
 
-    // Schedule jobs
-    schedule.scheduleJob("0 0 * * *", cleanupExpiredRegistrations); // Runs daily at midnight
-    resetCameraShots();
+    // Schedule reset of camera shots at 4 AM daily
+    schedule.scheduleJob("0 4 * * *", resetDailyCameraShots); // Reset camera shots at 4 AM
+
+    // Schedule the new background tasks
+    schedule.scheduleJob("*/30 * * * *", checkReadyToReviewShots); // Runs every 30 minutes
+    schedule.scheduleJob("0 */3 * * *", transferShotsAfter24Hours); // Runs every 3 hours
 
     await db; // Ensure database connection is ready
 

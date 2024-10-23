@@ -22,8 +22,13 @@ export default function CameraHome() {
   const { setIsTabBarVisible } = useNavigationContext();
   const [showHeaderOptions, setShowHeaderOptions] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
-  const [facing, setFacing] = useState("back");
-  const [flash, setFlash] = useState("off");
+
+  // Load cached camera settings, default to back and off for facing and flash respectively
+  const [facing, setFacing] = useState(
+    () => getCache("cameraFacing") || "back"
+  );
+  const [flash, setFlash] = useState(() => getCache("cameraFlash") || "off");
+
   const [zoom, setZoom] = useState(0);
   const [capturedImage, setCapturedImage] = useState(null); // Captured photo
   const [filteredUri, setFilteredUri] = useState(null); // Filtered image
@@ -116,12 +121,18 @@ export default function CameraHome() {
     );
   }
 
+  // Toggle between front and back camera and cache the state
   const toggleCameraFacing = () => {
-    setFacing(facing === "back" ? "front" : "back");
+    const newFacing = facing === "back" ? "front" : "back";
+    setFacing(newFacing);
+    setCache("cameraFacing", newFacing, 0); // No expiration, store the selected facing
   };
 
+  // Toggle flash state and cache the state
   const toggleFlash = () => {
-    setFlash(flash === "off" ? "on" : "off");
+    const newFlash = flash === "off" ? "on" : "off";
+    setFlash(newFlash);
+    setCache("cameraFlash", newFlash, 0); // No expiration, store the flash state
   };
 
   const handleZoomChange = (zoomLevel) => {

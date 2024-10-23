@@ -87,7 +87,7 @@ export default function ViewAlbum() {
     {
       icon: "pencil.slash",
       style: iconStyles.removeShots,
-      label: "Remove Shots",
+      label: "Manage Shots",
       onPress: () =>
         navigation.navigate("RemoveShotsFromAlbum", {
           albumId: album._id,

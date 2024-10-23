@@ -3,16 +3,10 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 export const getDailyCameraShotsLeft = async (_, __, { user }) => {
   isUser(user);
-  const currentUser = await User.findById(user)
-    .populate("developingCameraShots")
-    .exec();
+  const currentUser = await User.findById(user).exec();
   if (!currentUser) throw new Error("User not found.");
 
-  const dailyLimit = 10;
-  const shotsTaken = currentUser.developingCameraShots.length;
-  const shotsLeft = dailyLimit - shotsTaken;
-
-  return shotsLeft;
+  return currentUser.shotsLeft;
 };
 
 export const getAllCameraAlbums = async (_, __, { user }) => {
@@ -45,9 +39,17 @@ export const getCameraShot = async (_, { shotId }) => {
 
 export const getDevelopingCameraShots = async (_, __, { user }) => {
   isUser(user);
+
   const currentUser = await User.findById(user)
     .populate("developingCameraShots")
     .exec();
+
   if (!currentUser) throw new Error("User not found.");
-  return currentUser.developingCameraShots;
+
+  // Filter out only developing shots that haven't been transferred to the roll yet
+  const developingShots = currentUser.developingCameraShots.filter(
+    (shot) => !shot.transferredToRoll
+  );
+
+  return developingShots;
 };

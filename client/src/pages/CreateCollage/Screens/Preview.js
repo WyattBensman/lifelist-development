@@ -213,11 +213,16 @@ export default function CollagePreview() {
                 <Text style={styles.commentsButtonText}>Comments</Text>
               </View>
             </Pressable>
-            <Pressable onPress={() => setShowParticipants(true)}>
-              <View style={[styles.participantsButton, { marginLeft: 8 }]}>
-                <Text style={styles.participantsButtonText}>Participants</Text>
-              </View>
-            </Pressable>
+            {/* Conditionally render the Participants button */}
+            {taggedUsers.length > 0 && (
+              <Pressable onPress={() => setShowParticipants(true)}>
+                <View style={[styles.participantsButton, { marginLeft: 8 }]}>
+                  <Text style={styles.participantsButtonText}>
+                    Participants
+                  </Text>
+                </View>
+              </Pressable>
+            )}
           </View>
         </View>
       </View>

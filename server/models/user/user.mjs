@@ -82,6 +82,10 @@ const userSchema = new Schema({
   developingCameraShots: [{ type: Schema.Types.ObjectId, ref: "CameraShot" }],
   cameraShots: [{ type: Schema.Types.ObjectId, ref: "CameraShot" }],
   cameraAlbums: [{ type: Schema.Types.ObjectId, ref: "CameraAlbum" }],
+  shotsLeft: {
+    type: Number,
+    default: 10,
+  },
 
   // Notifications & Settings
   unreadMessagesCount: { type: Number, default: 0 },
