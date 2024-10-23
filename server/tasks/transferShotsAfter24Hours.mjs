@@ -1,7 +1,7 @@
 import { CameraShot, User } from "../models/index.mjs";
 
 // Job to check and transfer shots after 24 hours if not manually transferred
-const transferShotsAfter24Hours = async () => {
+export const transferShotsAfter24Hours = async () => {
   try {
     const now = new Date();
     const cutoffDate = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago

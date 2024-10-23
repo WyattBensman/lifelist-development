@@ -1,7 +1,7 @@
 import { CameraShot } from "../models/index.mjs";
 
 // Job to check if any developing shots are ready to review
-const checkReadyToReviewShots = async () => {
+export const checkReadyToReviewShots = async () => {
   try {
     const now = new Date();
 
