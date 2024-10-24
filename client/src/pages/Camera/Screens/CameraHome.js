@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
   View,
-  StyleSheet,
   Animated,
   Dimensions,
   Text,
   Button,
+  StyleSheet,
 } from "react-native";
 import { layoutStyles } from "../../../styles/LayoutStyles";
 import Header from "../Components/Header";
@@ -40,17 +40,14 @@ export default function CameraHome() {
   const screenWidth = Dimensions.get("window").width;
   const cameraHeight = (screenWidth * 3) / 2;
 
-  // Get the time until 4 AM tomorrow
-  const getTTLFor4AM = () => {
+  // Get the time until midnight
+  const getTTLForMidnight = () => {
     const now = new Date();
-    const next4AM = new Date();
-    next4AM.setHours(4, 0, 0, 0);
+    const nextMidnight = new Date();
+    nextMidnight.setHours(0, 0, 0, 0);
+    nextMidnight.setDate(now.getDate() + 1); // Set to the next day at midnight
 
-    if (now.getHours() >= 4) {
-      next4AM.setDate(now.getDate() + 1); // If it's after 4AM, set to next day
-    }
-
-    return (next4AM - now) / 1000; // Time until 4AM in seconds
+    return (nextMidnight - now) / 1000; // Time until midnight in seconds
   };
 
   // Load cached filter, default to "Standard"
@@ -79,10 +76,10 @@ export default function CameraHome() {
         query: GET_DAILY_CAMERA_SHOTS_LEFT,
       });
       const shots = response.data.getDailyCameraShotsLeft;
-      setShotsLeft(shots); // Set state with fresh data
+      setShotsLeft(shots);
 
-      // Cache the shots left until 4 AM
-      const ttl = getTTLFor4AM();
+      // Cache the shots left until midnight
+      const ttl = getTTLForMidnight();
       setCache("cameraShotsLeft", shots, ttl);
     }
   };
@@ -158,16 +155,29 @@ export default function CameraHome() {
 
   // Capture the photo and update shots left
   const handleTakePhoto = async () => {
+    if (shotsLeft <= 0) {
+      alert("No shots left for today!");
+      return;
+    }
+
     if (cameraRef.current) {
-      const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
-
-      setCapturedImage(photo.uri); // Store captured image URI
-      applyFilter(photo.uri); // Apply filter based on selected cameraType
-
-      // Decrement shots left after taking a photo
       const newShotsLeft = shotsLeft - 1;
       setShotsLeft(newShotsLeft);
-      setCache("cameraShotsLeft", newShotsLeft, getTTLFor4AM()); // Update cache
+
+      try {
+        const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+
+        setCapturedImage(photo.uri); // Store captured image URI
+        await applyFilter(photo.uri); // Apply filter based on selected cameraType
+
+        // Cache the updated shots left with midnight TTL
+        setCache("cameraShotsLeft", newShotsLeft, getTTLForMidnight());
+      } catch (error) {
+        // If something goes wrong, revert the shots left update
+        setShotsLeft(shotsLeft); // Revert if error
+        alert("Error taking photo. Please try again.");
+        console.error("Error taking photo:", error);
+      }
     }
   };
 
@@ -213,7 +223,7 @@ export default function CameraHome() {
           toggleFlash={toggleFlash}
           toggleCameraFacing={toggleCameraFacing}
           handleZoomChange={handleZoomChange}
-          handleTakePhoto={handleTakePhoto} // Take photo and decrement shots left
+          handleTakePhoto={handleTakePhoto}
         />
       </View>
     </View>

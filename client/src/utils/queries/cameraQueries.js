@@ -69,7 +69,10 @@ export const GET_DEVELOPING_CAMERA_SHOTS = gql`
     getDevelopingCameraShots {
       _id
       image
-      capturedAt
+      developingTime
+      isDeveloped
+      readyToReviewAt
+      transferredToRoll
     }
   }
 `;

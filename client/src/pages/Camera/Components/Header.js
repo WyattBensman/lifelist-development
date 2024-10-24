@@ -16,7 +16,7 @@ export default function Header({
   onSelectCameraType,
   showOptions,
   onToggleOptions,
-  shotsLeft, // Add shots left prop
+  shotsLeft,
 }) {
   const navigation = useNavigation();
   const rotateArrowAnim = useRef(new Animated.Value(0)).current;

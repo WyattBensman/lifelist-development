@@ -80,8 +80,8 @@ const startServer = async () => {
       path: "/graphql",
     });
 
-    // Schedule reset of camera shots at 4 AM daily
-    schedule.scheduleJob("0 4 * * *", resetDailyCameraShots); // Reset camera shots at 4 AM
+    // Schedule reset of camera shots at midnight daily
+    schedule.scheduleJob("0 0 * * *", resetDailyCameraShots); // Runs at midnight
 
     // Schedule the new background tasks
     schedule.scheduleJob("*/30 * * * *", checkReadyToReviewShots); // Runs every 30 minutes

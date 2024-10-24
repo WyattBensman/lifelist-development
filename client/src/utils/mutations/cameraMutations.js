@@ -10,6 +10,16 @@ export const CREATE_CAMERA_SHOT = gql`
   }
 `;
 
+// Trasnfer a camera shot to Camera Roll
+export const TRANSFER_CAMERA_SHOT = gql`
+  mutation TransferCameraShot($shotId: ID!) {
+    transferCameraShot(shotId: $shotId) {
+      success
+      message
+    }
+  }
+`;
+
 // Edit a camera shot
 export const EDIT_CAMERA_SHOT = gql`
   mutation EditCameraShot($shotId: ID!, $image: String!) {

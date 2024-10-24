@@ -56,7 +56,9 @@ export default function DevelopingRoll() {
       <View style={layoutStyles.marginTopSm}>
         <FlatList
           data={data.getDevelopingCameraShots}
-          renderItem={({ item }) => <BlurredShotCard shot={item} />}
+          renderItem={({ item }) => (
+            <BlurredShotCard shot={item} refetchShots={refetch} />
+          )}
           keyExtractor={(item) => item._id}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}

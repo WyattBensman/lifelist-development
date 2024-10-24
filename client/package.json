@@ -43,6 +43,7 @@
     "gl-react-expo": "^5.2.1",
     "graphql": "^15.8.0",
     "jwt-decode": "^4.0.0",
+    "moment": "^2.30.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "^0.74.3",
