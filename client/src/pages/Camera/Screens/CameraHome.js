@@ -15,7 +15,12 @@ import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useMutation } from "@apollo/client";
 import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
 import { applyFilterToImage } from "../../../utils/cameraUtils/applyFilterToImage";
-import { setCache, getCache } from "../../../utils/cacheHelper";
+import {
+  saveToCacheStore,
+  getFromCacheStore,
+  saveToAsyncStorage,
+  getFromAsyncStorage,
+} from "../../../utils/cacheHelper";
 import { GET_DAILY_CAMERA_SHOTS_LEFT } from "../../../utils/queries"; // Import query
 
 export default function CameraHome() {
@@ -23,15 +28,17 @@ export default function CameraHome() {
   const [showHeaderOptions, setShowHeaderOptions] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
 
-  // Load cached camera settings, default to back and off for facing and flash respectively
+  // Load camera settings from cache
   const [facing, setFacing] = useState(
-    () => getCache("cameraFacing") || "back"
+    () => getFromCacheStore("cameraFacing") || "back"
   );
-  const [flash, setFlash] = useState(() => getCache("cameraFlash") || "off");
+  const [flash, setFlash] = useState(
+    () => getFromCacheStore("cameraFlash") || "off"
+  );
 
   const [zoom, setZoom] = useState(0);
   const [capturedImage, setCapturedImage] = useState(null); // Captured photo
-  const [filteredUri, setFilteredUri] = useState(null); // Filtered image
+  const [filteredUri, setFilteredUri] = useState(null);
   const [shotsLeft, setShotsLeft] = useState(10); // Store shots left
   const cameraRef = useRef(null);
   const [createCameraShot] = useMutation(CREATE_CAMERA_SHOT);
@@ -45,48 +52,38 @@ export default function CameraHome() {
     const now = new Date();
     const nextMidnight = new Date();
     nextMidnight.setHours(0, 0, 0, 0);
-    nextMidnight.setDate(now.getDate() + 1); // Set to the next day at midnight
+    nextMidnight.setDate(now.getDate() + 1);
 
     return (nextMidnight - now) / 1000; // Time until midnight in seconds
   };
 
-  // Load cached filter, default to "Standard"
-  const [cameraType, setCameraType] = useState(
-    () => getCache("cameraFilter") || "Standard"
-  );
-
-  const [filter, setFilter] = useState(() => {
-    const cachedFilter = getCache("cameraFilter");
-
-    return cachedFilter === "Standard"
-      ? "standardFilter"
-      : cachedFilter === "Fuji"
-      ? "fujiFilter"
-      : "standardFilter"; // Default is "Standard"
+  // Load cameraType from AsyncStorage
+  const [cameraType, setCameraType] = useState(async () => {
+    const storedCameraType = await getFromAsyncStorage("cameraType");
+    return storedCameraType || "Standard";
   });
+
+  const [filter, setFilter] = useState("standardFilter");
 
   // Fetch camera shots left and cache it
   const fetchCameraShotsLeft = async () => {
-    const cachedShots = getCache("cameraShotsLeft");
+    const cachedShots = getFromCacheStore("cameraShotsLeft");
     if (cachedShots !== null) {
-      setShotsLeft(cachedShots); // Use cached value if it exists
+      setShotsLeft(cachedShots);
     } else {
-      // Query the server for fresh data
       const response = await client.query({
         query: GET_DAILY_CAMERA_SHOTS_LEFT,
       });
       const shots = response.data.getDailyCameraShotsLeft;
       setShotsLeft(shots);
-
-      // Cache the shots left until midnight
       const ttl = getTTLForMidnight();
-      setCache("cameraShotsLeft", shots, ttl);
+      saveToCacheStore("cameraShotsLeft", shots, ttl); // Cache shotsLeft until midnight
     }
   };
 
   useEffect(() => {
     setIsTabBarVisible(false);
-    fetchCameraShotsLeft(); // Fetch camera shots left when component loads
+    fetchCameraShotsLeft();
     return () => setIsTabBarVisible(true);
   }, []);
 
@@ -122,14 +119,14 @@ export default function CameraHome() {
   const toggleCameraFacing = () => {
     const newFacing = facing === "back" ? "front" : "back";
     setFacing(newFacing);
-    setCache("cameraFacing", newFacing, 0); // No expiration, store the selected facing
+    saveToCacheStore("cameraFacing", newFacing, 0); // No expiration, store the facing state
   };
 
   // Toggle flash state and cache the state
   const toggleFlash = () => {
     const newFlash = flash === "off" ? "on" : "off";
     setFlash(newFlash);
-    setCache("cameraFlash", newFlash, 0); // No expiration, store the flash state
+    saveToCacheStore("cameraFlash", newFlash, 0); // No expiration, store the flash state
   };
 
   const handleZoomChange = (zoomLevel) => {
@@ -142,18 +139,10 @@ export default function CameraHome() {
 
   const handleSelectCameraType = (type) => {
     setCameraType(type);
-    setFilter(
-      type === "Standard"
-        ? "standardFilter"
-        : type === "Disposable"
-        ? "disposableFilter"
-        : "fujiFilter"
-    );
-
-    setCache("cameraFilter", type, 0); // No expiration, store the selected filter
+    setFilter(type === "Standard" ? "standardFilter" : "fujiFilter");
+    saveToAsyncStorage("cameraType", type); // Persist camera type in AsyncStorage
   };
 
-  // Capture the photo and update shots left
   const handleTakePhoto = async () => {
     if (shotsLeft <= 0) {
       alert("No shots left for today!");
@@ -166,36 +155,64 @@ export default function CameraHome() {
 
       try {
         const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+        setCapturedImage(photo.uri);
+        await applyFilter(photo.uri);
 
-        setCapturedImage(photo.uri); // Store captured image URI
-        await applyFilter(photo.uri); // Apply filter based on selected cameraType
-
-        // Cache the updated shots left with midnight TTL
-        setCache("cameraShotsLeft", newShotsLeft, getTTLForMidnight());
+        const ttl = getTTLForMidnight();
+        saveToCacheStore("cameraShotsLeft", newShotsLeft, ttl); // Update shots left in cache
       } catch (error) {
-        // If something goes wrong, revert the shots left update
-        setShotsLeft(shotsLeft); // Revert if error
+        setShotsLeft(shotsLeft); // Revert shots left if error occurs
         alert("Error taking photo. Please try again.");
         console.error("Error taking photo:", error);
       }
     }
   };
 
-  // Apply filter using the utility function and upload the result
-  const applyFilter = async (imageUri) => {
+  // Utility function to convert URI to File object
+  const uriToFile = async (uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob(); // Convert URI to Blob
+
+    // Extract the file extension from the MIME type (e.g., 'image/jpeg' becomes 'jpeg')
+    const fileExtension = blob.type.split("/")[1];
+    const fileName = `filtered_image.${fileExtension}`; // Dynamic filename based on MIME type
+
+    const file = new File([blob], fileName, { type: blob.type }); // Create File object
+    console.log(`FILE: ${file}`);
+
+    return file;
+  };
+
+  // Handle file upload to GraphQL server
+  const handleUploadPhoto = async (imageUri) => {
     try {
-      const filteredImageUri = await applyFilterToImage(imageUri, filter); // Apply correct filter
-      setFilteredUri(filteredImageUri); // Store filtered image URI
-      handleUploadPhoto(filteredImageUri); // Upload filtered image
+      // Convert the image URI into a file that can be uploaded
+      const imageFile = await uriToFile(imageUri);
+
+      // Log file information on the frontend
+      console.log("File Name (Frontend):", imageFile.name);
+      console.log("MIME Type (Frontend):", imageFile.type);
+      console.log("File Size (Frontend):", imageFile.size);
+
+      // Execute the mutation to upload the file
+      const { data: result } = await createCameraShot({
+        variables: { image: imageFile },
+      });
+
+      if (result.createCameraShot.success) {
+        console.log("Image uploaded successfully!");
+      } else {
+        console.error("Upload failed:", result.createCameraShot.message);
+      }
     } catch (error) {
-      console.error("Error applying filter:", error);
+      console.error("Error uploading image:", error);
     }
   };
 
   return (
     <View style={layoutStyles.wrapper}>
       <Header
-        shotsLeft={shotsLeft} // Pass shots left to header
+        shotsLeft={shotsLeft}
         toggleFlash={toggleFlash}
         flash={flash}
         toggleCameraFacing={toggleCameraFacing}
