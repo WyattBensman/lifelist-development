@@ -48,12 +48,10 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   }
 };
 
-export const getFollowers = async (
-  _,
-  { userId, limit = 25, offset = 0 },
-  { user }
-) => {
+export const getFollowers = async (_, { userId, limit = 25, offset = 0 }) => {
   /* isUser(user); */
+  const user = User.findById("663a3129e0ffbeff092b81d4");
+
   const foundUser = await User.findById(userId)
     .populate({
       path: "followers",
@@ -64,15 +62,28 @@ export const getFollowers = async (
     .exec();
 
   if (!foundUser) throw new Error("User not found.");
-  return foundUser.followers;
+
+  // Calculate follow status for each follower
+  const followersWithStatus = foundUser.followers.map((follower) => {
+    let followStatus = "Follow"; // Default status
+    if (user.following.includes(follower._id)) {
+      followStatus = "Following";
+    } else if (follower.followRequests.some((req) => req.equals(user._id))) {
+      followStatus = "Requested";
+    }
+
+    return {
+      ...follower.toObject(),
+      followStatus,
+    };
+  });
+
+  return followersWithStatus;
 };
 
-export const getFollowing = async (
-  _,
-  { userId, limit = 25, offset = 0 },
-  { user }
-) => {
+export const getFollowing = async (_, { userId, limit = 25, offset = 0 }) => {
   /* isUser(user); */
+  const user = User.findById("663a3129e0ffbeff092b81d4");
   const foundUser = await User.findById(userId)
     .populate({
       path: "following",
@@ -83,7 +94,24 @@ export const getFollowing = async (
     .exec();
 
   if (!foundUser) throw new Error("User not found.");
-  return foundUser.following;
+
+  const followingWithStatus = foundUser.following.map((followingUser) => {
+    let followStatus = "Follow"; // Default status
+    if (user.following.includes(followingUser._id)) {
+      followStatus = "Following";
+    } else if (
+      followingUser.followRequests.some((req) => req.equals(user._id))
+    ) {
+      followStatus = "Requested";
+    }
+
+    return {
+      ...followingUser.toObject(),
+      followStatus,
+    };
+  });
+
+  return followingWithStatus;
 };
 
 export const getUserCollages = async (_, { userId }) => {

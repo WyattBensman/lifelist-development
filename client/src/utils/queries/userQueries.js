@@ -34,18 +34,8 @@ export const GET_USER_COUNTS = gql`
 
 // Followers
 export const GET_FOLLOWERS = gql`
-  query GetFollowers(
-    $userId: ID!
-    $limit: Int
-    $offset: Int
-    $searchQuery: String
-  ) {
-    getFollowers(
-      userId: $userId
-      limit: $limit
-      offset: $offset
-      searchQuery: $searchQuery
-    ) {
+  query GetFollowers($userId: ID!, $limit: Int, $offset: Int) {
+    getFollowers(userId: $userId, limit: $limit, offset: $offset) {
       _id
       username
       fullName
@@ -60,18 +50,8 @@ export const GET_FOLLOWERS = gql`
 
 // Following
 export const GET_FOLLOWING = gql`
-  query GetFollowing(
-    $userId: ID!
-    $limit: Int
-    $offset: Int
-    $searchQuery: String
-  ) {
-    getFollowing(
-      userId: $userId
-      limit: $limit
-      offset: $offset
-      searchQuery: $searchQuery
-    ) {
+  query GetFollowing($userId: ID!, $limit: Int, $offset: Int) {
+    getFollowing(userId: $userId, limit: $limit, offset: $offset) {
       _id
       username
       fullName
