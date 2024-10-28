@@ -6,20 +6,19 @@ let cacheStore = {};
 // Cache Store (Temporary)
 // =====================
 
-// Save data to cache (with TTL)
+// Save data to cache with TTL
 export const saveToCacheStore = (key, value, ttlInSeconds) => {
   const expires = Date.now() + ttlInSeconds * 1000;
   cacheStore[key] = { value, expires };
 };
 
-// Get data from cache
+// Get data from cache with expiration check
 export const getFromCacheStore = (key) => {
   const cacheEntry = cacheStore[key];
   if (!cacheEntry) return null;
 
   if (Date.now() > cacheEntry.expires) {
-    // Cache has expired, remove it
-    delete cacheStore[key];
+    delete cacheStore[key]; // Remove expired data
     return null;
   }
 
@@ -36,25 +35,48 @@ export const clearAllCacheStore = () => {
   cacheStore = {};
 };
 
+// Optional: Cleanup expired items in cacheStore on an interval
+export const cleanupCacheStore = () => {
+  const now = Date.now();
+  Object.keys(cacheStore).forEach((key) => {
+    if (cacheStore[key].expires < now) {
+      delete cacheStore[key];
+    }
+  });
+};
+
 // ========================
 // AsyncStorage (Persistent)
 // ========================
 
-// Save data to AsyncStorage
-export const saveToAsyncStorage = async (key, value) => {
+// Save data to AsyncStorage with optional TTL
+export const saveToAsyncStorage = async (key, value, ttlInSeconds = null) => {
   try {
-    const jsonValue = JSON.stringify(value);
+    const data = {
+      value,
+      expires: ttlInSeconds ? Date.now() + ttlInSeconds * 1000 : null,
+    };
+    const jsonValue = JSON.stringify(data);
     await AsyncStorage.setItem(key, jsonValue);
   } catch (error) {
     console.error("Error saving to AsyncStorage:", error);
   }
 };
 
-// Get data from AsyncStorage
+// Get data from AsyncStorage with expiration check
 export const getFromAsyncStorage = async (key) => {
   try {
-    const value = await AsyncStorage.getItem(key);
-    return value ? JSON.parse(value) : null;
+    const jsonValue = await AsyncStorage.getItem(key);
+    if (!jsonValue) return null;
+
+    const data = JSON.parse(jsonValue);
+    if (data.expires && Date.now() > data.expires) {
+      // Data has expired, clear it from storage
+      await AsyncStorage.removeItem(key);
+      return null;
+    }
+
+    return data.value;
   } catch (error) {
     console.error("Error retrieving from AsyncStorage:", error);
     return null;
@@ -77,4 +99,34 @@ export const clearAllAsyncStorage = async () => {
   } catch (error) {
     console.error("Error clearing AsyncStorage:", error);
   }
+};
+
+// ========================
+// Combined Cache Utilities
+// ========================
+
+// Clear expired data from both cacheStore and AsyncStorage
+export const clearExpiredCache = async () => {
+  // Cleanup cacheStore
+  cleanupCacheStore();
+
+  // Cleanup AsyncStorage expired items
+  const keys = await AsyncStorage.getAllKeys();
+  const now = Date.now();
+
+  await Promise.all(
+    keys.map(async (key) => {
+      try {
+        const jsonValue = await AsyncStorage.getItem(key);
+        if (jsonValue) {
+          const data = JSON.parse(jsonValue);
+          if (data.expires && data.expires < now) {
+            await AsyncStorage.removeItem(key);
+          }
+        }
+      } catch (error) {
+        console.error(`Error checking expiration for ${key}:`, error);
+      }
+    })
+  );
 };

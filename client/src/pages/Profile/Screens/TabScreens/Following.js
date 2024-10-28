@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import { FlatList, Alert, Text } from "react-native";
 import UserRelationsCard from "../../Cards/UserRelationsCard";
 import { layoutStyles } from "../../../../styles";
@@ -13,32 +13,28 @@ import {
 } from "../../../../utils/mutations/userRelationsMutations";
 import { useFocusEffect } from "@react-navigation/native";
 
+const PAGE_LIMIT = 20; // Number of following items to load per page
+
 export default function Following({ userId, searchQuery }) {
   const { currentUser } = useAuth();
+  const [offset, setOffset] = useState(0);
+  const [allFollowing, setAllFollowing] = useState([]);
 
   const {
     data: followingData,
     loading: loadingFollowing,
     error: errorFollowing,
-    refetch: refetchFollowing,
+    fetchMore,
+    refetch,
   } = useQuery(GET_FOLLOWING, {
-    variables: { userId },
-  });
-
-  const {
-    data: currentUserFollowingData,
-    loading: loadingCurrentUserFollowing,
-    error: errorCurrentUserFollowing,
-    refetch: refetchCurrentUserFollowing,
-  } = useQuery(GET_FOLLOWING, {
-    variables: { userId: currentUser },
+    variables: { userId, searchQuery, limit: PAGE_LIMIT, offset: 0 },
+    onCompleted: (data) => setAllFollowing(data.getFollowing),
   });
 
   useFocusEffect(
     useCallback(() => {
-      refetchFollowing();
-      refetchCurrentUserFollowing();
-    }, [refetchFollowing, refetchCurrentUserFollowing])
+      refetch();
+    }, [refetch])
   );
 
   const [followUser] = useMutation(FOLLOW_USER);
@@ -81,46 +77,38 @@ export default function Following({ userId, searchQuery }) {
     }
   };
 
-  const filteredFollowing = followingData?.getFollowing.filter((following) =>
-    following.fullName.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const renderFollowingItem = ({ item }) => {
-    let action = "Follow";
-    if (
-      currentUserFollowingData?.getFollowing.some(
-        (following) => following._id === item._id
-      )
-    ) {
-      action = "Following";
-    } else if (item.followRequests.some((req) => req.userId === currentUser)) {
-      action = "Requested";
+  const loadMoreFollowing = async () => {
+    try {
+      const { data } = await fetchMore({
+        variables: { offset: offset + PAGE_LIMIT },
+      });
+      setAllFollowing((prev) => [...prev, ...data.getFollowing]);
+      setOffset((prevOffset) => prevOffset + PAGE_LIMIT);
+    } catch (error) {
+      console.error("Error loading more following:", error);
     }
-
-    return (
-      <UserRelationsCard
-        user={item}
-        initialAction={action}
-        onActionPress={handleActionPress}
-      />
-    );
   };
 
-  if (loadingFollowing || loadingCurrentUserFollowing)
+  const renderFollowingItem = ({ item }) => (
+    <UserRelationsCard
+      user={item}
+      initialAction={item.followStatus} // followStatus from the backend
+      onActionPress={handleActionPress}
+    />
+  );
+
+  if (loadingFollowing && allFollowing.length === 0)
     return <Text>Loading...</Text>;
-  if (errorFollowing || errorCurrentUserFollowing)
-    return (
-      <Text>
-        Error: {errorFollowing?.message || errorCurrentUserFollowing?.message}
-      </Text>
-    );
+  if (errorFollowing) return <Text>Error: {errorFollowing.message}</Text>;
 
   return (
     <FlatList
-      data={filteredFollowing}
+      data={allFollowing}
       renderItem={renderFollowingItem}
       keyExtractor={(item) => item._id}
       style={layoutStyles.wrapper}
+      onEndReached={loadMoreFollowing}
+      onEndReachedThreshold={0.5}
     />
   );
 }

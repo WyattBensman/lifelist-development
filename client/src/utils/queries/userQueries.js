@@ -22,7 +22,7 @@ export const GET_USER_PROFILE = gql`
   }
 `;
 
-// Get User Followers & Following Count
+// Get User Followers & Following Counts
 export const GET_USER_COUNTS = gql`
   query GetUserCounts($userId: ID!) {
     getUserCounts(userId: $userId) {
@@ -34,17 +34,25 @@ export const GET_USER_COUNTS = gql`
 
 // Followers
 export const GET_FOLLOWERS = gql`
-  query GetFollowers($userId: ID!) {
-    getFollowers(userId: $userId) {
+  query GetFollowers(
+    $userId: ID!
+    $limit: Int
+    $offset: Int
+    $searchQuery: String
+  ) {
+    getFollowers(
+      userId: $userId
+      limit: $limit
+      offset: $offset
+      searchQuery: $searchQuery
+    ) {
       _id
       username
       fullName
       profilePicture
+      followStatus
       settings {
         isProfilePrivate
-      }
-      followRequests {
-        _id
       }
     }
   }
@@ -52,17 +60,25 @@ export const GET_FOLLOWERS = gql`
 
 // Following
 export const GET_FOLLOWING = gql`
-  query GetFollowing($userId: ID!) {
-    getFollowing(userId: $userId) {
+  query GetFollowing(
+    $userId: ID!
+    $limit: Int
+    $offset: Int
+    $searchQuery: String
+  ) {
+    getFollowing(
+      userId: $userId
+      limit: $limit
+      offset: $offset
+      searchQuery: $searchQuery
+    ) {
       _id
       username
       fullName
       profilePicture
+      followStatus
       settings {
         isProfilePrivate
-      }
-      followRequests {
-        _id
       }
     }
   }

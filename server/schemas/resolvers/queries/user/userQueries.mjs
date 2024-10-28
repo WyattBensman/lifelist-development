@@ -48,30 +48,100 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   }
 };
 
-export const getFollowers = async (_, { userId }, { user }) => {
+export const getFollowers = async (
+  _,
+  { userId, limit = 20, offset = 0, searchQuery = "" },
+  { user }
+) => {
   isUser(user);
+
+  // Fetch the target user and followers with pagination
   const foundUser = await User.findById(userId)
     .populate({
       path: "followers",
+      match: {
+        $or: [
+          { username: { $regex: searchQuery, $options: "i" } },
+          { fullName: { $regex: searchQuery, $options: "i" } },
+        ],
+      },
+      options: {
+        limit,
+        skip: offset,
+      },
       select: "_id username fullName profilePicture settings followRequests",
       populate: { path: "settings" },
     })
     .exec();
+
   if (!foundUser) throw new Error("User not found.");
-  return foundUser.followers;
+
+  // Calculate follow status for each follower
+  const followersWithStatus = foundUser.followers.map((follower) => {
+    let followStatus = "Follow"; // Default status
+    if (user.following.includes(follower._id)) {
+      followStatus = "Following";
+    } else if (follower.followRequests.some((req) => req.equals(user._id))) {
+      followStatus = "Requested";
+    }
+
+    return {
+      ...follower.toObject(),
+      followStatus, // Attach followStatus for frontend use
+    };
+  });
+
+  // Return the list of followers with status
+  return followersWithStatus;
 };
 
-export const getFollowing = async (_, { userId }, { user }) => {
+export const getFollowing = async (
+  _,
+  { userId, limit = 20, offset = 0, searchQuery = "" },
+  { user }
+) => {
   isUser(user);
+
+  // Fetch the target user and following users with pagination
   const foundUser = await User.findById(userId)
     .populate({
       path: "following",
+      match: {
+        $or: [
+          { username: { $regex: searchQuery, $options: "i" } },
+          { fullName: { $regex: searchQuery, $options: "i" } },
+        ],
+      },
+      options: {
+        limit,
+        skip: offset,
+      },
       select: "_id username fullName profilePicture settings followRequests",
       populate: { path: "settings" },
     })
     .exec();
+
   if (!foundUser) throw new Error("User not found.");
-  return foundUser.following;
+
+  // Calculate follow status for each following user
+  const followingWithStatus = foundUser.following.map((followingUser) => {
+    let followStatus = "Follow"; // Default status
+    if (user.following.includes(followingUser._id)) {
+      followStatus = "Following";
+    } else if (
+      followingUser.followRequests.some((req) => req.equals(user._id))
+    ) {
+      followStatus = "Requested";
+    }
+
+    return {
+      ...followingUser.toObject(),
+      followStatus, // Attach followStatus for frontend use
+    };
+  });
+
+  // Return the list of following users with status
+  return followingWithStatus;
 };
 
 export const getUserCollages = async (_, { userId }) => {

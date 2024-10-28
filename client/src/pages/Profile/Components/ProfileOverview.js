@@ -15,6 +15,7 @@ import {
 
 export default function ProfileOverview({
   profile,
+  followerData,
   isAdminView,
   isAdminScreen,
   isFollowing: initialIsFollowing, // Use prop passed from Profile component
@@ -157,7 +158,7 @@ export default function ProfileOverview({
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {profile.followersCount}
+                {followerData.followersCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Followers</Text>
             </Pressable>
@@ -182,7 +183,7 @@ export default function ProfileOverview({
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {profile.followingCount}
+                {followerData.followingCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Following</Text>
             </Pressable>
