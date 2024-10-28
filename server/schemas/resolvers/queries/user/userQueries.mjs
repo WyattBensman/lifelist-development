@@ -51,49 +51,51 @@ export const getUserCounts = async (_, { userId }, { user }) => {
 // GET FOLLOWERS
 export const getFollowers = async (
   _,
-  { userId, limit = 20, offset = 0, searchQuery = "" },
-  { user }
-) => {
-  /* isUser(user); */
+  { userId, limit = 20, offset = 0, searchQuery = "" }
+) =>
+  /* { user } */
+  {
+    /* isUser(user); */
+    const user = User.findById("663a3129e0ffbeff092b81d4");
 
-  // Fetch the target user and their followers with pagination and search query
-  const foundUser = await User.findById(userId)
-    .populate({
-      path: "followers",
-      match: {
-        $or: [
-          { username: { $regex: searchQuery, $options: "i" } },
-          { fullName: { $regex: searchQuery, $options: "i" } },
-        ],
-      },
-      options: {
-        limit,
-        skip: offset,
-      },
-      select: "_id username fullName profilePicture settings followRequests",
-      populate: { path: "settings" },
-    })
-    .exec();
+    // Fetch the target user and their followers with pagination and search query
+    const foundUser = await User.findById(userId)
+      .populate({
+        path: "followers",
+        match: {
+          $or: [
+            { username: { $regex: searchQuery, $options: "i" } },
+            { fullName: { $regex: searchQuery, $options: "i" } },
+          ],
+        },
+        options: {
+          limit,
+          skip: offset,
+        },
+        select: "_id username fullName profilePicture settings followRequests",
+        populate: { path: "settings" },
+      })
+      .exec();
 
-  if (!foundUser) throw new Error("User not found.");
+    if (!foundUser) throw new Error("User not found.");
 
-  // Calculate follow status for each follower
-  const followersWithStatus = foundUser.followers.map((follower) => {
-    let followStatus = "Follow"; // Default status
-    if (user.following.includes(follower._id)) {
-      followStatus = "Following";
-    } else if (follower.followRequests.includes(user._id)) {
-      followStatus = "Requested";
-    }
+    // Calculate follow status for each follower
+    const followersWithStatus = foundUser.followers.map((follower) => {
+      let followStatus = "Follow"; // Default status
+      if (user.following.includes(follower._id)) {
+        followStatus = "Following";
+      } else if (follower.followRequests.includes(user._id)) {
+        followStatus = "Requested";
+      }
 
-    return {
-      ...follower.toObject(),
-      followStatus,
-    };
-  });
+      return {
+        ...follower.toObject(),
+        followStatus,
+      };
+    });
 
-  return followersWithStatus;
-};
+    return followersWithStatus;
+  };
 
 // GET FOLLOWING
 export const getFollowing = async (
