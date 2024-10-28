@@ -48,14 +48,15 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   }
 };
 
+// GET FOLLOWERS
 export const getFollowers = async (
   _,
   { userId, limit = 20, offset = 0, searchQuery = "" },
   { user }
 ) => {
-  isUser(user);
+  isUser(user); // Validate that the user is authenticated
 
-  // Fetch the target user and followers with pagination
+  // Fetch the target user and their followers with pagination and search query
   const foundUser = await User.findById(userId)
     .populate({
       path: "followers",
@@ -81,28 +82,27 @@ export const getFollowers = async (
     let followStatus = "Follow"; // Default status
     if (user.following.includes(follower._id)) {
       followStatus = "Following";
-    } else if (follower.followRequests.some((req) => req.equals(user._id))) {
+    } else if (follower.followRequests.includes(user._id)) {
       followStatus = "Requested";
     }
 
     return {
       ...follower.toObject(),
-      followStatus, // Attach followStatus for frontend use
+      followStatus,
     };
   });
 
-  // Return the list of followers with status
   return followersWithStatus;
 };
 
+// GET FOLLOWING
 export const getFollowing = async (
   _,
   { userId, limit = 20, offset = 0, searchQuery = "" },
   { user }
 ) => {
-  isUser(user);
+  isUser(user); // Check user authentication
 
-  // Fetch the target user and following users with pagination
   const foundUser = await User.findById(userId)
     .populate({
       path: "following",
@@ -123,24 +123,20 @@ export const getFollowing = async (
 
   if (!foundUser) throw new Error("User not found.");
 
-  // Calculate follow status for each following user
   const followingWithStatus = foundUser.following.map((followingUser) => {
-    let followStatus = "Follow"; // Default status
+    let followStatus = "Follow";
     if (user.following.includes(followingUser._id)) {
       followStatus = "Following";
-    } else if (
-      followingUser.followRequests.some((req) => req.equals(user._id))
-    ) {
+    } else if (followingUser.followRequests.includes(user._id)) {
       followStatus = "Requested";
     }
 
     return {
       ...followingUser.toObject(),
-      followStatus, // Attach followStatus for frontend use
+      followStatus,
     };
   });
 
-  // Return the list of following users with status
   return followingWithStatus;
 };
 

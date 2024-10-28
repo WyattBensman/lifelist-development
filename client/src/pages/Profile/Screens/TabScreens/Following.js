@@ -11,32 +11,10 @@ import {
   UNFOLLOW_USER,
   UNSEND_FOLLOW_REQUEST,
 } from "../../../../utils/mutations/userRelationsMutations";
-import { useFocusEffect } from "@react-navigation/native";
 
 const PAGE_LIMIT = 20; // Number of following items to load per page
 
 export default function Following({ userId, searchQuery }) {
-  const { currentUser } = useAuth();
-  const [offset, setOffset] = useState(0);
-  const [allFollowing, setAllFollowing] = useState([]);
-
-  const {
-    data: followingData,
-    loading: loadingFollowing,
-    error: errorFollowing,
-    fetchMore,
-    refetch,
-  } = useQuery(GET_FOLLOWING, {
-    variables: { userId, searchQuery, limit: PAGE_LIMIT, offset: 0 },
-    onCompleted: (data) => setAllFollowing(data.getFollowing),
-  });
-
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
-
   const [followUser] = useMutation(FOLLOW_USER);
   const [unfollowUser] = useMutation(UNFOLLOW_USER);
   const [sendFollowRequest] = useMutation(SEND_FOLLOW_REQUEST);
@@ -77,18 +55,6 @@ export default function Following({ userId, searchQuery }) {
     }
   };
 
-  const loadMoreFollowing = async () => {
-    try {
-      const { data } = await fetchMore({
-        variables: { offset: offset + PAGE_LIMIT },
-      });
-      setAllFollowing((prev) => [...prev, ...data.getFollowing]);
-      setOffset((prevOffset) => prevOffset + PAGE_LIMIT);
-    } catch (error) {
-      console.error("Error loading more following:", error);
-    }
-  };
-
   const renderFollowingItem = ({ item }) => (
     <UserRelationsCard
       user={item}
@@ -112,3 +78,34 @@ export default function Following({ userId, searchQuery }) {
     />
   );
 }
+
+/*   const [offset, setOffset] = useState(0);
+  const [allFollowing, setAllFollowing] = useState([]);
+
+  const {
+    data: followingData,
+    loading: loadingFollowing,
+    error: errorFollowing,
+    fetchMore,
+    refetch,
+  } = useQuery(GET_FOLLOWING, {
+    variables: { userId, searchQuery, limit: PAGE_LIMIT, offset },
+    onCompleted: (data) => {
+      if (data?.getFollowing) {
+        console.log("Initial data loaded:", data.getFollowing);
+        setAllFollowing(data.getFollowing);
+      }
+    },
+  }); */
+
+/*   const loadMoreFollowing = async () => {
+    try {
+      const { data } = await fetchMore({
+        variables: { offset: offset + PAGE_LIMIT },
+      });
+      setAllFollowing((prev) => [...prev, ...data.getFollowing]);
+      setOffset((prevOffset) => prevOffset + PAGE_LIMIT);
+    } catch (error) {
+      console.error("Error loading more following:", error);
+    }
+  }; */
