@@ -3,25 +3,23 @@ import { gql } from "@apollo/client";
 // Get User
 export const GET_USER_PROFILE = gql`
   query GetUserProfileById($userId: ID!) {
-    query GetUserProfileById($userId: ID!) {
-      getUserProfileById(userId: $userId) {
+    getUserProfileById(userId: $userId) {
+      _id
+      fullName
+      username
+      bio
+      profilePicture
+      collages {
         _id
-        fullName
-        username
-        bio
-        profilePicture
-        collages {
-          _id
-          coverImage
-        }
-        repostedCollages {
-          _id
-          coverImage
-        }
-        collagesCount
-        followersCount
-        followingCount
+        coverImage
       }
+      repostedCollages {
+        _id
+        coverImage
+      }
+      collagesCount
+      followersCount
+      followingCount
     }
   }
 `;

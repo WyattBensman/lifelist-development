@@ -27,6 +27,8 @@ export default function AdminProfile() {
     variables: { userId: currentUser },
   });
 
+  console.log(data);
+
   // Cache keys for AsyncStorage
   const cacheKeys = {
     fullName: `profile_fullName_${currentUser}`,

@@ -396,7 +396,13 @@ type Score {
   }
 
   type UserProfileResponse {
-    foundUser: User,
+    _id: ID!
+    fullName: String
+    username: String
+    bio: String
+    profilePicture: String
+    collages: [Collage]
+    repostedCollages: [Collage]
     collagesCount: Int
     followersCount: Int
     followingCount: Int

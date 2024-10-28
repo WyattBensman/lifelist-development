@@ -29,7 +29,7 @@ export const getUserProfileById = async (_, { userId }, { user }) => {
     const followingCount = await User.countDocuments({ followers: userId });
 
     return {
-      foundUser,
+      ...foundUser.toObject(),
       collagesCount,
       followersCount,
       followingCount,
