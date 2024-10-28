@@ -54,7 +54,7 @@ export const getFollowers = async (
   { userId, limit = 20, offset = 0, searchQuery = "" },
   { user }
 ) => {
-  isUser(user); // Validate that the user is authenticated
+  /* isUser(user); */
 
   // Fetch the target user and their followers with pagination and search query
   const foundUser = await User.findById(userId)
