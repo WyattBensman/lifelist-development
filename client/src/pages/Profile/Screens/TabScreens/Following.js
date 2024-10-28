@@ -78,34 +78,3 @@ export default function Following({ userId, searchQuery }) {
     />
   );
 }
-
-/*   const [offset, setOffset] = useState(0);
-  const [allFollowing, setAllFollowing] = useState([]);
-
-  const {
-    data: followingData,
-    loading: loadingFollowing,
-    error: errorFollowing,
-    fetchMore,
-    refetch,
-  } = useQuery(GET_FOLLOWING, {
-    variables: { userId, searchQuery, limit: PAGE_LIMIT, offset },
-    onCompleted: (data) => {
-      if (data?.getFollowing) {
-        console.log("Initial data loaded:", data.getFollowing);
-        setAllFollowing(data.getFollowing);
-      }
-    },
-  }); */
-
-/*   const loadMoreFollowing = async () => {
-    try {
-      const { data } = await fetchMore({
-        variables: { offset: offset + PAGE_LIMIT },
-      });
-      setAllFollowing((prev) => [...prev, ...data.getFollowing]);
-      setOffset((prevOffset) => prevOffset + PAGE_LIMIT);
-    } catch (error) {
-      console.error("Error loading more following:", error);
-    }
-  }; */
