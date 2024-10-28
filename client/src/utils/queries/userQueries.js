@@ -40,9 +40,11 @@ export const GET_FOLLOWERS = gql`
       username
       fullName
       profilePicture
-      followRequests
       settings {
         isProfilePrivate
+      }
+      followRequests {
+        _id
       }
     }
   }
@@ -56,9 +58,11 @@ export const GET_FOLLOWING = gql`
       username
       fullName
       profilePicture
-      followRequests
       settings {
         isProfilePrivate
+      }
+      followRequests {
+        _id
       }
     }
   }
@@ -106,8 +110,8 @@ export const GET_LIKED_COLLAGES = gql`
 
 // User's Saved Collages
 export const GET_SAVED_COLLAGES = gql`
-  query GetSavedCollages {
-    getSavedCollages {
+  query GetSavedCollages($limit: Int!, $offset: Int!) {
+    getSavedCollages(limit: $limit, offset: $offset) {
       _id
       coverImage
     }

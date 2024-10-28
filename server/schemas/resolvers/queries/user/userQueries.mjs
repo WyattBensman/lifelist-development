@@ -48,39 +48,51 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   }
 };
 
-export const getFollowers = async (_, { userId, limit = 25, offset = 0 }) =>
-  /* { user } */
-  {
-    /* isUser(user); */
-    const foundUser = await User.findById(userId)
-      .populate({
-        path: "followers",
-        select: "_id username fullName profilePicture settings followRequests",
-        populate: { path: "settings" },
-        options: { skip: offset, limit: limit },
-      })
-      .exec();
+export const getFollowers = async (
+  _,
+  { userId, limit = 20, offset = 0 },
+  { user }
+) => {
+  isUser(user);
 
-    if (!foundUser) throw new Error("User not found.");
-    return foundUser.followers;
-  };
+  const foundUser = await User.findById(userId)
+    .populate({
+      path: "followers",
+      select: "_id username fullName profilePicture settings followRequests",
+      populate: [
+        { path: "settings" },
+        { path: "followRequests", select: "_id" },
+      ],
+      options: { skip: offset, limit: limit },
+    })
+    .exec();
 
-export const getFollowing = async (_, { userId, limit = 25, offset = 0 }) =>
-  /* { user } */
-  {
-    /* isUser(user); */
-    const foundUser = await User.findById(userId)
-      .populate({
-        path: "following",
-        select: "_id username fullName profilePicture settings followRequests",
-        populate: { path: "settings" },
-        options: { skip: offset, limit: limit },
-      })
-      .exec();
+  if (!foundUser) throw new Error("User not found.");
+  return foundUser.followers;
+};
 
-    if (!foundUser) throw new Error("User not found.");
-    return foundUser.following;
-  };
+export const getFollowing = async (
+  _,
+  { userId, limit = 20, offset = 0 },
+  { user }
+) => {
+  isUser(user);
+
+  const foundUser = await User.findById(userId)
+    .populate({
+      path: "following",
+      select: "_id username fullName profilePicture settings followRequests",
+      populate: [
+        { path: "settings" },
+        { path: "followRequests", select: "_id" },
+      ],
+      options: { skip: offset, limit: limit },
+    })
+    .exec();
+
+  if (!foundUser) throw new Error("User not found.");
+  return foundUser.following;
+};
 
 export const getUserCollages = async (_, { userId }) => {
   const foundUser = await User.findById(userId)

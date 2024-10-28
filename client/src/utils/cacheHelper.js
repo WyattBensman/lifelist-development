@@ -130,3 +130,42 @@ export const clearExpiredCache = async () => {
     })
   );
 };
+
+// Updated saveToCacheStore to include page-specific cache with expiration
+export const saveToCacheStoreWithPagination = (
+  key,
+  page,
+  value,
+  ttlInSeconds
+) => {
+  const expires = Date.now() + ttlInSeconds * 1000;
+  cacheStore[`${key}_page_${page}`] = { value, expires };
+};
+
+// Get data from cache with pagination and expiration check
+export const getFromCacheStoreWithPagination = (key, page) => {
+  const cacheEntry = cacheStore[`${key}_page_${page}`];
+  if (!cacheEntry) return null;
+
+  if (Date.now() > cacheEntry.expires) {
+    // Cache has expired, remove it
+    delete cacheStore[`${key}_page_${page}`];
+    return null;
+  }
+
+  return cacheEntry.value;
+};
+
+// Clear specific cache by key and page
+export const clearFromCacheStoreWithPagination = (key, page) => {
+  delete cacheStore[`${key}_page_${page}`];
+};
+
+// Clear all pages of a specific key
+export const clearAllPagesFromCacheStore = (key) => {
+  Object.keys(cacheStore).forEach((cacheKey) => {
+    if (cacheKey.startsWith(key)) {
+      delete cacheStore[cacheKey];
+    }
+  });
+};
