@@ -48,13 +48,7 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   }
 };
 
-export const getFollowers = async (
-  _,
-  { userId, limit = 20, offset = 0 },
-  { user }
-) => {
-  isUser(user);
-
+export const getFollowers = async (_, { userId, limit = 20, offset = 0 }) => {
   const foundUser = await User.findById(userId)
     .populate({
       path: "followers",
@@ -71,13 +65,7 @@ export const getFollowers = async (
   return foundUser.followers;
 };
 
-export const getFollowing = async (
-  _,
-  { userId, limit = 20, offset = 0 },
-  { user }
-) => {
-  isUser(user);
-
+export const getFollowing = async (_, { userId, limit = 20, offset = 0 }) => {
   const foundUser = await User.findById(userId)
     .populate({
       path: "following",
