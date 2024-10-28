@@ -24,7 +24,6 @@ export default function ProfileOverview({
   const userId = profile._id;
 
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
-  const [followerCount, setFollowerCount] = useState(profile.followers.length);
   const [isPendingRequest, setIsPendingRequest] = useState(false);
   const [buttonState, setButtonState] = useState("Follow");
 
@@ -133,7 +132,7 @@ export default function ProfileOverview({
           >
             <View style={styles.col}>
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {profile.collageCount}
+                {profile.collagesCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Collages</Text>
             </View>
@@ -158,7 +157,7 @@ export default function ProfileOverview({
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {followerCount}
+                {profile.followersCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Followers</Text>
             </Pressable>
@@ -183,7 +182,7 @@ export default function ProfileOverview({
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {profile.following.length}
+                {profile.followingCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Following</Text>
             </Pressable>

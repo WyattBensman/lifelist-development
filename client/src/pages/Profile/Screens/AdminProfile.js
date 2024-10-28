@@ -26,7 +26,6 @@ export default function AdminProfile() {
   const { data, loading, error, refetch } = useQuery(GET_USER_PROFILE, {
     variables: { userId: currentUser },
   });
-
   console.log(data);
 
   // Cache keys for AsyncStorage
@@ -48,15 +47,17 @@ export default function AdminProfile() {
         const profilePicture = await getFromAsyncStorage(
           cacheKeys.profilePicture
         );
-        const collageCount = await getFromAsyncStorage(cacheKeys.collageCount);
+        const collagesCount = await getFromAsyncStorage(
+          cacheKeys.collagesCount
+        );
 
-        // Set cached profile with collage count if exists
+        // Set cached profile with collagesCount if exists
         setCachedProfile({
           fullName,
           username,
           bio,
           profilePicture,
-          collageCount: collageCount ? parseInt(collageCount) : null,
+          collagesCount: collagesCount ? parseInt(collagesCount) : null,
         });
       } catch (error) {
         console.error("Failed to load profile from cache:", error);
@@ -80,8 +81,8 @@ export default function AdminProfile() {
             profile.profilePicture || ""
           );
           await saveToAsyncStorage(
-            cacheKeys.collageCount,
-            profile.collages.length.toString()
+            cacheKeys.collagesCount,
+            profile.collagesCount.toString()
           );
 
           setCachedProfile({
@@ -89,7 +90,7 @@ export default function AdminProfile() {
             username: profile.username,
             bio: profile.bio,
             profilePicture: profile.profilePicture,
-            collageCount: profile.collages.length,
+            collagesCount: profile.collagesCount,
           });
         } catch (error) {
           console.error("Failed to save profile to cache:", error);

@@ -18,6 +18,14 @@ export const GET_USER_PROFILE = gql`
         coverImage
       }
       collagesCount
+    }
+  }
+`;
+
+// Get User Followers & Following Count
+export const GET_USER_COUNTS = gql`
+  query GetUserCounts($userId: ID!) {
+    getUserCounts(userId: $userId) {
       followersCount
       followingCount
     }

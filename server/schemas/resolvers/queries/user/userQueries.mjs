@@ -24,13 +24,22 @@ export const getUserProfileById = async (_, { userId }, { user }) => {
     // Count non-archived collages
     const collagesCount = foundUser.collages.length;
 
-    // Get followers and following count without fetching full arrays
+    return {
+      ...foundUser.toObject(),
+      collagesCount,
+    };
+  } catch (error) {
+    throw new Error("Database error: " + error.message);
+  }
+};
+
+export const getUserCounts = async (_, { userId }, { user }) => {
+  try {
+    isUser(user);
     const followersCount = await User.countDocuments({ following: userId });
     const followingCount = await User.countDocuments({ followers: userId });
 
     return {
-      ...foundUser.toObject(),
-      collagesCount,
       followersCount,
       followingCount,
     };

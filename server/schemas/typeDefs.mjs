@@ -331,6 +331,7 @@ type Score {
   type Query {
     # User Queries
     getUserProfileById(userId: ID!): UserProfileResponse
+    getUserCounts(userId: ID!): UserCountsResponse
     getFollowers(userId: ID!): [User]
     getFollowing(userId: ID!): [User]
     getUserCollages(userId: ID!): [Collage]
@@ -404,6 +405,9 @@ type Score {
     collages: [Collage]
     repostedCollages: [Collage]
     collagesCount: Int
+  }
+
+  type UserCountsResponse {
     followersCount: Int
     followingCount: Int
   }
