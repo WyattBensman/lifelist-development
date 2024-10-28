@@ -52,6 +52,11 @@ export const getFollowers = async (_, { userId, limit = 25, offset = 0 }) => {
   /* isUser(user); */
   const user = User.findById("663a3129e0ffbeff092b81d4");
 
+  // Ensure `user.following` is defined and an array
+  if (!user.following) {
+    user = await User.findById(user._id).select("following").exec();
+  }
+
   const foundUser = await User.findById(userId)
     .populate({
       path: "followers",
@@ -63,10 +68,9 @@ export const getFollowers = async (_, { userId, limit = 25, offset = 0 }) => {
 
   if (!foundUser) throw new Error("User not found.");
 
-  // Calculate follow status for each follower
   const followersWithStatus = foundUser.followers.map((follower) => {
     let followStatus = "Follow"; // Default status
-    if (user.following.includes(follower._id)) {
+    if (user.following && user.following.includes(follower._id)) {
       followStatus = "Following";
     } else if (follower.followRequests.some((req) => req.equals(user._id))) {
       followStatus = "Requested";
