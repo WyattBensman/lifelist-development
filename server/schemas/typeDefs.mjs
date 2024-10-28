@@ -330,7 +330,7 @@ type Score {
 
   type Query {
     # User Queries
-    getUserProfileById(userId: ID!): User
+    getUserProfileById(userId: ID!): UserProfileResponse
     getFollowers(userId: ID!): [User]
     getFollowing(userId: ID!): [User]
     getUserCollages(userId: ID!): [Collage]
@@ -393,6 +393,13 @@ type Score {
   type FeedResult {
     collages: [Collage]
     hasMore: Boolean
+  }
+
+  type UserProfileResponse {
+    foundUser: User,
+    collagesCount: Int
+    followersCount: Int
+    followingCount: Int
   }
 
   type CollageResponse {

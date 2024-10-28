@@ -4,27 +4,35 @@ import { isUser } from "../../../../utils/auth.mjs";
 export const getUserProfileById = async (_, { userId }, { user }) => {
   try {
     const foundUser = await User.findById(userId)
-      .populate("collages", "_id coverImage")
-      .populate("repostedCollages", "_id coverImage")
+      .populate({
+        path: "collages",
+        match: { archived: false },
+        select: "_id coverImage",
+      })
+      .populate({
+        path: "repostedCollages",
+        match: { archived: false },
+        select: "_id coverImage",
+      })
+      .select("_id fullName username bio profilePicture")
       .exec();
 
     if (!foundUser) {
       throw new Error("User not found.");
     }
 
-    // Filter out collages and repostedCollages with archived set to true
-    const filteredCollages = foundUser.collages.filter(
-      (collage) => !collage.archived
-    );
-    const filteredRepostedCollages = foundUser.repostedCollages.filter(
-      (collage) => !collage.archived
-    );
+    // Count non-archived collages
+    const collagesCount = foundUser.collages.length;
 
-    // Return user with filtered collages
+    // Get followers and following count without fetching full arrays
+    const followersCount = await User.countDocuments({ following: userId });
+    const followingCount = await User.countDocuments({ followers: userId });
+
     return {
-      ...foundUser.toObject(), // Convert Mongoose Document to plain JavaScript object
-      collages: filteredCollages,
-      repostedCollages: filteredRepostedCollages,
+      foundUser,
+      collagesCount,
+      followersCount,
+      followingCount,
     };
   } catch (error) {
     throw new Error("Database error: " + error.message);
@@ -59,8 +67,13 @@ export const getFollowing = async (_, { userId }, { user }) => {
 
 export const getUserCollages = async (_, { userId }) => {
   const foundUser = await User.findById(userId)
-    .populate("collages", "_id coverImage archived")
+    .populate({
+      path: "collages",
+      match: { archived: false },
+      select: "_id coverImage",
+    })
     .exec();
+
   if (!foundUser) throw new Error("User not found for the provided ID.");
   return foundUser.collages;
 };
@@ -68,8 +81,13 @@ export const getUserCollages = async (_, { userId }) => {
 export const getRepostedCollages = async (_, { userId }, { user }) => {
   isUser(user);
   const foundUser = await User.findById(userId)
-    .populate("repostedCollages", "_id coverImage archived")
+    .populate({
+      path: "repostedCollages",
+      match: { archived: false },
+      select: "_id coverImage",
+    })
     .exec();
+
   if (!foundUser) throw new Error("User not found for the provided ID.");
   return foundUser.repostedCollages;
 };
@@ -77,8 +95,13 @@ export const getRepostedCollages = async (_, { userId }, { user }) => {
 export const getTaggedCollages = async (_, { userId }, { user }) => {
   isUser(user);
   const foundUser = await User.findById(userId)
-    .populate("taggedCollages", "_id coverImage archived")
+    .populate({
+      path: "taggedCollages",
+      match: { archived: false },
+      select: "_id coverImage",
+    })
     .exec();
+
   if (!foundUser) throw new Error("User not found for the provided ID.");
   return foundUser.taggedCollages;
 };
@@ -86,8 +109,13 @@ export const getTaggedCollages = async (_, { userId }, { user }) => {
 export const getLikedCollages = async (_, __, { user }) => {
   isUser(user);
   const foundUser = await User.findById(user)
-    .populate("likedCollages", "_id coverImage archived")
+    .populate({
+      path: "likedCollages",
+      match: { archived: false },
+      select: "_id coverImage",
+    })
     .exec();
+
   if (!foundUser) throw new Error("User not found.");
   return foundUser.likedCollages;
 };
@@ -95,8 +123,13 @@ export const getLikedCollages = async (_, __, { user }) => {
 export const getSavedCollages = async (_, __, { user }) => {
   isUser(user);
   const foundUser = await User.findById(user)
-    .populate("savedCollages", "_id coverImage archived")
+    .populate({
+      path: "savedCollages",
+      match: { archived: false },
+      select: "_id coverImage",
+    })
     .exec();
+
   if (!foundUser) throw new Error("User not found for the provided ID.");
   return foundUser.savedCollages;
 };

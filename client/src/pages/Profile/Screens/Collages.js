@@ -11,6 +11,8 @@ export default function Collages({ userId }) {
     variables: { userId },
   });
 
+  console.log(data);
+
   useFocusEffect(
     useCallback(() => {
       refetch();
