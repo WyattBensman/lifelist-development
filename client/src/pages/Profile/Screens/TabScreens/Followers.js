@@ -1,10 +1,13 @@
-import React, { useCallback, useState } from "react";
-import { FlatList, Alert, Text } from "react-native";
+import React, { useCallback } from "react";
+import { FlatList, Alert, Text, View } from "react-native";
 import UserRelationsCard from "../../Cards/UserRelationsCard";
 import { layoutStyles } from "../../../../styles";
 import { useMutation, useQuery } from "@apollo/client";
 import { useAuth } from "../../../../contexts/AuthContext";
-import { GET_FOLLOWERS } from "../../../../utils/queries/userQueries";
+import {
+  GET_FOLLOWERS,
+  GET_FOLLOWING,
+} from "../../../../utils/queries/userQueries";
 import {
   FOLLOW_USER,
   SEND_FOLLOW_REQUEST,
@@ -13,28 +16,30 @@ import {
 } from "../../../../utils/mutations/userRelationsMutations";
 import { useFocusEffect } from "@react-navigation/native";
 
-const PAGE_LIMIT = 20; // Number of followers to load per page
-
 export default function Followers({ userId, searchQuery }) {
   const { currentUser } = useAuth();
-  const [offset, setOffset] = useState(0);
-  const [allFollowers, setAllFollowers] = useState([]);
-
   const {
     data: followersData,
     loading: loadingFollowers,
     error: errorFollowers,
-    fetchMore,
-    refetch,
+    refetch: refetchFollowers,
   } = useQuery(GET_FOLLOWERS, {
-    variables: { userId, searchQuery, limit: PAGE_LIMIT, offset: 0 },
-    onCompleted: (data) => setAllFollowers(data.getFollowers),
+    variables: { userId },
+  });
+  const {
+    data: followingData,
+    loading: loadingFollowing,
+    error: errorFollowing,
+    refetch: refetchFollowing,
+  } = useQuery(GET_FOLLOWING, {
+    variables: { userId: currentUser },
   });
 
   useFocusEffect(
     useCallback(() => {
-      refetch();
-    }, [refetch])
+      refetchFollowers();
+      refetchFollowing();
+    }, [refetchFollowers, refetchFollowing])
   );
 
   const [followUser] = useMutation(FOLLOW_USER);
@@ -73,42 +78,47 @@ export default function Followers({ userId, searchQuery }) {
       }
     } catch (error) {
       Alert.alert("Action Error", error.message);
-      return action;
+      return action; // Return the current action if there's an error
     }
   };
 
-  const loadMoreFollowers = async () => {
-    try {
-      const { data } = await fetchMore({
-        variables: { offset: offset + PAGE_LIMIT },
-      });
-      setAllFollowers((prev) => [...prev, ...data.getFollowers]);
-      setOffset((prevOffset) => prevOffset + PAGE_LIMIT);
-    } catch (error) {
-      console.error("Error loading more followers:", error);
-    }
-  };
-
-  const renderFollowerItem = ({ item }) => (
-    <UserRelationsCard
-      user={item}
-      initialAction={item.followStatus} // Follow status directly from the backend
-      onActionPress={handleActionPress}
-    />
+  const filteredFollowers = followersData?.getFollowers.filter((follower) =>
+    follower.fullName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (loadingFollowers && allFollowers.length === 0)
-    return <Text>Loading...</Text>;
-  if (errorFollowers) return <Text>Error: {errorFollowers.message}</Text>;
+  const renderFollowerItem = ({ item }) => {
+    let action = "Follow";
+    if (
+      followingData?.getFollowing.some(
+        (following) => following._id === item._id
+      )
+    ) {
+      action = "Following";
+    } else if (item.followRequests.some((req) => req._id === currentUser)) {
+      action = "Requested";
+    }
+
+    return (
+      <UserRelationsCard
+        user={item}
+        initialAction={action}
+        onActionPress={handleActionPress}
+      />
+    );
+  };
+
+  if (loadingFollowers || loadingFollowing) return <Text>Loading...</Text>;
+  if (errorFollowers || errorFollowing)
+    return (
+      <Text>Error: {errorFollowers?.message || errorFollowing?.message}</Text>
+    );
 
   return (
     <FlatList
-      data={allFollowers}
+      data={filteredFollowers}
       renderItem={renderFollowerItem}
       keyExtractor={(item) => item._id}
       style={layoutStyles.wrapper}
-      onEndReached={loadMoreFollowers}
-      onEndReachedThreshold={0.5}
     />
   );
 }

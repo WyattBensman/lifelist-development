@@ -332,8 +332,8 @@ type Score {
     # User Queries
     getUserProfileById(userId: ID!): UserProfileResponse
     getUserCounts(userId: ID!): UserCountsResponse
-    getFollowers(userId: ID!, limit: Int, offset: Int): [UserRelationsResponse]
-    getFollowing(userId: ID!, limit: Int, offset: Int): [UserRelationsResponse]
+    getFollowers(userId: ID!, limit: Int, offset: Int): [User]
+    getFollowing(userId: ID!, limit: Int, offset: Int): [User]
     getUserCollages(userId: ID!): [Collage]
     getRepostedCollages(userId: ID!): [Collage]
     getTaggedCollages(userId: ID!): [Collage]
@@ -405,15 +405,6 @@ type Score {
     collages: [Collage]
     repostedCollages: [Collage]
     collagesCount: Int
-  }
-
-  type UserRelationsResponse {
-    _id: ID!
-    username: String
-    fullName: String
-    profilePicture: String
-    followStatus: String
-    settings: UserSettings
   }
 
   type UserCountsResponse {

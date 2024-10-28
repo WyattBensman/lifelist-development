@@ -48,75 +48,39 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   }
 };
 
-export const getFollowers = async (_, { userId, limit = 25, offset = 0 }) => {
-  /* isUser(user); */
-  const user = User.findById("663a3129e0ffbeff092b81d4");
+export const getFollowers = async (_, { userId, limit = 25, offset = 0 }) =>
+  /* { user } */
+  {
+    /* isUser(user); */
+    const foundUser = await User.findById(userId)
+      .populate({
+        path: "followers",
+        select: "_id username fullName profilePicture settings followRequests",
+        populate: { path: "settings" },
+        options: { skip: offset, limit: limit },
+      })
+      .exec();
 
-  // Ensure `user.following` is defined and an array
-  if (!user.following) {
-    user = await User.findById(user._id).select("following").exec();
-  }
+    if (!foundUser) throw new Error("User not found.");
+    return foundUser.followers;
+  };
 
-  const foundUser = await User.findById(userId)
-    .populate({
-      path: "followers",
-      select: "_id username fullName profilePicture settings followRequests",
-      populate: { path: "settings" },
-      options: { skip: offset, limit: limit },
-    })
-    .exec();
+export const getFollowing = async (_, { userId, limit = 25, offset = 0 }) =>
+  /* { user } */
+  {
+    /* isUser(user); */
+    const foundUser = await User.findById(userId)
+      .populate({
+        path: "following",
+        select: "_id username fullName profilePicture settings followRequests",
+        populate: { path: "settings" },
+        options: { skip: offset, limit: limit },
+      })
+      .exec();
 
-  if (!foundUser) throw new Error("User not found.");
-
-  const followersWithStatus = foundUser.followers.map((follower) => {
-    let followStatus = "Follow"; // Default status
-    if (user.following && user.following.includes(follower._id)) {
-      followStatus = "Following";
-    } else if (follower.followRequests.some((req) => req.equals(user._id))) {
-      followStatus = "Requested";
-    }
-
-    return {
-      ...follower.toObject(),
-      followStatus,
-    };
-  });
-
-  return followersWithStatus;
-};
-
-export const getFollowing = async (_, { userId, limit = 25, offset = 0 }) => {
-  /* isUser(user); */
-  const user = User.findById("663a3129e0ffbeff092b81d4");
-  const foundUser = await User.findById(userId)
-    .populate({
-      path: "following",
-      select: "_id username fullName profilePicture settings followRequests",
-      populate: { path: "settings" },
-      options: { skip: offset, limit: limit },
-    })
-    .exec();
-
-  if (!foundUser) throw new Error("User not found.");
-
-  const followingWithStatus = foundUser.following.map((followingUser) => {
-    let followStatus = "Follow"; // Default status
-    if (user.following.includes(followingUser._id)) {
-      followStatus = "Following";
-    } else if (
-      followingUser.followRequests.some((req) => req.equals(user._id))
-    ) {
-      followStatus = "Requested";
-    }
-
-    return {
-      ...followingUser.toObject(),
-      followStatus,
-    };
-  });
-
-  return followingWithStatus;
-};
+    if (!foundUser) throw new Error("User not found.");
+    return foundUser.following;
+  };
 
 export const getUserCollages = async (_, { userId }) => {
   const foundUser = await User.findById(userId)

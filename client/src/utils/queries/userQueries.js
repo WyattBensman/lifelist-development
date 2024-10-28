@@ -40,7 +40,7 @@ export const GET_FOLLOWERS = gql`
       username
       fullName
       profilePicture
-      followStatus
+      followRequests
       settings {
         isProfilePrivate
       }
@@ -56,7 +56,7 @@ export const GET_FOLLOWING = gql`
       username
       fullName
       profilePicture
-      followStatus
+      followRequests
       settings {
         isProfilePrivate
       }
