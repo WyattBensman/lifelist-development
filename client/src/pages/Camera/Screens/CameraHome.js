@@ -57,11 +57,24 @@ export default function CameraHome() {
     return (nextMidnight - now) / 1000; // Time until midnight in seconds
   };
 
+  const [cameraType, setCameraType] = useState("Standard");
+
+  useEffect(() => {
+    const loadCameraType = async () => {
+      const storedCameraType = await getFromAsyncStorage("cameraType");
+      if (storedCameraType) {
+        setCameraType(storedCameraType);
+      }
+    };
+
+    loadCameraType();
+  }, []);
+
   // Load cameraType from AsyncStorage
-  const [cameraType, setCameraType] = useState(async () => {
+  /* const [cameraType, setCameraType] = useState(async () => {
     const storedCameraType = await getFromAsyncStorage("cameraType");
     return storedCameraType || "Standard";
-  });
+  }); */
 
   const [filter, setFilter] = useState("standardFilter");
 

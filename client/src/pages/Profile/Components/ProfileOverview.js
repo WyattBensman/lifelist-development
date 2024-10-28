@@ -133,7 +133,7 @@ export default function ProfileOverview({
           >
             <View style={styles.col}>
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {profile.collages.length}
+                {profile.collageCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Collages</Text>
             </View>

@@ -11,7 +11,21 @@ export const getUserProfileById = async (_, { userId }, { user }) => {
     if (!foundUser) {
       throw new Error("User not found.");
     }
-    return foundUser;
+
+    // Filter out collages and repostedCollages with archived set to true
+    const filteredCollages = foundUser.collages.filter(
+      (collage) => !collage.archived
+    );
+    const filteredRepostedCollages = foundUser.repostedCollages.filter(
+      (collage) => !collage.archived
+    );
+
+    // Return user with filtered collages
+    return {
+      ...foundUser.toObject(), // Convert Mongoose Document to plain JavaScript object
+      collages: filteredCollages,
+      repostedCollages: filteredRepostedCollages,
+    };
   } catch (error) {
     throw new Error("Database error: " + error.message);
   }
