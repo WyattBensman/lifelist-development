@@ -10,6 +10,7 @@ export default function Collages({ userId }) {
   const { data, loading, error, refetch } = useQuery(GET_USER_COLLAGES, {
     variables: { userId },
   });
+  console.log(userId);
 
   useFocusEffect(
     useCallback(() => {

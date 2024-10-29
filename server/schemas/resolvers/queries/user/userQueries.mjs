@@ -48,7 +48,7 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   }
 };
 
-export const getFollowers = async (_, { userId, limit = 20, offset = 0 }) => {
+/* export const getFollowers = async (_, { userId, limit = 20, offset = 0 }) => {
   const foundUser = await User.findById(userId)
     .populate({
       path: "followers",
@@ -80,6 +80,74 @@ export const getFollowing = async (_, { userId, limit = 20, offset = 0 }) => {
 
   if (!foundUser) throw new Error("User not found.");
   return foundUser.following;
+}; */
+
+export const getFollowers = async (
+  _,
+  { userId, limit = 20, lastSeenId = null }
+) => {
+  // Construct query for cursor-based pagination
+  const query = lastSeenId ? { _id: { $gt: lastSeenId } } : {};
+
+  // Find user and populate followers with pagination
+  const foundUser = await User.findById(userId)
+    .populate({
+      path: "followers",
+      match: query,
+      select: "_id username fullName profilePicture settings followRequests",
+      populate: [
+        { path: "settings" },
+        { path: "followRequests", select: "_id" },
+      ],
+      options: { limit: limit },
+    })
+    .exec();
+
+  if (!foundUser) throw new Error("User not found.");
+
+  // Return followers and last item ID as the cursor
+  const followers = foundUser.followers || [];
+  const lastFollower =
+    followers.length > 0 ? followers[followers.length - 1]._id : null;
+
+  return {
+    followers,
+    lastCursor: lastFollower,
+  };
+};
+
+export const getFollowing = async (
+  _,
+  { userId, limit = 20, lastSeenId = null }
+) => {
+  // Construct query for cursor-based pagination
+  const query = lastSeenId ? { _id: { $gt: lastSeenId } } : {};
+
+  // Find user and populate following with pagination
+  const foundUser = await User.findById(userId)
+    .populate({
+      path: "following",
+      match: query,
+      select: "_id username fullName profilePicture settings followRequests",
+      populate: [
+        { path: "settings" },
+        { path: "followRequests", select: "_id" },
+      ],
+      options: { limit: limit },
+    })
+    .exec();
+
+  if (!foundUser) throw new Error("User not found.");
+
+  // Return following and last item ID as the cursor
+  const following = foundUser.following || [];
+  const lastFollowing =
+    following.length > 0 ? following[following.length - 1]._id : null;
+
+  return {
+    following,
+    lastCursor: lastFollowing,
+  };
 };
 
 export const getUserCollages = async (_, { userId }) => {

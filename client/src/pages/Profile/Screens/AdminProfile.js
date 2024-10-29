@@ -16,6 +16,7 @@ import Icon from "../../../components/Icons/Icon";
 import {
   saveToAsyncStorage,
   getFromAsyncStorage,
+  isTTLValid,
 } from "../../../utils/cacheHelper";
 
 export default function AdminProfile() {
@@ -102,8 +103,7 @@ export default function AdminProfile() {
         if (
           followersCount !== null &&
           followingCount !== null &&
-          countsTimestamp &&
-          Date.now() - countsTimestamp < COUNTS_TTL
+          isTTLValid(countsTimestamp, COUNTS_TTL)
         ) {
           setFollowerData({ followersCount, followingCount });
         } else {
@@ -198,7 +198,7 @@ export default function AdminProfile() {
         keyExtractor={(item) => item.key}
         renderItem={() => (
           <CustomProfileNavigator
-            userId={profile._id}
+            userId={currentUser}
             isAdmin={true}
             isAdminScreen={true}
             navigation={navigation}

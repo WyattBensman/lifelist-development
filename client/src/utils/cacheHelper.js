@@ -45,6 +45,62 @@ export const cleanupCacheStore = () => {
   });
 };
 
+// ======================
+// Pagination Support
+// ======================
+
+// Save paginated data to cache
+export const savePaginatedToCacheStore = (
+  baseKey,
+  page,
+  value,
+  ttlInSeconds
+) => {
+  const key = `${baseKey}_page_${page}`;
+  saveToCacheStore(key, value, ttlInSeconds);
+};
+
+// Get paginated data from cache
+export const getPaginatedFromCacheStore = (baseKey, page) => {
+  const key = `${baseKey}_page_${page}`;
+  return getFromCacheStore(key);
+};
+
+// ========================
+// LRU Cache Management
+// ========================
+
+const MAX_CACHE_ENTRIES = 50;
+let cacheUsageOrder = [];
+
+// Update cache usage order for LRU management
+const updateCacheUsage = (key) => {
+  // Remove key if it exists to reinsert at the end
+  cacheUsageOrder = cacheUsageOrder.filter((k) => k !== key);
+  cacheUsageOrder.push(key);
+
+  // If cache exceeds max entries, remove the oldest entry
+  if (cacheUsageOrder.length > MAX_CACHE_ENTRIES) {
+    const oldestKey = cacheUsageOrder.shift();
+    delete cacheStore[oldestKey];
+  }
+};
+
+// Save data to cache with LRU tracking
+export const saveToCacheStoreLRU = (key, value, ttlInSeconds) => {
+  saveToCacheStore(key, value, ttlInSeconds);
+  updateCacheUsage(key);
+};
+
+// Get data from cache with LRU tracking
+export const getFromCacheStoreLRU = (key) => {
+  const value = getFromCacheStore(key);
+  if (value !== null) {
+    updateCacheUsage(key);
+  }
+  return value;
+};
+
 // ========================
 // AsyncStorage (Persistent)
 // ========================
@@ -131,41 +187,8 @@ export const clearExpiredCache = async () => {
   );
 };
 
-// Updated saveToCacheStore to include page-specific cache with expiration
-export const saveToCacheStoreWithPagination = (
-  key,
-  page,
-  value,
-  ttlInSeconds
-) => {
-  const expires = Date.now() + ttlInSeconds * 1000;
-  cacheStore[`${key}_page_${page}`] = { value, expires };
-};
-
-// Get data from cache with pagination and expiration check
-export const getFromCacheStoreWithPagination = (key, page) => {
-  const cacheEntry = cacheStore[`${key}_page_${page}`];
-  if (!cacheEntry) return null;
-
-  if (Date.now() > cacheEntry.expires) {
-    // Cache has expired, remove it
-    delete cacheStore[`${key}_page_${page}`];
-    return null;
-  }
-
-  return cacheEntry.value;
-};
-
-// Clear specific cache by key and page
-export const clearFromCacheStoreWithPagination = (key, page) => {
-  delete cacheStore[`${key}_page_${page}`];
-};
-
-// Clear all pages of a specific key
-export const clearAllPagesFromCacheStore = (key) => {
-  Object.keys(cacheStore).forEach((cacheKey) => {
-    if (cacheKey.startsWith(key)) {
-      delete cacheStore[cacheKey];
-    }
-  });
+// Reusable TTL check function
+export const isTTLValid = (timestamp, ttlInMilliseconds) => {
+  if (!timestamp) return false; // If no timestamp is provided, TTL is invalid
+  return Date.now() - timestamp < ttlInMilliseconds;
 };
