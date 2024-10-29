@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { FlatList, Alert, Text } from "react-native";
 import UserRelationsCard from "../../Cards/UserRelationsCard";
 import { layoutStyles } from "../../../../styles";
@@ -12,33 +12,35 @@ import {
   UNSEND_FOLLOW_REQUEST,
 } from "../../../../utils/mutations/userRelationsMutations";
 import { useFocusEffect } from "@react-navigation/native";
+import {
+  getPaginatedFromCacheStore,
+  savePaginatedToCacheStore,
+} from "../../../../utils/cacheHelper";
 
 export default function Following({ userId, searchQuery }) {
   const { currentUser } = useAuth();
+  const [lastSeenId, setLastSeenId] = useState(null);
+  const [followingDataCache, setFollowingDataCache] = useState([]);
 
   const {
     data: followingData,
     loading: loadingFollowing,
     error: errorFollowing,
-    refetch: refetchFollowing,
+    fetchMore,
   } = useQuery(GET_FOLLOWING, {
-    variables: { userId },
-  });
-
-  const {
-    data: currentUserFollowingData,
-    loading: loadingCurrentUserFollowing,
-    error: errorCurrentUserFollowing,
-    refetch: refetchCurrentUserFollowing,
-  } = useQuery(GET_FOLLOWING, {
-    variables: { userId: currentUser },
+    variables: { userId, limit: 20, lastSeenId },
   });
 
   useFocusEffect(
     useCallback(() => {
-      refetchFollowing();
-      refetchCurrentUserFollowing();
-    }, [refetchFollowing, refetchCurrentUserFollowing])
+      const cachedData = getPaginatedFromCacheStore(`following_${userId}`, 1);
+      if (cachedData) {
+        setFollowingDataCache(cachedData);
+      } else {
+        // Refetch if there's no cached data
+        fetchMore();
+      }
+    }, [fetchMore, userId])
   );
 
   const [followUser] = useMutation(FOLLOW_USER);
@@ -81,19 +83,33 @@ export default function Following({ userId, searchQuery }) {
     }
   };
 
-  const filteredFollowing = followingData?.getFollowing.filter((following) =>
+  const loadMoreFollowing = async () => {
+    if (followingData?.getFollowing.length > 0) {
+      const lastId =
+        followingData.getFollowing[followingData.getFollowing.length - 1]._id;
+      setLastSeenId(lastId);
+      const moreData = await fetchMore({
+        variables: { lastSeenId: lastId, limit: 20 },
+      });
+      setFollowingDataCache((prev) => [...prev, ...moreData.data.getFollowing]);
+      savePaginatedToCacheStore(
+        `following_${userId}`,
+        1,
+        followingDataCache,
+        15 * 60
+      );
+    }
+  };
+
+  const filteredFollowing = followingDataCache.filter((following) =>
     following.fullName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const renderFollowingItem = ({ item }) => {
     let action = "Follow";
-    if (
-      currentUserFollowingData?.getFollowing.some(
-        (following) => following._id === item._id
-      )
-    ) {
+    if (followingDataCache.some((following) => following._id === item._id)) {
       action = "Following";
-    } else if (item.followRequests.some((req) => req.userId === currentUser)) {
+    } else if (item.followRequests.some((req) => req._id === currentUser)) {
       action = "Requested";
     }
 
@@ -106,20 +122,16 @@ export default function Following({ userId, searchQuery }) {
     );
   };
 
-  if (loadingFollowing || loadingCurrentUserFollowing)
-    return <Text>Loading...</Text>;
-  if (errorFollowing || errorCurrentUserFollowing)
-    return (
-      <Text>
-        Error: {errorFollowing?.message || errorCurrentUserFollowing?.message}
-      </Text>
-    );
+  if (loadingFollowing) return <Text>Loading...</Text>;
+  if (errorFollowing) return <Text>Error: {errorFollowing.message}</Text>;
 
   return (
     <FlatList
       data={filteredFollowing}
       renderItem={renderFollowingItem}
       keyExtractor={(item) => item._id}
+      onEndReached={loadMoreFollowing}
+      onEndReachedThreshold={0.5}
       style={layoutStyles.wrapper}
     />
   );

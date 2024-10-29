@@ -48,7 +48,51 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   }
 };
 
-export const getFollowers = async (_, { userId, limit = 20, offset = 0 }) => {
+export const getFollowers = async (
+  _,
+  { userId, limit = 20, lastSeenId = null }
+) => {
+  const query = lastSeenId ? { _id: { $gt: lastSeenId } } : {};
+  const foundUser = await User.findById(userId)
+    .populate({
+      path: "followers",
+      match: query,
+      select: "_id username fullName profilePicture settings followRequests",
+      populate: [
+        { path: "settings" },
+        { path: "followRequests", select: "_id" },
+      ],
+      options: { limit: limit },
+    })
+    .exec();
+
+  if (!foundUser) throw new Error("User not found.");
+  return foundUser.followers || [];
+};
+
+export const getFollowing = async (
+  _,
+  { userId, limit = 20, lastSeenId = null }
+) => {
+  const query = lastSeenId ? { _id: { $gt: lastSeenId } } : {};
+  const foundUser = await User.findById(userId)
+    .populate({
+      path: "following",
+      match: query,
+      select: "_id username fullName profilePicture settings followRequests",
+      populate: [
+        { path: "settings" },
+        { path: "followRequests", select: "_id" },
+      ],
+      options: { limit: limit },
+    })
+    .exec();
+
+  if (!foundUser) throw new Error("User not found.");
+  return foundUser.following || [];
+};
+
+/* export const getFollowers = async (_, { userId, limit = 20, offset = 0 }) => {
   const foundUser = await User.findById(userId)
     .populate({
       path: "followers",
@@ -80,7 +124,7 @@ export const getFollowing = async (_, { userId, limit = 20, offset = 0 }) => {
 
   if (!foundUser) throw new Error("User not found.");
   return foundUser.following;
-};
+}; */
 
 export const getUserCollages = async (_, { userId }) => {
   const foundUser = await User.findById(userId)
