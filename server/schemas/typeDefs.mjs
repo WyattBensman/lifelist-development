@@ -353,7 +353,7 @@ type Score {
   
     # LifeList Queries
     getCurrentUserLifeList: LifeList
-    getUserLifeList(userId: ID!): LifeList
+    getUserLifeList(userId: ID!): LifeListResponse
     getExperiencedList(lifeListId: ID!): [LifeListExperience]
     getWishListedList(lifeListId: ID!): [LifeListExperience]
     getLifeListExperience(experienceId: ID!): LifeListExperience
@@ -427,6 +427,27 @@ type Score {
     isRepostedByCurrentUser: Boolean
     isSavedByCurrentUser: Boolean
     hasParticipants: Boolean
+  }
+
+  type LifeListResponse {
+    _id: ID!
+    experiences: [LifeListExperienceResponse]
+  }
+
+  type LifeListExperienceResponse {
+    _id: ID!
+    list: String
+    experience: ExperienceResponse
+    hasAssociatedShots: Boolean
+    hasAssociatedCollages: Boolean
+  }
+
+  type ExperienceResponse {
+    _id: ID!
+    title: String!
+    image: String!
+    category: String!
+    subCategory: String
   }
 
   type UserProfileInformation {

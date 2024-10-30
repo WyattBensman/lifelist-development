@@ -12,14 +12,17 @@ export default function UserRelations() {
   const navigation = useNavigation();
   const route = useRoute();
   const { setIsTabBarVisible } = useNavigationContext();
-  const userId = route.params?.params?.userId; // Get the userId from the route parameters
-  const initialTab = route.params?.params?.initialTab || "Followers"; // Get the initialTab from the route parameters
+
+  const userId = route.params?.userId;
+  const initialTab = route.params?.initialTab || "Followers";
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     setIsTabBarVisible(false);
     return () => setIsTabBarVisible(true);
   }, [setIsTabBarVisible]);
+
+  console.log(`UserId: ${userId}`);
 
   return (
     <View style={layoutStyles.wrapper}>

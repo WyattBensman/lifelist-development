@@ -19,8 +19,8 @@ export const getCurrentUserLifeList = async (_, __, { user }) => {
   return lifeList;
 };
 
-export const getUserLifeList = async (_, { userId }, { user }) => {
-  isUser(user);
+export const getUserLifeList = async (_, { userId }) => {
+  /* isUser(user); */
 
   const lifeList = await LifeList.findOne({ author: userId })
     .populate({
@@ -43,7 +43,15 @@ export const getUserLifeList = async (_, { userId }, { user }) => {
     .exec();
 
   if (!lifeList) throw new Error("LifeList not found for the specified user.");
-  return lifeList;
+
+  // Modify lifeList data to add boolean fields
+  const experiencesWithBooleans = lifeList.experiences.map((experience) => ({
+    ...experience.toObject(), // convert mongoose doc to plain object
+    hasAssociatedShots: experience.associatedShots.length > 0,
+    hasAssociatedCollages: experience.associatedCollages.length > 0,
+  }));
+
+  return { ...lifeList.toObject(), experiences: experiencesWithBooleans };
 };
 
 export const getExperiencedList = async (_, { lifeListId }) => {

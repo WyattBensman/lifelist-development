@@ -15,6 +15,7 @@ import {
 
 export default function ProfileOverview({
   profile,
+  userId,
   followerData,
   isAdminView,
   isAdminScreen,
@@ -22,7 +23,6 @@ export default function ProfileOverview({
 }) {
   const navigation = useNavigation();
   const { currentUser, updateCurrentUser } = useAuth();
-  const userId = profile._id;
 
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const [isPendingRequest, setIsPendingRequest] = useState(false);
@@ -144,16 +144,13 @@ export default function ProfileOverview({
                   ? navigation.push("ProfileStack", {
                       screen: "UserRelations",
                       params: {
-                        screen: "Followers",
-                        params: {
-                          userId: profile._id,
-                          initialTab: "Followers",
-                        },
+                        userId: userId,
+                        initialTab: "Followers",
                       },
                     })
                   : navigation.push("UserRelations", {
-                      screen: "Followers",
-                      params: { userId: profile._id, initialTab: "Followers" },
+                      userId: userId,
+                      initialTab: "Followers",
                     })
               }
             >
@@ -169,16 +166,13 @@ export default function ProfileOverview({
                   ? navigation.push("ProfileStack", {
                       screen: "UserRelations",
                       params: {
-                        screen: "Following",
-                        params: {
-                          userId: profile._id,
-                          initialTab: "Following",
-                        },
+                        userId: userId,
+                        initialTab: "Following",
                       },
                     })
                   : navigation.push("UserRelations", {
-                      screen: "Following",
-                      params: { userId: profile._id, initialTab: "Following" },
+                      userId: userId,
+                      initialTab: "Following",
                     })
               }
             >

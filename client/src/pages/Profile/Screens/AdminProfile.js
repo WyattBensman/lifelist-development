@@ -207,6 +207,7 @@ export default function AdminProfile() {
         ListHeaderComponent={() => (
           <ProfileOverview
             profile={profile}
+            userId={currentUser}
             followerData={
               followerData || { followersCount: 0, followingCount: 0 }
             }
