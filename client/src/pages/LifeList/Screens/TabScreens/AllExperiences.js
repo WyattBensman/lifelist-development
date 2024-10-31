@@ -32,7 +32,7 @@ export default function AllExperiences({ lifeList, navigation }) {
     <ExperienceCard
       experience={item.experience}
       lifeListExperienceId={item._id}
-      associatedShots={item.associatedShots}
+      hasAssociatedShots={item.hasAssociatedShots}
       navigation={navigation}
     />
   );

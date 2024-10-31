@@ -26,7 +26,6 @@ export default function AdminProfile() {
   const [cachedProfile, setCachedProfile] = useState(null); // Store cached profile
   const [followerData, setFollowerData] = useState(null); // Store cached counts
   const rotateAnim = useRef(new Animated.Value(0)).current;
-  console.log(followerData);
 
   // Cache keys for AsyncStorage
   const cacheKeys = {

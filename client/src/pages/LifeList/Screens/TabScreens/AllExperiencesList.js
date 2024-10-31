@@ -21,7 +21,12 @@ export default function AllExperiencesList({
     .sort(sortByTitle);
 
   const renderExperience = ({ item }) => (
-    <ListItemCard experience={item} editMode={editMode} onDelete={onDelete} />
+    <ListItemCard
+      experience={item}
+      hasAssociatedShots={item.hasAssociatedShots}
+      editMode={editMode}
+      onDelete={onDelete}
+    />
   );
 
   return (

@@ -34,8 +34,8 @@ export const GET_USER_COUNTS = gql`
 
 // Followers
 export const GET_FOLLOWERS = gql`
-  query GetFollowing($userId: ID!, $limit: Int, $lastSeenId: ID) {
-    getFollowing(userId: $userId, limit: $limit, lastSeenId: $lastSeenId) {
+  query GetFollowers($userId: ID!) {
+    getFollowers(userId: $userId) {
       _id
       username
       fullName
@@ -52,6 +52,24 @@ export const GET_FOLLOWERS = gql`
 
 // Following
 export const GET_FOLLOWING = gql`
+  query GetFollowing($userId: ID!) {
+    getFollowing(userId: $userId) {
+      _id
+      username
+      fullName
+      profilePicture
+      settings {
+        isProfilePrivate
+      }
+      followRequests {
+        _id
+      }
+    }
+  }
+`;
+
+// Followers
+/* export const GET_FOLLOWERS = gql`
   query GetFollowing($userId: ID!, $limit: Int, $lastSeenId: ID) {
     getFollowing(userId: $userId, limit: $limit, lastSeenId: $lastSeenId) {
       _id
@@ -66,7 +84,25 @@ export const GET_FOLLOWING = gql`
       }
     }
   }
-`;
+`; */
+
+// Following
+/* export const GET_FOLLOWING = gql`
+  query GetFollowing($userId: ID!, $limit: Int, $lastSeenId: ID) {
+    getFollowing(userId: $userId, limit: $limit, lastSeenId: $lastSeenId) {
+      _id
+      username
+      fullName
+      profilePicture
+      settings {
+        isProfilePrivate
+      }
+      followRequests {
+        _id
+      }
+    }
+  }
+`; */
 
 // User Collages
 export const GET_USER_COLLAGES = gql`

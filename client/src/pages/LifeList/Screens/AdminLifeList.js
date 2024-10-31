@@ -17,34 +17,57 @@ import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
 import SearchBar from "../../../components/SearchBar";
 import { iconStyles } from "../../../styles/iconStyles";
 import Icon from "../../../components/Icons/Icon";
+import {
+  getFromAsyncStorage,
+  saveToAsyncStorage,
+} from "../../../utils/cacheHelper";
 
 export default function AdminLifeList() {
   const { currentUser } = useAuth();
   const navigation = useNavigation();
-  const [isAdmin, setIsAdmin] = useState(false);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [searchBarVisible, setSearchBarVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [cachedLifeList, setCachedLifeList] = useState(null);
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
-  const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
+  const cacheKey = `user_lifeList_${currentUser}`;
+
+  // Only fetch if there's no cached data
+  const { data, loading, error } = useQuery(GET_USER_LIFELIST, {
     variables: { userId: currentUser },
+    skip: !!cachedLifeList, // Skip fetching if cached data exists
   });
+
+  // Load cached LifeList on mount
+  useEffect(() => {
+    const loadCachedLifeList = async () => {
+      const cachedData = await getFromAsyncStorage(cacheKey);
+      if (cachedData) {
+        console.log("Using cached LifeList data for current user");
+        setCachedLifeList(cachedData);
+      }
+    };
+    loadCachedLifeList();
+  }, []);
+
+  // Cache LifeList after fetching if no cache was found initially
+  useEffect(() => {
+    if (data && !cachedLifeList) {
+      console.log("Fetched LifeList data from server and updating cache");
+      const lifeListData = data.getUserLifeList;
+      setCachedLifeList(lifeListData);
+      saveToAsyncStorage(cacheKey, lifeListData);
+    }
+  }, [data, cachedLifeList]);
 
   useFocusEffect(
     useCallback(() => {
-      refetch();
       return () => {
         setDropdownVisible(false);
       };
-    }, [refetch])
+    }, [])
   );
-
-  useEffect(() => {
-    if (data) {
-      setIsAdmin(true);
-    }
-  }, [data]);
 
   useEffect(() => {
     Animated.timing(rotateAnim, {
@@ -59,7 +82,8 @@ export default function AdminLifeList() {
     outputRange: ["0deg", "90deg"],
   });
 
-  const lifeList = data?.getUserLifeList || { experiences: [] };
+  const lifeList = cachedLifeList ||
+    data?.getUserLifeList || { experiences: [] };
 
   const filteredExperiences = useMemo(() => {
     if (!searchQuery) return lifeList.experiences;

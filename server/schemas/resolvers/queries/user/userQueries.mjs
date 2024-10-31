@@ -48,7 +48,33 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   }
 };
 
-export const getFollowers = async (
+export const getFollowers = async (_, { userId }, { user }) => {
+  isUser(user);
+  const foundUser = await User.findById(userId)
+    .populate({
+      path: "followers",
+      select: "_id username fullName profilePicture settings followRequests",
+      populate: { path: "settings" },
+    })
+    .exec();
+  if (!foundUser) throw new Error("User not found.");
+  return foundUser.followers;
+};
+
+export const getFollowing = async (_, { userId }, { user }) => {
+  isUser(user);
+  const foundUser = await User.findById(userId)
+    .populate({
+      path: "following",
+      select: "_id username fullName profilePicture settings followRequests",
+      populate: { path: "settings" },
+    })
+    .exec();
+  if (!foundUser) throw new Error("User not found.");
+  return foundUser.following;
+};
+
+/* export const getFollowers = async (
   _,
   { userId, limit = 20, lastSeenId = null }
 ) => {
@@ -90,7 +116,7 @@ export const getFollowing = async (
 
   if (!foundUser) throw new Error("User not found.");
   return foundUser.following || [];
-};
+}; */
 
 /* export const getFollowers = async (_, { userId, limit = 20, offset = 0 }) => {
   const foundUser = await User.findById(userId)

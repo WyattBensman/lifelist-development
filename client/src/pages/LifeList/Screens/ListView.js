@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { useRoute, useFocusEffect } from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import ListViewNavigator from "../Navigation/ListViewNavigator";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
@@ -12,36 +12,62 @@ import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
 import Icon from "../../../components/Icons/Icon";
+import {
+  getFromAsyncStorage,
+  saveToAsyncStorage,
+} from "../../../utils/cacheHelper";
 
 export default function ListView({ navigation }) {
   const route = useRoute();
   const { setIsTabBarVisible } = useNavigationContext();
+  const { currentUser } = useAuth();
   const [editMode, setEditMode] = useState(false);
   const [viewType, setViewType] = useState("EXPERIENCED");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-
-  const { currentUser } = useAuth();
-  const userId = route.params?.userId || currentUser;
-
-  const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
-    variables: { userId },
-    skip: !!route.params?.lifeList, // Skip fetching if data is passed
-  });
-
-  const [lifeList, setLifeList] = useState(
-    route.params?.lifeList || { experiences: [] }
-  );
-
-  const [removeExperience] = useMutation(REMOVE_EXPERIENCE_FROM_LIFELIST);
-
+  const [lifeList, setLifeList] = useState({ experiences: [] });
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedExperienceId, setSelectedExperienceId] = useState(null);
+  const [isCacheLoaded, setIsCacheLoaded] = useState(false);
+  const [cacheLoading, setCacheLoading] = useState(true); // Track cache loading state
 
-  useFocusEffect(() => {
+  const userId = route.params?.userId || currentUser;
+  const isCurrentUser = userId === currentUser;
+  const cacheKey = `user_lifeList_${currentUser}`;
+
+  // Load cached LifeList for the current user initially
+  useEffect(() => {
+    const loadCachedLifeList = async () => {
+      if (isCurrentUser) {
+        const cachedData = await getFromAsyncStorage(cacheKey);
+        if (cachedData) {
+          console.log("Using cached LifeList data for current user");
+          setLifeList(cachedData);
+          setIsCacheLoaded(true); // Set to true if cache is used
+        }
+      }
+      setCacheLoading(false); // Cache loading complete
+    };
+    loadCachedLifeList();
+  }, [isCurrentUser, cacheKey]);
+
+  // Only execute useQuery after cache loading is complete
+  const { data, loading, error } = useQuery(GET_USER_LIFELIST, {
+    variables: { userId },
+    skip: cacheLoading || (isCurrentUser && isCacheLoaded),
+    onCompleted: (data) => {
+      if (data && isCurrentUser) {
+        console.log("Fetched LifeList data from server and updating cache");
+        setLifeList(data.getUserLifeList);
+        saveToAsyncStorage(cacheKey, data.getUserLifeList);
+      }
+    },
+  });
+
+  useEffect(() => {
     setIsTabBarVisible(false);
     return () => setIsTabBarVisible(true);
-  });
+  }, []);
 
   useEffect(() => {
     if (route.params?.editMode) {
@@ -49,27 +75,12 @@ export default function ListView({ navigation }) {
     }
   }, [route.params?.editMode]);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (!route.params?.lifeList) {
-        refetch();
-      }
-    }, [refetch, route.params?.lifeList])
-  );
-
-  useEffect(() => {
-    if (data && !route.params?.lifeList) {
-      setLifeList(data.getUserLifeList);
-    }
-  }, [data, route.params?.lifeList]);
-
   const toggleEditMode = () => {
     setEditMode(!editMode);
   };
 
   const handleViewTypeChange = (type) => {
     setViewType(type);
-    refetch(); // Refetch data whenever viewType changes
   };
 
   const handleBackPress = () => {
@@ -81,6 +92,8 @@ export default function ListView({ navigation }) {
       navigation.goBack();
     }
   };
+
+  const [removeExperience] = useMutation(REMOVE_EXPERIENCE_FROM_LIFELIST);
 
   const handleDeleteExperience = (experienceId) => {
     setSelectedExperienceId(experienceId);
@@ -108,11 +121,10 @@ export default function ListView({ navigation }) {
     }
   };
 
-  if (loading) return <LoadingScreen />;
+  if (loading && !lifeList.experiences.length) return <LoadingScreen />;
   if (error) return <Text>Error: {error.message}</Text>;
 
   const lifeListData = route.params?.lifeList || lifeList;
-  console.log(lifeListData);
 
   return (
     <View style={layoutStyles.wrapper}>

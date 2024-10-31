@@ -1,10 +1,13 @@
-import React, { useState, useCallback } from "react";
-import { FlatList, Alert, Text } from "react-native";
+import React, { useCallback } from "react";
+import { FlatList, Alert, Text, View } from "react-native";
 import UserRelationsCard from "../../Cards/UserRelationsCard";
 import { layoutStyles } from "../../../../styles";
 import { useMutation, useQuery } from "@apollo/client";
 import { useAuth } from "../../../../contexts/AuthContext";
-import { GET_FOLLOWERS } from "../../../../utils/queries/userQueries";
+import {
+  GET_FOLLOWERS,
+  GET_FOLLOWING,
+} from "../../../../utils/queries/userQueries";
 import {
   FOLLOW_USER,
   SEND_FOLLOW_REQUEST,
@@ -12,35 +15,31 @@ import {
   UNSEND_FOLLOW_REQUEST,
 } from "../../../../utils/mutations/userRelationsMutations";
 import { useFocusEffect } from "@react-navigation/native";
-import {
-  getPaginatedFromCacheStore,
-  savePaginatedToCacheStore,
-} from "../../../../utils/cacheHelper";
 
 export default function Followers({ userId, searchQuery }) {
   const { currentUser } = useAuth();
-  const [lastSeenId, setLastSeenId] = useState(null);
-  const [followersDataCache, setFollowersDataCache] = useState([]);
-
   const {
     data: followersData,
     loading: loadingFollowers,
     error: errorFollowers,
-    fetchMore,
+    refetch: refetchFollowers,
   } = useQuery(GET_FOLLOWERS, {
-    variables: { userId, limit: 20, lastSeenId },
+    variables: { userId },
+  });
+  const {
+    data: followingData,
+    loading: loadingFollowing,
+    error: errorFollowing,
+    refetch: refetchFollowing,
+  } = useQuery(GET_FOLLOWING, {
+    variables: { userId: currentUser },
   });
 
   useFocusEffect(
     useCallback(() => {
-      const cachedData = getPaginatedFromCacheStore(`followers_${userId}`, 1);
-      if (cachedData) {
-        setFollowersDataCache(cachedData);
-      } else {
-        // Refetch if there's no cached data
-        fetchMore();
-      }
-    }, [fetchMore, userId])
+      refetchFollowers();
+      refetchFollowing();
+    }, [refetchFollowers, refetchFollowing])
   );
 
   const [followUser] = useMutation(FOLLOW_USER);
@@ -83,31 +82,17 @@ export default function Followers({ userId, searchQuery }) {
     }
   };
 
-  const loadMoreFollowers = async () => {
-    if (followersData?.getFollowers.length > 0) {
-      const lastId =
-        followersData.getFollowers[followersData.getFollowers.length - 1]._id;
-      setLastSeenId(lastId);
-      const moreData = await fetchMore({
-        variables: { lastSeenId: lastId, limit: 20 },
-      });
-      setFollowersDataCache((prev) => [...prev, ...moreData.data.getFollowers]);
-      savePaginatedToCacheStore(
-        `followers_${userId}`,
-        1,
-        followersDataCache,
-        15 * 60
-      );
-    }
-  };
-
-  const filteredFollowers = followersDataCache.filter((follower) =>
+  const filteredFollowers = followersData?.getFollowers.filter((follower) =>
     follower.fullName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const renderFollowerItem = ({ item }) => {
     let action = "Follow";
-    if (followersDataCache.some((follower) => follower._id === item._id)) {
+    if (
+      followingData?.getFollowing.some(
+        (following) => following._id === item._id
+      )
+    ) {
       action = "Following";
     } else if (item.followRequests.some((req) => req._id === currentUser)) {
       action = "Requested";
@@ -122,16 +107,17 @@ export default function Followers({ userId, searchQuery }) {
     );
   };
 
-  if (loadingFollowers) return <Text>Loading...</Text>;
-  if (errorFollowers) return <Text>Error: {errorFollowers.message}</Text>;
+  if (loadingFollowers || loadingFollowing) return <Text>Loading...</Text>;
+  if (errorFollowers || errorFollowing)
+    return (
+      <Text>Error: {errorFollowers?.message || errorFollowing?.message}</Text>
+    );
 
   return (
     <FlatList
       data={filteredFollowers}
       renderItem={renderFollowerItem}
       keyExtractor={(item) => item._id}
-      onEndReached={loadMoreFollowers}
-      onEndReachedThreshold={0.5}
       style={layoutStyles.wrapper}
     />
   );

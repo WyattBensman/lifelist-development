@@ -21,7 +21,12 @@ import IconStatic from "../../../components/Icons/IconStatic";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
 import { SymbolView } from "expo-symbols"; // Import SymbolView
 
-export default function ListItemCard({ experience, editMode, onDelete }) {
+export default function ListItemCard({
+  experience,
+  editMode,
+  onDelete,
+  hasAssociatedShots,
+}) {
   const navigation = useNavigation();
   const [isSelected, setIsSelected] = useState(false);
   const [isEditMode, setIsEditMode] = useState(editMode);
@@ -43,7 +48,7 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
   const handlePress = () => {
     if (isEditMode) {
       setIsSelected(!isSelected);
-    } else if (associatedShots && associatedShots.length > 0) {
+    } else if (hasAssociatedShots) {
       navigation.navigate("LifeListStack", {
         screen: "ViewExperience",
         params: { experienceId: _id },
@@ -56,7 +61,7 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
   };
 
   const handleToggleListStatus = async () => {
-    if (listStatus === "EXPERIENCED" && associatedShots.length > 0) {
+    if (listStatus === "EXPERIENCED" && hasAssociatedShots) {
       setIsAlertVisible(true);
     } else {
       const newListStatus =
@@ -148,7 +153,7 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
             <Text style={styles.title}>{truncatedTitle}</Text>
             <View style={styles.secondaryTextContainer}>
               <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
-              {associatedShots && associatedShots.length > 0 && (
+              {hasAssociatedShots && (
                 <SymbolView
                   name="photo.on.rectangle"
                   style={styles.photoIcon}
@@ -185,9 +190,7 @@ export default function ListItemCard({ experience, editMode, onDelete }) {
                   onPress={handleManageShots}
                 >
                   <Text style={styles.optionsText}>
-                    {associatedShots.length === 0
-                      ? "Add Shots"
-                      : "Manage Shots"}
+                    {hasAssociatedShots ? "Manage Shots" : "Add Shots"}
                   </Text>
                 </Pressable>
               )}

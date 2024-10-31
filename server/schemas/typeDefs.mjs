@@ -332,8 +332,8 @@ type Score {
     # User Queries
     getUserProfileById(userId: ID!): UserProfileResponse
     getUserCounts(userId: ID!): UserCountsResponse
-    getFollowers(userId: ID!, limit: Int, lastSeenId: ID): [UserRelationsResponse]
-    getFollowing(userId: ID!, limit: Int, lastSeenId: ID): [UserRelationsResponse]
+    getFollowers(userId: ID!): [User]
+    getFollowing(userId: ID!): [User]
     getUserCollages(userId: ID!): [Collage]
     getRepostedCollages(userId: ID!): [Collage]
     getTaggedCollages(userId: ID!): [Collage]

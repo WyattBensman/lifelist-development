@@ -32,17 +32,6 @@ export const GET_USER_LIFELIST = gql`
       experiences {
         _id
         list
-        associatedCollages {
-          _id
-          coverImage
-        }
-        associatedShots {
-          isHidden
-          shot {
-            _id
-            image
-          }
-        }
         experience {
           _id
           title
@@ -50,6 +39,8 @@ export const GET_USER_LIFELIST = gql`
           category
           subCategory
         }
+        hasAssociatedShots
+        hasAssociatedCollages
       }
     }
   }

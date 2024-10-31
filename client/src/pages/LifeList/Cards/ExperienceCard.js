@@ -14,7 +14,7 @@ import { SymbolView } from "expo-symbols";
 export default function ExperienceCard({
   experience,
   lifeListExperienceId,
-  associatedShots,
+  hasAssociatedShots,
   navigation,
 }) {
   const screenWidth = Dimensions.get("window").width;
@@ -24,11 +24,10 @@ export default function ExperienceCard({
 
   const imageUrl = `${BASE_URL}${experience.image}`;
   const truncatedTitle = truncateText(experience.title, 20);
-  // CHANGE TO SUBCATEGORY
   const capitalizedCategory = capitalizeText(experience.category);
 
   const handlePress = () => {
-    if (associatedShots && associatedShots.length > 0) {
+    if (hasAssociatedShots) {
       navigation.navigate("LifeListStack", {
         screen: "ViewExperience",
         params: { experienceId: lifeListExperienceId },
@@ -37,15 +36,12 @@ export default function ExperienceCard({
   };
 
   return (
-    <Pressable
-      onPress={handlePress}
-      disabled={!associatedShots || associatedShots.length === 0}
-    >
+    <Pressable onPress={handlePress} disabled={!hasAssociatedShots}>
       <View
         style={[
           styles.cardContainer,
           { width: cardWidth, height: cardHeight },
-          associatedShots && associatedShots.length > 0 && styles.cardShadow,
+          hasAssociatedShots && styles.cardShadow,
         ]}
       >
         <Image
@@ -56,7 +52,7 @@ export default function ExperienceCard({
           <Text style={styles.title}>{truncatedTitle}</Text>
           <View style={styles.secondaryTextContainer}>
             <Text style={styles.secondaryText}>{capitalizedCategory}</Text>
-            {associatedShots && associatedShots.length > 0 && (
+            {hasAssociatedShots && (
               <SymbolView
                 name="photo.on.rectangle"
                 style={styles.photoIcon}
