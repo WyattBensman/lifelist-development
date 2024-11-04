@@ -20,6 +20,8 @@ import Icon from "../../../components/Icons/Icon";
 import {
   getFromAsyncStorage,
   saveToAsyncStorage,
+  saveImageToFileSystem,
+  getImageFromFileSystem,
 } from "../../../utils/cacheHelper";
 
 export default function AdminLifeList() {
@@ -45,6 +47,7 @@ export default function AdminLifeList() {
       const cachedData = await getFromAsyncStorage(cacheKey);
       if (cachedData) {
         console.log("Using cached LifeList data for current user");
+        console.log("Cached LifeList Metadata:", cachedData);
         setCachedLifeList(cachedData);
       }
     };
@@ -58,8 +61,28 @@ export default function AdminLifeList() {
       const lifeListData = data.getUserLifeList;
       setCachedLifeList(lifeListData);
       saveToAsyncStorage(cacheKey, lifeListData);
+      cacheExperienceImages(lifeListData.experiences);
     }
   }, [data, cachedLifeList]);
+
+  // Cache experience images to FileSystem
+  const cacheExperienceImages = async (experiences) => {
+    for (const exp of experiences) {
+      const imageKey = `experience_image_${exp.experience._id}`;
+      const cachedImageUri = await getImageFromFileSystem(imageKey);
+      if (!cachedImageUri) {
+        console.log(`Caching image for experience: ${exp.experience.title}`);
+        await saveImageToFileSystem(imageKey, exp.experience.image);
+        console.log(
+          `Image for experience ${exp.experience.title} saved to FileSystem.`
+        );
+      } else {
+        console.log(
+          `Image for experience ${exp.experience.title} already cached at: ${cachedImageUri}`
+        );
+      }
+    }
+  };
 
   useFocusEffect(
     useCallback(() => {

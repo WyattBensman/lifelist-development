@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Image,
   StyleSheet,
@@ -10,6 +10,7 @@ import {
 import { capitalizeText, truncateText } from "../../../utils/utils";
 import { BASE_URL } from "../../../utils/config";
 import { SymbolView } from "expo-symbols";
+import { getImageFromFileSystem } from "../../../utils/cacheHelper";
 
 export default function ExperienceCard({
   experience,
@@ -22,7 +23,26 @@ export default function ExperienceCard({
   const imageHeight = cardWidth * 1.3375;
   const cardHeight = imageHeight + 44;
 
-  const imageUrl = `${BASE_URL}${experience.image}`;
+  const [cachedImageUri, setCachedImageUri] = useState(null);
+
+  // Construct the image key
+  const imageKey = `experience_image_${experience._id}`;
+
+  useEffect(() => {
+    const fetchCachedImage = async () => {
+      try {
+        const cachedUri = await getImageFromFileSystem(imageKey);
+        if (cachedUri) {
+          setCachedImageUri(cachedUri);
+        }
+      } catch (error) {
+        console.error("Error fetching cached image:", error);
+      }
+    };
+    fetchCachedImage();
+  }, [imageKey]);
+
+  const imageUrl = cachedImageUri || `${BASE_URL}${experience.image}`;
   const truncatedTitle = truncateText(experience.title, 20);
   const capitalizedCategory = capitalizeText(experience.category);
 

@@ -8,6 +8,11 @@ import {
 } from "../../../styles";
 import { useAuth } from "../../../contexts/AuthContext";
 import IconStatic from "../../../components/Icons/IconStatic";
+import {
+  clearAllAsyncStorage,
+  clearAllCacheStore,
+  clearAllFileSystemCache,
+} from "../../../utils/cacheHelper";
 
 export default function AdminOptionsPopup({
   visible,
@@ -18,7 +23,14 @@ export default function AdminOptionsPopup({
     navigation.navigate(screen, params);
     onRequestClose();
   };
-  const { logout, currentUser } = useAuth();
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await clearAllCacheStore();
+    await clearAllAsyncStorage();
+    await clearAllFileSystemCache();
+    logout();
+  };
 
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={508}>
@@ -160,7 +172,7 @@ export default function AdminOptionsPopup({
           />
         </View>
         <Pressable
-          onPress={logout}
+          onPress={handleLogout}
           style={[popupStyles.cardContainer, layoutStyles.flex]}
         >
           <Text

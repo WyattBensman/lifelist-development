@@ -36,7 +36,6 @@ export default function ListItemCard({
 
   const imageUrl = `${BASE_URL}${experience.experience.image}`;
   const truncatedTitle = truncateText(experience.experience.title, 40);
-  // CHANGE TO SUBCATEGORY
   const capitalizedCategory = capitalizeText(experience.experience.category);
   const { _id, associatedShots } = experience;
 
