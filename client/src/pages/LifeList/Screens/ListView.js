@@ -4,18 +4,13 @@ import { useRoute } from "@react-navigation/native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import ListViewNavigator from "../Navigation/ListViewNavigator";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
-import { useQuery, useMutation } from "@apollo/client";
-import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
+import { useMutation } from "@apollo/client";
 import { REMOVE_EXPERIENCE_FROM_LIFELIST } from "../../../utils/mutations";
 import { useAuth } from "../../../contexts/AuthContext";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import LoadingScreen from "../../Loading/LoadingScreen";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
 import Icon from "../../../components/Icons/Icon";
-import {
-  getFromAsyncStorage,
-  saveToAsyncStorage,
-} from "../../../utils/cacheHelper";
 
 export default function ListView({ navigation }) {
   const route = useRoute();
@@ -25,44 +20,16 @@ export default function ListView({ navigation }) {
   const [viewType, setViewType] = useState("EXPERIENCED");
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [lifeList, setLifeList] = useState({ experiences: [] });
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedExperienceId, setSelectedExperienceId] = useState(null);
-  const [isCacheLoaded, setIsCacheLoaded] = useState(false);
-  const [cacheLoading, setCacheLoading] = useState(true); // Track cache loading state
+
+  // Initialize lifeList state with the data passed from the route params
+  const [lifeList, setLifeList] = useState(
+    route.params?.lifeList || { experiences: [] }
+  );
 
   const userId = route.params?.userId || currentUser;
   const isCurrentUser = userId === currentUser;
-  const cacheKey = `user_lifeList_${currentUser}`;
-
-  // Load cached LifeList for the current user initially
-  useEffect(() => {
-    const loadCachedLifeList = async () => {
-      if (isCurrentUser) {
-        const cachedData = await getFromAsyncStorage(cacheKey);
-        if (cachedData) {
-          console.log("Using cached LifeList data for current user");
-          setLifeList(cachedData);
-          setIsCacheLoaded(true); // Set to true if cache is used
-        }
-      }
-      setCacheLoading(false); // Cache loading complete
-    };
-    loadCachedLifeList();
-  }, [isCurrentUser, cacheKey]);
-
-  // Only execute useQuery after cache loading is complete
-  const { data, loading, error } = useQuery(GET_USER_LIFELIST, {
-    variables: { userId },
-    skip: cacheLoading || (isCurrentUser && isCacheLoaded),
-    onCompleted: (data) => {
-      if (data && isCurrentUser) {
-        console.log("Fetched LifeList data from server and updating cache");
-        setLifeList(data.getUserLifeList);
-        saveToAsyncStorage(cacheKey, data.getUserLifeList);
-      }
-    },
-  });
 
   useEffect(() => {
     setIsTabBarVisible(false);
@@ -120,11 +87,6 @@ export default function ListView({ navigation }) {
       setModalVisible(false);
     }
   };
-
-  if (loading && !lifeList.experiences.length) return <LoadingScreen />;
-  if (error) return <Text>Error: {error.message}</Text>;
-
-  const lifeListData = route.params?.lifeList || lifeList;
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -189,7 +151,7 @@ export default function ListView({ navigation }) {
         </Pressable>
       </View>
       <ListViewNavigator
-        lifeList={lifeListData}
+        lifeList={lifeList}
         viewType={viewType}
         editMode={editMode}
         searchQuery={searchQuery}

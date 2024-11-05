@@ -96,7 +96,21 @@ export const clearFromAsyncStorage = async (key) => {
 // Clear all persistent caches
 export const clearAllAsyncStorage = async () => {
   try {
+    // Get the current value of isEarlyAccessUnlocked
+    const isEarlyAccessUnlocked = await AsyncStorage.getItem(
+      "isEarlyAccessUnlocked"
+    );
+
+    // Clear AsyncStorage
     await AsyncStorage.clear();
+
+    // Restore isEarlyAccessUnlocked if it existed
+    if (isEarlyAccessUnlocked !== null) {
+      await AsyncStorage.setItem(
+        "isEarlyAccessUnlocked",
+        isEarlyAccessUnlocked
+      );
+    }
   } catch (error) {
     console.error("Error clearing AsyncStorage:", error);
   }
@@ -106,28 +120,50 @@ export const clearAllAsyncStorage = async () => {
 // File System Cache (Expo)
 // ========================
 
+// Helper function to determine file extension
+const getFileExtension = (uri) => {
+  const parts = uri.split(".");
+  return parts.length > 1 ? parts.pop() : "jpg"; // Default to "jpg" if no extension found
+};
+
 // Save image to FileSystem with a given key
 export const saveImageToFileSystem = async (key, imagePath) => {
   try {
     // Construct the full URL using BASE_URL and the image path
     const fullImageUrl = `${BASE_URL}${imagePath}`;
-    const fileUri = `${FileSystem.cacheDirectory}${key}`;
+    console.log(`Full Image URL: ${fullImageUrl}`);
+
+    // Determine the file extension from the path
+    const fileExtension = getFileExtension(imagePath);
+
+    // Create the full file URI with the extension for persistence
+    const fileUri = `${FileSystem.documentDirectory}${key}.${fileExtension}`;
+    console.log(`File URI: ${fileUri}`);
+
+    // Check if the file already exists
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
+    if (fileInfo.exists) {
+      console.log("Image already exists in document directory:", fileUri);
+      return fileUri;
+    }
 
     // Download the image from the full URL
     const downloadedImage = await FileSystem.downloadAsync(
       fullImageUrl,
       fileUri
     );
+    console.log(
+      `Image successfully downloaded and saved at: ${downloadedImage.uri}`
+    );
 
-    if (downloadedImage.status === 200) {
-      console.log(`Image successfully downloaded and saved at: ${fileUri}`);
-      // Save the local URI to AsyncStorage for caching reference
-      await saveToAsyncStorage(key, fileUri, 7 * 24 * 60 * 60); // Save file URI with a 7-day TTL
-    } else {
-      console.error("Failed to download image:", downloadedImage);
-    }
+    // Save the local URI to AsyncStorage for caching reference with a 7-day TTL
+    await saveToAsyncStorage(key, downloadedImage.uri, 7 * 24 * 60 * 60);
+
+    console.log(`Image for experience ${key} saved to FileSystem.`);
+    return downloadedImage.uri;
   } catch (error) {
     console.error("Error saving image to FileSystem:", error);
+    return null;
   }
 };
 
@@ -184,19 +220,47 @@ export const cleanupFileSystemCache = async (maxStorageMb = 100) => {
   }
 };
 
-// Clear all FileSystem cache
+// Fetch or cache image URI
+export const fetchCachedImageUri = async (imageKey, fallbackUrl) => {
+  try {
+    const cachedUri = await getImageFromFileSystem(imageKey);
+    console.log(`Cached Image HERE: ${cachedUri}`);
+
+    return cachedUri || `${BASE_URL}${fallbackUrl}`;
+  } catch (error) {
+    console.error("Error fetching cached image:", error);
+    return `${BASE_URL}${fallbackUrl}`;
+  }
+};
+
+// Clear all FileSystem cache from both cacheDirectory and documentDirectory
 export const clearAllFileSystemCache = async () => {
   try {
-    const files = await FileSystem.readDirectoryAsync(
+    // Clear cacheDirectory
+    const cacheFiles = await FileSystem.readDirectoryAsync(
       FileSystem.cacheDirectory
     );
     await Promise.all(
-      files.map(async (file) => {
+      cacheFiles.map(async (file) => {
         const fileUri = `${FileSystem.cacheDirectory}${file}`;
         await FileSystem.deleteAsync(fileUri);
       })
     );
-    console.log("All FileSystem cache cleared.");
+
+    // Clear documentDirectory
+    const documentFiles = await FileSystem.readDirectoryAsync(
+      FileSystem.documentDirectory
+    );
+    await Promise.all(
+      documentFiles.map(async (file) => {
+        const fileUri = `${FileSystem.documentDirectory}${file}`;
+        await FileSystem.deleteAsync(fileUri);
+      })
+    );
+
+    console.log(
+      "All FileSystem cache cleared from both cacheDirectory and documentDirectory."
+    );
   } catch (error) {
     console.error("Error clearing FileSystem cache:", error);
   }

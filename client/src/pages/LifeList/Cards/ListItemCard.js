@@ -10,7 +10,7 @@ import {
 import { useMutation } from "@apollo/client";
 import { cardStyles, iconStyles } from "../../../styles";
 import { truncateText, capitalizeText } from "../../../utils/utils";
-import { BASE_URL } from "../../../utils/config";
+import { fetchCachedImageUri } from "../../../utils/cacheHelper";
 import {
   UPDATE_LIFELIST_EXPERIENCE_LIST_STATUS,
   UPDATE_ASSOCIATED_SHOTS,
@@ -19,7 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "../../../components/Icons/Icon";
 import IconStatic from "../../../components/Icons/IconStatic";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
-import { SymbolView } from "expo-symbols"; // Import SymbolView
+import { SymbolView } from "expo-symbols";
 
 export default function ListItemCard({
   experience,
@@ -33,11 +33,26 @@ export default function ListItemCard({
   const [listStatus, setListStatus] = useState(experience.list);
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [isAlertVisible, setIsAlertVisible] = useState(false);
+  const [imageUri, setImageUri] = useState(null);
 
-  const imageUrl = `${BASE_URL}${experience.experience.image}`;
   const truncatedTitle = truncateText(experience.experience.title, 40);
   const capitalizedCategory = capitalizeText(experience.experience.category);
   const { _id, associatedShots } = experience;
+
+  // Construct the image key for caching
+  const imageKey = `experience_image_${experience.experience._id}`;
+
+  // Fetch cached image URI using the helper function
+  useEffect(() => {
+    const fetchImage = async () => {
+      const uri = await fetchCachedImageUri(
+        imageKey,
+        experience.experience.image
+      );
+      setImageUri(uri);
+    };
+    fetchImage();
+  }, [imageKey, experience.experience.image]);
 
   const [updateListStatus] = useMutation(
     UPDATE_LIFELIST_EXPERIENCE_LIST_STATUS
@@ -147,7 +162,7 @@ export default function ListItemCard({
         style={[styles.listItemContainer, isSelected && styles.selected]}
       >
         <View style={styles.contentContainer}>
-          <Image source={{ uri: imageUrl }} style={cardStyles.imageMd} />
+          <Image source={{ uri: imageUri }} style={cardStyles.imageMd} />
           <View style={styles.textContainer}>
             <Text style={styles.title}>{truncatedTitle}</Text>
             <View style={styles.secondaryTextContainer}>
@@ -318,3 +333,24 @@ const styles = StyleSheet.create({
     borderColor: "#5FC4ED50",
   },
 });
+
+/*   const [cachedImageUri, setCachedImageUri] = useState(null);
+
+  // Construct the image key
+  const imageKey = `experience_image_${experience._id}`;
+
+  useEffect(() => {
+    const fetchCachedImage = async () => {
+      try {
+        const cachedUri = await getImageFromFileSystem(imageKey);
+        if (cachedUri) {
+          setCachedImageUri(cachedUri);
+        }
+      } catch (error) {
+        console.error("Error fetching cached image:", error);
+      }
+    };
+    fetchCachedImage();
+  }, [imageKey]);
+
+  const imageUrl = cachedImageUri || `${BASE_URL}${experience.image}`; */

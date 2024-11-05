@@ -8,9 +8,8 @@ import {
   Pressable,
 } from "react-native";
 import { capitalizeText, truncateText } from "../../../utils/utils";
-import { BASE_URL } from "../../../utils/config";
+import { fetchCachedImageUri } from "../../../utils/cacheHelper";
 import { SymbolView } from "expo-symbols";
-import { getImageFromFileSystem } from "../../../utils/cacheHelper";
 
 export default function ExperienceCard({
   experience,
@@ -23,26 +22,20 @@ export default function ExperienceCard({
   const imageHeight = cardWidth * 1.3375;
   const cardHeight = imageHeight + 44;
 
-  const [cachedImageUri, setCachedImageUri] = useState(null);
+  const [imageUri, setImageUri] = useState(null);
 
-  // Construct the image key
+  // Construct the image key for caching
   const imageKey = `experience_image_${experience._id}`;
 
+  // Fetch cached image URI using the helper function
   useEffect(() => {
-    const fetchCachedImage = async () => {
-      try {
-        const cachedUri = await getImageFromFileSystem(imageKey);
-        if (cachedUri) {
-          setCachedImageUri(cachedUri);
-        }
-      } catch (error) {
-        console.error("Error fetching cached image:", error);
-      }
+    const fetchImage = async () => {
+      const uri = await fetchCachedImageUri(imageKey, experience.image);
+      setImageUri(uri);
     };
-    fetchCachedImage();
-  }, [imageKey]);
+    fetchImage();
+  }, [imageKey, experience.image]);
 
-  const imageUrl = cachedImageUri || `${BASE_URL}${experience.image}`;
   const truncatedTitle = truncateText(experience.title, 20);
   const capitalizedCategory = capitalizeText(experience.category);
 
@@ -65,8 +58,14 @@ export default function ExperienceCard({
         ]}
       >
         <Image
-          source={{ uri: imageUrl }}
+          source={{ uri: imageUri }}
           style={[styles.image, { height: imageHeight }]}
+          onError={(error) =>
+            console.error(
+              `Error loading image from URI: ${imageUri}`,
+              error.nativeEvent
+            )
+          }
         />
         <View style={styles.spacer}>
           <Text style={styles.title}>{truncatedTitle}</Text>
