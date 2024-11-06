@@ -1,8 +1,8 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { FlatList, Text, View, StyleSheet, ScrollView } from "react-native";
 import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
 import {
   GET_ALL_CAMERA_ALBUMS,
@@ -13,39 +13,79 @@ import ShotCard from "../Cards/ShotCard";
 import { useAuth } from "../../../contexts/AuthContext";
 import Icon from "../../../components/Icons/Icon";
 import FormAlert from "../../../components/Alerts/FormAlert";
+import { saveImageToFileSystem } from "../../../utils/cacheHelper";
+import {
+  cacheAlbumMetadata,
+  getCachedAlbumMetadata,
+  cacheCameraShots,
+  getCachedCameraShots,
+} from "../../../utils/cache/cameraCacheHelper";
 
 export default function CameraRoll() {
   const navigation = useNavigation();
   const { currentUser } = useAuth();
   const [albumModalVisible, setAlbumModalVisible] = useState(false);
   const [newAlbumTitle, setNewAlbumTitle] = useState("");
+  const [albumsData, setAlbumsData] = useState(null);
+  const [shotsData, setShotsData] = useState(null);
+  const [isDataLoading, setIsDataLoading] = useState(true);
 
-  const {
-    data: albumsData,
-    loading: albumsLoading,
-    error: albumsError,
-    refetch: refetchAlbums,
-  } = useQuery(GET_ALL_CAMERA_ALBUMS, {
-    variables: { userId: currentUser },
-  });
+  // Load cached data on component mount
+  useEffect(() => {
+    const loadCachedData = async () => {
+      try {
+        const cachedAlbums = await getCachedAlbumMetadata();
+        if (cachedAlbums) setAlbumsData(cachedAlbums);
 
-  const {
-    data: shotsData,
-    loading: shotsLoading,
-    error: shotsError,
-  } = useQuery(GET_ALL_CAMERA_SHOTS, {
-    variables: { userId: currentUser._id },
-  });
+        const cachedShots = await getCachedCameraShots();
+        if (cachedShots) setShotsData(cachedShots);
 
-  useFocusEffect(
-    useCallback(() => {
-      refetchAlbums();
-    }, [refetchAlbums])
+        setIsDataLoading(!cachedAlbums || !cachedShots);
+      } catch (error) {
+        console.error("Error loading cached data:", error);
+      }
+    };
+    loadCachedData();
+  }, []);
+
+  // Fetch albums data from server if not cached
+  const { loading: albumsLoading, error: albumsError } = useQuery(
+    GET_ALL_CAMERA_ALBUMS,
+    {
+      variables: { userId: currentUser },
+      skip: !!albumsData, // Skip fetching if albums data is cached
+      onCompleted: async (data) => {
+        setAlbumsData(data.getAllCameraAlbums);
+        await cacheAlbumMetadata(data.getAllCameraAlbums);
+
+        // Cache album cover images
+        for (let album of data.getAllCameraAlbums) {
+          await saveImageToFileSystem(
+            `album_cover_${album._id}`,
+            album.coverImage
+          );
+        }
+      },
+    }
   );
 
-  if (albumsLoading || shotsLoading) return <Text>Loading...</Text>;
-  if (albumsError) return <Text>Error: {albumsError.message}</Text>;
-  if (shotsError) return <Text>Error: {shotsError.message}</Text>;
+  // Fetch camera shots data from server if not cached
+  const { loading: shotsLoading, error: shotsError } = useQuery(
+    GET_ALL_CAMERA_SHOTS,
+    {
+      variables: { userId: currentUser._id },
+      skip: !!shotsData, // Skip fetching if shots data is cached
+      onCompleted: async (data) => {
+        setShotsData(data.getAllCameraShots);
+        await cacheCameraShots(data.getAllCameraShots);
+
+        // Cache all shot images
+        for (let shot of data.getAllCameraShots) {
+          await saveImageToFileSystem(`camera_shot_${shot._id}`, shot.image);
+        }
+      },
+    }
+  );
 
   const renderAlbum = ({ item }) => (
     <AlbumCard album={item} navigation={navigation} />
@@ -53,7 +93,7 @@ export default function CameraRoll() {
   const renderShot = ({ item, index }) => (
     <ShotCard
       shot={item}
-      shots={shotsData.getAllCameraShots}
+      shots={shotsData}
       navigation={navigation}
       index={index}
     />
@@ -62,7 +102,7 @@ export default function CameraRoll() {
   const handleCreateAlbum = (title) => {
     setAlbumModalVisible(false);
     navigation.navigate("CreateAlbum", { albumTitle: title });
-    setNewAlbumTitle(""); // Reset the album title
+    setNewAlbumTitle(""); // Reset album title
   };
 
   return (
@@ -80,14 +120,13 @@ export default function CameraRoll() {
         button1={
           <Icon
             name="folder.badge.plus"
-            onPress={() => setAlbumModalVisible(true)} // Show the FormAlert modal
+            onPress={() => setAlbumModalVisible(true)}
             weight="semibold"
             style={iconStyles.createAlbum}
           />
         }
       />
 
-      {/* FormAlert for creating a new album */}
       <FormAlert
         visible={albumModalVisible}
         title="New Album"
@@ -104,7 +143,7 @@ export default function CameraRoll() {
           Albums
         </Text>
         <FlatList
-          data={albumsData.getAllCameraAlbums}
+          data={albumsData}
           renderItem={renderAlbum}
           keyExtractor={(item) => item._id}
           horizontal
@@ -116,7 +155,7 @@ export default function CameraRoll() {
             Camera Shots
           </Text>
           <FlatList
-            data={shotsData.getAllCameraShots}
+            data={shotsData}
             renderItem={renderShot}
             keyExtractor={(item) => item._id}
             numColumns={3}

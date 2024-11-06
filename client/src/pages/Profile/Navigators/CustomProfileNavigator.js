@@ -20,16 +20,24 @@ export default function CustomProfileNavigator({
   userId,
   isAdmin,
   isAdminScreen,
+  collages,
+  repostedCollages,
   navigation,
 }) {
   const [activeTab, setActiveTab] = useState("Collages");
   const translateX = useSharedValue(0);
 
   useEffect(() => {
+    // Update the translation value based on the active tab
     translateX.value = activeTab === "Collages" ? 0 : -width;
-  }, [activeTab, translateX]);
+    console.log(`Active Tab: ${activeTab}`);
+    console.log(`Collages Data:`, collages);
+    console.log(`Reposted Collages Data:`, repostedCollages);
+  }, [activeTab, translateX, collages, repostedCollages]);
 
-  const renderScreen = (Component) => <Component userId={userId} />;
+  const renderScreen = (Component, data) => (
+    <Component userId={userId} data={data} />
+  );
 
   const handleTabPress = (tabName) => {
     if (tabName === "LifeList") {
@@ -45,11 +53,7 @@ export default function CustomProfileNavigator({
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      {
-        translateX: translateX.value, // Directly assign the value without animation
-      },
-    ],
+    transform: [{ translateX: translateX.value }],
   }));
 
   return (
@@ -75,12 +79,15 @@ export default function CustomProfileNavigator({
           </Pressable>
         ))}
       </View>
-      <Animated.View style={[styles.screenContainer, animatedStyle]}>
+      <Animated.View
+        key={activeTab} // Force re-render on tab change
+        style={[styles.screenContainer, animatedStyle]}
+      >
         <View style={styles.screen}>
-          {activeTab === "Collages" && renderScreen(Collages)}
+          {activeTab === "Collages" && renderScreen(Collages, collages)}
         </View>
         <View style={styles.screen}>
-          {activeTab === "Reposts" && renderScreen(Reposts)}
+          {activeTab === "Reposts" && renderScreen(Reposts, repostedCollages)}
         </View>
       </Animated.View>
     </View>

@@ -88,13 +88,12 @@ export default function AdminLifeList() {
   };
 
   // Log experience images from FileSystem REMOVE
-  const logExperienceImages = async (experiences) => {
+  /*   const logExperienceImages = async (experiences) => {
     for (const exp of experiences) {
       const imageKey = `experience_image_${exp.experience._id}`;
       console.log(`Image Key: ${imageKey}`);
 
       const cachedImageUri = await getImageFromFileSystem(imageKey);
-      console.log(`CachEDDDD URI: ${cachedImageUri}`);
 
       if (cachedImageUri) {
         const fileInfo = await FileSystem.getInfoAsync(cachedImageUri);
@@ -113,7 +112,7 @@ export default function AdminLifeList() {
         );
       }
     }
-  };
+  }; */
 
   useFocusEffect(
     useCallback(() => {

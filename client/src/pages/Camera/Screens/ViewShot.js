@@ -21,7 +21,7 @@ import { DELETE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import DropdownMenuShot from "../../../components/Dropdowns/DropdownMenuShot";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
-import OptionsAlert from "../../../components/Alerts/OptionsAlert"; // Import OptionsAlert
+import OptionsAlert from "../../../components/Alerts/OptionsAlert";
 
 const { width } = Dimensions.get("window");
 const aspectRatio = 3 / 2;
@@ -211,7 +211,7 @@ export default function ViewShot() {
               data={shotsData}
               renderItem={({ item }) => (
                 <View style={{ width }}>
-                  <ViewShotCard imageUrl={item.image} />
+                  <ViewShotCard imageUrl={item.image} shotId={item._id} />
                 </View>
               )}
               keyExtractor={(item) => item._id.toString()}

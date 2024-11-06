@@ -5,17 +5,17 @@ import { BASE_URL } from "./config";
 let cacheStore = {};
 
 // =====================
-// Cache Store (Temporary)
+// Cache Store (Temporary for Metadata)
 // =====================
 
-// Save data to cache with TTL
-export const saveToCacheStore = (key, value, ttlInSeconds) => {
+// Save metadata to cache with TTL
+export const saveMetaDataToCache = (key, value, ttlInSeconds) => {
   const expires = Date.now() + ttlInSeconds * 1000;
   cacheStore[key] = { value, expires };
 };
 
-// Get data from cache with expiration check
-export const getFromCacheStore = (key) => {
+// Get metadata from cache with expiration check
+export const getMetaDataFromCache = (key) => {
   const cacheEntry = cacheStore[key];
   if (!cacheEntry) return null;
 
@@ -27,18 +27,102 @@ export const getFromCacheStore = (key) => {
   return cacheEntry.value;
 };
 
-// Clear specific cache
-export const clearFromCacheStore = (key) => {
+// Clear specific metadata cache
+export const clearMetaDataFromCache = (key) => {
   delete cacheStore[key];
 };
 
-// Clear all caches
-export const clearAllCacheStore = () => {
-  cacheStore = {};
+// =====================
+// Image Cache (Temporary for Session)
+// =====================
+
+// Save image to FileSystem temporarily for the session
+export const saveImageToCache = async (key, imagePath) => {
+  try {
+    const fullImageUrl = `${BASE_URL}${imagePath}`;
+    const fileExtension = imagePath.split(".").pop() || "jpg"; // Get file extension
+    const fileUri = `${FileSystem.cacheDirectory}${key}.${fileExtension}`;
+
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
+    if (fileInfo.exists) {
+      console.log("Image already exists in cache:", fileUri);
+      return fileUri;
+    }
+
+    const downloadedImage = await FileSystem.downloadAsync(
+      fullImageUrl,
+      fileUri
+    );
+    console.log(
+      `Image successfully downloaded and saved at: ${downloadedImage.uri}`
+    );
+
+    return downloadedImage.uri;
+  } catch (error) {
+    console.error("Error saving image to cache:", error);
+    return null;
+  }
 };
 
-// Optional: Cleanup expired items in cacheStore on an interval
-export const cleanupCacheStore = () => {
+// Get image from FileSystem cache
+export const getImageFromCache = async (key, imagePath) => {
+  try {
+    const fileExtension = imagePath.split(".").pop() || "jpg"; // Get file extension
+    const fileUri = `${FileSystem.cacheDirectory}${key}.${fileExtension}`;
+
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
+    if (fileInfo.exists) {
+      console.log("Retrieved image from cache:", fileUri);
+      return fileUri;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting image from cache:", error);
+    return null;
+  }
+};
+
+// Clear specific image cache
+export const clearImageFromCache = async (key, imagePath) => {
+  try {
+    const fileExtension = imagePath.split(".").pop() || "jpg"; // Get file extension
+    const fileUri = `${FileSystem.cacheDirectory}${key}.${fileExtension}`;
+
+    await FileSystem.deleteAsync(fileUri, { idempotent: true });
+    console.log("Image cache cleared:", fileUri);
+  } catch (error) {
+    console.error("Error clearing image from cache:", error);
+  }
+};
+
+// =====================
+// Cleanup Functions
+// =====================
+
+// Clear all metadata and image caches
+export const clearAllCaches = async () => {
+  // Clear in-memory metadata cache
+  cacheStore = {};
+
+  // Clear image cache in FileSystem
+  try {
+    const files = await FileSystem.readDirectoryAsync(
+      FileSystem.cacheDirectory
+    );
+    await Promise.all(
+      files.map(async (file) => {
+        const fileUri = `${FileSystem.cacheDirectory}${file}`;
+        await FileSystem.deleteAsync(fileUri);
+      })
+    );
+    console.log("All caches cleared from cacheDirectory.");
+  } catch (error) {
+    console.error("Error clearing all caches from FileSystem:", error);
+  }
+};
+
+// Cleanup expired metadata items
+export const cleanupExpiredMetaData = () => {
   const now = Date.now();
   Object.keys(cacheStore).forEach((key) => {
     if (cacheStore[key].expires < now) {
@@ -131,14 +215,12 @@ export const saveImageToFileSystem = async (key, imagePath) => {
   try {
     // Construct the full URL using BASE_URL and the image path
     const fullImageUrl = `${BASE_URL}${imagePath}`;
-    console.log(`Full Image URL: ${fullImageUrl}`);
 
     // Determine the file extension from the path
     const fileExtension = getFileExtension(imagePath);
 
     // Create the full file URI with the extension for persistence
     const fileUri = `${FileSystem.documentDirectory}${key}.${fileExtension}`;
-    console.log(`File URI: ${fileUri}`);
 
     // Check if the file already exists
     const fileInfo = await FileSystem.getInfoAsync(fileUri);
@@ -224,7 +306,7 @@ export const cleanupFileSystemCache = async (maxStorageMb = 100) => {
 export const fetchCachedImageUri = async (imageKey, fallbackUrl) => {
   try {
     const cachedUri = await getImageFromFileSystem(imageKey);
-    console.log(`Cached Image HERE: ${cachedUri}`);
+    console.log(`FETCHED CACHE IMAGE URI: ${cachedUri}`);
 
     return cachedUri || `${BASE_URL}${fallbackUrl}`;
   } catch (error) {

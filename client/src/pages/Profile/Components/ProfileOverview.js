@@ -5,13 +5,13 @@ import { useNavigation } from "@react-navigation/native";
 import { layoutStyles } from "../../../styles";
 import { useMutation } from "@apollo/client";
 import { useAuth } from "../../../contexts/AuthContext";
-import { BASE_URL } from "../../../utils/config";
 import {
   FOLLOW_USER,
   UNFOLLOW_USER,
   SEND_FOLLOW_REQUEST,
   UNSEND_FOLLOW_REQUEST,
 } from "../../../utils/mutations/userRelationsMutations";
+import { fetchCachedImageUri } from "../../../utils/cacheHelper";
 
 export default function ProfileOverview({
   profile,
@@ -19,7 +19,7 @@ export default function ProfileOverview({
   followerData,
   isAdminView,
   isAdminScreen,
-  isFollowing: initialIsFollowing, // Use prop passed from Profile component
+  isFollowing: initialIsFollowing,
 }) {
   const navigation = useNavigation();
   const { currentUser, updateCurrentUser } = useAuth();
@@ -27,12 +27,25 @@ export default function ProfileOverview({
   const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
   const [isPendingRequest, setIsPendingRequest] = useState(false);
   const [buttonState, setButtonState] = useState("Follow");
+  const [profilePictureUrl, setProfilePictureUrl] = useState(null);
 
   // Mutations
   const [followUser] = useMutation(FOLLOW_USER);
   const [unfollowUser] = useMutation(UNFOLLOW_USER);
   const [sendFollowRequest] = useMutation(SEND_FOLLOW_REQUEST);
   const [unsendFollowRequest] = useMutation(UNSEND_FOLLOW_REQUEST);
+
+  // Fetch the cached profile picture URI or fallback to server URL
+  useEffect(() => {
+    const loadProfilePicture = async () => {
+      const imageKey = `profile_picture_${userId}`;
+      const fallbackUrl = profile.profilePicture;
+      const cachedUri = await fetchCachedImageUri(imageKey, fallbackUrl);
+      setProfilePictureUrl(cachedUri);
+    };
+
+    loadProfilePicture();
+  }, [profile.profilePicture, userId]);
 
   useEffect(() => {
     let hasPendingRequest = false;
@@ -68,8 +81,8 @@ export default function ProfileOverview({
           variables: { userIdToFollow: userId },
         });
         Alert.alert("Follow", data.followUser.message);
-        setIsFollowing(true); // Update local state
-        setFollowerCount((prevCount) => prevCount + 1); // Increment follower count
+        setIsFollowing(true);
+        setFollowerCount((prevCount) => prevCount + 1);
         setButtonState("Following");
         updateCurrentUser((prevUser) => ({
           ...prevUser,
@@ -87,8 +100,8 @@ export default function ProfileOverview({
         variables: { userIdToUnfollow: userId },
       });
       Alert.alert("Unfollow", data.unfollowUser.message);
-      setIsFollowing(false); // Update local state
-      setFollowerCount((prevCount) => Math.max(prevCount - 1, 0)); // Decrement follower count
+      setIsFollowing(false);
+      setFollowerCount((prevCount) => Math.max(prevCount - 1, 0));
       setButtonState("Follow");
       updateCurrentUser((prevUser) => ({
         ...prevUser,
@@ -105,14 +118,12 @@ export default function ProfileOverview({
         variables: { userIdToUnfollow: userId },
       });
       Alert.alert("Request Withdrawn", data.unsendFollowRequest.message);
-      setIsPendingRequest(false); // Update local state
+      setIsPendingRequest(false);
       setButtonState("Follow");
     } catch (error) {
       Alert.alert("Error", error.message);
     }
   };
-
-  const profilePictureUrl = `${BASE_URL}${profile.profilePicture}`;
 
   return (
     <View

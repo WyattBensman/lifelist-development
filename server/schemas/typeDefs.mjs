@@ -332,14 +332,14 @@ type Score {
     # User Queries
     getUserProfileById(userId: ID!): UserProfileResponse
     getUserCounts(userId: ID!): UserCountsResponse
-    getFollowers(userId: ID!): [User]
-    getFollowing(userId: ID!): [User]
+    getFollowers(userId: ID!, cursor: ID, limit: Int): UserPagination
+    getFollowing(userId: ID!, cursor: ID, limit: Int): UserPagination
     getUserCollages(userId: ID!): [Collage]
     getRepostedCollages(userId: ID!): [Collage]
-    getTaggedCollages(userId: ID!): [Collage]
-    getLikedCollages: [Collage]
-    getSavedCollages: [Collage]
-    getArchivedCollages: [Collage]
+    getTaggedCollages(userId: ID!, cursor: ID, limit: Int): CollagePagination
+    getLikedCollages(cursor: ID, limit: Int): CollagePagination
+    getSavedCollages(cursor: ID, limit: Int): CollagePagination
+    getArchivedCollages(cursor: ID, limit: Int): CollagePagination
     getBlockedUsers: [User]
     getUserProfileInformation: UserProfileInformation
     getUserContactInformation: UserContactInformation
@@ -394,6 +394,18 @@ type Score {
   type FeedResult {
     collages: [Collage]
     hasMore: Boolean
+  }
+
+  type CollagePagination {
+    collages: [Collage]
+    nextCursor: ID
+    hasNextPage: Boolean
+  }
+
+  type UserPagination {
+    users: [User]
+    nextCursor: ID
+    hasNextPage: Boolean
   }
 
   type UserProfileResponse {

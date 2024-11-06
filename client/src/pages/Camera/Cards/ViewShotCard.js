@@ -1,11 +1,24 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, StyleSheet, View } from "react-native";
-import { BASE_URL } from "../../../utils/config";
+import { fetchCachedImageUri } from "../../../utils/cacheHelper";
 
-export default function ViewShotCard({ imageUrl }) {
+export default function ViewShotCard({ imageUrl, shotId }) {
+  const [cachedImageUri, setCachedImageUri] = useState(null);
+
+  useEffect(() => {
+    // Fetch or cache the image URI
+    const fetchImage = async () => {
+      const uri = await fetchCachedImageUri(`camera_shot_${shotId}`, imageUrl);
+      setCachedImageUri(uri);
+    };
+    fetchImage();
+  }, [imageUrl]);
+
+  if (!cachedImageUri) return null; // Render nothing while loading
+
   return (
     <View style={styles.imageContainer}>
-      <Image source={{ uri: `${BASE_URL}${imageUrl}` }} style={styles.image} />
+      <Image source={{ uri: cachedImageUri }} style={styles.image} />
     </View>
   );
 }

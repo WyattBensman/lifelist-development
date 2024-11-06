@@ -1,10 +1,11 @@
+import React, { useEffect, useState } from "react";
 import { Dimensions, Image, StyleSheet, View, Pressable } from "react-native";
-import { Checkbox } from "expo-checkbox";
-import { BASE_URL } from "../../../utils/config";
+import Checkbox from "expo-checkbox";
+import { fetchCachedImageUri } from "../../../utils/cacheHelper";
 
 const { width } = Dimensions.get("window");
 const spacing = 1.5;
-const shotWidth = (width - spacing * 2) / 3; // Adjusted to account for the spacing
+const shotWidth = (width - spacing * 2) / 3;
 const shotHeight = (shotWidth * 3) / 2;
 
 export default function ShotCard({
@@ -14,7 +15,21 @@ export default function ShotCard({
   navigation,
   index,
 }) {
-  const imageUrl = `${BASE_URL}${shot.image}`;
+  const [cachedImageUri, setCachedImageUri] = useState(null);
+
+  useEffect(() => {
+    // Fetch or cache the image URI
+    const fetchImage = async () => {
+      const uri = await fetchCachedImageUri(
+        `camera_shot_${shot._id}`,
+        shot.image
+      );
+      setCachedImageUri(uri);
+    };
+    fetchImage();
+  }, [shot._id, shot.image]);
+
+  if (!cachedImageUri) return null; // Render nothing while loading
 
   return (
     <Pressable
@@ -22,12 +37,12 @@ export default function ShotCard({
       style={[
         styles.container,
         {
-          marginRight: (index + 1) % 3 === 0 ? 0 : spacing, // Remove marginRight for the last item in each row
+          marginRight: (index + 1) % 3 === 0 ? 0 : spacing,
         },
       ]}
     >
       <View style={styles.shotContainer}>
-        <Image source={{ uri: imageUrl }} style={styles.shotImage} />
+        <Image source={{ uri: cachedImageUri }} style={styles.shotImage} />
         {isSelected !== undefined && onCheckboxToggle && (
           <Checkbox
             style={styles.checkbox}
