@@ -34,75 +34,47 @@ export const GET_USER_COUNTS = gql`
 
 // Followers
 export const GET_FOLLOWERS = gql`
-  query GetFollowers($userId: ID!) {
-    getFollowers(userId: $userId) {
-      _id
-      username
-      fullName
-      profilePicture
-      settings {
-        isProfilePrivate
-      }
-      followRequests {
+  query GetFollowers($userId: ID!, $cursor: ID, $limit: Int) {
+    getFollowers(userId: $userId, cursor: $cursor, limit: $limit) {
+      users {
         _id
+        username
+        fullName
+        profilePicture
+        settings {
+          isProfilePrivate
+        }
+        followRequests {
+          _id
+        }
       }
+      nextCursor
+      hasNextPage
     }
   }
 `;
 
 // Following
 export const GET_FOLLOWING = gql`
-  query GetFollowing($userId: ID!) {
-    getFollowing(userId: $userId) {
-      _id
-      username
-      fullName
-      profilePicture
-      settings {
-        isProfilePrivate
-      }
-      followRequests {
+  query GetFollowing($userId: ID!, $cursor: ID, $limit: Int) {
+    getFollowing(userId: $userId, cursor: $cursor, limit: $limit) {
+      users {
         _id
+        username
+        fullName
+        profilePicture
+        settings {
+          isProfilePrivate
+        }
+        followRequests {
+          _id
+        }
       }
+      nextCursor
+      hasNextPage
     }
   }
 `;
-
-// Followers
-/* export const GET_FOLLOWERS = gql`
-  query GetFollowing($userId: ID!, $limit: Int, $lastSeenId: ID) {
-    getFollowing(userId: $userId, limit: $limit, lastSeenId: $lastSeenId) {
-      _id
-      username
-      fullName
-      profilePicture
-      settings {
-        isProfilePrivate
-      }
-      followRequests {
-        _id
-      }
-    }
-  }
-`; */
-
-// Following
-/* export const GET_FOLLOWING = gql`
-  query GetFollowing($userId: ID!, $limit: Int, $lastSeenId: ID) {
-    getFollowing(userId: $userId, limit: $limit, lastSeenId: $lastSeenId) {
-      _id
-      username
-      fullName
-      profilePicture
-      settings {
-        isProfilePrivate
-      }
-      followRequests {
-        _id
-      }
-    }
-  }
-`; */
 
 // User Collages
 export const GET_USER_COLLAGES = gql`
@@ -126,40 +98,56 @@ export const GET_REPOSTED_COLLAGES = gql`
 
 // User's Tagged Collages
 export const GET_TAGGED_COLLAGES = gql`
-  query GetTaggedCollages($userId: ID!) {
-    getTaggedCollages(userId: $userId) {
-      _id
-      coverImage
+  query GetTaggedCollages($userId: ID!, $cursor: ID, $limit: Int) {
+    getTaggedCollages(userId: $userId, cursor: $cursor, limit: $limit) {
+      collages {
+        _id
+        coverImage
+      }
+      nextCursor
+      hasNextPage
     }
   }
 `;
 
 // User's Liked Collages
 export const GET_LIKED_COLLAGES = gql`
-  query GetLikedCollages {
-    getLikedCollages {
-      _id
-      coverImage
+  query GetLikedCollages($cursor: ID, $limit: Int) {
+    getLikedCollages(cursor: $cursor, limit: $limit) {
+      collages {
+        _id
+        coverImage
+      }
+      nextCursor
+      hasNextPage
     }
   }
 `;
 
 // User's Saved Collages
 export const GET_SAVED_COLLAGES = gql`
-  query GetSavedCollages($limit: Int!, $offset: Int!) {
-    getSavedCollages(limit: $limit, offset: $offset) {
-      _id
-      coverImage
+  query GetSavedCollages($cursor: ID, $limit: Int) {
+    getSavedCollages(cursor: $cursor, limit: $limit) {
+      collages {
+        _id
+        coverImage
+      }
+      nextCursor
+      hasNextPage
     }
   }
 `;
 
 // User's Archived Collages
 export const GET_ARCHIVED_COLLAGES = gql`
-  query GetArchivedCollages {
-    getArchivedCollages {
-      _id
-      coverImage
+  query GetArchivedCollages($cursor: ID, $limit: Int) {
+    getArchivedCollages(cursor: $cursor, limit: $limit) {
+      collages {
+        _id
+        coverImage
+      }
+      nextCursor
+      hasNextPage
     }
   }
 `;

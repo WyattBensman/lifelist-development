@@ -1,11 +1,5 @@
-import React, { useCallback } from "react";
-import {
-  Dimensions,
-  FlatList,
-  View,
-  Text,
-  ActivityIndicator,
-} from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import { Dimensions, FlatList, View, ActivityIndicator } from "react-native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -16,28 +10,55 @@ import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 const { height: screenHeight } = Dimensions.get("window");
+const PAGE_SIZE = 20;
 
 export default function Saved() {
   const navigation = useNavigation();
-  const { data, loading, error, refetch } = useQuery(GET_SAVED_COLLAGES);
   const { setIsTabBarVisible } = useNavigationContext();
+  const [savedCollages, setSavedCollages] = useState([]);
+  const [cursor, setCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+
+  const { data, loading, error, fetchMore } = useQuery(GET_SAVED_COLLAGES, {
+    variables: { cursor, limit: PAGE_SIZE },
+    fetchPolicy: "cache-and-network",
+  });
 
   useFocusEffect(() => {
     setIsTabBarVisible(false);
   });
 
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
+  useEffect(() => {
+    if (data) {
+      const { collages, nextCursor, hasNextPage } = data.getSavedCollages;
+      setSavedCollages((prevCollages) => [...prevCollages, ...collages]);
+      setCursor(nextCursor);
+      setHasMore(hasNextPage);
+    }
+  }, [data]);
 
-  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
-  if (error) return <Text>Error: {error.message}</Text>;
+  const loadMore = async () => {
+    if (hasMore && !loading) {
+      await fetchMore({
+        variables: { cursor, limit: PAGE_SIZE },
+        updateQuery: (prev, { fetchMoreResult }) => {
+          if (!fetchMoreResult) return prev;
 
-  const filteredCollages = data?.getSavedCollages.filter(
-    (item) => !item.archived
-  );
+          return {
+            getSavedCollages: {
+              ...fetchMoreResult.getSavedCollages,
+              collages: [
+                ...prev.getSavedCollages.collages,
+                ...fetchMoreResult.getSavedCollages.collages,
+              ],
+            },
+          };
+        },
+      });
+    }
+  };
+
+  if (error) return <Text>Error loading saved collages: {error.message}</Text>;
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -53,14 +74,14 @@ export default function Saved() {
         }
       />
       <FlatList
-        data={filteredCollages}
+        data={savedCollages}
         renderItem={({ item, index }) => (
           <View style={{ height: screenHeight }}>
             <CollageCard
               collageId={item._id}
               path={item.coverImage}
               index={index}
-              collages={filteredCollages}
+              collages={savedCollages}
             />
           </View>
         )}
@@ -70,6 +91,9 @@ export default function Saved() {
         snapToAlignment="start"
         snapToInterval={screenHeight}
         decelerationRate="fast"
+        onEndReached={loadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={loading && <ActivityIndicator size="large" />}
       />
     </View>
   );
