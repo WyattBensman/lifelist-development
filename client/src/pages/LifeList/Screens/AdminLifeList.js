@@ -50,7 +50,6 @@ export default function AdminLifeList() {
         console.log("Using cached LifeList data for current user");
         console.log("Cached LifeList Metadata:", cachedData);
         setCachedLifeList(cachedData);
-        logExperienceImages(cachedData.experiences); // Log experience images on load
       }
     };
     loadCachedLifeList();
@@ -86,33 +85,6 @@ export default function AdminLifeList() {
       }
     }
   };
-
-  // Log experience images from FileSystem REMOVE
-  /*   const logExperienceImages = async (experiences) => {
-    for (const exp of experiences) {
-      const imageKey = `experience_image_${exp.experience._id}`;
-      console.log(`Image Key: ${imageKey}`);
-
-      const cachedImageUri = await getImageFromFileSystem(imageKey);
-
-      if (cachedImageUri) {
-        const fileInfo = await FileSystem.getInfoAsync(cachedImageUri);
-        if (fileInfo.exists) {
-          console.log(
-            `Cached FileSystem image for experience ${exp.experience.title}: ${cachedImageUri}`
-          );
-        } else {
-          console.error(
-            `File DOES NOT exist for experience ${exp.experience.title}: ${cachedImageUri}`
-          );
-        }
-      } else {
-        console.log(
-          `No cached FileSystem image for experience ${exp.experience.title}`
-        );
-      }
-    }
-  }; */
 
   useFocusEffect(
     useCallback(() => {

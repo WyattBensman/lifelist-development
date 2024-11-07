@@ -7,22 +7,26 @@ const screenWidth = Dimensions.get("window").width;
 const spacing = 1.5;
 const imageWidth = (screenWidth - spacing * 2) / 3;
 
-export default function CollageCard({ collageId, path, index, collages }) {
+export default function CollageCard({
+  collageId,
+  path,
+  index,
+  collages,
+  cacheKeyPrefix,
+}) {
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
 
   useEffect(() => {
     // Fetch the cached image URI or fallback to the original URL
     const fetchImage = async () => {
-      const cachedUri = await fetchCachedImageUri(
-        `collage_cover_${collageId}`,
-        path
-      );
+      const cacheKey = `${cacheKeyPrefix}${collageId}`;
+      const cachedUri = await fetchCachedImageUri(cacheKey, path);
       setImageUri(cachedUri);
     };
 
     fetchImage();
-  }, [collageId, path]);
+  }, [collageId, path, cacheKeyPrefix]);
 
   const handlePress = () => {
     navigation.navigate("ViewCollage", { collages, initialIndex: index });

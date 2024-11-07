@@ -4,8 +4,6 @@ import { layoutStyles } from "../../../styles";
 
 export default function Collages({ data: collages }) {
   const filteredCollages = collages || [];
-  console.log("HI");
-  console.log(filteredCollages);
 
   const renderCollageItem = ({ item, index }) => (
     <CollageCard
@@ -13,6 +11,7 @@ export default function Collages({ data: collages }) {
       path={item.coverImage}
       index={index}
       collages={filteredCollages}
+      cacheKeyPrefix="collage_cover_"
     />
   );
 

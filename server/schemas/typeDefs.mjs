@@ -337,7 +337,6 @@ type Score {
     getUserCollages(userId: ID!): [Collage]
     getRepostedCollages(userId: ID!): [Collage]
     getTaggedCollages(userId: ID!, cursor: ID, limit: Int): CollagePagination
-    getLikedCollages(cursor: ID, limit: Int): CollagePagination
     getSavedCollages(cursor: ID, limit: Int): CollagePagination
     getArchivedCollages(cursor: ID, limit: Int): CollagePagination
     getBlockedUsers: [User]

@@ -12,6 +12,7 @@ export default function Reposts({ userId, data: collages }) {
       path={item.coverImage}
       index={index}
       collages={filteredCollages}
+      cacheKeyPrefix="repost_cover_"
     />
   );
 
