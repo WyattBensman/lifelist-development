@@ -81,8 +81,17 @@ export default function Saved() {
         }
       }
 
+      // Remove any duplicates by checking against current state
+      const newUniqueCollages = collages.filter(
+        (newCollage) =>
+          !savedCollages.some((saved) => saved._id === newCollage._id)
+      );
+
       // Update state with new data
-      setSavedCollages((prevCollages) => [...prevCollages, ...collages]);
+      setSavedCollages((prevCollages) => [
+        ...prevCollages,
+        ...newUniqueCollages,
+      ]);
       setCursor(nextCursor);
       setHasMore(hasNextPage);
     },
@@ -154,7 +163,6 @@ export default function Saved() {
         decelerationRate="fast"
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={loading && <ActivityIndicator size="large" />}
       />
     </View>
   );

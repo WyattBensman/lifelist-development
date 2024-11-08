@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { Dimensions, FlatList, View, Text } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  Dimensions,
+  FlatList,
+  View,
+  Text,
+  ActivityIndicator,
+} from "react-native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useQuery } from "@apollo/client";
-import { GET_ARCHIVED_COLLAGES } from "../../../utils/queries/userQueries";
+import { GET_TAGGED_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
@@ -18,45 +24,45 @@ import {
 const { height: screenHeight } = Dimensions.get("window");
 const PAGE_SIZE = 20;
 
-export default function Archived() {
+export default function Tagged() {
   const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
-  const [archivedCollages, setArchivedCollages] = useState([]);
+  const [taggedCollages, setTaggedCollages] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [hasMore, setHasMore] = useState(true);
 
   // Load initial data from cache on mount
   useEffect(() => {
     const loadCachedData = async () => {
-      console.log("Attempting to load cached archived collages data...");
-      const cachedData = await getMetaDataFromCache("archivedCollages");
+      console.log("Attempting to load cached tagged collages data...");
+      const cachedData = await getMetaDataFromCache("taggedCollages");
       if (cachedData) {
-        console.log("Cached archived collages data found, loading...");
-        setArchivedCollages(cachedData.collages);
+        console.log("Cached tagged collages data found, loading...");
+        setTaggedCollages(cachedData.collages);
         setCursor(cachedData.nextCursor);
         setHasMore(cachedData.hasNextPage);
       } else {
-        console.log("No cached data found for archived collages.");
+        console.log("No cached data found for tagged collages.");
       }
     };
     loadCachedData();
   }, []);
 
-  const { data, loading, error, fetchMore } = useQuery(GET_ARCHIVED_COLLAGES, {
+  const { data, loading, error, fetchMore } = useQuery(GET_TAGGED_COLLAGES, {
     variables: { cursor, limit: PAGE_SIZE },
     fetchPolicy: "cache-and-network",
     onCompleted: async (fetchedData) => {
       console.log(
-        "Data fetched from network for archived collages:",
+        "Data fetched from network for tagged collages:",
         fetchedData
       );
 
       const { collages, nextCursor, hasNextPage } =
-        fetchedData.getArchivedCollages;
+        fetchedData.getTaggedCollages;
 
       // Save collages metadata to cache
       console.log("Saving collages metadata to cache...");
-      await saveMetaDataToCache("archivedCollages", {
+      await saveMetaDataToCache("taggedCollages", {
         collages,
         nextCursor,
         hasNextPage,
@@ -64,7 +70,7 @@ export default function Archived() {
 
       // Attempt to cache each collage image if not already cached
       for (const collage of collages) {
-        const imageKey = `archived_collage_${collage._id}`;
+        const imageKey = `tagged_collage_${collage._id}`;
         console.log(`Attempting to load cached image for key: ${imageKey}`);
 
         const cachedImageUri = await getImageFromCache(imageKey);
@@ -81,11 +87,11 @@ export default function Archived() {
       // Remove any duplicates by checking against current state
       const newUniqueCollages = collages.filter(
         (newCollage) =>
-          !archivedCollages.some((archived) => archived._id === newCollage._id)
+          !taggedCollages.some((tagged) => tagged._id === newCollage._id)
       );
 
       // Update state with new data
-      setArchivedCollages((prevCollages) => [
+      setTaggedCollages((prevCollages) => [
         ...prevCollages,
         ...newUniqueCollages,
       ]);
@@ -100,7 +106,7 @@ export default function Archived() {
 
   const loadMore = async () => {
     if (hasMore && !loading) {
-      console.log("Loading more archived collages...");
+      console.log("Loading more tagged collages...");
       await fetchMore({
         variables: { cursor, limit: PAGE_SIZE },
         updateQuery: (prev, { fetchMoreResult }) => {
@@ -108,11 +114,11 @@ export default function Archived() {
           console.log("Fetched additional collages from network.");
 
           return {
-            getArchivedCollages: {
-              ...fetchMoreResult.getArchivedCollages,
+            getTaggedCollages: {
+              ...fetchMoreResult.getTaggedCollages,
               collages: [
-                ...prev.getArchivedCollages.collages,
-                ...fetchMoreResult.getArchivedCollages.collages,
+                ...prev.getTaggedCollages.collages,
+                ...fetchMoreResult.getTaggedCollages.collages,
               ],
             },
           };
@@ -122,14 +128,14 @@ export default function Archived() {
   };
 
   if (error) {
-    console.log("Error loading archived collages:", error.message);
-    return <Text>Error loading archived collages: {error.message}</Text>;
+    console.log("Error loading tagged collages:", error.message);
+    return <Text>Error loading tagged collages: {error.message}</Text>;
   }
 
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
-        title={"Archived"}
+        title={"Tagged"}
         arrow={
           <Icon
             name="chevron.backward"
@@ -140,15 +146,15 @@ export default function Archived() {
         }
       />
       <FlatList
-        data={archivedCollages}
+        data={taggedCollages}
         renderItem={({ item, index }) => (
           <View style={{ height: screenHeight }}>
             <CollageCard
               collageId={item._id}
               path={item.coverImage}
               index={index}
-              collages={archivedCollages}
-              cacheKeyPrefix="archived_collage_"
+              collages={taggedCollages}
+              cacheKeyPrefix="tagged_collage_"
             />
           </View>
         )}
@@ -160,6 +166,7 @@ export default function Archived() {
         decelerationRate="fast"
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
+        ListFooterComponent={loading && <ActivityIndicator size="large" />}
       />
     </View>
   );

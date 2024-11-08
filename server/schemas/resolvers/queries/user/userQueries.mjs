@@ -48,7 +48,7 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   }
 };
 
-export const getFollowers = async (
+/* export const getFollowers = async (
   _,
   { userId, cursor, limit = 20 },
   { user }
@@ -81,22 +81,22 @@ export const getFollowers = async (
     nextCursor: hasNextPage ? followers[followers.length - 1]._id : null,
     hasNextPage,
   };
-};
+}; */
 
-export const getFollowing = async (
+export const getFollowers = async (
   _,
   { userId, cursor, limit = 20 },
-  { user }
+  { user: currentUser }
 ) => {
-  isUser(user);
+  isUser(currentUser);
 
   const foundUser = await User.findById(userId)
     .populate({
-      path: "following",
-      match: cursor ? { _id: { $gt: cursor } } : {}, // Only fetch following users after the cursor
+      path: "followers",
+      match: cursor ? { _id: { $gt: cursor } } : {}, // Only fetch followers after the cursor
       options: {
-        sort: { _id: 1 },
-        limit: limit + 1,
+        sort: { _id: 1 }, // Sort by _id to support cursor-based pagination
+        limit: limit + 1, // Fetch one extra item to check if there's a next page
       },
       select: "_id username fullName profilePicture settings followRequests",
       populate: { path: "settings" },
@@ -105,14 +105,88 @@ export const getFollowing = async (
 
   if (!foundUser) throw new Error("User not found.");
 
-  const following = foundUser.following;
+  // Determine relationship status for each follower
+  const followersWithStatus = foundUser.followers.map((follower) => {
+    const isFollowing = currentUser.following.includes(follower._id);
+    const hasSentRequest = follower.followRequests.some(
+      (req) => req.toString() === currentUser._id.toString()
+    );
 
-  const hasNextPage = following.length > limit;
-  if (hasNextPage) following.pop();
+    return {
+      user: follower,
+      relationshipStatus: isFollowing
+        ? "Following"
+        : hasSentRequest
+        ? "Requested"
+        : "Follow",
+      isPrivate: follower.settings.isProfilePrivate,
+      hasSentFollowRequest: hasSentRequest,
+    };
+  });
+
+  // Check if there is a next page
+  const hasNextPage = followersWithStatus.length > limit;
+  if (hasNextPage) followersWithStatus.pop(); // Remove the extra item
 
   return {
-    following,
-    nextCursor: hasNextPage ? following[following.length - 1]._id : null,
+    users: followersWithStatus,
+    nextCursor: hasNextPage
+      ? followersWithStatus[followersWithStatus.length - 1].user._id
+      : null,
+    hasNextPage,
+  };
+};
+
+export const getFollowing = async (
+  _,
+  { userId, cursor, limit = 20 },
+  { user: currentUser }
+) => {
+  isUser(currentUser);
+
+  const foundUser = await User.findById(userId)
+    .populate({
+      path: "following",
+      match: cursor ? { _id: { $gt: cursor } } : {}, // Fetch following after the cursor
+      options: {
+        sort: { _id: 1 }, // Sort by _id for cursor-based pagination
+        limit: limit + 1, // Fetch one extra item to determine if there's a next page
+      },
+      select: "_id username fullName profilePicture settings followRequests",
+      populate: { path: "settings" },
+    })
+    .exec();
+
+  if (!foundUser) throw new Error("User not found.");
+
+  // Determine relationship status for each user being followed
+  const followingWithStatus = foundUser.following.map((followedUser) => {
+    const isFollowing = currentUser.following.includes(followedUser._id);
+    const hasSentRequest = followedUser.followRequests.some(
+      (req) => req.toString() === currentUser._id.toString()
+    );
+
+    return {
+      user: followedUser,
+      relationshipStatus: isFollowing
+        ? "Following"
+        : hasSentRequest
+        ? "Requested"
+        : "Follow",
+      isPrivate: followedUser.settings.isProfilePrivate,
+      hasSentFollowRequest: hasSentRequest,
+    };
+  });
+
+  // Check if there is a next page
+  const hasNextPage = followingWithStatus.length > limit;
+  if (hasNextPage) followingWithStatus.pop(); // Remove the extra item
+
+  return {
+    users: followingWithStatus,
+    nextCursor: hasNextPage
+      ? followingWithStatus[followingWithStatus.length - 1].user._id
+      : null,
     hasNextPage,
   };
 };

@@ -101,24 +101,18 @@ export const clearImageFromCache = async (key, imagePath) => {
 
 // Clear all metadata and image caches
 export const clearAllCaches = async () => {
-  // Clear in-memory metadata cache
+  // Step 1: Clear in-memory metadata cache
   cacheStore = {};
 
-  // Clear image cache in FileSystem
-  try {
-    const files = await FileSystem.readDirectoryAsync(
-      FileSystem.cacheDirectory
-    );
-    await Promise.all(
-      files.map(async (file) => {
-        const fileUri = `${FileSystem.cacheDirectory}${file}`;
-        await FileSystem.deleteAsync(fileUri);
-      })
-    );
-    console.log("All caches cleared from cacheDirectory.");
-  } catch (error) {
-    console.error("Error clearing all caches from FileSystem:", error);
-  }
+  // Step 2: Clear AsyncStorage while preserving specific keys
+  await clearAllAsyncStorage();
+
+  // Step 3: Clear all image and file caches from FileSystem (both cache and document directories)
+  await clearAllFileSystemCache();
+
+  console.log(
+    "All caches cleared successfully across in-memory, AsyncStorage, and FileSystem."
+  );
 };
 
 // Cleanup expired metadata items

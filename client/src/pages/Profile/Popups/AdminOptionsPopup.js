@@ -10,8 +10,8 @@ import { useAuth } from "../../../contexts/AuthContext";
 import IconStatic from "../../../components/Icons/IconStatic";
 import {
   clearAllAsyncStorage,
-  clearAllCacheStore,
   clearAllFileSystemCache,
+  clearAllCaches,
 } from "../../../utils/cacheHelper";
 
 export default function AdminOptionsPopup({
@@ -26,9 +26,7 @@ export default function AdminOptionsPopup({
   const { logout } = useAuth();
 
   const handleLogout = async () => {
-    await clearAllCacheStore();
-    await clearAllAsyncStorage();
-    await clearAllFileSystemCache();
+    await clearAllCaches();
     logout();
   };
 

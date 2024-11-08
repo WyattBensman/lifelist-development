@@ -37,16 +37,17 @@ export const GET_FOLLOWERS = gql`
   query GetFollowers($userId: ID!, $cursor: ID, $limit: Int) {
     getFollowers(userId: $userId, cursor: $cursor, limit: $limit) {
       users {
-        _id
-        username
-        fullName
-        profilePicture
-        settings {
-          isProfilePrivate
-        }
-        followRequests {
+        user {
           _id
+          username
+          fullName
+          profilePicture
+          settings {
+            isProfilePrivate
+          }
         }
+        relationshipStatus
+        hasSentFollowRequest
       }
       nextCursor
       hasNextPage
@@ -59,16 +60,17 @@ export const GET_FOLLOWING = gql`
   query GetFollowing($userId: ID!, $cursor: ID, $limit: Int) {
     getFollowing(userId: $userId, cursor: $cursor, limit: $limit) {
       users {
-        _id
-        username
-        fullName
-        profilePicture
-        settings {
-          isProfilePrivate
-        }
-        followRequests {
+        user {
           _id
+          username
+          fullName
+          profilePicture
+          settings {
+            isProfilePrivate
+          }
         }
+        relationshipStatus
+        hasSentFollowRequest
       }
       nextCursor
       hasNextPage

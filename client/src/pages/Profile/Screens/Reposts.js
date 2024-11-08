@@ -8,7 +8,7 @@ export default function Reposts({ userId, data: collages }) {
 
   const renderCollageItem = ({ item, index }) => (
     <CollageCard
-      collageId={item.id}
+      collageId={item._id}
       path={item.coverImage}
       index={index}
       collages={filteredCollages}
@@ -21,7 +21,7 @@ export default function Reposts({ userId, data: collages }) {
       <FlatList
         data={filteredCollages}
         renderItem={renderCollageItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         numColumns={3}
         columnWrapperStyle={styles.columnWrapper}
       />

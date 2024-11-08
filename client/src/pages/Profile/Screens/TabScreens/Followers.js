@@ -14,7 +14,6 @@ import {
   UNFOLLOW_USER,
   UNSEND_FOLLOW_REQUEST,
 } from "../../../../utils/mutations/userRelationsMutations";
-import { useFocusEffect } from "@react-navigation/native";
 
 export default function Followers({ userId, searchQuery }) {
   const { currentUser } = useAuth();
@@ -34,13 +33,6 @@ export default function Followers({ userId, searchQuery }) {
   } = useQuery(GET_FOLLOWING, {
     variables: { userId: currentUser },
   });
-
-  useFocusEffect(
-    useCallback(() => {
-      refetchFollowers();
-      refetchFollowing();
-    }, [refetchFollowers, refetchFollowing])
-  );
 
   const [followUser] = useMutation(FOLLOW_USER);
   const [unfollowUser] = useMutation(UNFOLLOW_USER);

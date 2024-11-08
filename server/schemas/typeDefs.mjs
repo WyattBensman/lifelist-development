@@ -332,8 +332,8 @@ type Score {
     # User Queries
     getUserProfileById(userId: ID!): UserProfileResponse
     getUserCounts(userId: ID!): UserCountsResponse
-    getFollowers(userId: ID!, cursor: ID, limit: Int): UserPagination
-    getFollowing(userId: ID!, cursor: ID, limit: Int): UserPagination
+    getFollowers(userId: ID!, cursor: ID, limit: Int): UserWithRelationshipStatusPagination
+    getFollowing(userId: ID!, cursor: ID, limit: Int): UserWithRelationshipStatusPagination
     getUserCollages(userId: ID!): [Collage]
     getRepostedCollages(userId: ID!): [Collage]
     getTaggedCollages(userId: ID!, cursor: ID, limit: Int): CollagePagination
@@ -403,6 +403,19 @@ type Score {
 
   type UserPagination {
     users: [User]
+    nextCursor: ID
+    hasNextPage: Boolean
+  }
+
+  type UserWithRelationshipStatus {
+    user: User
+    relationshipStatus: String
+    isPrivate: Boolean
+    hasSentFollowRequest: Boolean
+  }
+
+  type UserWithRelationshipStatusPagination {
+    users: [UserWithRelationshipStatus]
     nextCursor: ID
     hasNextPage: Boolean
   }

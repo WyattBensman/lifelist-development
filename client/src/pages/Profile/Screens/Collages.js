@@ -7,7 +7,7 @@ export default function Collages({ data: collages }) {
 
   const renderCollageItem = ({ item, index }) => (
     <CollageCard
-      collageId={item.id}
+      collageId={item._id}
       path={item.coverImage}
       index={index}
       collages={filteredCollages}
@@ -20,7 +20,7 @@ export default function Collages({ data: collages }) {
       <FlatList
         data={filteredCollages}
         renderItem={renderCollageItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         numColumns={3}
         columnWrapperStyle={styles.columnWrapper}
       />
