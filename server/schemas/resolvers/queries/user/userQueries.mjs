@@ -86,9 +86,9 @@ export const getUserCounts = async (_, { userId }, { user }) => {
 export const getFollowers = async (
   _,
   { userId, cursor, limit = 20 },
-  { user: currentUser }
+  { user }
 ) => {
-  isUser(currentUser);
+  /* isUser(user); */
 
   const foundUser = await User.findById(userId)
     .populate({
@@ -140,9 +140,9 @@ export const getFollowers = async (
 export const getFollowing = async (
   _,
   { userId, cursor, limit = 20 },
-  { user: currentUser }
+  { user }
 ) => {
-  isUser(currentUser);
+  /* isUser(user); */
 
   const foundUser = await User.findById(userId)
     .populate({
