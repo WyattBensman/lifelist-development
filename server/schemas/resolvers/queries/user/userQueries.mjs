@@ -83,9 +83,12 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   };
 }; */
 
-export const getFollowers = async (_, { userId, cursor, limit = 20 }) => {
-  /* isUser(currentUser); */
-  const currentUser = "663a3129e0ffbeff092b81d4";
+export const getFollowers = async (
+  _,
+  { userId, cursor, limit = 20 },
+  { user: currentUser }
+) => {
+  isUser(currentUser);
 
   const foundUser = await User.findById(userId)
     .populate({
