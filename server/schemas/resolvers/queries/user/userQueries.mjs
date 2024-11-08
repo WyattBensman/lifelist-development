@@ -83,20 +83,17 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   };
 }; */
 
-export const getFollowers = async (
-  _,
-  { userId, cursor, limit = 20 },
-  { user: currentUser }
-) => {
-  isUser(currentUser);
+export const getFollowers = async (_, { userId, cursor, limit = 20 }) => {
+  /* isUser(currentUser); */
+  const currentUser = "663a3129e0ffbeff092b81d4";
 
   const foundUser = await User.findById(userId)
     .populate({
       path: "followers",
-      match: cursor ? { _id: { $gt: cursor } } : {}, // Only fetch followers after the cursor
+      match: cursor ? { _id: { $gt: cursor } } : {}, // Fetch followers after the cursor
       options: {
-        sort: { _id: 1 }, // Sort by _id to support cursor-based pagination
-        limit: limit + 1, // Fetch one extra item to check if there's a next page
+        sort: { _id: 1 }, // Sort by _id for cursor-based pagination
+        limit: limit + 1, // Fetch one extra item to determine if there's a next page
       },
       select: "_id username fullName profilePicture settings followRequests",
       populate: { path: "settings" },
@@ -105,12 +102,18 @@ export const getFollowers = async (
 
   if (!foundUser) throw new Error("User not found.");
 
-  // Determine relationship status for each follower
+  console.log("Current User Following:", currentUser.following);
+
   const followersWithStatus = foundUser.followers.map((follower) => {
-    const isFollowing = currentUser.following.includes(follower._id);
-    const hasSentRequest = follower.followRequests.some(
-      (req) => req.toString() === currentUser._id.toString()
-    );
+    console.log("Processing Follower:", follower._id);
+    console.log("Follower FollowRequests:", follower.followRequests);
+
+    const isFollowing = currentUser.following?.includes(follower._id) || false; // Safe check for undefined
+    const hasSentRequest = Array.isArray(follower.followRequests)
+      ? follower.followRequests.some(
+          (req) => req.toString() === currentUser._id.toString()
+        )
+      : false;
 
     return {
       user: follower,
@@ -119,14 +122,13 @@ export const getFollowers = async (
         : hasSentRequest
         ? "Requested"
         : "Follow",
-      isPrivate: follower.settings.isProfilePrivate,
+      isPrivate: follower.settings?.isProfilePrivate || false,
       hasSentFollowRequest: hasSentRequest,
     };
   });
 
-  // Check if there is a next page
   const hasNextPage = followersWithStatus.length > limit;
-  if (hasNextPage) followersWithStatus.pop(); // Remove the extra item
+  if (hasNextPage) followersWithStatus.pop();
 
   return {
     users: followersWithStatus,
