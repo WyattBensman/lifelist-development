@@ -152,7 +152,7 @@ export const getFollowing = async (
   const foundUser = await User.findById(userId)
     .populate({
       path: "following",
-      match: cursor ? { _id: { $gt: cursor } } : {}, // Fetch following after the cursor
+      match: cursor ? { _id: { $gt: cursor } } : {}, // Fetch following users after the cursor
       options: {
         sort: { _id: 1 }, // Sort by _id for cursor-based pagination
         limit: limit + 1, // Fetch one extra item to determine if there's a next page
@@ -164,28 +164,34 @@ export const getFollowing = async (
 
   if (!foundUser) throw new Error("User not found.");
 
-  // Determine relationship status for each user being followed
-  const followingWithStatus = foundUser.following.map((followedUser) => {
-    const isFollowing = currentUser.following.includes(followedUser._id);
-    const hasSentRequest = followedUser.followRequests.some(
-      (req) => req.toString() === currentUser._id.toString()
-    );
+  console.log("Current User Followers:", currentUser.followers);
+
+  const followingWithStatus = foundUser.following.map((followingUser) => {
+    console.log("Processing Following User:", followingUser._id);
+    console.log("Following User FollowRequests:", followingUser.followRequests);
+
+    const isFollowedByCurrentUser =
+      currentUser.followers?.includes(followingUser._id) || false; // Safe check for undefined
+    const hasSentRequest = Array.isArray(followingUser.followRequests)
+      ? followingUser.followRequests.some(
+          (req) => req.toString() === currentUser._id.toString()
+        )
+      : false;
 
     return {
-      user: followedUser,
-      relationshipStatus: isFollowing
-        ? "Following"
+      user: followingUser,
+      relationshipStatus: isFollowedByCurrentUser
+        ? "Following Back"
         : hasSentRequest
         ? "Requested"
-        : "Follow",
-      isPrivate: followedUser.settings.isProfilePrivate,
+        : "Following",
+      isPrivate: followingUser.settings?.isProfilePrivate || false,
       hasSentFollowRequest: hasSentRequest,
     };
   });
 
-  // Check if there is a next page
   const hasNextPage = followingWithStatus.length > limit;
-  if (hasNextPage) followingWithStatus.pop(); // Remove the extra item
+  if (hasNextPage) followingWithStatus.pop();
 
   return {
     users: followingWithStatus,
