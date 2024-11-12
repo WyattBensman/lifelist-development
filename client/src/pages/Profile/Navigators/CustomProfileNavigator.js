@@ -23,6 +23,10 @@ export default function CustomProfileNavigator({
   collages,
   repostedCollages,
   navigation,
+  loadMoreCollages,
+  loadMoreReposts,
+  hasMoreCollages,
+  hasMoreReposts,
 }) {
   const [activeTab, setActiveTab] = useState("Collages");
   const translateX = useSharedValue(0);
@@ -35,8 +39,13 @@ export default function CustomProfileNavigator({
     console.log(`Reposted Collages Data:`, repostedCollages);
   }, [activeTab, translateX, collages, repostedCollages]);
 
-  const renderScreen = (Component, data) => (
-    <Component userId={userId} data={data} />
+  const renderScreen = (Component, data, loadMore, hasMore) => (
+    <Component
+      userId={userId}
+      data={data}
+      loadMore={loadMore}
+      hasMore={hasMore}
+    />
   );
 
   const handleTabPress = (tabName) => {
@@ -84,10 +93,17 @@ export default function CustomProfileNavigator({
         style={[styles.screenContainer, animatedStyle]}
       >
         <View style={styles.screen}>
-          {activeTab === "Collages" && renderScreen(Collages, collages)}
+          {activeTab === "Collages" &&
+            renderScreen(Collages, collages, loadMoreCollages, hasMoreCollages)}
         </View>
         <View style={styles.screen}>
-          {activeTab === "Reposts" && renderScreen(Reposts, repostedCollages)}
+          {activeTab === "Reposts" &&
+            renderScreen(
+              Reposts,
+              repostedCollages,
+              loadMoreReposts,
+              hasMoreReposts
+            )}
         </View>
       </Animated.View>
     </View>

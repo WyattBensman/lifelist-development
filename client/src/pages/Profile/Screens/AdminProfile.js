@@ -167,6 +167,49 @@ export default function AdminProfile() {
     loadCachedData();
   }, []);
 
+  const loadMoreCollages = async () => {
+    if (!hasMoreCollages || loadingMoreCollages) return;
+
+    setLoadingMoreCollages(true);
+    const { data } = await fetchMoreData({
+      variables: {
+        userId: currentUser,
+        collagesCursor,
+        limit: 10,
+      },
+    });
+
+    if (data) {
+      setCollages((prev) => [...prev, ...data.getUserProfileById.collages]);
+      setCollagesCursor(data.getUserProfileById.nextCollagesCursor);
+      setHasMoreCollages(data.getUserProfileById.hasMoreCollages);
+    }
+    setLoadingMoreCollages(false);
+  };
+
+  const loadMoreReposts = async () => {
+    if (!hasMoreReposts || loadingMoreReposts) return;
+
+    setLoadingMoreReposts(true);
+    const { data } = await fetchMoreData({
+      variables: {
+        userId: currentUser,
+        repostsCursor,
+        limit: 10,
+      },
+    });
+
+    if (data) {
+      setRepostedCollages((prev) => [
+        ...prev,
+        ...data.getUserProfileById.repostedCollages,
+      ]);
+      setRepostsCursor(data.getUserProfileById.nextRepostsCursor);
+      setHasMoreReposts(data.getUserProfileById.hasMoreReposts);
+    }
+    setLoadingMoreReposts(false);
+  };
+
   // Cache fetched data if no cached profile
   useEffect(() => {
     if (data && !cachedProfile) {
@@ -321,9 +364,13 @@ export default function AdminProfile() {
             userId={currentUser}
             isAdmin={true}
             isAdminScreen={true}
+            collages={collages}
+            repostedCollages={repostedCollages}
+            loadMoreCollages={loadMoreCollages}
+            loadMoreReposts={loadMoreReposts}
+            hasMoreCollages={hasMoreCollages}
+            hasMoreReposts={hasMoreReposts}
             navigation={navigation}
-            collages={profile?.collages || []}
-            repostedCollages={profile?.repostedCollages || []}
           />
         )}
         ListHeaderComponent={() => (

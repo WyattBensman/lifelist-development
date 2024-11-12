@@ -330,7 +330,7 @@ type Score {
 
   type Query {
     # User Queries
-    getUserProfileById(userId: ID!): UserProfileResponse
+    getUserProfileById(userId: ID!, collagesCursor: ID, repostsCursor: ID, limit: Int): UserProfileWithPagination
     getUserCounts(userId: ID!): UserCountsResponse
     getFollowers(userId: ID!, cursor: ID, limit: Int): UserWithRelationshipStatusPagination
     getFollowing(userId: ID!, cursor: ID, limit: Int): UserWithRelationshipStatusPagination
@@ -405,6 +405,21 @@ type Score {
     users: [User]
     nextCursor: ID
     hasNextPage: Boolean
+  }
+
+  type UserProfileWithPagination {
+    _id: ID!
+    fullName: String
+    username: String
+    bio: String
+    profilePicture: String
+    collages: [Collage]
+    repostedCollages: [Collage]
+    collagesCount: Int
+    hasMoreCollages: Boolean
+    hasMoreReposts: Boolean
+    nextCollagesCursor: ID
+    nextRepostsCursor: ID
   }
 
   type ExperiencePagination {
