@@ -22,8 +22,6 @@ export default function CustomProfileNavigator({
   isAdminScreen,
   collages,
   repostedCollages,
-  loadMoreCollages,
-  loadMoreReposts,
   navigation,
 }) {
   const [activeTab, setActiveTab] = useState("Collages");
@@ -37,8 +35,8 @@ export default function CustomProfileNavigator({
     console.log(`Reposted Collages Data:`, repostedCollages);
   }, [activeTab, translateX, collages, repostedCollages]);
 
-  const renderScreen = (Component, data, loadMore) => (
-    <Component userId={userId} data={data} loadMore={loadMore} />
+  const renderScreen = (Component, data) => (
+    <Component userId={userId} data={data} />
   );
 
   const handleTabPress = (tabName) => {
@@ -86,12 +84,10 @@ export default function CustomProfileNavigator({
         style={[styles.screenContainer, animatedStyle]}
       >
         <View style={styles.screen}>
-          {activeTab === "Collages" &&
-            renderScreen(Collages, collages, loadMoreCollages)}
+          {activeTab === "Collages" && renderScreen(Collages, collages)}
         </View>
         <View style={styles.screen}>
-          {activeTab === "Reposts" &&
-            renderScreen(Reposts, repostedCollages, loadMoreReposts)}
+          {activeTab === "Reposts" && renderScreen(Reposts, repostedCollages)}
         </View>
       </Animated.View>
     </View>

@@ -1,18 +1,16 @@
-import React from "react";
 import { FlatList, View, StyleSheet, Text } from "react-native";
 import CollageCard from "../Cards/CollageCard";
 import { layoutStyles } from "../../../styles";
 
-export default function Collages({ data: collages, loadMore }) {
+export default function Collages({ data: collages }) {
   const filteredCollages = collages || [];
 
   const renderCollageItem = ({ item, index }) => (
     <CollageCard
-      collageId={item.id || item._id}
+      collageId={item._id}
       path={item.coverImage}
       index={index}
       collages={filteredCollages}
-      cacheKeyPrefix="collage_cover_"
     />
   );
 
@@ -21,16 +19,9 @@ export default function Collages({ data: collages, loadMore }) {
       <FlatList
         data={filteredCollages}
         renderItem={renderCollageItem}
-        keyExtractor={(item) => item.id || item._id}
+        keyExtractor={(item) => item._id}
         numColumns={3}
         columnWrapperStyle={styles.columnWrapper}
-        onEndReached={loadMore} // Trigger loadMore when near the end
-        onEndReachedThreshold={0.5} // Adjust threshold for triggering loadMore
-        ListEmptyComponent={() => (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>No collages found.</Text>
-          </View>
-        )}
       />
     </View>
   );
@@ -39,15 +30,5 @@ export default function Collages({ data: collages, loadMore }) {
 const styles = StyleSheet.create({
   columnWrapper: {
     justifyContent: "space-between",
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 20,
-  },
-  emptyText: {
-    fontSize: 16,
-    color: "#888",
   },
 });

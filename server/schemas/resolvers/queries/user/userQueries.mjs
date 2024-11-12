@@ -1,13 +1,19 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const getUserProfileById = async (
-  _,
-  { userId, collagesCursor, repostsCursor, limit = 20 },
-  { user }
-) => {
+export const getUserProfileById = async (_, { userId }, { user }) => {
   try {
     const foundUser = await User.findById(userId)
+      .populate({
+        path: "collages",
+        match: { archived: false },
+        select: "_id coverImage",
+      })
+      .populate({
+        path: "repostedCollages",
+        match: { archived: false },
+        select: "_id coverImage",
+      })
       .select("_id fullName username bio profilePicture")
       .exec();
 
@@ -15,57 +21,12 @@ export const getUserProfileById = async (
       throw new Error("User not found.");
     }
 
-    // Fetch paginated collages
-    const collages = await Collage.find({
-      user: userId,
-      archived: false,
-      ...(collagesCursor && { _id: { $gt: collagesCursor } }),
-    })
-      .select("_id coverImage")
-      .sort({ _id: 1 })
-      .limit(limit + 1)
-      .exec();
-
-    const hasMoreCollages = collages.length > limit;
-    if (hasMoreCollages) collages.pop();
-
-    // Fetch paginated reposted collages
-    const repostedCollages = await Collage.find({
-      _id: { $in: foundUser.repostedCollages },
-      archived: false,
-      ...(repostsCursor && { _id: { $gt: repostsCursor } }),
-    })
-      .select("_id coverImage")
-      .sort({ _id: 1 })
-      .limit(limit + 1)
-      .exec();
-
-    const hasMoreReposts = repostedCollages.length > limit;
-    if (hasMoreReposts) repostedCollages.pop();
-
     // Count non-archived collages
-    const collagesCount = await Collage.countDocuments({
-      user: userId,
-      archived: false,
-    });
+    const collagesCount = foundUser.collages.length;
 
     return {
-      _id: foundUser._id,
-      fullName: foundUser.fullName,
-      username: foundUser.username,
-      bio: foundUser.bio,
-      profilePicture: foundUser.profilePicture,
+      ...foundUser.toObject(),
       collagesCount,
-      collages,
-      collagesNextCursor: hasMoreCollages
-        ? collages[collages.length - 1]._id
-        : null,
-      hasMoreCollages,
-      repostedCollages,
-      repostsNextCursor: hasMoreReposts
-        ? repostedCollages[repostedCollages.length - 1]._id
-        : null,
-      hasMoreReposts,
     };
   } catch (error) {
     throw new Error("Database error: " + error.message);
@@ -212,61 +173,31 @@ export const getFollowing = async (
   };
 };
 
-export const getUserCollages = async (_, { userId, cursor, limit = 20 }) => {
+export const getUserCollages = async (_, { userId }) => {
   const foundUser = await User.findById(userId)
     .populate({
       path: "collages",
-      match: cursor ? { _id: { $gt: cursor } } : {},
-      options: {
-        sort: { _id: 1 },
-        limit: limit + 1, // Fetch one extra item to check for next page
-      },
+      match: { archived: false },
       select: "_id coverImage",
     })
     .exec();
 
-  if (!foundUser) throw new Error("User not found.");
-
-  const collages = foundUser.collages;
-  const hasNextPage = collages.length > limit;
-
-  if (hasNextPage) collages.pop(); // Remove the extra fetched item
-
-  return {
-    collages,
-    nextCursor: hasNextPage ? collages[collages.length - 1]._id : null,
-    hasNextPage,
-  };
+  if (!foundUser) throw new Error("User not found for the provided ID.");
+  return foundUser.collages;
 };
 
-export const getRepostedCollages = async (
-  _,
-  { userId, cursor, limit = 20 }
-) => {
+export const getRepostedCollages = async (_, { userId }, { user }) => {
+  isUser(user);
   const foundUser = await User.findById(userId)
     .populate({
       path: "repostedCollages",
-      match: cursor ? { _id: { $gt: cursor } } : {},
-      options: {
-        sort: { _id: 1 },
-        limit: limit + 1,
-      },
+      match: { archived: false },
       select: "_id coverImage",
     })
     .exec();
 
-  if (!foundUser) throw new Error("User not found.");
-
-  const reposts = foundUser.repostedCollages;
-  const hasNextPage = reposts.length > limit;
-
-  if (hasNextPage) reposts.pop();
-
-  return {
-    reposts,
-    nextCursor: hasNextPage ? reposts[reposts.length - 1]._id : null,
-    hasNextPage,
-  };
+  if (!foundUser) throw new Error("User not found for the provided ID.");
+  return foundUser.repostedCollages;
 };
 
 export const getTaggedCollages = async (
@@ -277,7 +208,7 @@ export const getTaggedCollages = async (
   isUser(user);
 
   // Find the user and apply pagination based on cursor and limit
-  const foundUser = await User.findById(user)
+  const foundUser = await User.findById(users)
     .populate({
       path: "taggedCollages",
       match: {
