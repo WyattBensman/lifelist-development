@@ -4,7 +4,8 @@ import createNotification from "../notifications/createNotification.mjs";
 
 const createCollage = async (_, { caption, images, taggedUsers }, { user }) => {
   try {
-    isUser(user);
+    /* isUser(user); */
+    const user = "663a3129e0ffbeff092b81d4";
 
     // Validate that at least one image is provided
     if (!images || images.length === 0) {

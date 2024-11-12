@@ -1,9 +1,19 @@
-import React, { useState } from "react";
-import { Image, Text, View, StyleSheet, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  Image,
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import ButtonSmall from "../../../components/Buttons/ButtonSmall";
-import { BASE_URL } from "../../../utils/config";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../../contexts/AuthContext";
+import {
+  getImageFromCache,
+  saveImageToCache,
+} from "../../../utils/cacheHelper";
 
 export default function UserRelationsCard({
   user,
@@ -12,8 +22,41 @@ export default function UserRelationsCard({
 }) {
   const { currentUser } = useAuth();
   const [action, setAction] = useState(initialAction);
-  const profilePictureUrl = `${BASE_URL}${user.profilePicture}`;
+  const [profilePictureUri, setProfilePictureUri] = useState(null);
+  const [loadingImage, setLoadingImage] = useState(true); // Track loading state for images
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchAndCacheProfilePicture = async () => {
+      try {
+        const imageKey = `profile_picture_${user._id}`;
+        const cachedImageUri = await getImageFromCache(imageKey);
+
+        if (!cachedImageUri) {
+          console.log(`Caching profile picture for user: ${user._id}`);
+          const cachedUri = await saveImageToCache(
+            imageKey,
+            user.profilePicture
+          );
+          setProfilePictureUri(cachedUri);
+        } else {
+          console.log(
+            `Profile picture loaded from cache for user: ${user._id}`
+          );
+          setProfilePictureUri(cachedImageUri);
+        }
+      } catch (error) {
+        console.error(
+          `Error fetching or caching profile picture for user: ${user._id}`,
+          error
+        );
+      } finally {
+        setLoadingImage(false);
+      }
+    };
+
+    fetchAndCacheProfilePicture();
+  }, [user._id, user.profilePicture]);
 
   const handleProfilePress = () => {
     navigation.push("Profile", { userId: user._id });
@@ -32,11 +75,19 @@ export default function UserRelationsCard({
   return (
     <View style={styles.listItemContainer}>
       <View style={styles.contentContainer}>
-        <Image
-          source={{ uri: profilePictureUrl }}
-          onPress={handleProfilePress}
-          style={styles.imageMd}
-        />
+        {loadingImage ? (
+          <ActivityIndicator
+            size="small"
+            color="#d4d4d4"
+            style={styles.imageMd}
+          />
+        ) : (
+          <Image
+            source={{ uri: profilePictureUri }}
+            onPress={handleProfilePress}
+            style={styles.imageMd}
+          />
+        )}
         <Pressable style={styles.textContainer} onPress={handleProfilePress}>
           <Text style={styles.primaryText}>{user.fullName}</Text>
           <Text style={[styles.secondaryText, { marginTop: 2 }]}>

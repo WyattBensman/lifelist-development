@@ -162,9 +162,13 @@ export const getFollowing = async (
     })
     .exec();
 
-  if (!foundUser) throw new Error("User not found.");
+  if (!foundUser) {
+    console.log("User not found for userId:", userId);
+    throw new Error("User not found.");
+  }
 
-  console.log("Current User Followers:", currentUser.followers);
+  console.log("Current User ID:", currentUser._id);
+  console.log("Found User Following Count:", foundUser.following.length);
 
   const followingWithStatus = foundUser.following.map((followingUser) => {
     console.log("Processing Following User:", followingUser._id);
@@ -189,6 +193,8 @@ export const getFollowing = async (
       hasSentFollowRequest: hasSentRequest,
     };
   });
+
+  console.log("Processed Following List:", followingWithStatus);
 
   const hasNextPage = followingWithStatus.length > limit;
   if (hasNextPage) followingWithStatus.pop();

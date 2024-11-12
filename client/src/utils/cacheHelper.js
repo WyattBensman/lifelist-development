@@ -40,7 +40,9 @@ export const clearMetaDataFromCache = (key) => {
 export const saveImageToCache = async (key, imagePath) => {
   try {
     const fullImageUrl = `${BASE_URL}${imagePath}`;
+
     const fileExtension = imagePath.split(".").pop() || "jpg"; // Get file extension
+
     const fileUri = `${FileSystem.cacheDirectory}${key}.${fileExtension}`;
 
     const fileInfo = await FileSystem.getInfoAsync(fileUri);
@@ -67,6 +69,7 @@ export const saveImageToCache = async (key, imagePath) => {
 // Get image from FileSystem cache
 export const getImageFromCache = async (key, imagePath) => {
   try {
+    console.log(`Image Path: ${imagePath}`);
     const fileExtension = imagePath.split(".").pop() || "jpg"; // Get file extension
     const fileUri = `${FileSystem.cacheDirectory}${key}.${fileExtension}`;
 

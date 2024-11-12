@@ -14,6 +14,8 @@ import {
 import {
   getMetaDataFromCache,
   saveMetaDataToCache,
+  getImageFromCache,
+  saveImageToCache,
 } from "../../../../utils/cacheHelper";
 
 const PAGE_SIZE = 20;
@@ -48,6 +50,7 @@ export default function Followers({ userId, searchQuery }) {
       console.log("Followers data fetched from network:", fetchedData);
 
       const { users, nextCursor, hasNextPage } = fetchedData.getFollowers;
+      console.log(`USERS: ${users}`);
 
       // Save followers metadata to cache
       console.log("Saving followers metadata to cache...");
@@ -56,6 +59,25 @@ export default function Followers({ userId, searchQuery }) {
         nextCursor,
         hasNextPage,
       });
+
+      // Cache profile pictures
+      for (const item of users) {
+        const user = item.user; // Access the nested user object
+        const imageKey = `profile_picture_${user._id}`;
+        console.log(`PROFILE PICTURE FOLLOWERS: ${user.profilePicture}`);
+
+        const cachedImageUri = await getImageFromCache(
+          imageKey,
+          user.profilePicture
+        );
+
+        if (!cachedImageUri) {
+          console.log(`Caching profile picture for user: ${user._id}`);
+          await saveImageToCache(imageKey, user.profilePicture);
+        } else {
+          console.log(`Profile picture already cached for user: ${user._id}`);
+        }
+      }
 
       // Remove duplicates and update state
       const newUniqueFollowers = users.filter(
