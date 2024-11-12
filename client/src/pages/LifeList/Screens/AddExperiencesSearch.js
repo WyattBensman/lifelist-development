@@ -94,7 +94,7 @@ export default function AddExperiencesSearch({ route }) {
 
   // Filter experiences based on the search query
   const filteredExperiences = useMemo(() => {
-    if (!debouncedQuery) return allExperiences;
+    if (!debouncedQuery) return [];
     return allExperiences.filter((exp) =>
       exp.title.toLowerCase().includes(debouncedQuery.toLowerCase())
     );
