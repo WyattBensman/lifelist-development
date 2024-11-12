@@ -2,18 +2,8 @@ import { gql } from "@apollo/client";
 
 // Get User
 export const GET_USER_PROFILE = gql`
-  query GetUserProfileById(
-    $userId: ID!
-    $collagesCursor: ID
-    $repostsCursor: ID
-    $limit: Int
-  ) {
-    getUserProfileById(
-      userId: $userId
-      collagesCursor: $collagesCursor
-      repostsCursor: $repostsCursor
-      limit: $limit
-    ) {
+  query GetUserProfileById($userId: ID!) {
+    getUserProfileById(userId: $userId) {
       _id
       fullName
       username
@@ -28,10 +18,6 @@ export const GET_USER_PROFILE = gql`
         coverImage
       }
       collagesCount
-      hasMoreCollages
-      hasMoreReposts
-      nextCollagesCursor
-      nextRepostsCursor
     }
   }
 `;

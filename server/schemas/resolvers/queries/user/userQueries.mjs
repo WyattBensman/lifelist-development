@@ -1,15 +1,21 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const getUserProfileById = async (
-  _,
-  { userId, collagesCursor, repostsCursor, limit = 20 },
-  { user }
-) => {
+export const getUserProfileById = async (_, { userId }, { user }) => {
   try {
     isUser(user);
 
     const foundUser = await User.findById(userId)
+      .populate({
+        path: "collages",
+        match: { archived: false },
+        select: "_id coverImage",
+      })
+      .populate({
+        path: "repostedCollages",
+        match: { archived: false },
+        select: "_id coverImage",
+      })
       .select("_id fullName username bio profilePicture")
       .exec();
 
@@ -17,50 +23,12 @@ export const getUserProfileById = async (
       throw new Error("User not found.");
     }
 
-    // Fetch paginated collages
-    const collagesQuery = { archived: false };
-    if (collagesCursor) {
-      collagesQuery._id = { $gt: collagesCursor }; // Cursor condition
-    }
-    const collages = await Collage.find(collagesQuery)
-      .sort({ _id: 1 }) // Sort by ascending _id for cursor pagination
-      .limit(limit + 1) // Fetch one extra record to determine if there's a next page
-      .select("_id coverImage")
-      .exec();
-
-    const hasMoreCollages = collages.length > limit;
-    if (hasMoreCollages) collages.pop(); // Remove the extra record
-
-    // Fetch paginated reposted collages
-    const repostsQuery = { archived: false };
-    if (repostsCursor) {
-      repostsQuery._id = { $gt: repostsCursor }; // Cursor condition
-    }
-    const repostedCollages = await Repost.find(repostsQuery)
-      .sort({ _id: 1 }) // Sort by ascending _id for cursor pagination
-      .limit(limit + 1) // Fetch one extra record to determine if there's a next page
-      .select("_id coverImage")
-      .exec();
-
-    const hasMoreReposts = repostedCollages.length > limit;
-    if (hasMoreReposts) repostedCollages.pop(); // Remove the extra record
-
-    // Count total collages (non-paginated)
-    const collagesCount = await Collage.countDocuments({ archived: false });
+    // Count non-archived collages
+    const collagesCount = foundUser.collages.length;
 
     return {
       ...foundUser.toObject(),
-      collages,
       collagesCount,
-      repostedCollages,
-      hasMoreCollages,
-      hasMoreReposts,
-      nextCollagesCursor: hasMoreCollages
-        ? collages[collages.length - 1]._id
-        : null,
-      nextRepostsCursor: hasMoreReposts
-        ? repostedCollages[repostedCollages.length - 1]._id
-        : null,
     };
   } catch (error) {
     throw new Error("Database error: " + error.message);
