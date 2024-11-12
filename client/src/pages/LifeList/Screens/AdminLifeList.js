@@ -23,7 +23,6 @@ import {
   saveImageToFileSystem,
   getImageFromFileSystem,
 } from "../../../utils/cacheHelper";
-import * as FileSystem from "expo-file-system";
 
 export default function AdminLifeList() {
   const { currentUser } = useAuth();
@@ -123,7 +122,10 @@ export default function AdminLifeList() {
         icon: "plus",
         style: iconStyles.addExperience,
         label: "Add Experiences",
-        onPress: () => navigation.navigate("AddExperiences"),
+        onPress: () =>
+          navigation.navigate("AddExperiences", {
+            lifeList, // Pass LifeList data
+          }),
       },
       {
         icon: "pencil",

@@ -4,6 +4,7 @@ import { cardStyles } from "../../../styles";
 import { truncateText, capitalizeText } from "../../../utils/utils";
 import { BASE_URL } from "../../../utils/config";
 import CheckBox from "expo-checkbox";
+import { fetchCachedImageUri } from "../../../utils/cacheHelper";
 
 export default function SearchItemCard({
   experience,
@@ -12,8 +13,18 @@ export default function SearchItemCard({
   isPreExisting,
 }) {
   const [isChecked, setIsChecked] = useState(isSelected);
+  const [cachedImageUri, setCachedImageUri] = useState(null); // State to store cached image URI
 
-  const imageUrl = `${BASE_URL}${experience.image}`;
+  // Fetch cached image or fallback URL
+  useEffect(() => {
+    const loadImage = async () => {
+      const imageKey = `experience_image_${experience._id}`;
+      const uri = await fetchCachedImageUri(imageKey, experience.image);
+      setCachedImageUri(uri);
+    };
+    loadImage();
+  }, [experience]);
+
   const truncatedTitle = truncateText(experience.title, 30);
   const capitalizedCategory = capitalizeText(experience.category);
 
@@ -32,7 +43,10 @@ export default function SearchItemCard({
     <View style={[styles.listItemContainer, isPreExisting && styles.disabled]}>
       <Pressable onPress={handlePress} style={styles.pressable}>
         <View style={styles.contentContainer}>
-          <Image source={{ uri: imageUrl }} style={cardStyles.imageMd} />
+          <Image
+            source={{ uri: cachedImageUri || `${BASE_URL}${experience.image}` }}
+            style={cardStyles.imageMd}
+          />
           <View style={styles.textContainer}>
             <Text style={styles.title}>{truncatedTitle}</Text>
             <Text style={styles.secondaryText}>{capitalizedCategory}</Text>

@@ -73,7 +73,10 @@ export default function Tagged() {
         const imageKey = `tagged_collage_${collage._id}`;
         console.log(`Attempting to load cached image for key: ${imageKey}`);
 
-        const cachedImageUri = await getImageFromCache(imageKey);
+        const cachedImageUri = await getImageFromCache(
+          imageKey,
+          collage.coverImage
+        );
         if (!cachedImageUri) {
           console.log(
             `Image not found in cache, downloading and caching: ${imageKey}`

@@ -7,19 +7,26 @@ import SearchItemCard from "../Cards/SearchItemCard";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import AddExperiencesBottomContainer from "../Components/AddExperiencesBottomContainer";
-import { GET_USER_LIFELIST, GET_ALL_EXPERIENCES } from "../../../utils/queries";
+import { GET_ALL_EXPERIENCES } from "../../../utils/queries";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useLifeListExperienceContext } from "../../../contexts/LifeListExperienceContext";
 
-export default function AddExperiencesSearch() {
-  const { currentUser } = useAuth();
+const LIMIT = 20; // Number of items per page
+
+export default function AddExperiencesSearch({ route }) {
   const navigation = useNavigation();
-  const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const { setIsTabBarVisible } = useNavigationContext();
+
+  const { lifeList } = route.params;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [allExperiences, setAllExperiences] = useState([]);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   // LifeListExperienceContext methods
   const {
@@ -34,54 +41,71 @@ export default function AddExperiencesSearch() {
     setIsTabBarVisible(false);
   });
 
-  console.log(lifeListExperiences);
-
   // Reset experiences when the component mounts
   useEffect(() => {
     resetLifeListExperiences();
   }, []);
 
-  // Fetch LifeList data for the current user
-  const { data: lifeListData, refetch: refetchLifeList } = useQuery(
-    GET_USER_LIFELIST,
-    {
-      variables: { userId: currentUser },
+  // Debounce the search query for efficient filtering
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 300); // Delay of 300ms
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  // Fetch paginated experiences from the server
+  const { data, loading, error, fetchMore } = useQuery(GET_ALL_EXPERIENCES, {
+    variables: { cursor: null, limit: LIMIT },
+    fetchPolicy: "network-only", // Always fetch fresh data
+  });
+
+  // Append fetched experiences to the state
+  useEffect(() => {
+    if (data?.getAllExperiences) {
+      const { experiences, nextCursor: newCursor } = data.getAllExperiences;
+      setAllExperiences((prev) => [...prev, ...experiences]);
+      setNextCursor(newCursor);
     }
-  );
+  }, [data]);
 
-  // Fetch all experiences from the database
-  const {
-    data: allExperiencesData,
-    loading,
-    error,
-  } = useQuery(GET_ALL_EXPERIENCES);
+  // Load more experiences when user reaches the end of the list
+  const loadMoreExperiences = () => {
+    if (isFetchingMore || !nextCursor) return;
 
-  // Refetch lifeList when the screen is focused
-  useFocusEffect(
-    useCallback(() => {
-      refetchLifeList();
-    }, [refetchLifeList])
-  );
+    setIsFetchingMore(true);
+    fetchMore({
+      variables: { cursor: nextCursor, limit: LIMIT },
+      updateQuery: (prev, { fetchMoreResult }) => {
+        setIsFetchingMore(false);
+        if (!fetchMoreResult) return prev;
 
-  const lifeList = lifeListData?.getUserLifeList || { experiences: [] };
+        const { experiences, nextCursor: newCursor } =
+          fetchMoreResult.getAllExperiences;
+        setAllExperiences((prev) => [...prev, ...experiences]);
+        setNextCursor(newCursor);
+      },
+    });
+  };
+
   const userExperienceIds = new Set(
     lifeList.experiences.map((exp) => exp.experience._id)
   );
 
   // Filter experiences based on the search query
   const filteredExperiences = useMemo(() => {
-    if (!searchQuery) return [];
-    return (allExperiencesData?.getAllExperiences || []).filter((exp) =>
-      exp.title.toLowerCase().includes(searchQuery.toLowerCase())
+    if (!debouncedQuery) return allExperiences;
+    return allExperiences.filter((exp) =>
+      exp.title.toLowerCase().includes(debouncedQuery.toLowerCase())
     );
-  }, [searchQuery, allExperiencesData]);
+  }, [debouncedQuery, allExperiences]);
 
   // Handle selecting/deselecting experiences
   const handleSelect = (experience, isSelected) => {
     if (isSelected) {
-      addLifeListExperience(experience); // Add the full experience object here
+      addLifeListExperience(experience); // Add experience to lifeList
     } else {
-      removeLifeListExperience(experience._id); // Remove by experience._id
+      removeLifeListExperience(experience._id); // Remove by ID
     }
   };
 
@@ -102,7 +126,7 @@ export default function AddExperiencesSearch() {
     navigation.goBack();
   };
 
-  if (loading) return <Text>Loading...</Text>;
+  if (loading && !allExperiences.length) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
 
   return (
@@ -122,10 +146,8 @@ export default function AddExperiencesSearch() {
         isSearchFocused={isSearchFocused}
         onSearchFocusChange={setIsSearchFocused}
       />
-      {searchQuery === "" && (
-        <Text style={styles.instructionText}>
-          Start typing to search for experiences
-        </Text>
+      {filteredExperiences.length === 0 && !loading && (
+        <Text style={styles.instructionText}>No experiences found.</Text>
       )}
       <FlatList
         data={filteredExperiences}
@@ -133,13 +155,18 @@ export default function AddExperiencesSearch() {
           <SearchItemCard
             experience={item}
             isSelected={lifeListExperiences.some(
-              (exp) => exp.experience._id === item._id // Compare with experience._id
+              (exp) => exp.experience._id === item._id
             )}
             onSelect={handleSelect}
-            isPreExisting={userExperienceIds.has(item._id)}
+            isPreExisting={lifeList.experiences.some(
+              (exp) => exp.experience._id === item._id
+            )}
           />
         )}
         keyExtractor={(item) => item._id}
+        onEndReached={loadMoreExperiences} // Trigger pagination
+        onEndReachedThreshold={0.5} // Trigger at 50% from the bottom
+        ListFooterComponent={isFetchingMore && <Text>Loading more...</Text>}
       />
       <AddExperiencesBottomContainer
         onAdd={() =>
@@ -150,7 +177,6 @@ export default function AddExperiencesSearch() {
         onDeselect={() => resetLifeListExperiences()}
         isAddDisabled={lifeListExperiences.length === 0}
       />
-
       <CustomAlert
         visible={showAlert}
         onRequestClose={() => setShowAlert(false)}

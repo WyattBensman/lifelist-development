@@ -383,7 +383,7 @@ type Score {
   
     # Experience Queries
     getExperience(experienceId: ID!): Experience
-    getAllExperiences(limit: Int, offset: Int): [Experience]
+    getAllExperiences(cursor: ID, limit: Int): ExperiencePagination
 
     # Main Feed Queries
     getMainFeed(userId: ID!, page: Int!): FeedResult
@@ -406,6 +406,12 @@ type Score {
     nextCursor: ID
     hasNextPage: Boolean
   }
+
+  type ExperiencePagination {
+  experiences: [Experience]
+  nextCursor: ID
+  hasNextPage: Boolean
+}
 
   type UserWithRelationshipStatus {
     user: User

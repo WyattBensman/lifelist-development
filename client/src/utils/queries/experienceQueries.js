@@ -26,13 +26,17 @@ export const GET_EXPERIENCE = gql`
 
 // Fetch all experiences
 export const GET_ALL_EXPERIENCES = gql`
-  query GetAllExperiences($limit: Int, $offset: Int) {
-    getAllExperiences(limit: $limit, offset: $offset) {
-      _id
-      title
-      image
-      category
-      subCategory
+  query GetAllExperiences($cursor: ID, $limit: Int) {
+    getAllExperiences(cursor: $cursor, limit: $limit) {
+      experiences {
+        _id
+        title
+        image
+        category
+        subCategory
+      }
+      nextCursor
+      hasNextPage
     }
   }
 `;

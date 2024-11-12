@@ -21,7 +21,6 @@ import Modal from "react-native-modal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import IconStatic from "../../../../components/Icons/IconStatic";
 import EditProfileBottomContainer from "../../Components/EditProfileBottomContainer";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function EditProfileTab({
   setUnsavedChanges,
@@ -46,15 +45,6 @@ export default function EditProfileTab({
   const [updateProfileMutation] = useMutation(UPDATE_PROFILE);
   const [updateIdentityMutation] = useMutation(UPDATE_IDENTITY);
 
-  // Cache keys for AsyncStorage
-  const cacheKeys = {
-    fullName: "profile_fullName",
-    username: "profile_username",
-    bio: "profile_bio",
-    profilePicture: "profile_profilePicture",
-  };
-
-  // Initialize profile info from the server data
   const initializeProfileInfo = useCallback(() => {
     if (data) {
       const { getUserProfileInformation } = data;
@@ -138,21 +128,12 @@ export default function EditProfileTab({
         variables: { gender: capitalize(gender), birthday },
       });
 
-      // Update local state with the saved values
       setFullName(profileData.updateProfile.fullName);
       setUsername(profileData.updateProfile.username);
       setBio(profileData.updateProfile.bio);
       setProfilePicture(profileData.updateProfile.profilePicture);
       setGender(identityData.updateIdentity.gender);
       setBirthday(identityData.updateIdentity.birthday);
-
-      // Update cache in AsyncStorage
-      await AsyncStorage.multiSet([
-        [cacheKeys.fullName, profileData.updateProfile.fullName],
-        [cacheKeys.username, profileData.updateProfile.username],
-        [cacheKeys.bio, profileData.updateProfile.bio],
-        [cacheKeys.profilePicture, profileData.updateProfile.profilePicture],
-      ]);
 
       setChangesMade(false);
       setUnsavedChanges(false);
