@@ -2,19 +2,16 @@ import { FlatList, View, StyleSheet, Text } from "react-native";
 import CollageCard from "../Cards/CollageCard";
 import { layoutStyles } from "../../../styles";
 
-// Utility to handle mixed ID formats
-const getCollageId = (collage) => collage.id || collage._id;
-
-export default function Reposts({ data: collages }) {
+export default function Reposts({ data: collages, loadMore }) {
   const filteredCollages = collages || [];
 
   const renderCollageItem = ({ item, index }) => (
     <CollageCard
-      collageId={getCollageId(item)}
+      collageId={item.id || item._id}
       path={item.coverImage}
       index={index}
       collages={filteredCollages}
-      cacheKeyPrefix="repost_cover_"
+      cacheKeyPrefix="collage_cover_"
     />
   );
 
@@ -23,9 +20,16 @@ export default function Reposts({ data: collages }) {
       <FlatList
         data={filteredCollages}
         renderItem={renderCollageItem}
-        keyExtractor={(item) => getCollageId(item)}
+        keyExtractor={(item) => item.id || item._id}
         numColumns={3}
         columnWrapperStyle={styles.columnWrapper}
+        onEndReached={loadMore} // Trigger loadMore when near the end
+        onEndReachedThreshold={0.5} // Adjust threshold for triggering loadMore
+        ListEmptyComponent={() => (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>No reposts found.</Text>
+          </View>
+        )}
       />
     </View>
   );
@@ -34,5 +38,15 @@ export default function Reposts({ data: collages }) {
 const styles = StyleSheet.create({
   columnWrapper: {
     justifyContent: "space-between",
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#888",
   },
 });

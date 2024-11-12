@@ -330,12 +330,12 @@ type Score {
 
   type Query {
     # User Queries
-    getUserProfileById(userId: ID!): UserProfileResponse
+    getUserProfileById(userId: ID!, collagesCursor: ID, repostsCursor: ID, limit: Int): UserProfileResponse
     getUserCounts(userId: ID!): UserCountsResponse
     getFollowers(userId: ID!, cursor: ID, limit: Int): UserWithRelationshipStatusPagination
     getFollowing(userId: ID!, cursor: ID, limit: Int): UserWithRelationshipStatusPagination
-    getUserCollages(userId: ID!): [Collage]
-    getRepostedCollages(userId: ID!): [Collage]
+    getUserCollages(userId: ID!, cursor: ID, limit: Int): CollagePagination
+    getRepostedCollages(userId: ID!, cursor: ID, limit: Int): CollagePagination
     getTaggedCollages(userId: ID!, cursor: ID, limit: Int): CollagePagination
     getSavedCollages(cursor: ID, limit: Int): CollagePagination
     getArchivedCollages(cursor: ID, limit: Int): CollagePagination
@@ -426,8 +426,8 @@ type Score {
     username: String
     bio: String
     profilePicture: String
-    collages: [Collage]
-    repostedCollages: [Collage]
+    collages: CollagePagination
+    repostedCollages: CollagePagination
     collagesCount: Int
   }
 

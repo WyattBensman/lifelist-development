@@ -1,11 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  Dimensions,
-  FlatList,
-  View,
-  ActivityIndicator,
-  Text,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { Dimensions, FlatList, View, Text } from "react-native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";

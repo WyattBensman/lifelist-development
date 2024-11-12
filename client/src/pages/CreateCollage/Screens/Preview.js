@@ -64,15 +64,33 @@ export default function CollagePreview() {
     setCurrentIndex(index);
   };
 
-  // Handle the action to post the collage
   const handlePostCollage = () => {
+    // Ensure images array is valid
+    if (!images || images.length === 0) {
+      alert("Please select at least one image to create a collage.");
+      return;
+    }
+
+    // Extract the image paths
+    const imagePaths = images.map((item) => item.image);
+
+    console.log("Image paths being sent to the server:", imagePaths); // Debug log
+
+    // Post the collage
     createCollage({
       variables: {
-        caption,
-        images,
-        taggedUsers: taggedUsers.map((user) => user._id),
+        caption: caption || "", // Use empty string if no caption
+        images: imagePaths, // Pass only the extracted image paths
+        taggedUsers: taggedUsers.map((user) => user._id), // Extract IDs for tagged users
       },
-    });
+    })
+      .then(() => {
+        console.log("Collage created successfully!");
+        navigation.navigate("MainFeedHome", { refresh: true });
+      })
+      .catch((error) => {
+        console.error("Error creating collage:", error.message);
+      });
   };
 
   if (loading) return <Text>Loading...</Text>;
