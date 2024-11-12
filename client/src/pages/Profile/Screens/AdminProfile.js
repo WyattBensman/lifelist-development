@@ -26,12 +26,6 @@ export default function AdminProfile() {
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
   const [cachedProfile, setCachedProfile] = useState(null);
   const [followerData, setFollowerData] = useState(null);
-  const [collages, setCollages] = useState([]);
-  const [repostedCollages, setRepostedCollages] = useState([]);
-  const [collagesCursor, setCollagesCursor] = useState(null);
-  const [repostsCursor, setRepostsCursor] = useState(null);
-  const [hasMoreCollages, setHasMoreCollages] = useState(true);
-  const [hasMoreReposts, setHasMoreReposts] = useState(true);
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const cacheKeys = {
@@ -77,22 +71,30 @@ export default function AdminProfile() {
           cacheKeys.collagesCount
         );
 
+        // Log loaded basic profile information
+        console.log("Loaded Basic Profile Info:", {
+          fullName,
+          username,
+          bio,
+          profilePictureUri,
+          collagesCount,
+        });
+
         // Load Collages and Reposts with their cover images
         const collages = [];
         const repostedCollages = [];
 
-        // Check if collages and reposts are already cached and load them
         const collageMetadataKeys =
           (await getFromAsyncStorage(`collage_metadata_keys_${currentUser}`)) ||
           [];
 
         for (let key of collageMetadataKeys) {
           const metadata = await getFromAsyncStorage(key);
-          const coverImageUri = await getImageFromFileSystem(
+          const collageUri = await getImageFromFileSystem(
             `collage_cover_${metadata.id}`
           );
-          if (metadata && coverImageUri) {
-            collages.push({ ...metadata, coverImage: coverImageUri });
+          if (metadata && collageUri) {
+            collages.push({ ...metadata, coverImage: collageUri });
           }
         }
 
@@ -102,13 +104,17 @@ export default function AdminProfile() {
 
         for (let key of repostMetadataKeys) {
           const metadata = await getFromAsyncStorage(key);
-          const coverImageUri = await getImageFromFileSystem(
+          const repostUri = await getImageFromFileSystem(
             `repost_cover_${metadata.id}`
           );
-          if (metadata && coverImageUri) {
-            repostedCollages.push({ ...metadata, coverImage: coverImageUri });
+          if (metadata && repostUri) {
+            repostedCollages.push({ ...metadata, coverImage: repostUri });
           }
         }
+
+        // Log loaded collages and reposts
+        console.log("Loaded Collages:", collages);
+        console.log("Loaded Reposted Collages:", repostedCollages);
 
         // Set cached profile if all data is present
         if (
@@ -118,7 +124,7 @@ export default function AdminProfile() {
           profilePictureUri &&
           collagesCount !== null
         ) {
-          setCachedProfile({
+          const cachedData = {
             fullName,
             username,
             bio,
@@ -126,7 +132,9 @@ export default function AdminProfile() {
             collagesCount,
             collages,
             repostedCollages,
-          });
+          };
+          setCachedProfile(cachedData);
+          console.log("Cached Profile Set:", cachedData);
         }
 
         // Load Dynamic Profile Information with TTL check
@@ -145,7 +153,9 @@ export default function AdminProfile() {
           followingCount !== null &&
           Date.now() - countsTimestamp < COUNTS_TTL
         ) {
-          setFollowerData({ followersCount, followingCount });
+          const followerData = { followersCount, followingCount };
+          setFollowerData(followerData);
+          console.log("Loaded Follower Data:", followerData);
         } else {
           refetchCounts(); // Refetch if TTL has expired or no cached data
         }
@@ -164,11 +174,12 @@ export default function AdminProfile() {
 
       const updateCachedProfile = async () => {
         try {
-          // Save the profile picture to the file system if not already cached
+          // Save the profile picture to the file system
           const profilePictureUri = await saveImageToFileSystem(
             `profile_picture_${currentUser}`,
             profile.profilePicture
           );
+          console.log("Profile Picture Cached at:", profilePictureUri);
 
           // Cache collages and reposts metadata and images
           const collageMetadataKeys = [];
@@ -214,7 +225,7 @@ export default function AdminProfile() {
           );
 
           // Update cached profile
-          setCachedProfile({
+          const cachedData = {
             ...profile,
             profilePicture: profilePictureUri,
             collages: profile.collages.map((c, i) => ({
@@ -225,7 +236,9 @@ export default function AdminProfile() {
               ...r,
               coverImage: repostMetadataKeys[i],
             })),
-          });
+          };
+          setCachedProfile(cachedData);
+          console.log("Cached Profile Updated:", cachedData);
 
           // Save other profile information to AsyncStorage
           saveToAsyncStorage(cacheKeys.fullName, profile.fullName);
@@ -250,10 +263,14 @@ export default function AdminProfile() {
       saveToAsyncStorage(cacheKeys.followersCount, followersCount);
       saveToAsyncStorage(cacheKeys.followingCount, followingCount);
       saveToAsyncStorage(cacheKeys.countsTimestamp, Date.now());
+      console.log("Follower and Following Counts Cached:", {
+        followersCount,
+        followingCount,
+      });
     }
   }, [countsData, followerData]);
 
-  // EVENTUALLY IMPORT & REUSE THIS THROUGHOUT PROJECT
+  // Animate rotation
   useEffect(() => {
     Animated.timing(rotateAnim, {
       toValue: optionsPopupVisible ? 1 : 0,
@@ -274,20 +291,14 @@ export default function AdminProfile() {
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
 
-  const collagesData = [{ key: "Collages", component: CustomProfileNavigator }];
-
   const profile = cachedProfile || data?.getUserProfileById;
   const isAdminView = true;
-
-  console.log("Cached Profile:", cachedProfile);
-  console.log("Cached Collages:", cachedProfile?.collages);
-  console.log("Cached Reposts:", cachedProfile?.repostedCollages);
 
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderMain
         titleComponent={
-          <Text style={headerStyles.headerHeavy}>{profile.fullName}</Text>
+          <Text style={headerStyles.headerHeavy}>{profile?.fullName}</Text>
         }
         icon1={
           <Animated.View style={{ transform: [{ rotate: rotation }] }}>
@@ -303,7 +314,7 @@ export default function AdminProfile() {
 
       {/* Scrollable Content */}
       <FlatList
-        data={collagesData}
+        data={[{ key: "Collages", component: CustomProfileNavigator }]}
         keyExtractor={(item) => item.key}
         renderItem={() => (
           <CustomProfileNavigator
@@ -311,6 +322,8 @@ export default function AdminProfile() {
             isAdmin={true}
             isAdminScreen={true}
             navigation={navigation}
+            collages={profile?.collages || []}
+            repostedCollages={profile?.repostedCollages || []}
           />
         )}
         ListHeaderComponent={() => (

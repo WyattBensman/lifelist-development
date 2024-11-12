@@ -2,15 +2,12 @@ import { FlatList, View, StyleSheet, Text } from "react-native";
 import CollageCard from "../Cards/CollageCard";
 import { layoutStyles } from "../../../styles";
 
-// Utility to handle mixed ID formats
-const getCollageId = (collage) => collage.id || collage._id;
-
 export default function Reposts({ data: collages }) {
   const filteredCollages = collages || [];
 
   const renderCollageItem = ({ item, index }) => (
     <CollageCard
-      collageId={getCollageId(item)}
+      collageId={item.id || item._id}
       path={item.coverImage}
       index={index}
       collages={filteredCollages}
@@ -23,7 +20,7 @@ export default function Reposts({ data: collages }) {
       <FlatList
         data={filteredCollages}
         renderItem={renderCollageItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id || item._id}
         numColumns={3}
         columnWrapperStyle={styles.columnWrapper}
       />
