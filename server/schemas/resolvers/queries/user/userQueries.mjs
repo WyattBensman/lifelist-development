@@ -35,11 +35,25 @@ export const getUserCounts = async (_, { userId }, { user }) => {
   try {
     isUser(user);
 
-    const [followersCount, followingCount, collagesCount] = await Promise.all([
+    const [followersCount, followingCount] = await Promise.all([
       User.countDocuments({ following: userId }), // Count users following this user
       User.countDocuments({ followers: userId }), // Count users this user is following
-      Collage.countDocuments({ author: userId, archived: false }), // Count non-archived collages
     ]);
+
+    const foundUser = await User.findById(userId)
+      .populate({
+        path: "collages",
+        match: { archived: false },
+        select: "_id",
+      })
+      .exec();
+
+    if (!foundUser) {
+      throw new Error("User not found.");
+    }
+
+    // Count non-archived collages
+    const collagesCount = foundUser.collages.length;
 
     return {
       followersCount,

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Animated, Text, View, FlatList, StyleSheet } from "react-native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import ProfileOverview from "../Components/ProfileOverview";
@@ -22,7 +22,6 @@ import {
 export default function Profile() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { currentUser } = useAuth();
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
 

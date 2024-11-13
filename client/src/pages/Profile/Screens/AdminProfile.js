@@ -26,6 +26,10 @@ export default function AdminProfile() {
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
   const [cachedProfile, setCachedProfile] = useState(null);
   const [cachedCounts, setCachedCounts] = useState(null);
+  const [cachedCollages, setCachedCollages] = useState({
+    collages: [],
+    reposts: [],
+  });
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const cacheKeys = {
@@ -54,6 +58,8 @@ export default function AdminProfile() {
       skip: !!cachedCounts, // Skip if cached counts exist
     }
   );
+
+  console.log(`Counts Data: ${countsData}`);
 
   // Load cached data on mount
   useEffect(() => {
