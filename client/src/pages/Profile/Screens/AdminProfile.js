@@ -25,139 +25,76 @@ export default function AdminProfile() {
   const { currentUser } = useAuth();
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
   const [cachedProfile, setCachedProfile] = useState(null);
-  const [followerData, setFollowerData] = useState(null);
+  const [cachedCounts, setCachedCounts] = useState(null);
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   const cacheKeys = {
     fullName: `profile_fullName_${currentUser}`,
     username: `profile_username_${currentUser}`,
     bio: `profile_bio_${currentUser}`,
-    collagesCount: `profile_collagesCount_${currentUser}`,
-    followersCount: `profile_followersCount_${currentUser}`,
-    followingCount: `profile_followingCount_${currentUser}`,
-    countsTimestamp: `profile_countsTimestamp_${currentUser}`,
+    profilePicture: `profile_picture_${currentUser}`,
+    counts: `profile_counts_${currentUser}`,
+    countsTimestamp: `profile_counts_timestamp_${currentUser}`,
+    collages: `collages_metadata_${currentUser}`,
+    reposts: `reposts_metadata_${currentUser}`,
   };
 
-  // TTL for counts (in milliseconds)
   const COUNTS_TTL = 15 * 60 * 1000; // 15 minutes
 
-  // Fetch profile data from server
+  // Queries
   const { data, loading, error } = useQuery(GET_USER_PROFILE, {
     variables: { userId: currentUser },
-    skip: !!cachedProfile, // Skip fetching if cached profile exists
+    skip: !!cachedProfile, // Skip if cached profile exists
   });
 
-  // Fetch counts from server
   const { data: countsData, refetch: refetchCounts } = useQuery(
     GET_USER_COUNTS,
     {
       variables: { userId: currentUser },
-      skip: !!followerData, // Skip if cached counts exist
+      skip: !!cachedCounts, // Skip if cached counts exist
     }
   );
 
-  // Retrieve cached data on load
+  // Load cached data on mount
   useEffect(() => {
     const loadCachedData = async () => {
       try {
-        // Load Basic Profile Information
+        // Load basic profile metadata
         const fullName = await getFromAsyncStorage(cacheKeys.fullName);
         const username = await getFromAsyncStorage(cacheKeys.username);
         const bio = await getFromAsyncStorage(cacheKeys.bio);
-        const profilePictureUri = await getImageFromFileSystem(
-          `profile_picture_${currentUser}`
-        );
-        const collagesCount = await getFromAsyncStorage(
-          cacheKeys.collagesCount
+        const profilePicture = await getImageFromFileSystem(
+          cacheKeys.profilePicture
         );
 
-        // Log loaded basic profile information
-        console.log("Loaded Basic Profile Info:", {
-          fullName,
-          username,
-          bio,
-          profilePictureUri,
-          collagesCount,
-        });
+        // Load collages and reposts metadata
+        const collages = (await getFromAsyncStorage(cacheKeys.collages)) || [];
+        const reposts = (await getFromAsyncStorage(cacheKeys.reposts)) || [];
 
-        // Load Collages and Reposts with their cover images
-        const collages = [];
-        const repostedCollages = [];
-
-        const collageMetadataKeys =
-          (await getFromAsyncStorage(`collage_metadata_keys_${currentUser}`)) ||
-          [];
-
-        for (let key of collageMetadataKeys) {
-          const metadata = await getFromAsyncStorage(key);
-          const collageUri = await getImageFromFileSystem(
-            `collage_cover_${metadata.id}`
-          );
-          if (metadata && collageUri) {
-            collages.push({ ...metadata, coverImage: collageUri });
-          }
-        }
-
-        const repostMetadataKeys =
-          (await getFromAsyncStorage(`repost_metadata_keys_${currentUser}`)) ||
-          [];
-
-        for (let key of repostMetadataKeys) {
-          const metadata = await getFromAsyncStorage(key);
-          const repostUri = await getImageFromFileSystem(
-            `repost_cover_${metadata.id}`
-          );
-          if (metadata && repostUri) {
-            repostedCollages.push({ ...metadata, coverImage: repostUri });
-          }
-        }
-
-        // Log loaded collages and reposts
-        console.log("Loaded Collages:", collages);
-        console.log("Loaded Reposted Collages:", repostedCollages);
-
-        // Set cached profile if all data is present
-        if (
-          fullName &&
-          username &&
-          bio &&
-          profilePictureUri &&
-          collagesCount !== null
-        ) {
-          const cachedData = {
+        if (fullName && username && bio && profilePicture) {
+          setCachedProfile({
             fullName,
             username,
             bio,
-            profilePicture: profilePictureUri,
-            collagesCount,
-            collages,
-            repostedCollages,
-          };
-          setCachedProfile(cachedData);
-          console.log("Cached Profile Set:", cachedData);
+            profilePicture,
+          });
         }
 
-        // Load Dynamic Profile Information with TTL check
-        const followersCount = await getFromAsyncStorage(
-          cacheKeys.followersCount
-        );
-        const followingCount = await getFromAsyncStorage(
-          cacheKeys.followingCount
-        );
+        setCachedCollages({ collages, reposts });
+
+        // Load counts with TTL check
+        const counts = await getFromAsyncStorage(cacheKeys.counts);
         const countsTimestamp = await getFromAsyncStorage(
           cacheKeys.countsTimestamp
         );
 
-        if (
-          followersCount !== null &&
-          followingCount !== null &&
-          Date.now() - countsTimestamp < COUNTS_TTL
-        ) {
-          const followerData = { followersCount, followingCount };
-          setFollowerData(followerData);
-          console.log("Loaded Follower Data:", followerData);
+        const isCountsValid =
+          countsTimestamp && Date.now() - countsTimestamp < COUNTS_TTL;
+
+        if (counts && isCountsValid) {
+          setCachedCounts(counts);
         } else {
-          refetchCounts(); // Refetch if TTL has expired or no cached data
+          refetchCounts();
         }
       } catch (error) {
         console.error("Error loading cached data:", error);
@@ -166,6 +103,88 @@ export default function AdminProfile() {
 
     loadCachedData();
   }, []);
+
+  // Cache profile data after fetch
+  useEffect(() => {
+    if (data && !cachedProfile) {
+      const { getUserProfileById: profile } = data;
+
+      const cacheProfileData = async () => {
+        try {
+          // Cache profile picture
+          const profilePicture = await saveImageToFileSystem(
+            cacheKeys.profilePicture,
+            profile.profilePicture
+          );
+
+          // Cache collages and reposts metadata
+          const collages = await Promise.all(
+            profile.collages.map(async (collage) => {
+              const coverImage = await saveImageToFileSystem(
+                `collage_cover_${collage._id}`,
+                collage.coverImage
+              );
+              return { ...collage, coverImage };
+            })
+          );
+
+          const reposts = await Promise.all(
+            profile.repostedCollages.map(async (repost) => {
+              const coverImage = await saveImageToFileSystem(
+                `repost_cover_${repost._id}`,
+                repost.coverImage
+              );
+              return { ...repost, coverImage };
+            })
+          );
+
+          await saveToAsyncStorage(cacheKeys.collages, collages);
+          await saveToAsyncStorage(cacheKeys.reposts, reposts);
+
+          // Cache profile metadata
+          await saveToAsyncStorage(
+            cacheKeys.fullName,
+            profile.fullName,
+            72 * 60 * 60
+          );
+          await saveToAsyncStorage(
+            cacheKeys.username,
+            profile.username,
+            72 * 60 * 60
+          );
+          await saveToAsyncStorage(cacheKeys.bio, profile.bio, 72 * 60 * 60);
+
+          setCachedProfile({
+            fullName: profile.fullName,
+            username: profile.username,
+            bio: profile.bio,
+            profilePicture,
+          });
+
+          setCachedCollages({ collages, reposts });
+        } catch (error) {
+          console.error("Error caching profile data:", error);
+        }
+      };
+
+      cacheProfileData();
+    }
+  }, [data, cachedProfile]);
+
+  // Cache counts data after fetch
+  useEffect(() => {
+    if (countsData && !cachedCounts) {
+      const { followersCount, followingCount, collagesCount } =
+        countsData.getUserCounts;
+
+      const counts = { followersCount, followingCount, collagesCount };
+
+      saveToAsyncStorage(cacheKeys.counts, counts, COUNTS_TTL);
+      saveToAsyncStorage(cacheKeys.countsTimestamp, Date.now());
+
+      setCachedCounts(counts);
+    }
+  }, [countsData, cachedCounts]);
 
   // Cache fetched data if no cached profile
   useEffect(() => {
@@ -253,22 +272,20 @@ export default function AdminProfile() {
     }
   }, [data, cachedProfile]);
 
-  // Cache Follower and Following Counts after fetch
+  // Cache Follower, Following, Collage Counts after fetch
   useEffect(() => {
-    if (countsData && !followerData) {
-      const { followersCount, followingCount } = countsData.getUserCounts;
-      setFollowerData({ followersCount, followingCount });
+    if (countsData && !cachedCounts) {
+      const { followersCount, followingCount, collagesCount } =
+        countsData.getUserCounts;
 
-      // Save counts and timestamp to AsyncStorage
-      saveToAsyncStorage(cacheKeys.followersCount, followersCount);
-      saveToAsyncStorage(cacheKeys.followingCount, followingCount);
+      const counts = { followersCount, followingCount, collagesCount };
+
+      saveToAsyncStorage(cacheKeys.counts, counts, COUNTS_TTL);
       saveToAsyncStorage(cacheKeys.countsTimestamp, Date.now());
-      console.log("Follower and Following Counts Cached:", {
-        followersCount,
-        followingCount,
-      });
+
+      setCachedCounts(counts);
     }
-  }, [countsData, followerData]);
+  }, [countsData, cachedCounts]);
 
   // Animate rotation
   useEffect(() => {
@@ -292,7 +309,6 @@ export default function AdminProfile() {
   if (error) return <Text>Error: {error.message}</Text>;
 
   const profile = cachedProfile || data?.getUserProfileById;
-  const isAdminView = true;
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -322,18 +338,24 @@ export default function AdminProfile() {
             isAdmin={true}
             isAdminScreen={true}
             navigation={navigation}
-            collages={profile?.collages || []}
-            repostedCollages={profile?.repostedCollages || []}
+            // collages={profile?.collages || []}
+            // repostedCollages={profile?.repostedCollages || []}
+            collages={cachedCollages.collages}
+            repostedCollages={cachedCollages.reposts}
           />
         )}
         ListHeaderComponent={() => (
           <ProfileOverview
             profile={profile}
             userId={currentUser}
-            followerData={
-              followerData || { followersCount: 0, followingCount: 0 }
+            counts={
+              cachedCounts || {
+                followersCount: 0,
+                followingCount: 0,
+                collagesCount: 0,
+              }
             }
-            isAdminView={isAdminView}
+            isAdminView={true}
             isAdminScreen={true}
           />
         )}

@@ -17,7 +17,6 @@ export const GET_USER_PROFILE = gql`
         _id
         coverImage
       }
-      collagesCount
     }
   }
 `;
@@ -28,6 +27,16 @@ export const GET_USER_COUNTS = gql`
     getUserCounts(userId: $userId) {
       followersCount
       followingCount
+      collagesCount
+    }
+  }
+`;
+
+// Check Following
+export const CHECK_IS_FOLLOWING = gql`
+  query CheckIsFollowing($userId: ID!) {
+    checkIsFollowing(userId: $userId) {
+      isFollowing
     }
   }
 `;

@@ -1,4 +1,4 @@
-import { User } from "../../../../models/index.mjs";
+import { User, Collage } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 export const getUserProfileById = async (_, { userId }, { user }) => {
@@ -23,12 +23,8 @@ export const getUserProfileById = async (_, { userId }, { user }) => {
       throw new Error("User not found.");
     }
 
-    // Count non-archived collages
-    const collagesCount = foundUser.collages.length;
-
     return {
       ...foundUser.toObject(),
-      collagesCount,
     };
   } catch (error) {
     throw new Error("Database error: " + error.message);
@@ -38,15 +34,42 @@ export const getUserProfileById = async (_, { userId }, { user }) => {
 export const getUserCounts = async (_, { userId }, { user }) => {
   try {
     isUser(user);
-    const followersCount = await User.countDocuments({ following: userId });
-    const followingCount = await User.countDocuments({ followers: userId });
+
+    const [followersCount, followingCount, collagesCount] = await Promise.all([
+      User.countDocuments({ following: userId }), // Count users following this user
+      User.countDocuments({ followers: userId }), // Count users this user is following
+      Collage.countDocuments({ author: userId, archived: false }), // Count non-archived collages
+    ]);
 
     return {
       followersCount,
       followingCount,
+      collagesCount,
     };
   } catch (error) {
     throw new Error("Database error: " + error.message);
+  }
+};
+
+export const checkIsFollowing = async (_, { userId }, { user }) => {
+  try {
+    // Check if the current user is following the requested user
+    const currentUserData = await User.findById(user)
+      .select("following")
+      .exec();
+
+    if (!currentUserData) {
+      throw new Error("Authenticated user not found.");
+    }
+
+    const isFollowing = currentUserData.following.some(
+      (followingId) => followingId.toString() === userId.toString()
+    );
+
+    return { isFollowing };
+  } catch (error) {
+    console.error("Error checking follow status:", error);
+    return false;
   }
 };
 

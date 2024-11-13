@@ -16,7 +16,7 @@ import { fetchCachedImageUri } from "../../../utils/cacheHelper";
 export default function ProfileOverview({
   profile,
   userId,
-  followerData,
+  counts,
   isAdminView,
   isAdminScreen,
   isFollowing: initialIsFollowing,
@@ -144,7 +144,7 @@ export default function ProfileOverview({
           >
             <View style={styles.col}>
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {profile.collagesCount}
+                {counts.collagesCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Collages</Text>
             </View>
@@ -166,7 +166,7 @@ export default function ProfileOverview({
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {followerData.followersCount}
+                {counts.followersCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Followers</Text>
             </Pressable>
@@ -188,7 +188,7 @@ export default function ProfileOverview({
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {followerData.followingCount}
+                {counts.followingCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Following</Text>
             </Pressable>
