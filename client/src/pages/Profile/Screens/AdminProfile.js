@@ -32,6 +32,11 @@ export default function AdminProfile() {
   });
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
+  if (!currentUser) {
+    console.error("currentUser is not defined. Skipping cache operations.");
+    return;
+  }
+
   const cacheKeys = {
     fullName: `profile_fullName_${currentUser}`,
     username: `profile_username_${currentUser}`,
@@ -42,6 +47,8 @@ export default function AdminProfile() {
     collages: `collages_metadata_${currentUser}`,
     reposts: `reposts_metadata_${currentUser}`,
   };
+
+  console.log("Cache Keys:", cacheKeys);
 
   const COUNTS_TTL = 15 * 60 * 1000; // 15 minutes
 

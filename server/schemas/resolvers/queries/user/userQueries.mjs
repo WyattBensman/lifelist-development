@@ -31,10 +31,8 @@ export const getUserProfileById = async (_, { userId }, { user }) => {
   }
 };
 
-export const getUserCounts = async (_, { userId }, { user }) => {
+export const getUserCounts = async (_, { userId }) => {
   try {
-    isUser(user);
-
     const [followersCount, followingCount] = await Promise.all([
       User.countDocuments({ following: userId }), // Count users following this user
       User.countDocuments({ followers: userId }), // Count users this user is following
