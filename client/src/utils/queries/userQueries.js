@@ -25,9 +25,9 @@ export const GET_USER_PROFILE = gql`
 export const GET_USER_COUNTS = gql`
   query GetUserCounts($userId: ID!) {
     getUserCounts(userId: $userId) {
+      collagesCount
       followersCount
       followingCount
-      collagesCount
     }
   }
 `;

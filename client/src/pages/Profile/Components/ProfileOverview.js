@@ -3,7 +3,7 @@ import { Image, Pressable, StyleSheet, Text, View, Alert } from "react-native";
 import ButtonSkinny from "../../../components/Buttons/ButtonSkinny";
 import { useNavigation } from "@react-navigation/native";
 import { layoutStyles } from "../../../styles";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { useAuth } from "../../../contexts/AuthContext";
 import {
   FOLLOW_USER,
@@ -11,23 +11,35 @@ import {
   SEND_FOLLOW_REQUEST,
   UNSEND_FOLLOW_REQUEST,
 } from "../../../utils/mutations/userRelationsMutations";
+import { CHECK_IS_FOLLOWING } from "../../../utils/queries/userQueries";
 import { fetchCachedImageUri } from "../../../utils/cacheHelper";
 
 export default function ProfileOverview({
   profile,
   userId,
-  counts,
+  followerData,
   isAdminView,
   isAdminScreen,
-  isFollowing: initialIsFollowing,
 }) {
   const navigation = useNavigation();
   const { currentUser, updateCurrentUser } = useAuth();
 
-  const [isFollowing, setIsFollowing] = useState(initialIsFollowing);
+  const [isFollowing, setIsFollowing] = useState(false);
   const [isPendingRequest, setIsPendingRequest] = useState(false);
   const [buttonState, setButtonState] = useState("Follow");
   const [profilePictureUrl, setProfilePictureUrl] = useState(null);
+
+  // Query to check if the current user is following this profile
+  const { data: isFollowingData, loading: isFollowingLoading } = useQuery(
+    CHECK_IS_FOLLOWING,
+    {
+      variables: { userId },
+      skip: userId === currentUser, // Skip for self-profile
+      onCompleted: (data) => {
+        setIsFollowing(data?.checkIsFollowing?.isFollowing || false);
+      },
+    }
+  );
 
   // Mutations
   const [followUser] = useMutation(FOLLOW_USER);
@@ -144,7 +156,7 @@ export default function ProfileOverview({
           >
             <View style={styles.col}>
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {counts.collagesCount}
+                {followerData.collagesCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Collages</Text>
             </View>
@@ -166,7 +178,7 @@ export default function ProfileOverview({
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {counts.followersCount}
+                {followerData.followersCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Followers</Text>
             </Pressable>
@@ -188,7 +200,7 @@ export default function ProfileOverview({
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {counts.followingCount}
+                {followerData.followingCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Following</Text>
             </Pressable>

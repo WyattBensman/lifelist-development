@@ -10,34 +10,81 @@ import SearchBar from "../../../components/SearchBar";
 import { iconStyles } from "../../../styles/iconStyles";
 import NavigatorContainer from "../Navigation/NavigatorContainer";
 import Icon from "../../../components/Icons/Icon";
+import {
+  saveMetaDataToCache,
+  getMetaDataFromCache,
+  saveImageToCache,
+  getImageFromCache,
+} from "../../../utils/cacheHelper";
 
 export default function LifeList({ route }) {
   const { currentUser } = useAuth();
   const navigation = useNavigation();
-  const { userId } = route.params || currentUser; // Extract userId from route params
+  const { userId } = route.params || currentUser;
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [searchBarVisible, setSearchBarVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [cachedLifeList, setCachedLifeList] = useState(null);
 
-  const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
+  const cacheKey = `user_lifeList_${userId}`;
+
+  const { data, loading, error } = useQuery(GET_USER_LIFELIST, {
     variables: { userId },
+    skip: !!cachedLifeList,
   });
+
+  useEffect(() => {
+    const loadCachedLifeList = async () => {
+      const cachedData = getMetaDataFromCache(cacheKey);
+      if (cachedData) {
+        console.log("Using cached LifeList metadata for user:", userId);
+        setCachedLifeList(cachedData);
+        cacheExperienceImages(cachedData.experiences);
+      }
+    };
+    loadCachedLifeList();
+  }, [cacheKey, userId]);
+
+  useEffect(() => {
+    if (data && !cachedLifeList) {
+      console.log("Fetched LifeList data from server and caching metadata");
+      const lifeListData = data.getUserLifeList;
+      saveMetaDataToCache(cacheKey, lifeListData); // No TTL needed
+      setCachedLifeList(lifeListData);
+      cacheExperienceImages(lifeListData.experiences);
+    }
+  }, [data, cachedLifeList, cacheKey]);
+
+  const cacheExperienceImages = async (experiences) => {
+    for (const exp of experiences) {
+      const imageKey = `experience_image_${exp.experience._id}`;
+      const cachedImageUri = await getImageFromCache(
+        imageKey,
+        exp.experience.image
+      );
+
+      if (!cachedImageUri) {
+        console.log(`Caching image for experience: ${exp.experience.title}`);
+        await saveImageToCache(imageKey, exp.experience.image);
+      } else {
+        console.log(`Image already cached: ${cachedImageUri}`);
+      }
+    }
+  };
+
+  const filteredExperiences = useMemo(() => {
+    if (!searchQuery) return cachedLifeList?.experiences || [];
+    return (cachedLifeList?.experiences || []).filter((exp) =>
+      exp.experience.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [searchQuery, cachedLifeList]);
 
   useEffect(() => {
     if (data) {
       setIsAdmin(userId === currentUser);
     }
   }, [data, userId, currentUser]);
-
-  const lifeList = data?.getUserLifeList || { experiences: [] };
-
-  const filteredExperiences = useMemo(() => {
-    if (!searchQuery) return lifeList.experiences;
-    return lifeList.experiences.filter((exp) =>
-      exp.experience.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [searchQuery, lifeList.experiences]);
 
   if (loading) return <Text>Loading...</Text>;
   if (error) return <Text>Error: {error.message}</Text>;
