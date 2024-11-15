@@ -13,13 +13,6 @@ import ShotCard from "../Cards/ShotCard";
 import { useAuth } from "../../../contexts/AuthContext";
 import Icon from "../../../components/Icons/Icon";
 import FormAlert from "../../../components/Alerts/FormAlert";
-import { saveImageToFileSystem } from "../../../utils/cacheHelper";
-import {
-  cacheAlbumMetadata,
-  getCachedAlbumMetadata,
-  cacheCameraShots,
-  getCachedCameraShots,
-} from "../../../utils/cache/cameraCacheHelper";
 
 export default function CameraRoll() {
   const navigation = useNavigation();

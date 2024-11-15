@@ -14,14 +14,14 @@ import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useMutation } from "@apollo/client";
 import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
-import { applyFilterToImage } from "../../../utils/cameraUtils/applyFilterToImage";
 import {
-  saveToCacheStore,
-  getFromCacheStore,
+  saveMetaDataToCache,
+  getMetaDataFromCache,
   saveToAsyncStorage,
   getFromAsyncStorage,
 } from "../../../utils/cacheHelper";
 import { GET_DAILY_CAMERA_SHOTS_LEFT } from "../../../utils/queries"; // Import query
+import { ImageManipulator } from "expo-image-manipulator";
 
 export default function CameraHome() {
   const { setIsTabBarVisible } = useNavigationContext();
@@ -30,10 +30,10 @@ export default function CameraHome() {
 
   // Load camera settings from cache
   const [facing, setFacing] = useState(
-    () => getFromCacheStore("cameraFacing") || "back"
+    () => getMetaDataFromCache("cameraFacing") || "back"
   );
   const [flash, setFlash] = useState(
-    () => getFromCacheStore("cameraFlash") || "off"
+    () => getMetaDataFromCache("cameraFlash") || "off"
   );
 
   const [zoom, setZoom] = useState(0);
@@ -47,14 +47,12 @@ export default function CameraHome() {
   const screenWidth = Dimensions.get("window").width;
   const cameraHeight = (screenWidth * 3) / 2;
 
-  // Get the time until midnight
-  const getTTLForMidnight = () => {
+  // Calculate time until midnight in seconds
+  const getSecondsUntilMidnight = () => {
     const now = new Date();
     const nextMidnight = new Date();
-    nextMidnight.setHours(0, 0, 0, 0);
-    nextMidnight.setDate(now.getDate() + 1);
-
-    return (nextMidnight - now) / 1000; // Time until midnight in seconds
+    nextMidnight.setHours(24, 0, 0, 0); // Midnight
+    return Math.floor((nextMidnight - now) / 1000); // Seconds until midnight
   };
 
   const [cameraType, setCameraType] = useState("Standard");
@@ -70,33 +68,27 @@ export default function CameraHome() {
     loadCameraType();
   }, []);
 
-  // Load cameraType from AsyncStorage
-  /* const [cameraType, setCameraType] = useState(async () => {
-    const storedCameraType = await getFromAsyncStorage("cameraType");
-    return storedCameraType || "Standard";
-  }); */
-
   const [filter, setFilter] = useState("standardFilter");
 
   // Fetch camera shots left and cache it
   const fetchCameraShotsLeft = async () => {
-    const cachedShots = getFromCacheStore("cameraShotsLeft");
+    const cachedShots = getFromAsyncStorage("cameraShotsLeft");
     if (cachedShots !== null) {
       setShotsLeft(cachedShots);
+      return;
     } else {
       const response = await client.query({
         query: GET_DAILY_CAMERA_SHOTS_LEFT,
       });
       const shots = response.data.getDailyCameraShotsLeft;
       setShotsLeft(shots);
-      const ttl = getTTLForMidnight();
-      saveToCacheStore("cameraShotsLeft", shots, ttl); // Cache shotsLeft until midnight
+      const ttl = getSecondsUntilMidnight();
+      saveToAsyncStorage("cameraShotsLeft", shots, ttl); // Cache shotsLeft until midnight
     }
   };
 
   useEffect(() => {
     setIsTabBarVisible(false);
-    fetchCameraShotsLeft();
     return () => setIsTabBarVisible(true);
   }, []);
 
@@ -132,14 +124,14 @@ export default function CameraHome() {
   const toggleCameraFacing = () => {
     const newFacing = facing === "back" ? "front" : "back";
     setFacing(newFacing);
-    saveToCacheStore("cameraFacing", newFacing, 0); // No expiration, store the facing state
+    saveMetaDataToCache("cameraFacing", newFacing, 0); // No expiration, store the facing state
   };
 
   // Toggle flash state and cache the state
   const toggleFlash = () => {
     const newFlash = flash === "off" ? "on" : "off";
     setFlash(newFlash);
-    saveToCacheStore("cameraFlash", newFlash, 0); // No expiration, store the flash state
+    saveMetaDataToCache("cameraFlash", newFlash, 0); // No expiration, store the flash state
   };
 
   const handleZoomChange = (zoomLevel) => {
@@ -167,12 +159,25 @@ export default function CameraHome() {
       setShotsLeft(newShotsLeft);
 
       try {
-        const photo = await cameraRef.current.takePictureAsync({ quality: 1 });
+        const photo = await cameraRef.current.takePictureAsync({
+          quality: 0.8,
+        });
         setCapturedImage(photo.uri);
-        await applyFilter(photo.uri);
+
+        // Apply the filter to the original photo
+        const filteredOriginalUri = await applyFilter(photo.uri);
+        console.log("Filtered Original URI:", filteredOriginalUri);
+
+        // Generate a thumbnail and apply the filter to it
+        const thumbnailUri = await generateThumbnail(filteredOriginalUri);
+        const filteredThumbnailUri = await applyFilter(thumbnailUri);
+        console.log("Filtered Thumbnail URI:", filteredThumbnailUri);
+
+        // Upload both filtered original and filtered thumbnail
+        await handleUploadPhoto(filteredOriginalUri, filteredThumbnailUri);
 
         const ttl = getTTLForMidnight();
-        saveToCacheStore("cameraShotsLeft", newShotsLeft, ttl); // Update shots left in cache
+        saveToAsyncStorage("cameraShotsLeft", newShotsLeft, ttl); // Update shots left in cache
       } catch (error) {
         setShotsLeft(shotsLeft); // Revert shots left if error occurs
         alert("Error taking photo. Please try again.");
@@ -196,20 +201,40 @@ export default function CameraHome() {
     return file;
   };
 
-  // Handle file upload to GraphQL server
-  const handleUploadPhoto = async (imageUri) => {
+  // Function to generate a thumbnail with 180x120 dimensions
+  const generateThumbnail = async (imageUri) => {
     try {
-      // Convert the image URI into a file that can be uploaded
-      const imageFile = await uriToFile(imageUri);
+      const result = await ImageManipulator.manipulateAsync(
+        imageUri,
+        [
+          { resize: { width: 120, height: 180 } }, // Resize to 120x180
+        ],
+        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+      );
+      return result.uri; // Return the thumbnail URI
+    } catch (error) {
+      console.error("Error generating thumbnail:", error);
+      throw new Error("Failed to generate thumbnail.");
+    }
+  };
 
-      // Log file information on the frontend
-      console.log("File Name (Frontend):", imageFile.name);
-      console.log("MIME Type (Frontend):", imageFile.type);
-      console.log("File Size (Frontend):", imageFile.size);
+  // Handle the upload of both the original and thumbnail images
+  const handleUploadPhoto = async (originalUri, thumbnailUri) => {
+    try {
+      // Convert URIs to File objects
+      const originalFile = await uriToFile(originalUri);
+      const thumbnailFile = await uriToFile(thumbnailUri);
 
-      // Execute the mutation to upload the file
+      // Log file details
+      console.log("Original File:", originalFile);
+      console.log("Thumbnail File:", thumbnailFile);
+
+      // Upload both images to the backend
       const { data: result } = await createCameraShot({
-        variables: { image: imageFile },
+        variables: {
+          image: originalFile,
+          thumbnail: thumbnailFile,
+        },
       });
 
       if (result.createCameraShot.success) {

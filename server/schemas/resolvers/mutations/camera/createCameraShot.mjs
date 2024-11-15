@@ -5,7 +5,7 @@ import * as url from "url";
 
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
 
-const createCameraShot = async (_, { image }, { user }) => {
+const createCameraShot = async (_, { image, thumbnail }, { user }) => {
   try {
     const uploadDir = path.join(__dirname, "../../../../uploads");
 
@@ -17,17 +17,23 @@ const createCameraShot = async (_, { image }, { user }) => {
       throw new Error("You have no shots left for today.");
     }
 
-    // Await the promise to resolve and extract the file information
-    const { createReadStream, filename, mimetype } = await image.promise;
-
-    // Save the uploaded image file
-    const filePath = await uploadSingleImage(
-      { createReadStream, filename },
+    // Process and save the original image
+    const { createReadStream: imageStream, filename: imageFilename } =
+      await image.promise;
+    const originalFilePath = await uploadSingleImage(
+      { createReadStream: imageStream, filename: imageFilename },
       uploadDir
     );
+    const originalFileUrl = `/uploads/${path.basename(originalFilePath)}`;
 
-    // Store relative path in the database
-    const fileUrl = `/uploads/${path.basename(filePath)}`;
+    // Process and save the thumbnail image
+    const { createReadStream: thumbnailStream, filename: thumbnailFilename } =
+      await thumbnail.promise;
+    const thumbnailFilePath = await uploadSingleImage(
+      { createReadStream: thumbnailStream, filename: thumbnailFilename },
+      uploadDir
+    );
+    const thumbnailFileUrl = `/uploads/${path.basename(thumbnailFilePath)}`;
 
     // Generate a random developing time between 4 to 16 minutes
     const developingTime = Math.floor(Math.random() * (16 - 4 + 1)) + 4;
@@ -35,7 +41,8 @@ const createCameraShot = async (_, { image }, { user }) => {
     // Create the new CameraShot with developingTime
     const newShot = new CameraShot({
       author: user,
-      image: fileUrl,
+      image: originalFileUrl, // Save the original image URL
+      imageThumbnail: thumbnailFileUrl, // Save the thumbnail URL
       developingTime,
     });
 

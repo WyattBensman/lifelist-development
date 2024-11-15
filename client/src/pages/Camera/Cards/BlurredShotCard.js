@@ -8,10 +8,12 @@ import {
   Pressable,
 } from "react-native";
 import { BlurView } from "expo-blur";
-import { BASE_URL } from "../../../utils/config";
-import moment from "moment";
 import { useMutation } from "@apollo/client";
 import { TRANSFER_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
+import {
+  saveImageToCache,
+  getImageFromCache,
+} from "../../../utils/cacheHelper";
 
 const { width } = Dimensions.get("window");
 const spacing = 1.5;
@@ -22,12 +24,27 @@ export default function BlurredShotCard({ shot, refetchShots }) {
   const [timeLeft, setTimeLeft] = useState(null);
   const [isDeveloped, setIsDeveloped] = useState(shot.isDeveloped);
   const [blurIntensity, setBlurIntensity] = useState(50); // Start with high intensity
+  const [imageUri, setImageUri] = useState(null);
 
   const [transferCameraShot] = useMutation(TRANSFER_CAMERA_SHOT, {
     onCompleted: () => {
       refetchShots(); // Refetch shots once a transfer is successful
     },
   });
+
+  useEffect(() => {
+    const cacheImage = async () => {
+      const cachedImage = await getImageFromCache(shot._id, shot.image);
+      if (cachedImage) {
+        setImageUri(cachedImage);
+      } else {
+        const newCachedUri = await saveImageToCache(shot._id, shot.image);
+        setImageUri(newCachedUri);
+      }
+    };
+
+    cacheImage();
+  }, [shot.image, shot._id]);
 
   useEffect(() => {
     // Update the countdown timer and blur intensity every second
@@ -52,7 +69,7 @@ export default function BlurredShotCard({ shot, refetchShots }) {
         const totalTime = totalDevelopmentTime.asSeconds();
         const newBlurIntensity = Math.max(
           0,
-          Math.floor((remainingTime / totalTime) * 50) // Adjust max intensity as needed
+          Math.floor((remainingTime / totalTime) * 50)
         );
         setBlurIntensity(newBlurIntensity);
       }
@@ -61,7 +78,6 @@ export default function BlurredShotCard({ shot, refetchShots }) {
     return () => clearInterval(interval);
   }, [shot.readyToReviewAt, shot.capturedAt]);
 
-  // Handle opening the shot, and transferring it if it's developed
   const handleOpenShot = async () => {
     if (isDeveloped) {
       try {
@@ -75,10 +91,7 @@ export default function BlurredShotCard({ shot, refetchShots }) {
   return (
     <Pressable onPress={handleOpenShot} style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image
-          source={{ uri: `${BASE_URL}${shot.image}` }}
-          style={styles.image}
-        />
+        {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
         {!isDeveloped && (
           <BlurView intensity={blurIntensity} style={styles.blurView}>
             {/* Display the countdown timer */}

@@ -10,6 +10,10 @@ const cameraShotSchema = new Schema({
     type: String,
     required: true,
   },
+  imageThumbnail: {
+    type: String,
+    required: true,
+  },
   capturedAt: {
     type: Date,
     default: Date.now,

@@ -321,6 +321,7 @@ type Score {
     _id: ID!
     author: User
     image: String
+    imageThumbnail: String
     capturedAt: Date
     developingTime: Int!
     isDeveloped: Boolean!
@@ -595,8 +596,8 @@ type Score {
     updateAssociatedShots(lifeListExperienceId: ID!, shotIds: [ID]): StandardResponse
     updateAssociatedCollages(lifeListExperienceId: ID!, collageIds: [ID]): StandardResponse
 
-    # Camera Mutations
-    createCameraShot(image: Upload!): StandardResponse
+    # Camera Mutationss
+    createCameraShot(image: Upload!, thumbnail: Upload!): StandardResponse
     transferCameraShot(shotId: ID!): StandardResponse
     editCameraShot(shotId: ID!, image: String!): StandardResponse
     deleteCameraShot(shotId: ID!): StandardResponse

@@ -19,7 +19,6 @@ import resolvers from "./schemas/resolvers.mjs";
 
 // Scheduled tasks
 import { resetDailyCameraShots } from "./tasks/resetDailyCameraShots.mjs";
-import { transferShotsAfter24Hours } from "./tasks/transferShotsAfter24Hours.mjs";
 import { checkReadyToReviewShots } from "./tasks/checkReadyToReviewShots.mjs";
 
 // Initialize environment variables
@@ -85,7 +84,6 @@ const startServer = async () => {
 
     // Schedule the new background tasks
     schedule.scheduleJob("*/30 * * * *", checkReadyToReviewShots); // Runs every 30 minutes
-    schedule.scheduleJob("0 */3 * * *", transferShotsAfter24Hours); // Runs every 3 hours
 
     await db; // Ensure database connection is ready
 

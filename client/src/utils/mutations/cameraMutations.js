@@ -2,8 +2,8 @@ import { gql } from "@apollo/client";
 
 // Create a camera shot
 export const CREATE_CAMERA_SHOT = gql`
-  mutation CreateCameraShot($image: Upload!) {
-    createCameraShot(image: $image) {
+  mutation CreateCameraShot($image: Upload!, $thumbnail: Upload!) {
+    createCameraShot(image: $image, thumbnail: $thumbnail) {
       success
       message
     }
