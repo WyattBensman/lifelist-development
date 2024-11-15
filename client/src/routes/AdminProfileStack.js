@@ -13,6 +13,7 @@ import CameraStack from "./CameraStack";
 import AddUsersToPrivacyGroup from "../pages/Profile/Screens/AddUsersToPrivacyGroup";
 import CreatePrivacyGroup from "../pages/Profile/Screens/CreatePrivacyGroup";
 import InviteFriends from "../pages/Profile/Screens/InviteFriends";
+import Tagged from "../pages/Profile/Screens/Tagged";
 
 const Stack = createNativeStackNavigator();
 
@@ -43,6 +44,11 @@ export default function AdminProfileStack() {
       <Stack.Screen
         name="Saved"
         component={Saved}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Tagged"
+        component={Tagged}
         options={{ headerShown: false }}
       />
       <Stack.Screen

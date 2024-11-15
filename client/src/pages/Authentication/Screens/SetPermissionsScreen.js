@@ -9,7 +9,7 @@ import {
   Linking,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Camera, useCameraPermissions } from "expo-camera";
+import { useCameraPermissions } from "expo-camera";
 import * as Contacts from "expo-contacts";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import HeaderStack from "../../../components/Headers/HeaderStack";

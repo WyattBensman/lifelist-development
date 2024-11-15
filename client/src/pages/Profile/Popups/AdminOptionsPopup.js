@@ -82,6 +82,20 @@ export default function AdminOptionsPopup({
         </Pressable>
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
+          onPress={() => handleNavigate("Tagged")}
+        >
+          <View style={layoutStyles.flexRow}>
+            <IconStatic name="bookmark.circle" style={iconStyles.popupIcon} />
+            <Text style={[popupStyles.spacer, styles.text]}>Tagged</Text>
+          </View>
+          <IconStatic
+            name="chevron.forward"
+            style={iconStyles.forwardArrow}
+            weight={"semibold"}
+          />
+        </Pressable>
+        <Pressable
+          style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={() => handleNavigate("Archived")}
         >
           <View style={layoutStyles.flexRow}>
@@ -102,7 +116,7 @@ export default function AdminOptionsPopup({
         >
           <View style={layoutStyles.flexRow}>
             <IconStatic name="camera.circle" style={iconStyles.popupIcon} />
-            <Text style={[popupStyles.spacer, styles.text]}>Camera Shots</Text>
+            <Text style={[popupStyles.spacer, styles.text]}>Camera Roll</Text>
           </View>
           <IconStatic
             name="chevron.forward"
@@ -110,7 +124,7 @@ export default function AdminOptionsPopup({
             weight={"semibold"}
           />
         </Pressable>
-        <Pressable
+        {/* <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={() => handleNavigate("PrivacyGroups")}
         >
@@ -125,7 +139,7 @@ export default function AdminOptionsPopup({
             style={iconStyles.forwardArrow}
             weight={"semibold"}
           />
-        </Pressable>
+        </Pressable> */}
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={() =>

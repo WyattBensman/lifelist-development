@@ -13,8 +13,6 @@ const AuthContext = createContext({});
 export const AuthProvider = ({ children }) => {
   const navigationRef = useRef();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [registrationProgress, setRegistrationProgress] = useState("");
-  const [registrationComplete, setRegistrationComplete] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
@@ -24,17 +22,8 @@ export const AuthProvider = ({ children }) => {
 
       if (isLoggedIn) {
         const userData = await AuthService.getUser();
-        // Fetch user details if logged in
         setCurrentUser(userData);
       }
-
-      // Check registration status
-      const progress = await AuthService.getRegistrationProgress();
-      setRegistrationProgress(progress || "initial");
-
-      // Check if registration is complete
-      const isComplete = await AuthService.isRegistrationComplete();
-      setRegistrationComplete(isComplete);
     };
 
     checkAuthStatus();
@@ -42,27 +31,20 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (token) => {
     console.log("Login started");
-    await AuthService.saveToken(token); // Save the token
-
+    await AuthService.saveToken(token);
     console.log("Token storage complete, setting isAuthenticated");
     setIsAuthenticated(true);
 
     const userData = await AuthService.getUser();
     setCurrentUser(userData);
-
-    // Mark registration as complete
-    await AuthService.setRegistrationComplete();
-    setRegistrationComplete(true);
   };
 
   const logout = async () => {
     await AuthService.logout();
     setIsAuthenticated(false);
     setCurrentUser(null);
-    setRegistrationProgress(""); // Reset registration progress if applicable
-    setRegistrationComplete(false); // Reset registrationComplete
 
-    // Reset navigation state to ensure user can't go back
+    // Reset navigation state
     navigationRef.current?.dispatch(
       CommonActions.reset({
         index: 0,
@@ -72,7 +54,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateCurrentUser = (updatedFields) => {
-    console.log("Updating Current User....");
+    console.log("Updating Current User...");
     setCurrentUser((prevUser) => ({
       ...prevUser,
       ...updatedFields,
@@ -86,13 +68,9 @@ export const AuthProvider = ({ children }) => {
         logout,
         isAuthenticated,
         setIsAuthenticated,
-        registrationProgress,
-        setRegistrationProgress,
-        registrationComplete,
-        setRegistrationComplete,
-        navigationRef,
         currentUser,
         updateCurrentUser,
+        navigationRef,
       }}
     >
       {children}

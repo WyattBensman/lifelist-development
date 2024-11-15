@@ -90,7 +90,7 @@ export default function SetLoginInformationScreen() {
       <View style={{ justifyContent: "space-between", flex: 1 }}>
         {/* Container Top */}
         <View style={styles.topContainer}>
-          <Text style={styles.stepIndicator}>1 of 4 Steps</Text>
+          <Text style={styles.stepIndicator}>1 of 3 Steps</Text>
           <View style={styles.progressBarContainer}>
             <View style={styles.progressBarFilled} />
             <View style={styles.progressBarEmpty} />
@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   progressBarFilled: {
-    flex: 0.25,
+    flex: 0.3333,
     backgroundColor: "#6AB952",
     borderRadius: 4,
   },

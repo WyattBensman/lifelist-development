@@ -523,6 +523,10 @@ type Score {
   type Mutation {
     # User Authentication Mutations
     login(usernameOrEmailOrPhone: String!, password: String!): Auth
+    createProfile(email: String, phoneNumber: String, birthday: String!, username: String!, password: String!, fullName: String!, gender: String!, profilePicture: Upload, bio: String): Auth
+    validateContactAndBirthday(email: String, phoneNumber: String, birthday: String!): StandardResponse
+    validateUsernameAndPassword(username: String!, password: String!): StandardResponse
+    validateProfileDetails(fullName: String!, gender: String!, bio: String): StandardResponse
     initializeRegistration(email: String, phoneNumber: String, birthday: String!): AuthResponse!
     setBasicInformation(fullName: String!, gender: String!): UserResponse!
     setLoginInformation(username: String!, password: String!): UserResponse!

@@ -81,12 +81,6 @@ export default function SetProfileInformationScreen() {
         gender,
       };
 
-      // Save the updated profile data to AsyncStorage
-      await AsyncStorage.setItem("signupData", JSON.stringify(updatedData));
-
-      // Update the registration progress to indicate that user reached this step
-      await AsyncStorage.setItem("registrationProgress", "SetPermissions");
-
       // Navigate to the next step
       navigation.navigate("SetPermissions");
     } catch (error) {
@@ -128,7 +122,7 @@ export default function SetProfileInformationScreen() {
       <View style={{ justifyContent: "space-between", flex: 1 }}>
         {/* Container Top */}
         <View style={styles.topContainer}>
-          <Text style={styles.stepIndicator}>2 of 2 Steps</Text>
+          <Text style={styles.stepIndicator}>2 of 3 Steps</Text>
           <View style={styles.progressBarContainer}>
             <View style={styles.progressBarFilled} />
             <View style={styles.progressBarEmpty} />
@@ -219,7 +213,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   progressBarFilled: {
-    flex: 0.5,
+    flex: 0.6666,
     backgroundColor: "#6AB952",
     borderRadius: 4,
   },

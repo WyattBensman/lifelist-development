@@ -1,5 +1,81 @@
 import { gql } from "@apollo/client";
 
+export const CREATE_PROFILE = gql`
+  mutation CreateProfile(
+    $email: String
+    $phoneNumber: String
+    $birthday: String!
+    $username: String!
+    $password: String!
+    $fullName: String!
+    $gender: String!
+    $profilePicture: Upload
+    $bio: String
+  ) {
+    createProfile(
+      email: $email
+      phoneNumber: $phoneNumber
+      birthday: $birthday
+      username: $username
+      password: $password
+      fullName: $fullName
+      gender: $gender
+      profilePicture: $profilePicture
+      bio: $bio
+    ) {
+      token
+      user {
+        id
+        username
+        email
+        fullName
+        profilePicture
+        bio
+        gender
+      }
+    }
+  }
+`;
+
+export const VALIDATE_CONTACT_AND_BIRTHDAY = gql`
+  mutation ValidateContactAndBirthday(
+    $email: String
+    $phoneNumber: String
+    $birthday: String!
+  ) {
+    validateContactAndBirthday(
+      email: $email
+      phoneNumber: $phoneNumber
+      birthday: $birthday
+    ) {
+      success
+      message
+    }
+  }
+`;
+
+export const VALIDATE_USERNAME_AND_PASSWORD = gql`
+  mutation ValidateUsernameAndPassword($username: String!, $password: String!) {
+    validateUsernameAndPassword(username: $username, password: $password) {
+      success
+      message
+    }
+  }
+`;
+
+export const VALIDATE_PROFILE_DETAILS = gql`
+  mutation ValidateProfileDetails(
+    $fullName: String!
+    $gender: String!
+    $bio: String
+  ) {
+    validateProfileDetails(fullName: $fullName, gender: $gender, bio: $bio) {
+      success
+      message
+    }
+  }
+`;
+
 export const INITIALIZE_REGISTRATION = gql`
   mutation InitializeRegistration(
     $email: String

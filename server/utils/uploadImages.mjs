@@ -2,6 +2,7 @@ import fs from "fs";
 import { v4 as uuidv4 } from "uuid";
 import sanitizeFilename from "sanitize-filename";
 import path from "path";
+import sharp from "sharp";
 
 // Single image upload function
 export const uploadSingleImage = async (
@@ -9,9 +10,6 @@ export const uploadSingleImage = async (
   uploadDir
 ) => {
   try {
-    // Log to check the structure of the incoming image object
-    console.log("Image details:", { createReadStream, filename });
-
     if (!createReadStream || !filename) {
       throw new Error(
         "Invalid image format. Expected a file with a createReadStream and filename."
@@ -25,8 +23,6 @@ export const uploadSingleImage = async (
     // Ensure the uploads directory exists
     await fs.promises.mkdir(uploadDir, { recursive: true }); // Use promises for mkdir
 
-    console.log(`Uploading to path: ${filePath}`); // Log the file path
-
     // Stream the file data to the file system
     const stream = createReadStream();
     const writeStream = fs.createWriteStream(filePath); // Use standard fs.createWriteStream
@@ -39,6 +35,53 @@ export const uploadSingleImage = async (
   } catch (error) {
     console.error(`Error during single image upload: ${error.message}`);
     throw new Error("Single image upload failed");
+  }
+};
+
+export const compressProfilePicture = async (
+  { createReadStream, filename },
+  uploadDir
+) => {
+  try {
+    if (!createReadStream || !filename) {
+      throw new Error(
+        "Invalid image format. Expected a file with a createReadStream and filename."
+      );
+    }
+
+    // Generate a unique filename to avoid conflicts
+    const uniqueFilename = `${uuidv4()}-${sanitizeFilename(filename)}`;
+    const compressedFilePath = path.join(
+      uploadDir,
+      `compressed-${uniqueFilename}`
+    );
+    const tempFilePath = path.join(uploadDir, `temp-${uniqueFilename}`);
+
+    // Ensure the uploads directory exists
+    await fs.promises.mkdir(uploadDir, { recursive: true });
+
+    // Save the original file temporarily
+    const stream = createReadStream();
+    await new Promise((resolve, reject) => {
+      stream
+        .pipe(fs.createWriteStream(tempFilePath))
+        .on("finish", resolve)
+        .on("error", reject);
+    });
+
+    // Compress and resize the image
+    await sharp(tempFilePath)
+      .resize(200, 200) // Resize to 200x200 pixels
+      .jpeg({ quality: 80 }) // Compress to 80% quality
+      .toFile(compressedFilePath);
+
+    // Remove the temporary file
+    await fs.promises.unlink(tempFilePath);
+
+    return compressedFilePath; // Return the path to the compressed file
+  } catch (error) {
+    console.error(`Error during profile picture compression: ${error.message}`);
+    throw new Error("Profile picture compression failed");
   }
 };
 

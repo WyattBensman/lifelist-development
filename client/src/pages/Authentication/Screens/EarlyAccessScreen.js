@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   Image,
   TextInput,
   Animated,
-  ActivityIndicator,
 } from "react-native";
 import { layoutStyles } from "../../../styles";
 import LockIcon from "../Icons/LockIcon"; // Ensure this icon can accept a color prop
@@ -17,7 +16,6 @@ export default function EarlyAccessScreen() {
   const [inputValue, setInputValue] = useState(""); // State to store input value
   const [accessGranted, setAccessGranted] = useState(false); // To control animation trigger
   const [isAnimating, setIsAnimating] = useState(false); // To prevent multiple presses during animation
-  const [isLoading, setIsLoading] = useState(true); // State to handle loading
 
   const navigation = useNavigation(); // Hook for navigation
 
@@ -25,19 +23,6 @@ export default function EarlyAccessScreen() {
   const opacityValue = useState(new Animated.Value(0))[0]; // For fade-in of "Access Granted"
   const slideUpValue = useState(new Animated.Value(0))[0]; // For slide-up effect
   const welcomeOpacity = useState(new Animated.Value(0))[0]; // For "Welcome to LifeList"
-
-  useEffect(() => {
-    // Check if the Early Access passcode is already unlocked
-    const checkAccessStatus = async () => {
-      const isUnlocked = await AsyncStorage.getItem("isEarlyAccessUnlocked");
-      if (isUnlocked === "true") {
-        navigation.navigate("CreateAccount"); // Redirect if access is already granted
-      } else {
-        setIsLoading(false); // Stop loading when access is not granted
-      }
-    };
-    checkAccessStatus();
-  }, [navigation]);
 
   const handleInputChange = (text) => {
     setInputValue(text.toUpperCase()); // Convert input to uppercase
@@ -76,28 +61,23 @@ export default function EarlyAccessScreen() {
     });
   };
 
+  // Handle lock icon press
   const handleLockPress = async () => {
     if (inputValue.length === 8 && !isAnimating) {
-      setAccessGranted(true); // Set accessGranted to true when pressing the button
+      setAccessGranted(true);
 
-      // Save the access state in AsyncStorage
-      await AsyncStorage.setItem("isEarlyAccessUnlocked", "true");
-
-      // Run animation and navigate
-      runAnimation(() => {
-        navigation.navigate("CreateAccount"); // Navigate after animation
-      });
+      try {
+        await AsyncStorage.setItem("isEarlyAccessUnlocked", "true");
+        runAnimation(() => {
+          navigation.navigate("CreateAccount");
+        });
+      } catch (error) {
+        Alert.alert("Error", "Unable to save access status. Please try again.");
+        console.error("AsyncStorage error:", error);
+        setAccessGranted(false);
+      }
     }
   };
-
-  // Render a loading indicator while checking access state
-  if (isLoading) {
-    return (
-      <View style={[layoutStyles.wrapper, styles.loadingContainer]}>
-        <ActivityIndicator size="large" color="#6AB952" />
-      </View>
-    );
-  }
 
   return (
     <View style={layoutStyles.wrapper}>

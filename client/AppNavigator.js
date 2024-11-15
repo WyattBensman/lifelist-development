@@ -1,22 +1,48 @@
 import React, { useEffect, useState } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native"; // Import NavigationContainer
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NavigationTab from "./src/routes/NavigationTab";
 import AuthenticationStack from "./src/routes/AuthenticationStack";
-import EarlyAccessScreen from "./src/pages/Authentication/Screens/EarlyAccessScreen";
-import { View, Text } from "react-native";
 import { useAuth } from "./src/contexts/AuthContext";
-import CustomAlert from "./src/components/Alerts/CustomAlert";
+import LoadingScreen from "./src/pages/Loading/LoadingScreen";
 
 export default function AppNavigator() {
-  const [isEarlyAccessUnlocked, setIsEarlyAccessUnlocked] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [registrationProgress, setRegistrationProgress] =
-    useState("CreateAccount");
-  const [showResumeModal, setShowResumeModal] = useState(false);
-  const { isAuthenticated, registrationComplete } = useAuth();
+  const [isEarlyAccessUnlocked, setIsEarlyAccessUnlocked] = useState(null);
+  const [isChecking, setIsChecking] = useState(true);
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
+    const checkEarlyAccess = async () => {
+      try {
+        const value = await AsyncStorage.getItem("isEarlyAccessUnlocked");
+        console.log(value);
+
+        setIsEarlyAccessUnlocked(value === "true");
+      } catch (error) {
+        console.error("Error checking AsyncStorage", error);
+      } finally {
+        setIsChecking(false);
+      }
+    };
+
+    checkEarlyAccess();
+  }, []);
+
+  if (isChecking) return <LoadingScreen />;
+
+  let content;
+  if (!isEarlyAccessUnlocked) {
+    content = <AuthenticationStack initialRouteName="EarlyAccess" />;
+  } else if (!isAuthenticated) {
+    content = <AuthenticationStack initialRouteName="CreateAccount" />;
+  } else {
+    content = <NavigationTab />;
+  }
+
+  return <NavigationContainer>{content}</NavigationContainer>;
+}
+
+/*   useEffect(() => {
     const checkAccessStatus = async () => {
       try {
         const isUnlocked = await AsyncStorage.getItem("isEarlyAccessUnlocked");
@@ -82,7 +108,7 @@ export default function AppNavigator() {
   const renderNavigator = () => {
     // Show Early Access Screen if not unlocked
     if (!isEarlyAccessUnlocked) {
-      return <EarlyAccessScreen />;
+      return <AuthenticationStack initialRouteName={"EarlyAccess"} />;
     }
 
     // If user is not authenticated, navigate to the correct step in the AuthenticationStack
@@ -102,18 +128,7 @@ export default function AppNavigator() {
   return (
     <NavigationContainer>
       {renderNavigator()}
-
-      {/* CustomAlert to prompt user to resume onboarding */}
-      <CustomAlert
-        visible={showResumeModal}
-        onRequestClose={() => setShowResumeModal(false)}
-        title="Resume Your Onboarding?"
-        message="It looks like you didn't complete your onboarding process. Would you like to continue where you left off?"
-        onConfirm={handleResumeOnboarding}
-        onCancel={handleStartFresh}
-        confirmButtonText="Continue"
-        cancelButtonText="Start Over"
-      />
     </NavigationContainer>
   );
 }
+ */
