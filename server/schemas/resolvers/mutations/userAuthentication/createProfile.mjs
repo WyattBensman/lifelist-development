@@ -1,5 +1,6 @@
 import { User } from "../../../../models/index.mjs";
 import { compressProfilePicture } from "../../../../utils/uploadImages.mjs";
+import { generateToken } from "../../../../utils/auth.mjs";
 
 const createProfile = async (
   _,
