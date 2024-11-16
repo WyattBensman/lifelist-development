@@ -98,13 +98,7 @@ const createProfile = async (
 
     return {
       token,
-      user: {
-        id: newUser._id,
-        username: newUser.username,
-        email: newUser.email,
-        fullName: newUser.fullName,
-        profilePicture: newUser.profilePicture,
-      },
+      newUser,
     };
   } catch (error) {
     console.error(`Create Profile Error: ${error.message}`);
