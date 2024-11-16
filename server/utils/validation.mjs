@@ -62,6 +62,23 @@ export const isEmailAvailable = async (email) => {
   return true;
 };
 
+export const isPhoneNumberAvailable = async (phoneNumber) => {
+  const phoneNumberRegex = /^\d{10}$/;
+
+  if (!phoneNumberRegex.test(phoneNumber)) {
+    throw new Error(
+      "Phone number must be exactly 10 digits without any symbols or spaces."
+    );
+  }
+
+  const existingUser = await User.findOne({ phoneNumber });
+  if (existingUser) {
+    throw new Error("An account with this phone number already exists.");
+  }
+
+  return true;
+};
+
 export const validateBirthday = (birthday) => {
   const currentDate = new Date();
   const userBirthday = new Date(birthday);
