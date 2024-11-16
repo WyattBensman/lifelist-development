@@ -1,100 +1,70 @@
-import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, TextInput, Image } from "react-native";
-import {
-  useNavigation,
-  useRoute,
-  useFocusEffect,
-} from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useEffect, useState } from "react";
+import { Text, View, StyleSheet, TextInput, Image, Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { layoutStyles, iconStyles } from "../../../styles";
+import { useCreateProfileContext } from "../../../contexts/CreateProfileContext";
+
+const allowedGenders = ["MALE", "FEMALE", "PREFER NOT TO SAY"];
+const fullNameRegex = /^[a-zA-Z\s]+$/;
+
+export const validateFullName = (fullName) => {
+  if (!fullNameRegex.test(fullName)) {
+    throw new Error(
+      "Full name must only contain alphabetic characters and spaces."
+    );
+  }
+  return true;
+};
+
+export const validateProfileDetails = ({ fullName, gender }) => {
+  validateFullName(fullName);
+
+  if (!allowedGenders.includes(gender)) {
+    throw new Error("Invalid gender. Please select a valid option.");
+  }
+
+  return true;
+};
 
 export default function SetProfileInformationScreen() {
-  const [fullName, setFullName] = useState("");
-  const [bio, setBio] = useState("");
-  const [gender, setGender] = useState("");
+  const { profile, updateProfile } = useCreateProfileContext(); // Access profile and updateProfile from context
   const [isValid, setIsValid] = useState(false);
   const navigation = useNavigation();
 
-  // Load saved data every time the screen is focused
-  useFocusEffect(
-    React.useCallback(() => {
-      const loadData = async () => {
-        try {
-          const savedData = await AsyncStorage.getItem("signupData");
-
-          if (savedData) {
-            const parsedData = JSON.parse(savedData);
-            setFullName(parsedData.fullName || "");
-            setBio(parsedData.bio || "");
-            setGender(parsedData.gender || "");
-          }
-        } catch (error) {
-          console.error("Error loading data from AsyncStorage:", error);
-        }
-      };
-      loadData();
-    }, [])
-  );
-
-  // Save data to AsyncStorage whenever input changes
-  useEffect(() => {
-    const saveData = async () => {
-      try {
-        const existingData = await AsyncStorage.getItem("signupData");
-        const updatedData = {
-          ...(existingData ? JSON.parse(existingData) : {}),
-          fullName,
-          bio,
-          gender,
-        };
-        await AsyncStorage.setItem("signupData", JSON.stringify(updatedData));
-      } catch (error) {
-        console.error("Error saving data to AsyncStorage:", error);
-      }
-    };
-
-    saveData(); // Call saveData whenever any of the input fields change
-  }, [fullName, bio, gender]);
-
-  // Validate form whenever input fields change
   useEffect(() => {
     validateForm();
-  }, [fullName, bio, gender]);
+  }, [profile.fullName, profile.gender]);
 
   const validateForm = () => {
-    const isValidFullName = fullName.length > 2;
-    const isValidGender = gender !== "";
-    setIsValid(isValidFullName && isValidGender);
-  };
-
-  // Save data and proceed to next step
-  const saveProfileInformation = async () => {
     try {
-      const existingData = await AsyncStorage.getItem("signupData");
-      const updatedData = {
-        ...(existingData ? JSON.parse(existingData) : {}),
-        fullName,
-        bio,
-        gender,
-      };
-
-      // Navigate to the next step
-      navigation.navigate("SetPermissions");
-    } catch (error) {
-      console.error("Error saving data to AsyncStorage:", error);
+      validateProfileDetails({
+        fullName: profile.fullName,
+        gender: profile.gender,
+      });
+      setIsValid(true);
+    } catch {
+      setIsValid(false);
     }
   };
 
-  // Save data when navigating back to the previous screen
-  const handleBackPress = async () => {
+  const handleNextStep = () => {
     try {
-      navigation.goBack();
+      validateProfileDetails({
+        fullName: profile.fullName,
+        gender: profile.gender,
+      });
+
+      navigation.navigate("SetProfilePicture");
     } catch (error) {
-      console.error("Error saving data before navigating back:", error);
+      Alert.alert("Validation Error", error.message);
     }
+  };
+
+  const handleBackPress = () => {
+    navigation.goBack();
   };
 
   return (
@@ -103,7 +73,7 @@ export default function SetProfileInformationScreen() {
         arrow={
           <Icon
             name="chevron.backward"
-            onPress={handleBackPress} // Save data when pressing the back arrow
+            onPress={handleBackPress} // Navigate back
             style={iconStyles.backArrow}
             weight="semibold"
           />
@@ -114,7 +84,7 @@ export default function SetProfileInformationScreen() {
             weight="heavy"
             tintColor={isValid ? "#6AB952" : "#696969"}
             style={iconStyles.backArrow}
-            onPress={isValid ? saveProfileInformation : null} // Save and navigate only if form is valid
+            onPress={handleNextStep} // Navigate to the next step only if valid
           />
         }
         hasBorder={false}
@@ -122,7 +92,7 @@ export default function SetProfileInformationScreen() {
       <View style={{ justifyContent: "space-between", flex: 1 }}>
         {/* Container Top */}
         <View style={styles.topContainer}>
-          <Text style={styles.stepIndicator}>2 of 3 Steps</Text>
+          <Text style={styles.stepIndicator}>2 of 4 Steps</Text>
           <View style={styles.progressBarContainer}>
             <View style={styles.progressBarFilled} />
             <View style={styles.progressBarEmpty} />
@@ -143,10 +113,10 @@ export default function SetProfileInformationScreen() {
             <Text style={styles.label}>Full Name</Text>
             <TextInput
               style={styles.input}
-              value={fullName}
+              value={profile.fullName} // Use context value
               placeholder="Enter your full name"
               placeholderTextColor="#c7c7c7"
-              onChangeText={setFullName}
+              onChangeText={(value) => updateProfile("fullName", value)} // Update context
             />
           </View>
 
@@ -155,10 +125,10 @@ export default function SetProfileInformationScreen() {
             <Text style={styles.label}>Bio</Text>
             <TextInput
               style={styles.input}
-              value={bio}
+              value={profile.bio} // Use context value
               placeholder="Write a short bio"
               placeholderTextColor="#c7c7c7"
-              onChangeText={setBio}
+              onChangeText={(value) => updateProfile("bio", value)} // Update context
             />
           </View>
 
@@ -167,10 +137,10 @@ export default function SetProfileInformationScreen() {
             <Text style={styles.label}>Gender</Text>
             <TextInput
               style={styles.input}
-              value={gender}
+              value={profile.gender} // Use context value
               placeholder="Enter your gender"
               placeholderTextColor="#c7c7c7"
-              onChangeText={setGender}
+              onChangeText={(value) => updateProfile("gender", value)} // Update context
             />
           </View>
 
@@ -181,7 +151,7 @@ export default function SetProfileInformationScreen() {
             textColor={isValid ? "#6AB952" : "#696969"}
             width="50%"
             text="Next Step"
-            onPress={isValid ? saveProfileInformation : null}
+            onPress={handleNextStep}
           />
         </View>
 
@@ -213,7 +183,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   progressBarFilled: {
-    flex: 0.6666,
+    flex: 0.5,
     backgroundColor: "#6AB952",
     borderRadius: 4,
   },

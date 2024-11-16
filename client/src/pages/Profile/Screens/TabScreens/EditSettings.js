@@ -8,106 +8,39 @@ import {
 import { useState, useEffect, useCallback } from "react";
 import GlobalSwitch from "../../../../components/Switch";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { useMutation, useQuery } from "@apollo/client";
-import { UPDATE_SETTINGS } from "../../../../utils/mutations";
-import { GET_USER_SETTINGS_INFORMATION } from "../../../../utils/queries";
 import IconStatic from "../../../../components/Icons/IconStatic";
 import EditProfileBottomContainer from "../../Components/EditProfileBottomContainer";
 import CustomAlert from "../../../../components/Alerts/CustomAlert";
+import { useProfile } from "../../../../contexts/ProfileContext";
 
-export default function EditSettings({
-  setUnsavedChanges,
-  registerResetChanges,
-}) {
+export default function EditSettings() {
   const navigation = useNavigation();
-  const { loading, error, data, refetch } = useQuery(
-    GET_USER_SETTINGS_INFORMATION
-  );
+  const {
+    profile,
+    updateProfileField,
+    saveProfile,
+    resetChanges,
+    unsavedChanges,
+  } = useProfile();
 
-  const [isPrivate, setIsPrivate] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [language, setLanguage] = useState("");
-  const [notifications, setNotifications] = useState(false);
-  const [changesMade, setChangesMade] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
 
-  const [updateSettingsMutation] = useMutation(UPDATE_SETTINGS);
-
-  // Function to initialize or reset settings
-  const initializeSettings = useCallback(() => {
-    if (data) {
-      const { getUserSettingsInformation } = data;
-      setIsPrivate(getUserSettingsInformation.isProfilePrivate);
-      setIsDarkMode(getUserSettingsInformation.darkMode);
-      setLanguage(getUserSettingsInformation.language);
-      setNotifications(getUserSettingsInformation.notifications);
-    }
-  }, [data]);
-
-  // Register the resetChanges function with the navigator
-  useEffect(() => {
-    registerResetChanges(initializeSettings);
-  }, [registerResetChanges, initializeSettings]);
-
-  // Initialize settings when the data is fetched
-  useEffect(() => {
-    initializeSettings();
-  }, [data, initializeSettings]);
-
-  // Track changes in settings and notify the navigator if there are unsaved changes
-  useEffect(() => {
-    if (data) {
-      const { getUserSettingsInformation } = data;
-      const hasChanges =
-        isPrivate !== getUserSettingsInformation.isProfilePrivate ||
-        isDarkMode !== getUserSettingsInformation.darkMode ||
-        language !== getUserSettingsInformation.language ||
-        notifications !== getUserSettingsInformation.notifications;
-
-      setChangesMade(hasChanges);
-      setUnsavedChanges(hasChanges); // Notify parent (navigator) about unsaved changes
-    }
-  }, [isPrivate, isDarkMode, language, notifications, data, setUnsavedChanges]);
-
-  const saveChanges = async () => {
-    try {
-      const { data: settingsData } = await updateSettingsMutation({
-        variables: {
-          isProfilePrivate: isPrivate,
-          darkMode: isDarkMode,
-          language: language,
-          notifications: notifications,
-        },
-      });
-
-      setIsPrivate(settingsData.updateSettings.isProfilePrivate);
-      setIsDarkMode(settingsData.updateSettings.darkMode);
-      setLanguage(settingsData.updateSettings.language);
-      setNotifications(settingsData.updateSettings.notifications);
-
-      setChangesMade(false);
-      setUnsavedChanges(false);
-    } catch (error) {
-      console.error("Failed to update settings", error);
+  const handleBackPress = () => {
+    if (unsavedChanges) {
+      setShowAlert(true); // Show alert if there are unsaved changes
+    } else {
+      navigation.goBack(); // Navigate back immediately if no changes
     }
   };
 
-  const discardChanges = () => {
-    initializeSettings(); // Reset to original values
-    setChangesMade(false);
-    setUnsavedChanges(false);
-  };
-
-  // Hook to handle when the user tries to navigate away from the screen
   useFocusEffect(
     useCallback(() => {
       const handleBeforeRemove = (e) => {
-        if (!changesMade) {
+        if (!unsavedChanges) {
           return;
         }
-
         e.preventDefault();
-        setShowAlert(true);
+        setShowAlert(true); // Prevent navigation and show the alert
       };
 
       navigation.addListener("beforeRemove", handleBeforeRemove);
@@ -115,19 +48,8 @@ export default function EditSettings({
       return () => {
         navigation.removeListener("beforeRemove", handleBeforeRemove);
       };
-    }, [changesMade, navigation])
+    }, [unsavedChanges, navigation])
   );
-
-  // Hook to reset the form when the user navigates back to this screen
-  useFocusEffect(
-    useCallback(() => {
-      refetch(); // Refetch user settings data to ensure values are up-to-date
-      initializeSettings(); // Reinitialize the form with original values
-    }, [refetch, initializeSettings])
-  );
-
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error! {error.message}</Text>;
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -137,7 +59,15 @@ export default function EditSettings({
         </Text>
         <View style={[layoutStyles.flex, layoutStyles.marginBtmMd]}>
           <Text style={styles.text}>Private</Text>
-          <GlobalSwitch isOn={isPrivate} onToggle={setIsPrivate} />
+          <GlobalSwitch
+            isOn={profile?.settings?.isProfilePrivate || false}
+            onToggle={(value) =>
+              updateProfileField("settings", {
+                ...profile.settings,
+                isProfilePrivate: value,
+              })
+            }
+          />
         </View>
         <Pressable
           style={[layoutStyles.flex, layoutStyles.marginBtmLg]}
@@ -175,7 +105,15 @@ export default function EditSettings({
         <View>
           <View style={[layoutStyles.flex, layoutStyles.marginBtmMd]}>
             <Text style={styles.text}>Dark Mode</Text>
-            <GlobalSwitch isOn={isDarkMode} onToggle={setIsDarkMode} />
+            <GlobalSwitch
+              isOn={profile?.settings?.darkMode || false}
+              onToggle={(value) =>
+                updateProfileField("settings", {
+                  ...profile.settings,
+                  darkMode: value,
+                })
+              }
+            />
           </View>
           <Pressable
             style={[layoutStyles.flex, layoutStyles.marginBtmLg]}
@@ -203,10 +141,10 @@ export default function EditSettings({
           </Pressable>
         </View>
       </View>
-      {changesMade && (
+      {unsavedChanges && (
         <EditProfileBottomContainer
-          saveChanges={saveChanges}
-          discardChanges={discardChanges}
+          saveChanges={saveProfile} // Save changes via context
+          discardChanges={resetChanges} // Discard changes via context
         />
       )}
 
@@ -217,11 +155,11 @@ export default function EditSettings({
         title="Unsaved Changes"
         message="You have unsaved changes. Are you sure you want to leave without saving?"
         onConfirm={() => {
-          setShowAlert(false);
-          discardChanges(); // Revert changes to initial state
-          navigation.goBack(); // Allow navigation
+          resetChanges(); // Reset to original state
+          setShowAlert(false); // Close the alert
+          navigation.goBack(); // Navigate back
         }}
-        onCancel={() => setShowAlert(false)} // Cancel and stay on the current page
+        onCancel={() => setShowAlert(false)} // Close the alert and stay
       />
     </View>
   );

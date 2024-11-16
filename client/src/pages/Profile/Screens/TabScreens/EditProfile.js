@@ -10,89 +10,32 @@ import {
   Pressable,
 } from "react-native";
 import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
-import { useState, useEffect, useCallback } from "react";
-import { useMutation, useQuery } from "@apollo/client";
+import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
-import { UPDATE_PROFILE, UPDATE_IDENTITY } from "../../../../utils/mutations";
-import { GET_USER_PROFILE_INFORMATION } from "../../../../utils/queries";
-import { BASE_URL } from "../../../../utils/config";
-import { Picker } from "@react-native-picker/picker";
 import Modal from "react-native-modal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import IconStatic from "../../../../components/Icons/IconStatic";
 import EditProfileBottomContainer from "../../Components/EditProfileBottomContainer";
+import { useProfile } from "../../../../contexts/ProfileContext";
+import { BASE_URL } from "../../../../utils/config";
+import { Picker } from "@react-native-picker/picker";
 
-export default function EditProfileTab({
-  setUnsavedChanges,
-  registerResetChanges,
-}) {
-  const { loading, error, data, refetch } = useQuery(
-    GET_USER_PROFILE_INFORMATION
-  );
-  const [changesMade, setChangesMade] = useState(false);
+export default function EditProfileTab() {
+  const {
+    profile,
+    updateProfileField,
+    saveProfile,
+    resetChanges,
+    unsavedChanges,
+  } = useProfile();
+
   const [showGenderPicker, setShowGenderPicker] = useState(false);
   const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
   const [temporaryGender, setTemporaryGender] = useState("");
   const [temporaryBirthday, setTemporaryBirthday] = useState(null);
 
-  const [fullName, setFullName] = useState("");
-  const [username, setUsername] = useState("");
-  const [bio, setBio] = useState("");
-  const [birthday, setBirthday] = useState("");
-  const [gender, setGender] = useState("");
-  const [profilePicture, setProfilePicture] = useState("");
-
-  const [updateProfileMutation] = useMutation(UPDATE_PROFILE);
-  const [updateIdentityMutation] = useMutation(UPDATE_IDENTITY);
-
-  const initializeProfileInfo = useCallback(() => {
-    if (data) {
-      const { getUserProfileInformation } = data;
-      setFullName(getUserProfileInformation.fullName);
-      setUsername(getUserProfileInformation.username);
-      setBio(getUserProfileInformation.bio);
-      setBirthday(getUserProfileInformation.birthday);
-      setGender(getUserProfileInformation.gender);
-      setProfilePicture(getUserProfileInformation.profilePicture);
-    }
-  }, [data]);
-
-  // Register the resetChanges function with the navigator
-  useEffect(() => {
-    registerResetChanges(initializeProfileInfo);
-  }, [registerResetChanges, initializeProfileInfo]);
-
-  useEffect(() => {
-    initializeProfileInfo();
-  }, [data, initializeProfileInfo]);
-
-  useEffect(() => {
-    if (data) {
-      const { getUserProfileInformation } = data;
-      const hasChanges =
-        fullName !== getUserProfileInformation.fullName ||
-        username !== getUserProfileInformation.username ||
-        bio !== getUserProfileInformation.bio ||
-        birthday !== getUserProfileInformation.birthday ||
-        gender !== getUserProfileInformation.gender ||
-        profilePicture !== getUserProfileInformation.profilePicture;
-
-      setChangesMade(hasChanges);
-      setUnsavedChanges(hasChanges);
-    }
-  }, [
-    fullName,
-    username,
-    bio,
-    birthday,
-    gender,
-    profilePicture,
-    data,
-    setUnsavedChanges,
-  ]);
-
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 4],
@@ -100,52 +43,8 @@ export default function EditProfileTab({
     });
 
     if (!result.cancelled) {
-      setProfilePicture(result.uri);
+      updateProfileField("profilePicture", result.uri);
     }
-  };
-
-  const saveChanges = async () => {
-    try {
-      const updateProfileVariables = { fullName, username, bio };
-
-      if (profilePicture !== data.getUserProfileInformation.profilePicture) {
-        const photo = {
-          uri: profilePicture,
-          type: "image/jpeg",
-          name: "profile.jpg",
-        };
-        updateProfileVariables.profilePicture = photo;
-      }
-
-      const capitalize = (str) =>
-        str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-
-      const { data: profileData } = await updateProfileMutation({
-        variables: updateProfileVariables,
-      });
-
-      const { data: identityData } = await updateIdentityMutation({
-        variables: { gender: capitalize(gender), birthday },
-      });
-
-      setFullName(profileData.updateProfile.fullName);
-      setUsername(profileData.updateProfile.username);
-      setBio(profileData.updateProfile.bio);
-      setProfilePicture(profileData.updateProfile.profilePicture);
-      setGender(identityData.updateIdentity.gender);
-      setBirthday(identityData.updateIdentity.birthday);
-
-      setChangesMade(false);
-      setUnsavedChanges(false);
-    } catch (error) {
-      console.error("Failed to update profile information", error);
-    }
-  };
-
-  const discardChanges = () => {
-    initializeProfileInfo(); // Reset to original values
-    setChangesMade(false);
-    setUnsavedChanges(false);
   };
 
   const formatDate = (isoString) => {
@@ -175,20 +74,12 @@ export default function EditProfileTab({
 
   const handleBirthdaySave = () => {
     if (temporaryBirthday) {
-      setBirthday(temporaryBirthday);
+      updateProfileField("birthday", temporaryBirthday.toISOString());
       setShowBirthdayPicker(false);
     }
   };
 
-  const handleBirthdayDiscard = () => {
-    setShowBirthdayPicker(false);
-    setTemporaryBirthday(null);
-  };
-
-  const profilePictureUrl = `${BASE_URL}${profilePicture}`;
-
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error! {error.message}</Text>;
+  const profilePictureUrl = `${BASE_URL}${profile?.profilePicture || ""}`;
 
   return (
     <KeyboardAvoidingView
@@ -217,8 +108,8 @@ export default function EditProfileTab({
         <View style={styles.row}>
           <Text style={styles.label}>Name</Text>
           <TextInput
-            value={fullName}
-            onChangeText={setFullName}
+            value={profile?.fullName || ""}
+            onChangeText={(value) => updateProfileField("fullName", value)}
             style={styles.input}
             placeholder="Enter your full name"
             placeholderTextColor="#d4d4d4"
@@ -227,8 +118,8 @@ export default function EditProfileTab({
         <View style={styles.row}>
           <Text style={styles.label}>Username</Text>
           <TextInput
-            value={username}
-            onChangeText={setUsername}
+            value={profile?.username || ""}
+            onChangeText={(value) => updateProfileField("username", value)}
             style={styles.input}
             placeholder="Enter your username"
             placeholderTextColor="#d4d4d4"
@@ -237,8 +128,8 @@ export default function EditProfileTab({
         <View style={styles.row}>
           <Text style={styles.label}>Bio</Text>
           <TextInput
-            value={bio}
-            onChangeText={setBio}
+            value={profile?.bio || ""}
+            onChangeText={(value) => updateProfileField("bio", value)}
             style={styles.input}
             placeholder="Tell us about yourself"
             placeholderTextColor="#d4d4d4"
@@ -250,13 +141,14 @@ export default function EditProfileTab({
           <Pressable
             style={styles.input}
             onPress={() => {
-              setTemporaryGender(gender);
+              setTemporaryGender(profile?.gender || "");
               setShowGenderPicker(true);
             }}
           >
-            <Text style={{ color: gender ? "#fff" : "#d4d4d4" }}>
-              {gender
-                ? gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase()
+            <Text style={{ color: profile?.gender ? "#fff" : "#d4d4d4" }}>
+              {profile?.gender
+                ? profile.gender.charAt(0).toUpperCase() +
+                  profile.gender.slice(1).toLowerCase()
                 : "Select your gender"}
             </Text>
             <IconStatic
@@ -272,12 +164,14 @@ export default function EditProfileTab({
           <Pressable
             style={styles.input}
             onPress={() => {
-              setTemporaryBirthday(new Date(birthday));
+              setTemporaryBirthday(new Date(profile?.birthday || ""));
               setShowBirthdayPicker(true);
             }}
           >
-            <Text style={{ color: birthday ? "#fff" : "#d4d4d4" }}>
-              {birthday ? formatDate(birthday) : "Select your birthday"}
+            <Text style={{ color: profile?.birthday ? "#fff" : "#d4d4d4" }}>
+              {profile?.birthday
+                ? formatDate(profile.birthday)
+                : "Select your birthday"}
             </Text>
             <IconStatic
               name="chevron.down"
@@ -288,10 +182,10 @@ export default function EditProfileTab({
           </Pressable>
         </View>
       </ScrollView>
-      {changesMade && (
+      {unsavedChanges && (
         <EditProfileBottomContainer
-          saveChanges={saveChanges}
-          discardChanges={discardChanges}
+          saveChanges={saveProfile}
+          discardChanges={resetChanges}
         />
       )}
 
@@ -322,7 +216,7 @@ export default function EditProfileTab({
             <Pressable
               style={styles.confirmButton}
               onPress={() => {
-                setGender(temporaryGender);
+                updateProfileField("gender", temporaryGender);
                 setShowGenderPicker(false);
               }}
             >
@@ -336,7 +230,7 @@ export default function EditProfileTab({
       {showBirthdayPicker && (
         <Modal
           isVisible={showBirthdayPicker}
-          onBackdropPress={handleBirthdayDiscard}
+          onBackdropPress={() => setShowBirthdayPicker(false)}
           style={styles.modal}
         >
           <View style={styles.pickerContainer}>
@@ -353,7 +247,7 @@ export default function EditProfileTab({
             <View style={styles.buttonRow}>
               <Pressable
                 style={styles.discardButton}
-                onPress={handleBirthdayDiscard}
+                onPress={() => setShowBirthdayPicker(false)}
               >
                 <Text style={styles.discardButtonText}>Discard</Text>
               </Pressable>

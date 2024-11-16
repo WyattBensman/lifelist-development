@@ -342,6 +342,7 @@ type Score {
     getSavedCollages(cursor: ID, limit: Int): CollagePagination
     getArchivedCollages(cursor: ID, limit: Int): CollagePagination
     getBlockedUsers: [User]
+    getUserData: UserData
     getUserProfileInformation: UserProfileInformation
     getUserContactInformation: UserContactInformation
     getUserIdentityInformation: UserIdentityInformation
@@ -504,6 +505,18 @@ type Score {
     birthday: Date
     gender: String
   }
+
+  type UserData {
+    profilePicture: String
+    fullName: String
+    username: String
+    bio: String
+    birthday: String
+    gender: String
+    email: String
+    phoneNumber: String
+    settings: UserSettings
+  }
   
   type UserSettingsInformation {
     isProfilePrivate: Boolean
@@ -543,6 +556,23 @@ type Score {
     updateIdentity(gender: String, birthday: String): UpdateIdentityResponse!
     updateSettings(privacy: String, darkMode: Boolean, language: String, notifications: Boolean, postRepostToMainFeed: Boolean): UpdateSettingsResponse!
     deleteUser(userId: ID!): StandardResponse
+    updateUserData(
+    email: String
+    currentPassword: String
+    newPassword: String
+    phoneNumber: String
+    profilePicture: Upload
+    fullName: String
+    username: String
+    bio: String
+    gender: String
+    birthday: String
+    isProfilePrivate: Boolean
+    darkMode: Boolean
+    language: String
+    notifications: Boolean
+    postRepostToMainFeed: Boolean
+  ): UpdateUserResponse
 
     # User Relations Mutations
     followUser(userIdToFollow: ID!): StandardResponse!
@@ -669,6 +699,12 @@ type Score {
     success: Boolean!
     message: String!
     collageId: ID!
+  }
+
+  type UpdateUserResponse {
+    success: Boolean
+    message: String
+    user: UserData
   }
 
   type UpdateEmailResponse {

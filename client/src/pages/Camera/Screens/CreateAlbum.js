@@ -103,6 +103,8 @@ export default function CreateAlbum() {
         renderItem={renderShot}
         keyExtractor={(item) => item._id}
         numColumns={3}
+        columnWrapperStyle={styles.columnWrapper}
+        contentContainerStyle={styles.flatListContent}
         ListHeaderComponent={
           <Text
             style={[
@@ -127,5 +129,11 @@ const styles = StyleSheet.create({
   createButtonTextActive: {
     color: "#6AB952",
     fontWeight: "600",
+  },
+  columnWrapper: {
+    justifyContent: "space-between",
+  },
+  flatListContent: {
+    flexGrow: 1,
   },
 });

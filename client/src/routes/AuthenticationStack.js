@@ -6,6 +6,7 @@ import SetProfileInformationScreen from "../pages/Authentication/Screens/SetProf
 import SetPermissionsScreen from "../pages/Authentication/Screens/SetPermissionsScreen";
 import ShareEarlyAccessScreen from "../pages/Authentication/Screens/ShareEarlyAccessScreen";
 import EarlyAccessScreen from "../pages/Authentication/Screens/EarlyAccessScreen";
+import SetProfilePictureScreen from "../pages/Authentication/Screens/SetProfilePictureScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -37,6 +38,11 @@ export default function AuthenticationStack({
       <Stack.Screen
         name="SetProfileInformation"
         component={SetProfileInformationScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SetProfilePicture"
+        component={SetProfilePictureScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

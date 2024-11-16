@@ -63,8 +63,6 @@ export const isEmailAvailable = async (email) => {
 };
 
 export const isPhoneNumberAvailable = async (phoneNumber) => {
-  const phoneNumberRegex = /^\d{10}$/;
-
   if (!phoneNumberRegex.test(phoneNumber)) {
     throw new Error(
       "Phone number must be exactly 10 digits without any symbols or spaces."

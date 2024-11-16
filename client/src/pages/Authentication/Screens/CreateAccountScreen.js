@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Text,
   View,
@@ -6,18 +6,24 @@ import {
   Image,
   TextInput,
   Pressable,
+  Alert,
 } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native"; // Import navigation hook and useFocusEffect
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import { layoutStyles } from "../../../styles";
+import { useCreateProfileContext } from "../../../contexts/CreateProfileContext"; // Import the context hook
+import { VALIDATE_CONTACT_AND_BIRTHDAY } from "../../../utils/mutations";
+import { useMutation } from "@apollo/client";
 
 export default function CreateAccountScreen() {
-  const [useEmail, setUseEmail] = useState(false); // Toggle between phone and email
-  const [phone, setPhone] = useState(""); // State for phone input
-  const [email, setEmail] = useState(""); // State for email input
-  const [birthday, setBirthday] = useState(""); // State for birthday input
-  const [isValid, setIsValid] = useState(false); // Track if both inputs are valid
+  const { profile, updateProfile } = useCreateProfileContext(); // Get profile and updateProfile from context
+  const [useEmail, setUseEmail] = React.useState(false); // Toggle between phone and email
+  const [isValid, setIsValid] = React.useState(false); // Track if both inputs are valid
   const navigation = useNavigation(); // Hook for navigation
+
+  const [validateContactAndBirthday, { loading }] = useMutation(
+    VALIDATE_CONTACT_AND_BIRTHDAY
+  );
 
   // Phone Number Formatter
   const handlePhoneChange = (text) => {
@@ -34,7 +40,7 @@ export default function CreateAccountScreen() {
       formatted += `-${cleaned.substring(6, 10)}`;
     }
 
-    setPhone(formatted);
+    updateProfile("phoneNumber", formatted); // Update phone in context
   };
 
   // Birthday Formatter
@@ -47,14 +53,19 @@ export default function CreateAccountScreen() {
     if (cleaned.length >= 5) {
       formatted += `/${cleaned.substring(4, 8)}`;
     }
-    setBirthday(formatted);
+    updateProfile("birthday", formatted); // Update birthday in context
+  };
+
+  // Email change handler
+  const handleEmailChange = (text) => {
+    updateProfile("email", text); // Update email in context
   };
 
   // Check if the phone number (or email) and birthday are valid
   const validateInputs = () => {
-    const phoneIsValid = phone.length === 14; // (XXX) XXX-XXXX
-    const emailIsValid = email.includes("@"); // Simple email validation
-    const birthdayIsValid = birthday.length === 10; // MM/DD/YYYY
+    const phoneIsValid = profile.phoneNumber.length === 14; // (XXX) XXX-XXXX
+    const emailIsValid = profile.email.includes("@"); // Simple email validation
+    const birthdayIsValid = profile.birthday.length === 10; // MM/DD/YYYY
     setIsValid((useEmail ? emailIsValid : phoneIsValid) && birthdayIsValid);
   };
 
@@ -62,25 +73,45 @@ export default function CreateAccountScreen() {
   useFocusEffect(
     React.useCallback(() => {
       // Reset all fields when screen is focused
-      setPhone("");
-      setEmail("");
-      setBirthday("");
+      updateProfile("phoneNumber", "");
+      updateProfile("email", "");
+      updateProfile("birthday", "");
     }, [])
   );
 
   // Run validation when inputs change
   useEffect(() => {
     validateInputs();
-  }, [phone, email, birthday]);
+  }, [profile.phoneNumber, profile.email, profile.birthday]);
 
   // Pass data and navigate to the next screen
-  const handleNextStep = () => {
-    const userInfo = {
-      phone: !useEmail ? phone : null,
-      email: useEmail ? email : null,
-      birthday,
-    };
-    navigation.navigate("SetLoginInformation", { userInfo });
+  const handleNextStep = async () => {
+    try {
+      // Convert MM/DD/YYYY to YYYY-MM-DD
+      const [mm, dd, yyyy] = profile.birthday.split("/"); // Split MM/DD/YYYY
+      const formattedBirthday = `${yyyy}-${mm}-${dd}`; // Convert to YYYY-MM-DD
+
+      const variables = {
+        email: useEmail ? profile.email : null,
+        phoneNumber: !useEmail ? profile.phoneNumber.replace(/\D/g, "") : null, // Remove non-numeric characters
+        birthday: formattedBirthday, // Send YYYY-MM-DD to backend
+      };
+
+      // Validate contact and birthday
+      const { data } = await validateContactAndBirthday({ variables });
+
+      if (data.validateContactAndBirthday.success) {
+        navigation.navigate("SetLoginInformation");
+      } else {
+        Alert.alert(
+          "Validation Error",
+          data.validateContactAndBirthday.message
+        );
+      }
+    } catch (error) {
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+      console.error(error);
+    }
   };
 
   return (
@@ -109,8 +140,8 @@ export default function CreateAccountScreen() {
             <Pressable
               onPress={() => {
                 setUseEmail(!useEmail);
-                setPhone(""); // Clear phone input when switching to email
-                setEmail(""); // Clear email input when switching to phone
+                updateProfile("phoneNumber", ""); // Clear phone when switching to email
+                updateProfile("email", ""); // Clear email when switching to phone
               }}
             >
               <Text style={styles.switchText}>
@@ -131,11 +162,11 @@ export default function CreateAccountScreen() {
 
           <TextInput
             style={styles.input}
-            value={useEmail ? email : phone}
+            value={useEmail ? profile.email : profile.phoneNumber}
             placeholder={useEmail ? "steve@example.com" : "(xxx)xxx-xxxx"}
             placeholderTextColor="#c7c7c7"
             keyboardType={useEmail ? "email-address" : "phone-pad"}
-            onChangeText={useEmail ? setEmail : handlePhoneChange} // Apply formatting for phone or set email
+            onChangeText={useEmail ? handleEmailChange : handlePhoneChange} // Apply formatting for phone or set email
           />
         </View>
 
@@ -144,8 +175,8 @@ export default function CreateAccountScreen() {
           <Text style={[styles.label, { marginBottom: 8 }]}>Birthday</Text>
           <TextInput
             style={styles.input}
-            value={birthday}
-            placeholder="MM/DD/YYYY"
+            value={profile.birthday}
+            placeholder="MM-DD-YYYY"
             placeholderTextColor="#c7c7c7"
             keyboardType="numeric"
             onChangeText={handleBirthdayChange} // Apply formatting for birthday

@@ -1,4 +1,3 @@
-import React from "react";
 import { Dimensions, Image, StyleSheet, View, Pressable } from "react-native";
 import Checkbox from "expo-checkbox";
 import { BASE_URL } from "../../../utils/config";
@@ -13,14 +12,11 @@ export default function ShotCard({ shot, isSelected, onCheckboxToggle }) {
 
   return (
     <Pressable onPress={() => onCheckboxToggle(shot._id)}>
-      <View
-        style={[
-          styles.shotContainer,
-          isSelected && styles.selectedShotContainer,
-        ]}
-      >
+      <View style={styles.shotContainer}>
         <Image source={{ uri: imageUrl }} style={styles.shotImage} />
-        {/* Checkbox appears only when the image is selected */}
+        {/* Overlay border */}
+        {isSelected && <View style={styles.overlayBorder} />}
+        {/* Checkbox */}
         {isSelected && (
           <Checkbox
             style={styles.checkbox}
@@ -41,12 +37,19 @@ const styles = StyleSheet.create({
     marginBottom: spacing,
     marginRight: spacing,
     position: "relative",
-    borderWidth: 1,
-    borderColor: "transparent",
   },
   shotImage: {
     width: "100%",
     height: "100%",
+  },
+  overlayBorder: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    borderWidth: 2,
+    borderColor: "#6AB952", // Green border color
   },
   checkbox: {
     position: "absolute",
@@ -56,9 +59,5 @@ const styles = StyleSheet.create({
     height: 12,
     borderWidth: 2,
     borderRadius: 12,
-  },
-  selectedShotContainer: {
-    borderColor: "#6AB952", // Highlight the border of the selected image
-    borderWidth: 2,
   },
 });

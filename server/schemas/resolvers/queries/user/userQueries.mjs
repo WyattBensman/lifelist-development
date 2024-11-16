@@ -379,6 +379,34 @@ export const getUserSettingsInformation = async (_, __, { user }) => {
   return userData.settings;
 };
 
+export const getUserData = async (_, __, { user }) => {
+  isUser(user);
+
+  const userData = await User.findById(user, [
+    "profilePicture",
+    "fullName",
+    "username",
+    "bio",
+    "birthday",
+    "gender",
+    "email",
+    "phoneNumber",
+    "settings",
+  ]).exec();
+
+  return {
+    profilePicture: userData.profilePicture,
+    fullName: userData.fullName,
+    username: userData.username,
+    bio: userData.bio,
+    birthday: userData.birthday,
+    gender: userData.gender,
+    email: userData.email,
+    phoneNumber: userData.phoneNumber,
+    settings: userData.settings,
+  };
+};
+
 export const getAllUsers = async (_, { limit, offset }) => {
   try {
     const users = await User.find({})

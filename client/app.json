@@ -48,6 +48,9 @@
         "projectId": "4fa51d41-7f46-4644-8ed9-4ff160efb297"
       }
     },
-    "owner": "wyattbensman"
+    "owner": "wyattbensman",
+    "experimental": {
+      "enableBridgelessMode": false
+    }
   }
 }

@@ -42,7 +42,13 @@ export default function ShotCard({
       ]}
     >
       <View style={styles.shotContainer}>
+        {/* Image */}
         <Image source={{ uri: cachedImageUri }} style={styles.shotImage} />
+
+        {/* Overlay Border */}
+        {isSelected && <View style={styles.overlayBorder} />}
+
+        {/* Checkbox */}
         {isSelected !== undefined && onCheckboxToggle && (
           <Checkbox
             style={styles.checkbox}
@@ -70,6 +76,15 @@ const styles = StyleSheet.create({
   shotImage: {
     width: "100%",
     height: "100%",
+  },
+  overlayBorder: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    borderWidth: 2,
+    borderColor: "#6AB952", // Green border
   },
   checkbox: {
     position: "absolute",

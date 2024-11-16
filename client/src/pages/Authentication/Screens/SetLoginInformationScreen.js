@@ -1,56 +1,66 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, StyleSheet, TextInput, Image, Alert } from "react-native";
-import {
-  useNavigation,
-  useRoute,
-  useFocusEffect,
-} from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { layoutStyles, iconStyles } from "../../../styles";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
+import { useCreateProfileContext } from "../../../contexts/CreateProfileContext";
+import { useMutation } from "@apollo/client";
+import { VALIDATE_USERNAME_AND_PASSWORD } from "../../../utils/mutations";
 
 export default function SetLoginInformationScreen() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const { profile, updateProfile } = useCreateProfileContext(); // Access profile and updateProfile from context
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
   const [isValid, setIsValid] = useState(false);
   const [showAlert, setShowAlert] = useState(false); // State to control alert visibility
   const navigation = useNavigation();
-  const route = useRoute();
-  const { userInfo } = route.params || {};
+
+  // Apollo Mutation
+  const [validateUsernameAndPassword, { loading }] = useMutation(
+    VALIDATE_USERNAME_AND_PASSWORD
+  );
 
   useEffect(() => {
     validateForm();
-  }, [username, password, confirmPassword]);
+  }, [profile.username, profile.password, profile.confirmPassword]);
 
   const validateForm = () => {
-    const isValidUsername = username.length >= 5;
+    const isValidUsername = profile.username.length >= 5;
     const isValidPassword =
-      password.length >= 8 && password === confirmPassword;
+      profile.password.length >= 8 &&
+      profile.password === profile.confirmPassword;
     setIsValid(isValidUsername && isValidPassword);
   };
 
-  const saveLoginInformation = async () => {
-    try {
-      const existingData = await AsyncStorage.getItem("signupData");
+  const handleNextStep = async () => {
+    if (!isValid) return;
 
-      const updatedData = {
-        ...(existingData ? JSON.parse(existingData) : {}),
-        username,
-        password,
-        confirmPassword,
-        ...userInfo,
-      };
-      await AsyncStorage.setItem("signupData", JSON.stringify(updatedData));
-      navigation.navigate("SetProfileInformation", { userInfo: updatedData });
+    try {
+      // Validate username and password via GraphQL
+      const { data } = await validateUsernameAndPassword({
+        variables: {
+          username: profile.username,
+          password: profile.password,
+        },
+      });
+
+      if (!data.validateUsernameAndPassword.success) {
+        Alert.alert(
+          "Validation Error",
+          data.validateUsernameAndPassword.message
+        );
+        return;
+      }
+
+      // Navigate to the next screen if validation is successful
+      navigation.navigate("SetProfileInformation");
     } catch (error) {
-      console.error("Error saving data to AsyncStorage:", error);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+      console.error("Error validating username and password:", error);
     }
   };
 
@@ -58,9 +68,7 @@ export default function SetLoginInformationScreen() {
     setShowAlert(true); // Show CustomAlert when pressing back
   };
 
-  const handleConfirmBackPress = async () => {
-    await AsyncStorage.removeItem("signupData");
-    await AsyncStorage.removeItem("registrationProgress");
+  const handleConfirmBackPress = () => {
     setShowAlert(false); // Hide the alert
     navigation.goBack(); // Navigate back to the previous screen
   };
@@ -82,7 +90,8 @@ export default function SetLoginInformationScreen() {
             weight="heavy"
             tintColor={isValid ? "#6AB952" : "#696969"} // Green if valid, gray if not
             style={iconStyles.backArrow}
-            onPress={isValid ? saveLoginInformation : null} // Save and navigate only if form is valid
+            onPress={isValid ? handleNextStep : null} // Validate and navigate only if form is valid
+            loading={loading} // Show loading while mutation is running
           />
         }
         hasBorder={false}
@@ -90,7 +99,7 @@ export default function SetLoginInformationScreen() {
       <View style={{ justifyContent: "space-between", flex: 1 }}>
         {/* Container Top */}
         <View style={styles.topContainer}>
-          <Text style={styles.stepIndicator}>1 of 3 Steps</Text>
+          <Text style={styles.stepIndicator}>1 of 4 Steps</Text>
           <View style={styles.progressBarContainer}>
             <View style={styles.progressBarFilled} />
             <View style={styles.progressBarEmpty} />
@@ -109,10 +118,10 @@ export default function SetLoginInformationScreen() {
             <Text style={styles.label}>Username</Text>
             <TextInput
               style={styles.input}
-              value={username}
+              value={profile.username} // Use context value
               placeholder="Enter your username"
               placeholderTextColor="#c7c7c7"
-              onChangeText={setUsername}
+              onChangeText={(value) => updateProfile("username", value)} // Update context
             />
           </View>
 
@@ -121,11 +130,11 @@ export default function SetLoginInformationScreen() {
             <View style={styles.passwordWrapper}>
               <TextInput
                 style={styles.input}
-                value={password}
+                value={profile.password} // Use context value
                 placeholder="Enter your password"
                 placeholderTextColor="#c7c7c7"
                 secureTextEntry={!isPasswordVisible}
-                onChangeText={setPassword}
+                onChangeText={(value) => updateProfile("password", value)} // Update context
               />
             </View>
           </View>
@@ -135,11 +144,13 @@ export default function SetLoginInformationScreen() {
             <View style={styles.passwordWrapper}>
               <TextInput
                 style={styles.input}
-                value={confirmPassword}
+                value={profile.confirmPassword} // Use context value
                 placeholder="Confirm your password"
                 placeholderTextColor="#c7c7c7"
                 secureTextEntry={!isConfirmPasswordVisible}
-                onChangeText={setConfirmPassword}
+                onChangeText={(value) =>
+                  updateProfile("confirmPassword", value)
+                } // Update context
               />
             </View>
           </View>
@@ -150,7 +161,7 @@ export default function SetLoginInformationScreen() {
             textColor={isValid ? "#6AB952" : "#696969"}
             width="50%"
             text="Next Step"
-            onPress={isValid ? saveLoginInformation : null}
+            onPress={isValid ? handleNextStep : null}
           />
         </View>
 
@@ -191,7 +202,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   progressBarFilled: {
-    flex: 0.3333,
+    flex: 0.25,
     backgroundColor: "#6AB952",
     borderRadius: 4,
   },

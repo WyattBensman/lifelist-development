@@ -222,6 +222,29 @@ export const GET_USER_SETTINGS_INFORMATION = gql`
   }
 `;
 
+// User Settings Information
+export const GET_USER_DATA = gql`
+  query GetUserData {
+    getUserData {
+      profilePicture
+      fullName
+      username
+      bio
+      birthday
+      gender
+      email
+      phoneNumber
+      settings {
+        isProfilePrivate
+        darkMode
+        language
+        notifications
+        postRepostToMainFeed
+      }
+    }
+  }
+`;
+
 // Fetch all users
 export const GET_ALL_USERS = gql`
   query GetAllUsers($limit: Int, $offset: Int) {

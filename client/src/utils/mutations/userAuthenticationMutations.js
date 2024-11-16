@@ -27,11 +27,8 @@ export const CREATE_PROFILE = gql`
       user {
         id
         username
-        email
         fullName
         profilePicture
-        bio
-        gender
       }
     }
   }
