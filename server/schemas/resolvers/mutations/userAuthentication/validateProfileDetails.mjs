@@ -1,6 +1,6 @@
 import { validateFullName } from "../../../../utils/validation.mjs";
 
-export const validateProfileDetails = ({ fullName, gender }) => {
+export const validateProfileDetails = (_, { fullName, gender }) => {
   validateFullName(fullName);
 
   const allowedGenders = ["MALE", "FEMALE", "PREFER NOT TO SAY"];

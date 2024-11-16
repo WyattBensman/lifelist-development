@@ -3,7 +3,10 @@ import {
   validatePassword,
 } from "../../../../utils/validation.mjs";
 
-export const validateUsernameAndPassword = async ({ username, password }) => {
+export const validateUsernameAndPassword = async (
+  _,
+  { username, password }
+) => {
   await isUsernameAvailable(username);
   validatePassword(password);
 

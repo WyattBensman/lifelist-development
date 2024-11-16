@@ -4,11 +4,10 @@ import {
   validateBirthday,
 } from "../../../../utils/validation.mjs";
 
-export const validateContactAndBirthday = async ({
-  email,
-  phoneNumber,
-  birthday,
-}) => {
+export const validateContactAndBirthday = async (
+  _,
+  { email, phoneNumber, birthday }
+) => {
   if (!email && !phoneNumber) {
     throw new Error("Please provide either an email or a phone number.");
   }
