@@ -1,4 +1,4 @@
-import { User, Collage } from "../../../../models/index.mjs";
+import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 export const getUserProfileById = async (_, { userId }, { user }) => {
@@ -65,12 +65,9 @@ export const getUserCounts = async (_, { userId }) => {
 
 export const getCollagesAndReposts = async (
   _,
-  { userId, collagesCursor, repostsCursor, limit = 15 },
-  { user }
+  { userId, collagesCursor, repostsCursor, limit = 15 }
 ) => {
   try {
-    isUser(user);
-
     // Validate user existence
     const foundUser = await User.findById(userId).select("_id").exec();
     if (!foundUser) throw new Error("User not found for the provided ID.");

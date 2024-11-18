@@ -46,13 +46,19 @@ export default function AdminProfile() {
       const cachedCollages = await getFromAsyncStorage(
         cacheKeys.collagesMetadata
       );
+      console.log(`cachedCollages ${cachedCollages}`);
+
       const cachedReposts = await getFromAsyncStorage(
         cacheKeys.repostsMetadata
       );
+      console.log(`cachedReposts ${cachedReposts}`);
+
       const cachedCounts = await getFromAsyncStorage(cacheKeys.followerCounts);
       const countsTimestamp = await getFromAsyncStorage(
         cacheKeys.countsTimestamp
       );
+      console.log(`cachedCounts ${cachedCounts}`);
+      console.log(`countsTimestamp ${countsTimestamp}`);
 
       const countsAreValid =
         cachedCounts &&
@@ -61,7 +67,15 @@ export default function AdminProfile() {
 
       if (cachedCollages) setCollagesData(cachedCollages);
       if (cachedReposts) setRepostsData(cachedReposts);
-      if (countsAreValid) setFollowerData(cachedCounts);
+      if (countsAreValid) {
+        setFollowerData(cachedCounts);
+      } else {
+        refetchCounts(); // Refetch counts if cached data is invalid or missing
+      }
+
+      if (!cachedCollages || !cachedReposts) {
+        fetchMore(); // Fetch collages and reposts if missing
+      }
     } catch (error) {
       console.error("Error loading cached data:", error);
     }
@@ -94,7 +108,6 @@ export default function AdminProfile() {
       repostsCursor,
       limit: 15,
     },
-    skip: !!(collagesData.length && repostsData.length),
     onCompleted: async (data) => {
       const { collages, repostedCollages } = data.getCollagesAndReposts;
 
