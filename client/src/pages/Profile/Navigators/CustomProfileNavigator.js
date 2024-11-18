@@ -22,21 +22,19 @@ export default function CustomProfileNavigator({
   isAdminScreen,
   collages,
   repostedCollages,
+  fetchMoreCollages,
+  fetchMoreReposts,
   navigation,
 }) {
   const [activeTab, setActiveTab] = useState("Collages");
   const translateX = useSharedValue(0);
 
   useEffect(() => {
-    // Update the translation value based on the active tab
     translateX.value = activeTab === "Collages" ? 0 : -width;
-    console.log(`Active Tab: ${activeTab}`);
-    console.log(`Collages Data:`, collages);
-    console.log(`Reposted Collages Data:`, repostedCollages);
-  }, [activeTab, translateX, collages, repostedCollages]);
+  }, [activeTab, translateX]);
 
-  const renderScreen = (Component, data) => (
-    <Component userId={userId} data={data} />
+  const renderScreen = (Component, data, fetchMore) => (
+    <Component userId={userId} data={data} fetchMore={fetchMore} />
   );
 
   const handleTabPress = (tabName) => {
@@ -84,10 +82,12 @@ export default function CustomProfileNavigator({
         style={[styles.screenContainer, animatedStyle]}
       >
         <View style={styles.screen}>
-          {activeTab === "Collages" && renderScreen(Collages, collages)}
+          {activeTab === "Collages" &&
+            renderScreen(Collages, collages, fetchMoreCollages)}
         </View>
         <View style={styles.screen}>
-          {activeTab === "Reposts" && renderScreen(Reposts, repostedCollages)}
+          {activeTab === "Reposts" &&
+            renderScreen(Reposts, repostedCollages, fetchMoreReposts)}
         </View>
       </Animated.View>
     </View>

@@ -333,6 +333,7 @@ type Score {
     # User Queries
     getUserProfileById(userId: ID!): UserProfileResponse
     getUserCounts(userId: ID!): UserCountsResponse
+    getCollagesAndReposts(userId: ID!, collagesCursor: ID, repostsCursor: ID, limit: Int = 15): CollagesAndRepostsResponse
     checkIsFollowing(userId: ID!): FollowStatus
     getFollowers(userId: ID!, cursor: ID, limit: Int): UserWithRelationshipStatusPagination
     getFollowing(userId: ID!, cursor: ID, limit: Int): UserWithRelationshipStatusPagination
@@ -396,6 +397,11 @@ type Score {
   type FeedResult {
     collages: [Collage]
     hasMore: Boolean
+  }
+
+  type CollagesAndRepostsResponse {
+    collages: CollagePagination
+    repostedCollages: CollagePagination
   }
 
   type CollagePagination {

@@ -20,6 +20,11 @@ export default function ExperienceNavigator({ experienceId, associatedShots }) {
   const [activeTab, setActiveTab] = useState("Carousel View");
   const translateX = useSharedValue(0);
 
+  console.log(`ExperienceID: ${experienceId}`);
+  console.log(`associatedShots: ${associatedShots}`);
+  console.log(associatedShots);
+  console.log("FINISH");
+
   useEffect(() => {
     translateX.value = activeTab === "Carousel View" ? 0 : -width;
   }, [activeTab, translateX]);

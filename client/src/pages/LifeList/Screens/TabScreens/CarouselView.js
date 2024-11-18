@@ -41,6 +41,8 @@ export default function CarouselView({ experienceId, associatedShots }) {
     }
   };
 
+  console.log(associatedShots);
+
   return (
     <View style={layoutStyles.wrapper}>
       <View style={{ height: imageHeight }}>
@@ -54,7 +56,7 @@ export default function CarouselView({ experienceId, associatedShots }) {
               />
             </View>
           )}
-          keyExtractor={(item) => item.shot._id.toString()}
+          keyExtractor={(item) => item._id.toString()}
           horizontal
           pagingEnabled
           onViewableItemsChanged={handleViewableItemsChanged}

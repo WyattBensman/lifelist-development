@@ -19,9 +19,11 @@ export default function EditProfile() {
     setIsTabBarVisible(false);
   });
 
+  console.log("Navigating back from:", navigation.getState());
+
   const handleBackPress = () => {
     if (unsavedChanges) {
-      setShowAlert(true); // Show alert if there are unsaved changes
+      setShowAlert(true); // Show alert if there arekk unsaved changes
     } else {
       navigation.goBack(); // Navigate back if there are no changes
     }
@@ -29,7 +31,7 @@ export default function EditProfile() {
 
   const handleDiscardChanges = () => {
     resetChanges(); // Reset changes to the original state
-    setShowAlert(false); // Close the alert
+    setShowAlert(false);
     navigation.goBack(); // Navigate back
   };
 

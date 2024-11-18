@@ -22,6 +22,7 @@ import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import DropdownMenuShot from "../../../components/Dropdowns/DropdownMenuShot";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
 import OptionsAlert from "../../../components/Alerts/OptionsAlert";
+import DangerAlert from "../../../components/Alerts/DangerAlert";
 
 const { width } = Dimensions.get("window");
 const aspectRatio = 3 / 2;
@@ -242,12 +243,14 @@ export default function ViewShot() {
       </View>
 
       {/* Custom Alert for Delete Confirmation */}
-      <CustomAlert
+      <DangerAlert
         visible={isDeleteAlertVisible}
         onRequestClose={() => setIsDeleteAlertVisible(false)}
         title="Delete Camera Shot"
         message="Are you sure you want to delete this shot?"
         onConfirm={confirmDelete}
+        onCancel={() => setIsDeleteAlertVisible(false)} // Explicit cancel action
+        cancelButtonText="Discard"
       />
 
       {/* Options Alert for Album */}

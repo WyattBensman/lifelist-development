@@ -63,6 +63,77 @@ export const getUserCounts = async (_, { userId }) => {
   }
 };
 
+export const getCollagesAndReposts = async (
+  _,
+  { userId, collagesCursor, repostsCursor, limit = 15 },
+  { user }
+) => {
+  try {
+    isUser(user);
+
+    // Validate user existence
+    const foundUser = await User.findById(userId).select("_id").exec();
+    if (!foundUser) throw new Error("User not found for the provided ID.");
+
+    // Fetch collages with pagination
+    const collages = await User.findById(userId)
+      .populate({
+        path: "collages",
+        match: {
+          archived: false,
+          ...(collagesCursor && { _id: { $gt: collagesCursor } }),
+        },
+        options: {
+          sort: { _id: 1 },
+          limit: limit + 1, // Fetch one extra to check for next page
+        },
+        select: "_id coverImage",
+      })
+      .then((user) => user.collages || []);
+
+    const collagesHasNextPage = collages.length > limit;
+    if (collagesHasNextPage) collages.pop(); // Remove the extra item
+
+    // Fetch reposted collages with pagination
+    const repostedCollages = await User.findById(userId)
+      .populate({
+        path: "repostedCollages",
+        match: {
+          archived: false,
+          ...(repostsCursor && { _id: { $gt: repostsCursor } }),
+        },
+        options: {
+          sort: { _id: 1 },
+          limit: limit + 1, // Fetch one extra to check for next page
+        },
+        select: "_id coverImage",
+      })
+      .then((user) => user.repostedCollages || []);
+
+    const repostsHasNextPage = repostedCollages.length > limit;
+    if (repostsHasNextPage) repostedCollages.pop(); // Remove the extra item
+
+    return {
+      collages: {
+        items: collages,
+        nextCursor: collagesHasNextPage
+          ? collages[collages.length - 1]._id
+          : null,
+        hasNextPage: collagesHasNextPage,
+      },
+      repostedCollages: {
+        items: repostedCollages,
+        nextCursor: repostsHasNextPage
+          ? repostedCollages[repostedCollages.length - 1]._id
+          : null,
+        hasNextPage: repostsHasNextPage,
+      },
+    };
+  } catch (error) {
+    throw new Error("Database error: " + error.message);
+  }
+};
+
 export const checkIsFollowing = async (_, { userId }, { user }) => {
   try {
     // Check if the current user is following the requested user

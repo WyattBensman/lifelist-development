@@ -9,6 +9,7 @@ import CustomAlert from "../../../components/Alerts/CustomAlert";
 import { useCreateProfileContext } from "../../../contexts/CreateProfileContext";
 import { useMutation } from "@apollo/client";
 import { VALIDATE_USERNAME_AND_PASSWORD } from "../../../utils/mutations";
+import DangerAlert from "../../../components/Alerts/DangerAlert";
 
 export default function SetLoginInformationScreen() {
   const { profile, updateProfile } = useCreateProfileContext(); // Access profile and updateProfile from context
@@ -174,12 +175,15 @@ export default function SetLoginInformationScreen() {
         </View>
 
         {/* Custom Alert for Back Navigation */}
-        <CustomAlert
+        <DangerAlert
           visible={showAlert}
           onRequestClose={() => setShowAlert(false)}
           title="Progress will be lost"
           message="If you go back, all your progress will be lost. Do you want to continue?"
-          onConfirm={handleConfirmBackPress}
+          onConfirm={handleConfirmBackPress} // Action for "Leave"
+          onCancel={() => setShowAlert(false)} // Action for "Discard"
+          confirmButtonText="Leave"
+          cancelButtonText="Discard"
         />
       </View>
     </View>

@@ -13,6 +13,7 @@ import Icon from "../../../components/Icons/Icon";
 import NavigableShotCard from "../Cards/NavigableShotCard";
 import { DELETE_CAMERA_ALBUM } from "../../../utils/mutations";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
+import DangerAlert from "../../../components/Alerts/DangerAlert";
 
 export default function ViewAlbum() {
   const navigation = useNavigation();
@@ -142,11 +143,13 @@ export default function ViewAlbum() {
         keyExtractor={(item) => item._id}
         numColumns={3}
       />
-      <CustomAlert
+      <DangerAlert
         visible={alertVisible}
         onRequestClose={() => setAlertVisible(false)}
         message="Are you sure you want to delete this album? This action cannot be undone."
         onConfirm={confirmDeleteAlbum}
+        onCancel={() => setAlertVisible(false)} // Optional: Explicitly handle cancel action
+        cancelButtonText="Discard"
       />
     </View>
   );

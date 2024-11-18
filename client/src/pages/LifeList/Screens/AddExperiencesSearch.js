@@ -12,6 +12,7 @@ import CustomAlert from "../../../components/Alerts/CustomAlert";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useLifeListExperienceContext } from "../../../contexts/LifeListExperienceContext";
+import DangerAlert from "../../../components/Alerts/DangerAlert";
 
 const LIMIT = 20; // Number of items per page
 
@@ -177,12 +178,15 @@ export default function AddExperiencesSearch({ route }) {
         onDeselect={() => resetLifeListExperiences()}
         isAddDisabled={lifeListExperiences.length === 0}
       />
-      <CustomAlert
+      <DangerAlert
         visible={showAlert}
         onRequestClose={() => setShowAlert(false)}
         title="Confirm Navigation"
         message="You have made changes. Do you want to save them before leaving?"
-        onConfirm={handleConfirmAlert}
+        onConfirm={handleConfirmAlert} // Action for "Leave"
+        onCancel={() => setShowAlert(false)} // Action for "Discard"
+        confirmButtonText="Leave"
+        cancelButtonText="Discard"
       />
     </View>
   );

@@ -30,16 +30,13 @@ export default function ProfileOverview({
   const [profilePictureUrl, setProfilePictureUrl] = useState(null);
 
   // Query to check if the current user is following this profile
-  const { data: isFollowingData, loading: isFollowingLoading } = useQuery(
-    CHECK_IS_FOLLOWING,
-    {
-      variables: { userId },
-      skip: userId === currentUser, // Skip for self-profile
-      onCompleted: (data) => {
-        setIsFollowing(data?.checkIsFollowing?.isFollowing || false);
-      },
-    }
-  );
+  const { data: isFollowingData } = useQuery(CHECK_IS_FOLLOWING, {
+    variables: { userId },
+    skip: userId === currentUser, // Skip for self-profile
+    onCompleted: (data) => {
+      setIsFollowing(data?.checkIsFollowing?.isFollowing || false);
+    },
+  });
 
   // Mutations
   const [followUser] = useMutation(FOLLOW_USER);
@@ -51,20 +48,20 @@ export default function ProfileOverview({
   useEffect(() => {
     const loadProfilePicture = async () => {
       const imageKey = `profile_picture_${userId}`;
-      const fallbackUrl = profile.profilePicture;
+      const fallbackUrl = profile?.profilePicture;
       const cachedUri = await fetchCachedImageUri(imageKey, fallbackUrl);
       setProfilePictureUrl(cachedUri);
     };
 
     loadProfilePicture();
-  }, [profile.profilePicture, userId]);
+  }, [profile?.profilePicture, userId]);
 
   useEffect(() => {
     let hasPendingRequest = false;
 
-    if (profile.followRequests) {
+    if (profile?.followRequests) {
       hasPendingRequest = profile.followRequests.some(
-        (req) => req._id === currentUser._id
+        (req) => req._id === currentUser
       );
     }
 
@@ -77,11 +74,11 @@ export default function ProfileOverview({
     } else {
       setButtonState("Follow");
     }
-  }, [isFollowing, profile.followRequests, currentUser]);
+  }, [isFollowing, profile?.followRequests, currentUser]);
 
   const handleFollow = async () => {
     try {
-      if (profile.isProfilePrivate) {
+      if (profile?.isProfilePrivate) {
         const { data } = await sendFollowRequest({
           variables: { userIdToFollow: userId },
         });
@@ -156,7 +153,7 @@ export default function ProfileOverview({
           >
             <View style={styles.col}>
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {followerData.collagesCount}
+                {followerData?.collagesCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Collages</Text>
             </View>
@@ -178,7 +175,7 @@ export default function ProfileOverview({
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {followerData.followersCount}
+                {followerData?.followersCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Followers</Text>
             </Pressable>
@@ -200,7 +197,7 @@ export default function ProfileOverview({
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {followerData.followingCount}
+                {followerData?.followingCount}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Following</Text>
             </Pressable>
@@ -254,9 +251,9 @@ export default function ProfileOverview({
       </View>
       <View style={[layoutStyles.marginTopXs, { marginTop: 6 }]}>
         <Text style={{ fontWeight: "bold", color: "#fff" }}>
-          @{profile.username}
+          @{profile?.username}
         </Text>
-        <Text style={{ marginTop: 2, color: "#fff" }}>{profile.bio}</Text>
+        <Text style={{ marginTop: 2, color: "#fff" }}>{profile?.bio}</Text>
       </View>
     </View>
   );

@@ -13,6 +13,7 @@ import ShotCard from "../Cards/ShotCard";
 import SelectedShotCard from "../Cards/SelectedShotCard";
 import { useCollageContext } from "../../../contexts/CollageContext"; // Import CollageContext
 import CustomAlert from "../../../components/Alerts/CustomAlert"; // Import the CustomAlert component
+import DangerAlert from "../../../components/Alerts/DangerAlert";
 
 export default function Media() {
   const navigation = useNavigation();
@@ -158,12 +159,15 @@ export default function Media() {
       />
 
       {/* Custom Alert for Back Press */}
-      <CustomAlert
+      <DangerAlert
         visible={showAlert}
         onRequestClose={() => setShowAlert(false)}
         title="Unsaved Changes"
         message="You have made changes. Are you sure you want to go back?"
         onConfirm={handleConfirmAlert}
+        onCancel={() => setShowAlert(false)}
+        confirmButtonText="Leave"
+        cancelButtonText="Stay"
       />
     </View>
   );

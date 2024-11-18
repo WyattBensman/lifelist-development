@@ -32,6 +32,40 @@ export const GET_USER_COUNTS = gql`
   }
 `;
 
+// Get Current User Collages & Reposts
+export const GET_COLLAGES_REPOSTS = gql`
+  query GetCollagesAndReposts(
+    $userId: ID!
+    $collagesCursor: ID
+    $repostsCursor: ID
+    $limit: Int = 15
+  ) {
+    getCollagesAndReposts(
+      userId: $userId
+      collagesCursor: $collagesCursor
+      repostsCursor: $repostsCursor
+      limit: $limit
+    ) {
+      collages {
+        collages {
+          _id
+          coverImage
+        }
+        nextCursor
+        hasNextPage
+      }
+      repostedCollages {
+        repostedCollages {
+          _id
+          coverImage
+        }
+        nextCursor
+        hasNextPage
+      }
+    }
+  }
+`;
+
 // Check Following
 export const CHECK_IS_FOLLOWING = gql`
   query CheckIsFollowing($userId: ID!) {

@@ -12,6 +12,7 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
+import { useProfile } from "../../../contexts/ProfileContext";
 
 const { width } = Dimensions.get("window");
 
@@ -22,12 +23,12 @@ const tabs = [
 ];
 
 export default function EditProfileNavigator() {
+  const { unsavedChanges, resetChanges } = useProfile();
   const route = useRoute();
   const initialTab = route.params?.initialTab || "Profile";
   const [activeTab, setActiveTab] = useState(initialTab);
   const [pendingTab, setPendingTab] = useState(null); // Track the tab the user is trying to switch to
   const [showAlert, setShowAlert] = useState(false); // Control alert visibility
-  const [unsavedChanges, setUnsavedChanges] = useState(false); // Track unsaved changes
   const translateX = useSharedValue(0);
   const resetChangesRef = useRef({}); // Store resetChanges functions for each tab
 
@@ -53,11 +54,9 @@ export default function EditProfileNavigator() {
   };
 
   const handleDiscardChanges = () => {
-    // Call the resetChanges function for the current active tab
-    resetChangesRef.current[activeTab]?.();
-    setUnsavedChanges(false);
-    setActiveTab(pendingTab);
-    setShowAlert(false);
+    resetChanges(); // Reset unsaved changes globally
+    setActiveTab(pendingTab); // Switch to the new tab
+    setShowAlert(false); // Close the alert
   };
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -75,7 +74,6 @@ export default function EditProfileNavigator() {
     return tabs.map((tab) => (
       <View key={tab.name} style={styles.screen}>
         {React.createElement(tab.component, {
-          setUnsavedChanges,
           registerResetChanges: (resetFn) => {
             resetChangesRef.current[tab.name] = resetFn;
           },
