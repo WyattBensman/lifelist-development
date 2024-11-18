@@ -400,12 +400,18 @@ type Score {
   }
 
   type CollagesAndRepostsResponse {
-    collages: CollagePagination
-    repostedCollages: CollagePagination
+    collages: CollageRepostPagination
+    repostedCollages: CollageRepostPagination
   }
 
   type CollagePagination {
     collages: [Collage]
+    nextCursor: ID
+    hasNextPage: Boolean
+  }
+
+  type CollageRepostPagination {
+    items: [Collage]
     nextCursor: ID
     hasNextPage: Boolean
   }

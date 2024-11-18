@@ -68,66 +68,62 @@ export const getCollagesAndReposts = async (
   { userId, collagesCursor, repostsCursor, limit = 15 }
 ) => {
   try {
-    // Validate user existence
-    const foundUser = await User.findById(userId).select("_id").exec();
-    if (!foundUser) throw new Error("User not found for the provided ID.");
-
-    // Fetch collages with pagination
-    const collages = await User.findById(userId)
+    // Fetch the user and populate both collages and reposted collages
+    const foundUser = await User.findById(userId)
       .populate({
         path: "collages",
         match: {
           archived: false,
-          ...(collagesCursor && { _id: { $gt: collagesCursor } }),
+          ...(collagesCursor && { _id: { $gt: collagesCursor } }), // Pagination filter
         },
-        options: {
-          sort: { _id: 1 },
-          limit: limit + 1, // Fetch one extra to check for next page
-        },
+        options: { sort: { _id: 1 }, limit: limit + 1 }, // Fetch extra for pagination
         select: "_id coverImage",
       })
-      .then((user) => user.collages || []);
-
-    const collagesHasNextPage = collages.length > limit;
-    if (collagesHasNextPage) collages.pop(); // Remove the extra item
-
-    // Fetch reposted collages with pagination
-    const repostedCollages = await User.findById(userId)
       .populate({
         path: "repostedCollages",
         match: {
           archived: false,
-          ...(repostsCursor && { _id: { $gt: repostsCursor } }),
+          ...(repostsCursor && { _id: { $gt: repostsCursor } }), // Pagination filter
         },
-        options: {
-          sort: { _id: 1 },
-          limit: limit + 1, // Fetch one extra to check for next page
-        },
+        options: { sort: { _id: 1 }, limit: limit + 1 }, // Fetch extra for pagination
         select: "_id coverImage",
       })
-      .then((user) => user.repostedCollages || []);
+      .exec();
 
+    if (!foundUser) throw new Error("User not found."); // Handle invalid user
+
+    // Extract collages and reposted collages
+    const collages = foundUser.collages || [];
+    const repostedCollages = foundUser.repostedCollages || [];
+
+    // Determine if there's another page of collages
+    const collagesHasNextPage = collages.length > limit;
+    if (collagesHasNextPage) collages.pop(); // Remove extra item for clean response
+
+    // Determine if there's another page of reposted collages
     const repostsHasNextPage = repostedCollages.length > limit;
-    if (repostsHasNextPage) repostedCollages.pop(); // Remove the extra item
+    if (repostsHasNextPage) repostedCollages.pop(); // Remove extra item for clean response
 
+    // Return the paginated response
     return {
       collages: {
         items: collages,
         nextCursor: collagesHasNextPage
           ? collages[collages.length - 1]._id
-          : null,
+          : null, // Set cursor to the last item's ID or null
         hasNextPage: collagesHasNextPage,
       },
       repostedCollages: {
         items: repostedCollages,
         nextCursor: repostsHasNextPage
           ? repostedCollages[repostedCollages.length - 1]._id
-          : null,
+          : null, // Set cursor to the last item's ID or null
         hasNextPage: repostsHasNextPage,
       },
     };
   } catch (error) {
-    throw new Error("Database error: " + error.message);
+    console.error("Error fetching collages and reposts:", error);
+    throw new Error("Database error: " + error.message); // Return a generic database error
   }
 };
 
