@@ -45,8 +45,9 @@ const updateCollage = async (
 
     // Add the collage to newly tagged users' taggedCollages
     const newlyTaggedUsers = updatedTaggedUserIds.filter(
-      (_id) => !currentTaggedUserIds.includes(_id)
+      (id) => !currentTaggedUserIds.includes(id)
     );
+
     await User.updateMany(
       { _id: { $in: newlyTaggedUsers } },
       { $addToSet: { taggedCollages: collage._id } }
