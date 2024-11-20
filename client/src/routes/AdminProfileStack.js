@@ -14,6 +14,7 @@ import AddUsersToPrivacyGroup from "../pages/Profile/Screens/AddUsersToPrivacyGr
 import CreatePrivacyGroup from "../pages/Profile/Screens/CreatePrivacyGroup";
 import InviteFriends from "../pages/Profile/Screens/InviteFriends";
 import Tagged from "../pages/Profile/Screens/Tagged";
+import CollageStack from "./CollageStack";
 
 const Stack = createNativeStackNavigator();
 
@@ -99,6 +100,11 @@ export default function AdminProfileStack() {
       <Stack.Screen
         name="InviteFriends"
         component={InviteFriends}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CollageStack"
+        component={CollageStack}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

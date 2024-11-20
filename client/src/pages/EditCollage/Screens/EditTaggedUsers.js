@@ -20,6 +20,8 @@ export default function EditTaggedUsers() {
   const [hasModified, setHasModified] = useState(false); // Track modifications
   const { data: allUsersData, loading, error } = useQuery(GET_ALL_USERS);
 
+  console.log(collage.taggedUsers);
+
   // Initialize selectedUsers from collage.taggedUsers once
   useEffect(() => {
     setSelectedUsers([...collage.taggedUsers]); // Spread to avoid shared reference issues

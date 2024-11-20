@@ -13,8 +13,8 @@ export const getCollageById = async (_, { collageId }, { user }) => {
       select: "_id",
     })
     .populate({
-      path: "tagged", // Populate to check participants, but not return it
-      select: "_id",
+      path: "tagged",
+      select: "_id username fullName profilePicture",
     })
     .exec();
 
