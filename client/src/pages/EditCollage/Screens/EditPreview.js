@@ -76,6 +76,7 @@ export default function EditPreview() {
 
     console.log(`COLLAGE ID: ${collage._id}`);
     console.log(`CAPTION: ${caption}`);
+    console.log(imagePaths);
     console.log(`images: ${imagePaths}`);
     console.log(`taggedUsers: ${taggedUsers}`);
     console.log(taggedUsers);
