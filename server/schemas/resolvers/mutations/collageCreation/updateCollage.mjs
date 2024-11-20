@@ -32,10 +32,6 @@ const updateCollage = async (
       throw new Error("A valid cover image must be provided.");
     }
 
-    // Validate taggedUsers
-    if (!taggedUsers || !Array.isArray(taggedUsers)) {
-      throw new Error("Invalid 'taggedUsers' input.");
-    }
     const updatedTaggedUserIds = taggedUsers.map((user) => user._id);
 
     // Update the collage fields
@@ -44,7 +40,9 @@ const updateCollage = async (
     collage.coverImage = selectedCoverImage;
 
     // Update taggedCollages for users
-    const currentTaggedUserIds = collage.tagged.map((user) => user.toString());
+    const currentTaggedUserIds = collage.tagged.map((user) =>
+      user._id.toString()
+    );
     const newlyTaggedUsers = updatedTaggedUserIds.filter(
       (id) => !currentTaggedUserIds.includes(id)
     );
