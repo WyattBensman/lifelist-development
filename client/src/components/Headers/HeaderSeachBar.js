@@ -18,6 +18,7 @@ export default function HeaderSearchBar({
   handleSearch,
   isSearchFocused,
   onSearchFocusChange,
+  hideIconsOnFocus = true,
 }) {
   const showIcons = arrowIcon || icon1 || icon2;
   const navigation = useNavigation();
@@ -46,18 +47,29 @@ export default function HeaderSearchBar({
           handleSearch={handleSearch}
           onFocusChange={onSearchFocusChange}
         />
-        {isSearchFocused && (
-          <View style={styles.rightIconsContainer}>
-            <View style={[styles.icon, styles.iconSpacing]}></View>
-          </View>
-        )}
-        {showIcons && !isSearchFocused && (
-          <View style={styles.rightIconsContainer}>
-            {icon1 && (
-              <View style={[styles.icon, styles.iconSpacing]}>{icon1}</View>
-            )}
-            {icon2 && <View style={styles.icon}>{icon2}</View>}
-          </View>
+        {isSearchFocused ? (
+          hideIconsOnFocus ? (
+            <View style={styles.rightIconsContainer}>
+              {/* Placeholder for spacing */}
+              <View style={[styles.icon, styles.iconSpacing]}></View>
+            </View>
+          ) : (
+            <View style={styles.rightIconsContainer}>
+              {icon1 && (
+                <View style={[styles.icon, styles.iconSpacing]}>{icon1}</View>
+              )}
+              {icon2 && <View style={styles.icon}>{icon2}</View>}
+            </View>
+          )
+        ) : (
+          showIcons && (
+            <View style={styles.rightIconsContainer}>
+              {icon1 && (
+                <View style={[styles.icon, styles.iconSpacing]}>{icon1}</View>
+              )}
+              {icon2 && <View style={styles.icon}>{icon2}</View>}
+            </View>
+          )
         )}
       </View>
     </TouchableWithoutFeedback>

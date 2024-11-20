@@ -11,16 +11,16 @@ import { useNavigationContext } from "../../../contexts/NavigationContext";
 import DraggableFlatList from "react-native-draggable-flatlist";
 import ShotCard from "../Cards/ShotCard";
 import SelectedShotCard from "../Cards/SelectedShotCard";
-import { useCollageContext } from "../../../contexts/CollageContext"; // Import CollageContext
-import CustomAlert from "../../../components/Alerts/CustomAlert"; // Import the CustomAlert component
 import DangerAlert from "../../../components/Alerts/DangerAlert";
+import { useCreateCollageContext } from "../../../contexts/CreateCollageContext";
 
 export default function Media() {
   const navigation = useNavigation();
   const { data, loading, error } = useQuery(GET_ALL_CAMERA_SHOTS);
-  const { collage, updateCollage, hasModified } = useCollageContext(); // Access collage methods
+  const { collage, updateCollage, resetCollage, hasModified } =
+    useCreateCollageContext();
   const { setIsTabBarVisible } = useNavigationContext();
-  const [showAlert, setShowAlert] = useState(false); // State to control visibility of the alert
+  const [showAlert, setShowAlert] = useState(false);
 
   useFocusEffect(() => {
     setIsTabBarVisible(false);
@@ -37,6 +37,7 @@ export default function Media() {
 
   // Handle confirm in the alert
   const handleConfirmAlert = () => {
+    resetCollage();
     setShowAlert(false); // Close alert
     navigation.goBack(); // Proceed with the back action
   };

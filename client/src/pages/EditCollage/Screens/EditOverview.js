@@ -16,12 +16,12 @@ import { useNavigationContext } from "../../../contexts/NavigationContext";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import { useCreateCollageContext } from "../../../contexts/CreateCollageContext";
 
-export default function Overview() {
+export default function EditOverview() {
   const navigation = useNavigation();
   const { collage, updateCollage } = useCreateCollageContext(); // Access collage methods
   const { setIsTabBarVisible } = useNavigationContext();
 
-  // Access caption and coverImage directly from the collage context
+  // Access caption, coverImage, and images directly from the collage context
   const { caption, coverImage, images } = collage;
 
   // Ensure tab bar is hidden when this screen is focused
@@ -29,8 +29,11 @@ export default function Overview() {
     setIsTabBarVisible(false);
   }, []);
 
-  // If there's no cover image yet, use the first image in the collage
-  const currentCoverImage = coverImage || images[0]?.image || null;
+  // Handle coverImage validation
+  const currentCoverImage =
+    coverImage && images.some((img) => img.image === coverImage)
+      ? coverImage
+      : images[0]?.image || null;
 
   // Handle caption change: Update directly into the collage context
   const handleCaptionChange = (text) => {
@@ -39,24 +42,24 @@ export default function Overview() {
 
   // Pass updated collage info to the Preview screen
   const handlePreview = () => {
-    navigation.navigate("CollagePreview");
+    navigation.navigate("EditPreview");
   };
 
   // Navigate to AddParticipants screen
   const handleAddParticipants = () => {
-    navigation.navigate("AddParticipants");
+    navigation.navigate("EditTaggedUsers");
   };
 
   // Navigate to ChangeCoverImage screen
   const handleChangeCoverImage = () => {
-    navigation.navigate("ChangeCoverImage"); // No need to pass params; cover image is in the context
+    navigation.navigate("EditCoverImage");
   };
 
   return (
     <View style={layoutStyles.wrapper}>
       {/* Header */}
       <HeaderStack
-        title={"Overview"}
+        title={"Edit Overview"}
         arrow={
           <Icon
             name="chevron.backward"

@@ -8,9 +8,9 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemeProvider } from "@react-navigation/native";
 import { theme } from "./src/styles/theme.js";
 import { LifeListExperienceProvider } from "./src/contexts/LifeListExperienceContext.js";
-import { CollageProvider } from "./src/contexts/CollageContext.js";
-import "react-native-gesture-handler";
 import { CreateProfileProvider } from "./src/contexts/CreateProfileContext.js";
+import { CreateCollageProvider } from "./src/contexts/CreateCollageContext.js";
+import "react-native-gesture-handler";
 
 export default function App() {
   return (
@@ -20,13 +20,13 @@ export default function App() {
           <CallbackProvider>
             <ThemeProvider theme={theme}>
               <CreateProfileProvider>
-                <CollageProvider>
+                <CreateCollageProvider>
                   <LifeListExperienceProvider>
                     <NavigationProvider>
                       <AppNavigator />
                     </NavigationProvider>
                   </LifeListExperienceProvider>
-                </CollageProvider>
+                </CreateCollageProvider>
               </CreateProfileProvider>
             </ThemeProvider>
           </CallbackProvider>

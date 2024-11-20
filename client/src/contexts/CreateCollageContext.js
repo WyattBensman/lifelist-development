@@ -1,11 +1,12 @@
 import React, { createContext, useState, useContext } from "react";
 
 // CollageContext definition
-const CollageContext = createContext();
+const CreateCollageContext = createContext();
 
 // CollageProvider to wrap the components where collage creation happens
-export const CollageProvider = ({ children }) => {
+export const CreateCollageProvider = ({ children }) => {
   const [collage, setCollage] = useState({
+    _id: null, // Unique identifier for the collage (only required for editing)
     images: [], // Holds the selected images
     coverImage: null, // Set the cover image, can default to the first image
     caption: "", // Collage caption
@@ -26,6 +27,7 @@ export const CollageProvider = ({ children }) => {
   // Reset the collage
   const resetCollage = () => {
     setCollage({
+      _id: null,
       images: [],
       coverImage: null,
       caption: "",
@@ -38,7 +40,7 @@ export const CollageProvider = ({ children }) => {
   };
 
   return (
-    <CollageContext.Provider
+    <CreateCollageContext.Provider
       value={{
         collage,
         updateCollage,
@@ -47,9 +49,9 @@ export const CollageProvider = ({ children }) => {
       }}
     >
       {children}
-    </CollageContext.Provider>
+    </CreateCollageContext.Provider>
   );
 };
 
 // Custom hook to access the collage context
-export const useCollageContext = () => useContext(CollageContext);
+export const useCreateCollageContext = () => useContext(CreateCollageContext);

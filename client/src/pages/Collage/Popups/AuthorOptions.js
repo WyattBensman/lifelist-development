@@ -5,34 +5,53 @@ import {
   layoutStyles,
   popupStyles,
 } from "../../../styles";
-
 import IconStatic from "../../../components/Icons/IconStatic";
 import BottomPopup from "../../Profile/Popups/BottomPopup";
+import { useNavigation } from "@react-navigation/native";
 
 export default function AuthorOptions({
   visible,
   onRequestClose,
   collageId,
+  collageData,
   isArchived,
   handleArchivePress,
 }) {
-  console.log(isArchived);
+  const navigation = useNavigation();
 
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={484}>
       <View style={popupStyles.popupContainer}>
         <Text style={[headerStyles.headerMedium, styles.text]}>Options</Text>
-        <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
+        <Pressable
+          style={[popupStyles.cardContainer, layoutStyles.flex]}
+          onPress={() => {
+            onRequestClose(); // Close the popup
+            navigation.navigate("CollageStack", {
+              screen: "EditMedia",
+              params: {
+                collageId, // Pass the collage ID
+                collageData, // Pass the collage data object
+              },
+            });
+          }}
+        >
           <View style={layoutStyles.flexRow}>
-            <IconStatic name="paperplane.circle" style={iconStyles.popupIcon} />
-            <Text style={[popupStyles.spacer, styles.text]}>Edit</Text>
+            <IconStatic
+              name="pencil.and.outline"
+              tintColor={"#6AB952"}
+              weight={"semibold"}
+              style={iconStyles.popupIcon}
+            />
+            <Text style={[popupStyles.spacer, styles.greenText]}>Edit</Text>
           </View>
           <IconStatic
             name="chevron.forward"
             style={iconStyles.forwardArrow}
             weight={"semibold"}
+            tintColor={"#6AB952"}
           />
-        </View>
+        </Pressable>
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={handleArchivePress}
@@ -41,14 +60,9 @@ export default function AuthorOptions({
             <IconStatic
               name={isArchived ? "archivebox.fill" : "archivebox"}
               style={iconStyles.popupIcon}
+              tintColor={"#5FC4ED"}
             />
-            <Text
-              style={[
-                popupStyles.spacer,
-                styles.text,
-                isArchived ? { color: "green" } : { color: "#fff" },
-              ]}
-            >
+            <Text style={[popupStyles.spacer, styles.blueText]}>
               {isArchived ? "Unarchive" : "Archive"}
             </Text>
           </View>
@@ -56,16 +70,12 @@ export default function AuthorOptions({
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
           <View style={layoutStyles.flexRow}>
             {/* Placeholder for alignment */}
-            <View style={iconStyles.popupIcon} />
-            <Text
-              style={[
-                popupStyles.spacer,
-                styles.text,
-                { color: "red", fontWeight: "500" },
-              ]}
-            >
-              Delete
-            </Text>
+            <IconStatic
+              name={"trash"}
+              style={iconStyles.popupIcon}
+              tintColor={"#FF6347"}
+            />
+            <Text style={[popupStyles.spacer, styles.redText]}>Delete</Text>
           </View>
         </View>
         <Text
@@ -112,4 +122,13 @@ const styles = StyleSheet.create({
   text: {
     color: "#ffffff",
   },
+  greenText: {
+    color: "#6AB952",
+    fontWeight: "600",
+  },
+  blueText: {
+    color: "#5FC4ED",
+    fontWeight: "600",
+  },
+  redText: { color: "#FF6347", fontWeight: "600" },
 });

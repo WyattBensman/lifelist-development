@@ -6,6 +6,7 @@ import tagUsers from "./tagUsers.mjs";
 import untagUsers from "./untagUsers.mjs";
 import setCoverImage from "./setCoverImage.mjs";
 import createCollage from "./createCollage.mjs";
+import updateCollage from "./updateCollage.mjs";
 
 export {
   setCaption,
@@ -16,4 +17,5 @@ export {
   tagUsers,
   untagUsers,
   setCoverImage,
+  updateCollage,
 };

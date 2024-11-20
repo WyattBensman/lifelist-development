@@ -19,15 +19,15 @@ import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { CREATE_COLLAGE } from "../../../utils/mutations/collageCreationMutations";
 import { GET_USER_PROFILE } from "../../../utils/queries";
-import { useCollageContext } from "../../../contexts/CollageContext"; // Use CollageContext
+import { useCreateCollageContext } from "../../../contexts/CreateCollageContext";
 
 const { width } = Dimensions.get("window");
 
 export default function CollagePreview() {
   const { currentUser } = useAuth(); // Access currentUser ID from AuthContext
   const navigation = useNavigation();
-  const { collage } = useCollageContext(); // Access collage data from context
-  const { images, caption, taggedUsers } = collage; // Destructure collage data
+  const { collage } = useCreateCollageContext(); // Access collage data from context
+  const { images, caption, taggedUsers, coverImage } = collage; // Destructure collage data
 
   const [showParticipants, setShowParticipants] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -74,14 +74,13 @@ export default function CollagePreview() {
     // Extract the image paths
     const imagePaths = images.map((item) => item.image);
 
-    console.log("Image paths being sent to the server:", imagePaths); // Debug log
-
     // Post the collage
     createCollage({
       variables: {
         caption: caption || "", // Use empty string if no caption
         images: imagePaths, // Pass only the extracted image paths
         taggedUsers: taggedUsers.map((user) => user._id), // Extract IDs for tagged users
+        coverImage: coverImage || imagePaths[0],
       },
     })
       .then(() => {

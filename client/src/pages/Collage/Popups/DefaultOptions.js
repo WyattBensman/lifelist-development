@@ -56,19 +56,11 @@ export default function DefaultOptions({
             <IconStatic
               name={"exclamationmark.bubble"}
               style={iconStyles.popupIcon}
-              tintColor={"red"}
+              tintColor={"#FF6347"}
               weight={"semibold"}
               onPress={handleReportPress}
             />
-            <Text
-              style={[
-                popupStyles.spacer,
-                styles.text,
-                { color: "red", fontWeight: "500" },
-              ]}
-            >
-              Report
-            </Text>
+            <Text style={[popupStyles.spacer, styles.redText]}>Report</Text>
           </View>
         </Pressable>
         <Text
@@ -120,4 +112,5 @@ const styles = StyleSheet.create({
     color: "#6AB952",
     fontWeight: "600",
   },
+  redText: { color: "#FF6347", fontWeight: "600" },
 });

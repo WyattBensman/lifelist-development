@@ -22,7 +22,7 @@ const spacing = 1.5;
 const shotWidth = (screenWidth - spacing * 2) / 3;
 const shotHeight = (shotWidth * 3) / 2;
 
-export default function ChangeCoverImage() {
+export default function EditCoverImage() {
   const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
   const { collage, updateCollage } = useCreateCollageContext(); // Access collage context
@@ -31,20 +31,26 @@ export default function ChangeCoverImage() {
   );
   const [isModified, setIsModified] = useState(false);
 
+  // Hide the tab bar when the page is focused
   useFocusEffect(() => {
     setIsTabBarVisible(false);
   });
 
+  // Handle selecting a new cover image
   const handleSelectCoverImage = (image) => {
     setSelectedCoverImage(image);
-    setIsModified(image !== collage.coverImage);
+    setIsModified(image !== collage.coverImage); // Mark as modified only if it changes
   };
 
+  // Save the selected cover image and update the context
   const handleSaveCoverImage = () => {
-    updateCollage({ coverImage: selectedCoverImage }); // Update cover image in context
-    navigation.goBack();
+    if (selectedCoverImage) {
+      updateCollage({ coverImage: selectedCoverImage }); // Update the context
+    }
+    navigation.goBack(); // Navigate back
   };
 
+  // Render each image as an option for the cover image
   const renderItem = ({ item }) => (
     <Pressable onPress={() => handleSelectCoverImage(item.image)}>
       <View style={styles.shotContainer}>
@@ -64,6 +70,7 @@ export default function ChangeCoverImage() {
 
   return (
     <View style={layoutStyles.wrapper}>
+      {/* Header Section */}
       <HeaderStack
         title={"Change Cover Image"}
         arrow={
@@ -87,11 +94,13 @@ export default function ChangeCoverImage() {
           </Pressable>
         }
       />
+
+      {/* FlatList for images */}
       <FlatList
-        data={collage.images} // Access images from context
+        data={collage.images} // List of images from the context
         renderItem={renderItem}
-        keyExtractor={(item) => item._id}
-        numColumns={3}
+        keyExtractor={(item) => item.image} // Use `image` path as the key
+        numColumns={3} // Show images in a grid
         contentContainerStyle={styles.flatListContent}
       />
     </View>
@@ -109,15 +118,16 @@ const styles = StyleSheet.create({
   shotImage: {
     width: "100%",
     height: "100%",
+    borderRadius: 4,
   },
   checkbox: {
     position: "absolute",
     top: 6,
     right: 6,
-    width: 12,
-    height: 12,
+    width: 16,
+    height: 16,
     borderWidth: 2,
-    borderRadius: 12,
+    borderRadius: 16,
   },
   flatListContent: {
     padding: spacing,

@@ -4,13 +4,13 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
 import { layoutStyles, iconStyles } from "../../../styles";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
-import SearchUserCard from "../Cards/SearchUserCard";
+import SearchUserCard from "../../CreateCollage/Cards/SearchUserCard";
 import { GET_ALL_USERS } from "../../../utils/queries/userQueries";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useCreateCollageContext } from "../../../contexts/CreateCollageContext";
 
-export default function AddParticipants() {
+export default function EditTaggedUsers() {
   const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
   const { collage, updateCollage } = useCreateCollageContext(); // Access collage context
