@@ -164,11 +164,9 @@ export default function Collage({
   };
 
   const handleArchivePress = async () => {
-    console.log("HEY");
-    console.log(`ISARCHIVED`);
-
     if (isArchived) {
       await unarchiveCollage({ variables: { collageId } });
+      console.log(`ISARCHIVED`);
     } else {
       await archiveCollage({ variables: { collageId } });
     }
