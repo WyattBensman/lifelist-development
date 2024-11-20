@@ -40,6 +40,8 @@ const updateCollage = async (
     collage.images = images;
     collage.coverImage = selectedCoverImage;
 
+    console.log(collage.tagged);
+
     // Handle tagged users
     const currentTaggedUserIds = collage.tagged.map((user) => user.toString());
     const updatedTaggedUserIds = taggedUsers.map((user) => user._id);

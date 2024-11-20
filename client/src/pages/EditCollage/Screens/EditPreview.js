@@ -74,6 +74,13 @@ export default function EditPreview() {
     // Extract the image paths
     const imagePaths = images.map((item) => item.image);
 
+    console.log(`COLLAGE ID: ${collage._id}`);
+    console.log(`CAPTION: ${caption}`);
+    console.log(`images: ${imagePaths}`);
+    console.log(`taggedUsers: ${taggedUsers}`);
+    console.log(taggedUsers);
+    console.log(`coverImage: ${taggedUsers}`);
+
     // Update the collage
     updateCollageMutation({
       variables: {
