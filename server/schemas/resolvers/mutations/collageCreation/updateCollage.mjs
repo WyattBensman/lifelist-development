@@ -4,11 +4,9 @@ import createNotification from "../notifications/createNotification.mjs";
 
 const updateCollage = async (
   _,
-  { collageId, caption, images, taggedUsers, coverImage }
+  { collageId, caption, images, taggedUsers, coverImage },
+  { user }
 ) => {
-  user;
-};
-{
   try {
     isUser(user);
 
@@ -45,8 +43,21 @@ const updateCollage = async (
     // Save the collage
     await collage.save();
 
-    // Update taggedCollages for users
-    /*       const currentTaggedUserIds = collage.tagged.map((user) =>
+    return {
+      success: true,
+      message: "Collage successfully updated.",
+    };
+  } catch (error) {
+    throw new Error(
+      `An error occurred while updating the collage: ${error.message}`
+    );
+  }
+};
+
+export default updateCollage;
+
+// Update taggedCollages for users
+/*       const currentTaggedUserIds = collage.tagged.map((user) =>
         user._id.toString()
       );
 
@@ -72,8 +83,8 @@ const updateCollage = async (
         );
       } */
 
-    // Send notifications to newly tagged users
-    /* for (const taggedUserId of newlyTaggedUsers) {
+// Send notifications to newly tagged users
+/* for (const taggedUserId of newlyTaggedUsers) {
         await createNotification({
           recipientId: taggedUserId,
           senderId: user,
@@ -81,16 +92,3 @@ const updateCollage = async (
           message: `${user.fullName} tagged you in a collage.`,
         });
       } */
-
-    return {
-      success: true,
-      message: "Collage successfully updated.",
-    };
-  } catch (error) {
-    throw new Error(
-      `An error occurred while updating the collage: ${error.message}`
-    );
-  }
-}
-
-export default updateCollage;
