@@ -17,6 +17,8 @@ export default function CollageCard({
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
 
+  console.log(`COLLAGES FROM CARD: ${collages}`);
+
   useEffect(() => {
     // Fetch the cached image URI or fallback to the original URL
     const fetchImage = async () => {

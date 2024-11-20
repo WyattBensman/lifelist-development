@@ -13,13 +13,15 @@ export default function LifeListStack({ route }) {
       <Stack.Screen
         name="LifeList"
         component={LifeList}
-        initialParams={{ userId }} // Pass userId as initial param
+        initialParams={{ userId }}
         options={{ headerShown: false }}
       />
       <Stack.Screen
         name="ListView"
         component={ListView}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="ViewExperience"

@@ -1,21 +1,17 @@
-import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs";
-import { useTheme } from "react-native-paper";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useNavigationContext } from "../contexts/NavigationContext";
 import MainFeedStack from "./MainFeedStack";
 import ExploreStack from "./ExploreStack";
-import TabIcon from "../icons/NavigationBar/TabIcon";
 import CameraStack from "./CameraStack";
 import AdminProfileStack from "./AdminProfileStack";
 import AdminLifeListStack from "./AdminLifeListStack";
 import { useNavigationState } from "@react-navigation/native";
 import { useEffect } from "react";
+import TabIcon from "../icons/NavigationBar/TabIcon";
 
-const Tab = createMaterialBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function NavigationTab() {
-  const theme = useTheme();
-  theme.colors.secondaryContainer = "";
-
   const state = useNavigationState((state) => state);
   const { isTabBarVisible, setIsTabBarVisible } = useNavigationContext();
 
@@ -28,6 +24,7 @@ export default function NavigationTab() {
     "Archived",
     "ViewShot",
     "ViewExperience",
+    "ListView",
   ];
 
   useEffect(() => {
@@ -44,12 +41,17 @@ export default function NavigationTab() {
 
   return (
     <Tab.Navigator
-      barStyle={{
-        backgroundColor: "#252525",
-        flex: isTabBarVisible ? 0.095 : 0,
-        overflow: "hidden",
-        display: isTabBarVisible ? "flex" : "none",
-      }}
+      screenOptions={({ route }) => ({
+        tabBarStyle: {
+          backgroundColor: "#252525",
+          overflow: "hidden",
+          paddingTop: isTabBarVisible ? 18 : 0,
+          paddingBottom: isTabBarVisible ? 34 : 0,
+          height: isTabBarVisible ? 78 : 0,
+          display: isTabBarVisible ? "flex" : "none",
+        },
+        headerShown: false, // Remove headers from stacks
+      })}
     >
       <Tab.Screen
         name="MainFeed"

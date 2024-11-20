@@ -12,6 +12,7 @@ export default function ViewCollage() {
   const navigation = useNavigation();
   const route = useRoute();
   const { collages, initialIndex } = route.params;
+  console.log(collages);
 
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [headerHeight, setHeaderHeight] = useState(0);

@@ -11,6 +11,8 @@ export default function Icon({
   noFill,
   backgroundColor,
 }) {
+  console.log(style);
+
   return (
     <Pressable
       onPress={onPress}

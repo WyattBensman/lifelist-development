@@ -3,7 +3,6 @@ import {
   View,
   FlatList,
   Dimensions,
-  ActivityIndicator,
   StyleSheet,
   Text,
   RefreshControl,

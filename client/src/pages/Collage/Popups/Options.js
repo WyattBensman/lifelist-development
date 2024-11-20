@@ -26,8 +26,8 @@ export default function Options({
   collageId,
   isSaved,
   handleSavePress,
-  currentUserId, // Current user ID
-  collageAuthorId, // Collage author ID
+  currentUserId,
+  collageAuthorId,
 }) {
   const navigation = useNavigation();
   const collageLink = `${BASE_URL}/collage/${collageId}`; // Construct the collage link
@@ -113,7 +113,15 @@ export default function Options({
                   tintColor={"#6AB952"}
                 />
                 <Text style={styles.topButtonTextGreen}>
-                  {isSaved ? "Unsave" : "Save"}
+                  {isSaved ? "Unsave" : "Edit"}
+                </Text>
+              </Pressable>
+              <Pressable
+                style={styles.topButtonContainerGreen}
+                onPress={handleSavePress}
+              >
+                <Text style={styles.topButtonTextGreen}>
+                  {isSaved ? "Unsave" : "Archive"}
                 </Text>
               </Pressable>
               {currentUserId === collageAuthorId ? (
@@ -216,7 +224,7 @@ const styles = StyleSheet.create({
   topButtonContainerGreen: {
     flexDirection: "row",
     height: 35,
-    width: "40%",
+    width: 108,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#252525",
@@ -228,7 +236,7 @@ const styles = StyleSheet.create({
   },
   topButtonContainerRed: {
     height: 35,
-    width: "40%",
+    width: 108,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",

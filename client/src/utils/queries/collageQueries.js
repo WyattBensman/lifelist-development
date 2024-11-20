@@ -16,6 +16,7 @@ export const GET_COLLAGE_BY_ID = gql`
           profilePicture
         }
         createdAt
+        archived
       }
       isLikedByCurrentUser
       isRepostedByCurrentUser

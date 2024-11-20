@@ -47,7 +47,7 @@ export const GET_COLLAGES_REPOSTS = gql`
       limit: $limit
     ) {
       collages {
-        collages {
+        items {
           _id
           coverImage
         }
@@ -55,7 +55,7 @@ export const GET_COLLAGES_REPOSTS = gql`
         hasNextPage
       }
       repostedCollages {
-        repostedCollages {
+        items {
           _id
           coverImage
         }

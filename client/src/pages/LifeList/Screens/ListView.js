@@ -52,7 +52,7 @@ export default function ListView({ navigation }) {
 
   const handleBackPress = () => {
     if (editMode && route.params?.fromScreen === "EditExperiences") {
-      navigation.navigate("AdminLifeList");
+      navigation.goBack();
     } else if (editMode) {
       setEditMode(false);
     } else {

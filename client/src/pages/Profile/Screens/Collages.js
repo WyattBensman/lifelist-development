@@ -9,7 +9,7 @@ const getCollageId = (collage) => collage.id || collage._id;
 export default function Collages({ data: collages, fetchMore }) {
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const filteredCollages = collages || [];
+  const filteredCollages = collages;
 
   const renderCollageItem = ({ item, index }) => (
     <CollageCard

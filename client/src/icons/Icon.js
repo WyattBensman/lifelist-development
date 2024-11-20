@@ -10,7 +10,7 @@ export default function Icon({ name, style, spacer, tintColor, onPress }) {
     >
       <SymbolView
         name={name}
-        style={style}
+        style={{ width: 24, height: 24 }}
         type="monochrome"
         tintColor={!tintColor ? "#000" : tintColor}
       />

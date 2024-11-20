@@ -20,14 +20,17 @@ import {
   UNREPOST_COLLAGE,
   SAVE_COLLAGE,
   UNSAVE_COLLAGE,
+  ARCHIVE_COLLAGE,
+  UNARCHIVE_COLLAGE,
 } from "../../../utils/mutations";
 import { useQuery, useMutation } from "@apollo/client";
 import { BASE_URL } from "../../../utils/config";
 import Comments from "../Popups/Comments";
 import Participants from "../Popups/Participants";
 import IconCollage from "../../../components/Icons/IconCollage";
-import Options from "../Popups/Options";
 import { useAuth } from "../../../contexts/AuthContext";
+import AuthorOptions from "../Popups/AuthorOptions";
+import DefaultOptions from "../Popups/DefaultOptions";
 
 const { width } = Dimensions.get("window");
 
@@ -50,6 +53,7 @@ export default function Collage({
   const [isLiked, setIsLiked] = useState(false);
   const [isReposted, setIsReposted] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [isArchived, setIsArchived] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -57,6 +61,7 @@ export default function Collage({
       setIsLiked(data.getCollageById.isLikedByCurrentUser);
       setIsReposted(data.getCollageById.isRepostedByCurrentUser);
       setIsSaved(data.getCollageById.isSavedByCurrentUser);
+      setIsArchived(data.getCollageById.collage.archived);
     }
   }, [data]);
 
@@ -83,6 +88,13 @@ export default function Collage({
   });
   const [unsaveCollage] = useMutation(UNSAVE_COLLAGE, {
     onCompleted: () => setIsSaved(false),
+  });
+
+  const [archiveCollage] = useMutation(ARCHIVE_COLLAGE, {
+    onCompleted: () => setIsArchived(true),
+  });
+  const [unarchiveCollage] = useMutation(UNARCHIVE_COLLAGE, {
+    onCompleted: () => setIsArchived(false),
   });
 
   useEffect(() => {
@@ -148,6 +160,17 @@ export default function Collage({
       await unsaveCollage({ variables: { collageId } });
     } else {
       await saveCollage({ variables: { collageId } });
+    }
+  };
+
+  const handleArchivePress = async () => {
+    console.log("HEY");
+    console.log(`ISARCHIVED`);
+
+    if (isArchived) {
+      await unarchiveCollage({ variables: { collageId } });
+    } else {
+      await archiveCollage({ variables: { collageId } });
     }
   };
 
@@ -300,12 +323,14 @@ export default function Collage({
         onRequestClose={() => setShowParticipants(false)}
         collageId={collageId}
       />
-      <Options
+      <AuthorOptions
         visible={showOptions}
         onRequestClose={() => setShowOptions(false)}
         collageId={collageId}
         isSaved={isSaved}
         handleSavePress={handleSavePress}
+        isArchived={isArchived}
+        handleArchivePress={handleArchivePress}
         currentUserId={currentUser} // Pass the current user ID
         collageAuthorId={author._id} // Pass the collage author ID
       />

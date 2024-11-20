@@ -29,6 +29,9 @@ export default function CustomProfileNavigator({
   const [activeTab, setActiveTab] = useState("Collages");
   const translateX = useSharedValue(0);
 
+  console.log(`INITIAL COLLAGES IN NAVIGATOR: ${collages}`);
+  console.log(`INITIAL REPOSTS IN NAVIGATOR: ${repostedCollages}`);
+
   useEffect(() => {
     translateX.value = activeTab === "Collages" ? 0 : -width;
   }, [activeTab, translateX]);

@@ -1,15 +1,12 @@
 import { Text, View, StyleSheet } from "react-native";
 import BottomPopup from "./BottomPopup";
-import ForwardArrowIcon from "../../../icons/Universal/ForwardArrowIcon";
 import {
   headerStyles,
   iconStyles,
   layoutStyles,
   popupStyles,
 } from "../../../styles";
-import ShareProfile from "../Icons/PopupIcons/ShareProfile";
-import CopyProfileUrl from "../Icons/PopupIcons/CopyProfileURL";
-import SendMessage from "../Icons/PopupIcons/SendMessage";
+
 import IconStatic from "../../../components/Icons/IconStatic";
 
 export default function DefaultOptionsPopup({ visible, onRequestClose }) {

@@ -18,5 +18,10 @@
     "concurrently": "^8.2.2",
     "dotenv": "^16.4.4",
     "mongodb": "^6.3.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.15.0",
+    "eslint-plugin-react": "^7.37.2",
+    "globals": "^15.12.0"
   }
 }

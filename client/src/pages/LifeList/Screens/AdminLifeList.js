@@ -164,7 +164,6 @@ export default function AdminLifeList() {
         icon1={
           <Icon
             name="line.3.horizontal"
-            style={iconStyles.list}
             onPress={() =>
               navigation.navigate("LifeListStack", {
                 screen: "ListView",
@@ -174,6 +173,7 @@ export default function AdminLifeList() {
                 },
               })
             }
+            style={iconStyles.createCollagePlus}
           />
         }
         icon2={
