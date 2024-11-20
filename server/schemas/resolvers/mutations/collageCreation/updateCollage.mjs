@@ -32,35 +32,39 @@ const updateCollage = async (
       throw new Error("A valid cover image must be provided.");
     }
 
+    // Validate taggedUsers
+    if (!taggedUsers || !Array.isArray(taggedUsers)) {
+      throw new Error("Invalid 'taggedUsers' input.");
+    }
+    const updatedTaggedUserIds = taggedUsers.map((user) => user._id);
+
     // Update the collage fields
     collage.caption = caption || collage.caption;
     collage.images = images;
     collage.coverImage = selectedCoverImage;
 
-    // Handle tagged users
-    const currentTaggedUserIds = collage.tagged.map((user) =>
-      user._id.toString()
-    );
-    const updatedTaggedUserIds = taggedUsers.map((user) => user._id.toString());
-
-    // Add the collage to newly tagged users' taggedCollages
+    // Update taggedCollages for users
+    const currentTaggedUserIds = collage.tagged.map((user) => user.toString());
     const newlyTaggedUsers = updatedTaggedUserIds.filter(
       (id) => !currentTaggedUserIds.includes(id)
     );
-
-    await User.updateMany(
-      { _id: { $in: newlyTaggedUsers } },
-      { $addToSet: { taggedCollages: collage._id } }
-    );
-
-    // Remove the collage from untagged users' taggedCollages
     const untaggedUsers = currentTaggedUserIds.filter(
       (id) => !updatedTaggedUserIds.includes(id)
     );
-    await User.updateMany(
-      { _id: { $in: untaggedUsers } },
-      { $pull: { taggedCollages: collage._id } }
-    );
+
+    if (newlyTaggedUsers.length > 0) {
+      await User.updateMany(
+        { _id: { $in: newlyTaggedUsers } },
+        { $addToSet: { taggedCollages: collage._id } }
+      );
+    }
+
+    if (untaggedUsers.length > 0) {
+      await User.updateMany(
+        { _id: { $in: untaggedUsers } },
+        { $pull: { taggedCollages: collage._id } }
+      );
+    }
 
     // Update the tagged users on the collage
     collage.tagged = updatedTaggedUserIds;
