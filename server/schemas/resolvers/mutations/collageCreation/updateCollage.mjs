@@ -15,9 +15,6 @@ const updateCollage = async (
     if (!collage) {
       throw new Error("Collage not found.");
     }
-    if (collage.author.toString() !== user) {
-      throw new Error("You are not authorized to edit this collage.");
-    }
 
     // Validate that at least one image is provided
     if (!images || images.length === 0) {
@@ -40,15 +37,15 @@ const updateCollage = async (
     collage.images = images;
     collage.coverImage = selectedCoverImage;
 
-    console.log(collage.tagged);
-
     // Handle tagged users
-    const currentTaggedUserIds = collage.tagged.map((user) => user.toString());
-    const updatedTaggedUserIds = taggedUsers.map((user) => user._id);
+    const currentTaggedUserIds = collage.tagged.map((user) =>
+      user._id.toString()
+    );
+    const updatedTaggedUserIds = taggedUsers.map((user) => user._id.toString());
 
     // Add the collage to newly tagged users' taggedCollages
     const newlyTaggedUsers = updatedTaggedUserIds.filter(
-      (id) => !currentTaggedUserIds.includes(id)
+      (_id) => !currentTaggedUserIds.includes(_id)
     );
     await User.updateMany(
       { _id: { $in: newlyTaggedUsers } },
