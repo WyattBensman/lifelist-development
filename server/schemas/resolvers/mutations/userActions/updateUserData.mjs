@@ -1,6 +1,11 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser, AuthenticationError } from "../../../../utils/auth.mjs";
-import { uploadSingleImage } from "../../../../utils/uploadImages.mjs";
+import {
+  uploadProfileImageToS3,
+  deleteOldProfilePicture,
+  fetchS3ImageStream,
+} from "../../../../utils/awsHelper.mjs";
+import { CameraShot } from "../../../../models/index.mjs";
 
 const updateUserData = async (
   _,
@@ -9,7 +14,7 @@ const updateUserData = async (
     currentPassword,
     newPassword,
     phoneNumber,
-    profilePicture,
+    profilePicture, // CameraShot ID or a new file
     fullName,
     username,
     bio,
@@ -27,63 +32,62 @@ const updateUserData = async (
     isUser(user); // Ensure the user is authenticated
 
     const updates = {}; // Collect updates for the user document
+    const settingsUpdates = {}; // Collect updates for user settings
 
-    // Email update
-    if (email) {
-      updates.email = email;
+    // Find the current user
+    const currentUser = await User.findById(user);
+    if (!currentUser) {
+      throw new AuthenticationError("User not found.");
     }
 
-    // Password update
-    if (currentPassword && newPassword) {
-      const currentUser = await User.findById(user);
-      if (!currentUser) {
-        throw new AuthenticationError("User not found.");
-      }
+    // Handle profile picture updates
+    if (profilePicture) {
+      let newProfilePictureUrl;
 
-      // Verify current password
-      const isCurrentPasswordValid = await currentUser.isCorrectPassword(
-        currentPassword
-      );
-      if (!isCurrentPasswordValid) {
-        throw new AuthenticationError("Invalid current password.");
-      }
+      if (typeof profilePicture === "string") {
+        // Scenario 1: CameraShot ID
+        const cameraShot = await CameraShot.findById(profilePicture);
+        if (!cameraShot || cameraShot.author.toString() !== user) {
+          throw new Error(
+            "Invalid CameraShot ID or unauthorized access to the image."
+          );
+        }
 
-      // Ensure new password is different
-      if (currentPassword === newPassword) {
-        throw new AuthenticationError(
-          "New password must be different from the current password."
+        // Fetch the image stream from S3 and upload as a profile picture
+        newProfilePictureUrl = await uploadProfileImageToS3({
+          createReadStream: () => fetchS3ImageStream(cameraShot.image),
+          filename: `cropped-${cameraShot._id}.jpg`,
+        });
+      } else if (profilePicture.file) {
+        // Scenario 2: File upload
+        const { createReadStream, filename } = await profilePicture.file;
+        newProfilePictureUrl = await uploadProfileImageToS3({
+          createReadStream,
+          filename,
+        });
+      } else {
+        throw new Error(
+          "Invalid profilePicture input. Must be a CameraShot ID or a file upload."
         );
       }
 
-      currentUser.password = newPassword;
-      await currentUser.save(); // Save the updated password directly
+      // Delete the old profile picture (if not default)
+      await deleteOldProfilePicture(currentUser.profilePicture);
+
+      // Update profile picture
+      updates.profilePicture = newProfilePictureUrl;
     }
 
-    // Phone number update
-    if (phoneNumber) {
-      updates.phoneNumber = phoneNumber;
-    }
-
-    // Profile updates
-    if (fullName) updates.fullName = fullName;
-    if (username) updates.username = username;
-    if (bio) updates.bio = bio;
-
-    if (profilePicture) {
-      const uploadDir = "./uploads";
-      const filePath = await uploadSingleImage(profilePicture.file, uploadDir);
-      const baseUrl = process.env.PORT ? "" : "http://localhost:3001";
-      updates.profilePicture = `${baseUrl}/uploads/${filePath
-        .split("/")
-        .pop()}`;
-    }
-
-    // Identity updates
+    // Handle other user data updates
+    if (email) updates.email = email.toLowerCase();
+    if (phoneNumber) updates.phoneNumber = phoneNumber;
+    if (fullName) updates.fullName = fullName.trim();
+    if (username) updates.username = username.toLowerCase().trim();
+    if (bio) updates.bio = bio.trim();
     if (gender) updates.gender = gender;
     if (birthday) updates.birthday = birthday;
 
-    // Settings updates
-    const settingsUpdates = {};
+    // Handle user settings updates
     if (isProfilePrivate !== undefined)
       settingsUpdates.isProfilePrivate = isProfilePrivate;
     if (darkMode !== undefined) settingsUpdates.darkMode = darkMode;
@@ -109,7 +113,7 @@ const updateUserData = async (
       user: updatedUser,
     };
   } catch (error) {
-    console.error(`Update User Data Error: ${error.message}`);
+    console.error(`[UpdateUserData] Error: ${error.message}`);
     throw new Error("An error occurred during the user data update.");
   }
 };

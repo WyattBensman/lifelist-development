@@ -1,25 +1,27 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
-  StyleSheet,
   Image,
   TextInput,
   Pressable,
   Alert,
+  StyleSheet,
 } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native"; // Import navigation hook and useFocusEffect
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import { layoutStyles } from "../../../styles";
-import { useCreateProfileContext } from "../../../contexts/CreateProfileContext"; // Import the context hook
+import { useCreateProfileContext } from "../../../contexts/CreateProfileContext";
 import { VALIDATE_CONTACT_AND_BIRTHDAY } from "../../../utils/mutations";
 import { useMutation } from "@apollo/client";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 export default function CreateAccountScreen() {
-  const { profile, updateProfile } = useCreateProfileContext(); // Get profile and updateProfile from context
-  const [useEmail, setUseEmail] = React.useState(false); // Toggle between phone and email
-  const [isValid, setIsValid] = React.useState(false); // Track if both inputs are valid
-  const navigation = useNavigation(); // Hook for navigation
+  const { profile, updateProfile } = useCreateProfileContext();
+  const [useEmail, setUseEmail] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const navigation = useNavigation();
 
   const [validateContactAndBirthday, { loading }] = useMutation(
     VALIDATE_CONTACT_AND_BIRTHDAY
@@ -27,7 +29,7 @@ export default function CreateAccountScreen() {
 
   // Phone Number Formatter
   const handlePhoneChange = (text) => {
-    let cleaned = text.replace(/\D/g, ""); // Remove non-numeric characters
+    let cleaned = text.replace(/\D/g, "");
     let formatted = cleaned;
 
     if (cleaned.length > 0) {
@@ -40,39 +42,40 @@ export default function CreateAccountScreen() {
       formatted += `-${cleaned.substring(6, 10)}`;
     }
 
-    updateProfile("phoneNumber", formatted); // Update phone in context
-  };
-
-  // Birthday Formatter
-  const handleBirthdayChange = (text) => {
-    let cleaned = ("" + text).replace(/\D/g, ""); // Remove non-numeric characters
-    let formatted = cleaned;
-    if (cleaned.length >= 3) {
-      formatted = `${cleaned.substring(0, 2)}/${cleaned.substring(2, 4)}`;
-    }
-    if (cleaned.length >= 5) {
-      formatted += `/${cleaned.substring(4, 8)}`;
-    }
-    updateProfile("birthday", formatted); // Update birthday in context
+    updateProfile("phoneNumber", formatted);
   };
 
   // Email change handler
   const handleEmailChange = (text) => {
-    updateProfile("email", text); // Update email in context
+    updateProfile("email", text);
   };
 
-  // Check if the phone number (or email) and birthday are valid
+  // Open and close the date picker
+  const showDatePicker = () => setDatePickerVisibility(true);
+  const hideDatePicker = () => setDatePickerVisibility(false);
+
+  // Handle the selected date
+  const handleConfirm = (date) => {
+    const formattedDate = date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+    updateProfile("birthday", formattedDate);
+    hideDatePicker();
+  };
+
+  // Check if the inputs are valid
   const validateInputs = () => {
-    const phoneIsValid = profile.phoneNumber.length === 14; // (XXX) XXX-XXXX
-    const emailIsValid = profile.email.includes("@"); // Simple email validation
-    const birthdayIsValid = profile.birthday.length === 10; // MM/DD/YYYY
+    const phoneIsValid = profile.phoneNumber.length === 14;
+    const emailIsValid = profile.email.includes("@");
+    const birthdayIsValid = profile.birthday.length === 10;
     setIsValid((useEmail ? emailIsValid : phoneIsValid) && birthdayIsValid);
   };
 
-  // Reset fields on screen focus (using useFocusEffect)
+  // Reset fields on screen focus
   useFocusEffect(
     React.useCallback(() => {
-      // Reset all fields when screen is focused
       updateProfile("phoneNumber", "");
       updateProfile("email", "");
       updateProfile("birthday", "");
@@ -84,20 +87,17 @@ export default function CreateAccountScreen() {
     validateInputs();
   }, [profile.phoneNumber, profile.email, profile.birthday]);
 
-  // Pass data and navigate to the next screen
   const handleNextStep = async () => {
     try {
-      // Convert MM/DD/YYYY to YYYY-MM-DD
-      const [mm, dd, yyyy] = profile.birthday.split("/"); // Split MM/DD/YYYY
-      const formattedBirthday = `${yyyy}-${mm}-${dd}`; // Convert to YYYY-MM-DD
+      const [mm, dd, yyyy] = profile.birthday.split("/");
+      const formattedBirthday = `${yyyy}-${mm}-${dd}`;
 
       const variables = {
         email: useEmail ? profile.email : null,
-        phoneNumber: !useEmail ? profile.phoneNumber.replace(/\D/g, "") : null, // Remove non-numeric characters
-        birthday: formattedBirthday, // Send YYYY-MM-DD to backend
+        phoneNumber: !useEmail ? profile.phoneNumber.replace(/\D/g, "") : null,
+        birthday: formattedBirthday,
       };
 
-      // Validate contact and birthday
       const { data } = await validateContactAndBirthday({ variables });
 
       if (data.validateContactAndBirthday.success) {
@@ -140,8 +140,8 @@ export default function CreateAccountScreen() {
             <Pressable
               onPress={() => {
                 setUseEmail(!useEmail);
-                updateProfile("phoneNumber", ""); // Clear phone when switching to email
-                updateProfile("email", ""); // Clear email when switching to phone
+                updateProfile("phoneNumber", "");
+                updateProfile("email", "");
               }}
             >
               <Text style={styles.switchText}>
@@ -166,28 +166,37 @@ export default function CreateAccountScreen() {
             placeholder={useEmail ? "steve@example.com" : "(xxx)xxx-xxxx"}
             placeholderTextColor="#c7c7c7"
             keyboardType={useEmail ? "email-address" : "phone-pad"}
-            onChangeText={useEmail ? handleEmailChange : handlePhoneChange} // Apply formatting for phone or set email
+            onChangeText={useEmail ? handleEmailChange : handlePhoneChange}
           />
         </View>
 
         {/* Birthday Input */}
         <View style={styles.inputWrapper}>
           <Text style={[styles.label, { marginBottom: 8 }]}>Birthday</Text>
-          <TextInput
-            style={styles.input}
-            value={profile.birthday}
-            placeholder="MM-DD-YYYY"
-            placeholderTextColor="#c7c7c7"
-            keyboardType="numeric"
-            onChangeText={handleBirthdayChange} // Apply formatting for birthday
+          <Pressable style={styles.input} onPress={showDatePicker}>
+            <Text style={{ color: "#fff" }}>
+              {profile.birthday || "MM/DD/YYYY"}
+            </Text>
+          </Pressable>
+          <DateTimePickerModal
+            isVisible={isDatePickerVisible}
+            mode="date"
+            onConfirm={handleConfirm}
+            onCancel={hideDatePicker}
+            textColor="#fff"
+            buttonTextColorIOS="#fff"
+            pickerContainerStyleIOS={{
+              justifycontent: "center",
+              alignItems: "center",
+            }}
           />
         </View>
 
         {/* Start Creation Button */}
         <ButtonSolid
-          backgroundColor={isValid ? "#6AB95230" : "#1c1c1c"} // Green when valid, dark gray when not
-          borderColor={isValid ? "#6AB952" : "#1c1c1c"} // Green border when valid
-          textColor={isValid ? "#6AB952" : "#696969"} // White when valid, gray when not
+          backgroundColor={isValid ? "#6AB95230" : "#1c1c1c"}
+          borderColor={isValid ? "#6AB952" : "#1c1c1c"}
+          textColor={isValid ? "#6AB952" : "#696969"}
           width="85%"
           text="Create Account"
           onPress={isValid ? handleNextStep : null}
@@ -199,21 +208,21 @@ export default function CreateAccountScreen() {
         <View style={styles.socialIconsContainer}>
           <Pressable style={styles.socialIcon}>
             <Image
-              source={require("../../../../public/branding/google-icon.webp")} // Replace with your Google icon
+              source={require("../../../../public/branding/google-icon.webp")}
               style={styles.googleImage}
             />
           </Pressable>
 
           <Pressable style={styles.socialIcon}>
             <Image
-              source={require("../../../../public/branding/apple-icon.png")} // Replace with your Apple icon
+              source={require("../../../../public/branding/apple-icon.png")}
               style={styles.appleImage}
             />
           </Pressable>
 
           <Pressable style={styles.socialIcon}>
             <Image
-              source={require("../../../../public/branding/facebook-icon.webp")} // Replace with your Facebook icon
+              source={require("../../../../public/branding/facebook-icon.webp")}
               style={styles.facebookImage}
             />
           </Pressable>

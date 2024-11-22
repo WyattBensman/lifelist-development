@@ -1,17 +1,10 @@
-import path from "path";
-import { CameraShot, CameraAlbum, User } from "../../../../models/index.mjs";
+import { CameraShot, User, Collage } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
-import fs from "fs/promises";
-import * as url from "url";
+import { deleteImageFromS3 } from "../../../../utils/awsHelper.mjs";
 
-// Define the directory for uploads
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
-const uploadDir = path.join(__dirname, "../../../../uploads");
-
-const deleteCameraShot = async (_, { shotId } /* { user } */) => {
+const deleteCameraShot = async (_, { shotId }, { user }) => {
   try {
-    /* isUser(user); */
-    const user = "663a3129e0ffbeff092b81d4";
+    isUser(user); // Ensure the user is authenticated
 
     // Retrieve the camera shot from the database
     const shot = await CameraShot.findById(shotId);
@@ -27,35 +20,52 @@ const deleteCameraShot = async (_, { shotId } /* { user } */) => {
       };
     }
 
-    // Remove the shot ID from any albums it may be part of
-    await CameraAlbum.updateMany(
-      { shots: shotId },
-      { $pull: { shots: shotId } }
-    );
+    // Check if the shot exists in any of the user's collages
+    const isInCollage = await Collage.exists({
+      author: user,
+      images: shot.image, // Check if the shot's image URL is in the collage's `images` array
+    });
 
-    // Remove the shot ID from the user's cameraShots field (assuming it exists in the User schema)
+    if (isInCollage) {
+      // If the shot is in a collage, remove it from the user's cameraRoll but keep the shot
+      await User.findByIdAndUpdate(user, {
+        $pull: { cameraShots: shotId },
+      });
+
+      return {
+        success: true,
+        message:
+          "Shot removed from your camera roll but retained in your collages.",
+      };
+    }
+
+    // If the shot is not in a collage, proceed to delete it entirely
+    // Remove the shot ID from the user's cameraShots field
     await User.findByIdAndUpdate(user, {
       $pull: { cameraShots: shotId },
     });
 
-    // Extract the image file path (relative to the uploads directory)
-    const filePath = path.join(uploadDir, path.basename(shot.image));
+    // Extract the S3 key from the image URL
+    const s3Key = shot.image.split(process.env.CLOUDFRONT_URL)[1].substring(1);
 
-    // Delete the file from the file system
+    // Delete the image from S3
     try {
-      await fs.unlink(filePath); // Delete the file from the file system
-      console.log(`File ${filePath} successfully deleted`);
-    } catch (fileError) {
-      console.error(`Error deleting file: ${fileError.message}`);
+      await deleteImageFromS3(s3Key);
+      console.log(
+        `[deleteCameraShot] Image ${s3Key} successfully deleted from S3.`
+      );
+    } catch (s3Error) {
+      console.error(
+        `[deleteCameraShot] Error deleting image from S3 (${s3Key}): ${s3Error.message}`
+      );
     }
 
     // Delete the camera shot from the database
     await CameraShot.findByIdAndDelete(shotId);
 
-    // Return a success message
     return { success: true, message: "Camera shot deleted successfully." };
   } catch (error) {
-    console.error("Error deleting camera shot:", error);
+    console.error(`[deleteCameraShot] Error: ${error.message}`);
     return { success: false, message: "Failed to delete camera shot." };
   }
 };

@@ -1,0 +1,41 @@
+service: graphql-server
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: us-east-2
+  logs:
+    httpApi: true
+  environment:
+    JWT_SECRET: aQ390AdF112!ipl99
+    MONGODB_URI: mongodb+srv://wyattbensman:TiOwxsJMvAp6OOo1@lifelist-dev.jtwrjgy.mongodb.net/?retryWrites=true&w=majority&appName=lifelist-dev
+    S3_BUCKET_NAME: lifelist-media
+    CLOUDFRONT_URL: https://d73gjs74ras0w.cloudfront.net/
+    NODE_ENV: production
+  httpApi:
+    cors:
+      allowedOrigins:
+        - https://studio.apollographql.com
+      allowedHeaders:
+        - Content-Type
+        - Authorization
+      allowedMethods:
+        - OPTIONS
+        - POST
+      allowCredentials: true
+
+functions:
+  graphql:
+    handler: server.graphqlHandler
+    events:
+      - httpApi:
+          path: /graphql
+          method: post
+
+package:
+  exclude:
+    - .env
+    - .gitignore
+    - README.md
+  include:
+    - node_modules/**

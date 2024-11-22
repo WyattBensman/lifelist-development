@@ -17,12 +17,12 @@ export const GET_COLLAGE_BY_ID = gql`
         }
         createdAt
         archived
-      }
-      tagged {
-        _id
-        username
-        fullName
-        profilePicture
+        tagged {
+          _id
+          username
+          fullName
+          profilePicture
+        }
       }
       isLikedByCurrentUser
       isRepostedByCurrentUser

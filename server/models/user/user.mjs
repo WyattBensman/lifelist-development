@@ -1,7 +1,6 @@
 import { Schema, model } from "mongoose";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { LifeList, Message } from "../index.mjs";
-import invitedFriendSchema from "./invitedFriend.mjs";
 import userSettingsSchema from "./userSettings.mjs";
 
 // Regular expression constants for validation

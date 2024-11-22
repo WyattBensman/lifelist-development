@@ -1,6 +1,6 @@
 import { User } from "../../../../models/index.mjs";
-import { compressProfilePicture } from "../../../../utils/uploadImages.mjs";
 import { generateToken } from "../../../../utils/auth.mjs";
+import { uploadProfileImageToS3 } from "../../../../utils/awsHelper.mjs";
 
 const createProfile = async (
   _,
@@ -66,18 +66,18 @@ const createProfile = async (
       throw new Error("You must be at least 18 years old to create a profile.");
     }
 
-    // Handle profile picture upload
-    let fileUrl = "default-avatar.jpg"; // Default profile picture
+    // Handle profile picture upload to S3
+    let fileUrl = `${process.env.CLOUDFRONT_URL}/profile-images/default-avatar.jpg`; // Default profile picture
     if (profilePicture) {
-      const uploadDir = "./uploads";
-      const filePath = await compressProfilePicture(
-        profilePicture.file,
-        uploadDir
-      );
-
-      // Construct the file URL
-      const baseUrl = process.env.API_URL || "http://localhost:3001";
-      fileUrl = `${baseUrl}/uploads/${filePath.split("/").pop()}`;
+      try {
+        const { createReadStream, filename } = await profilePicture.file;
+        fileUrl = await uploadProfileImageToS3({ createReadStream, filename });
+      } catch (uploadError) {
+        console.error(
+          `Error uploading profile picture: ${uploadError.message}`
+        );
+        throw new Error("Failed to upload profile picture. Please try again.");
+      }
     }
 
     // Create the user in the database

@@ -1,99 +1,47 @@
 // Core and third-party modules
-import express from "express";
-import { ApolloServer } from "apollo-server-express";
-import graphqlUploadExpress from "graphql-upload/graphqlUploadExpress.mjs";
-import path from "path";
-import schedule from "node-schedule";
+import AWS from "aws-sdk";
+import { ApolloServer } from "@apollo/server";
+import { startServerAndCreateLambdaHandler } from "@as-integrations/aws-lambda";
 import dotenv from "dotenv";
-import * as url from "url";
-import cors from "cors";
-import fs from "fs";
-
-// Configuration and utilities
 import { authMiddleware } from "./utils/auth.mjs";
 import db from "./config/connection.mjs";
-
-// GraphQL schema definitions
 import typeDefs from "./schemas/typeDefs.mjs";
 import resolvers from "./schemas/resolvers.mjs";
-
-// Scheduled tasks
-import { resetDailyCameraShots } from "./tasks/resetDailyCameraShots.mjs";
-import { checkReadyToReviewShots } from "./tasks/checkReadyToReviewShots.mjs";
 
 // Initialize environment variables
 dotenv.config();
 
-// Construct directory base path from URL
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
+// AWS SDK Configuration
+AWS.config.update({
+  region: process.env.S3_REGION,
+});
+const s3 = new AWS.S3();
 
-const PORT = process.env.PORT || 3001;
-const app = express();
+// Create Apollo server instance
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  introspection: true, // Enable introspection
-  playground: true, // Enable GraphQL Playground in production
-  uploads: false, // Ensure file uploads are handled by graphql-upload
-  context: async ({ req }) => {
-    await authMiddleware(req);
-    return { user: req.user };
-  },
+  introspection: true,
+  playground: true,
 });
 
-// Middleware for file uploads
-app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 12 }));
+// Lambda Handler
+export const graphqlHandler = startServerAndCreateLambdaHandler(server, {
+  context: async ({ event }) => {
+    try {
+      const req = { headers: event.headers };
 
-// Directory paths
-const uploadDir = path.join(__dirname, "/uploads");
+      // Authenticate user
+      await authMiddleware(req);
 
-// Verify if the directory exists and is writable
-try {
-  if (!fs.existsSync(uploadDir)) {
-    console.log("Upload directory does not exist. Creating directory...");
-    fs.mkdirSync(uploadDir, { recursive: true });
-    console.log("Upload directory created.");
-  } else {
-    console.log("Upload directory exists.");
-  }
+      // Ensure MongoDB is connected
+      await db;
 
-  // Check if the directory is writable
-  fs.accessSync(uploadDir, fs.constants.W_OK);
-  console.log("Upload directory is writable.");
-} catch (error) {
-  console.error(`Directory access error: ${error.message}`);
-}
-
-// Static directory setup
-app.use("/uploads", express.static(uploadDir));
-
-// Universal CORS configuration
-app.use(cors());
-
-const startServer = async () => {
-  try {
-    await server.start();
-
-    server.applyMiddleware({
-      app,
-      path: "/graphql",
-    });
-
-    // Schedule reset of camera shots at midnight daily
-    schedule.scheduleJob("0 0 * * *", resetDailyCameraShots); // Runs at midnight
-
-    // Schedule the new background tasks
-    schedule.scheduleJob("*/30 * * * *", checkReadyToReviewShots); // Runs every 30 minutes
-
-    await db; // Ensure database connection is ready
-
-    app.listen(PORT, () => {
-      console.log(`API server running on port ${PORT}!`);
-      console.log(`Use GraphQL at http://localhost:${PORT}/graphql`);
-    });
-  } catch (error) {
-    console.error(`Error starting server: ${error.message}`);
-  }
-};
-
-startServer();
+      // Pass authenticated user to resolvers
+      return { user: req.user };
+    } catch (err) {
+      console.error("Context setup error:", err);
+      throw new Error("Failed to set up context");
+    }
+  },
+});

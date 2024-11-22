@@ -18,7 +18,6 @@ export default function EditMedia() {
   const { params } = useRoute(); // Access the navigation params
   const { collage, updateCollage, hasModified } = useCreateCollageContext(); // Access collage context methods
   const [showAlert, setShowAlert] = useState(false);
-  console.log(params.collageData.taggedUsers);
 
   // Fetch all available images (gallery)
   const { data, loading, error } = useQuery(GET_ALL_CAMERA_SHOTS);

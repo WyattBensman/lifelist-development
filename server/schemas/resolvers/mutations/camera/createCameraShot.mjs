@@ -1,14 +1,8 @@
-import { uploadSingleImage } from "../../../../utils/uploadImages.mjs";
+import { uploadCameraImageToS3 } from "../../../../utils/awsHelper.mjs";
 import { CameraShot, User } from "../../../../models/index.mjs";
-import path from "path";
-import * as url from "url";
 
-const __dirname = url.fileURLToPath(new URL(".", import.meta.url));
-
-const createCameraShot = async (_, { image, thumbnail }, { user }) => {
+const createCameraShot = async (_, { image }, { user }) => {
   try {
-    const uploadDir = path.join(__dirname, "../../../../uploads");
-
     // Find the current user
     const currentUser = await User.findById(user);
 
@@ -17,23 +11,30 @@ const createCameraShot = async (_, { image, thumbnail }, { user }) => {
       throw new Error("You have no shots left for today.");
     }
 
-    // Process and save the original image
-    const { createReadStream: imageStream, filename: imageFilename } =
-      await image.promise;
-    const originalFilePath = await uploadSingleImage(
-      { createReadStream: imageStream, filename: imageFilename },
-      uploadDir
-    );
-    const originalFileUrl = `/uploads/${path.basename(originalFilePath)}`;
+    // Extract the file stream and filename
+    const { createReadStream, filename } = await image.promise;
 
-    // Process and save the thumbnail image
-    const { createReadStream: thumbnailStream, filename: thumbnailFilename } =
-      await thumbnail.promise;
-    const thumbnailFilePath = await uploadSingleImage(
-      { createReadStream: thumbnailStream, filename: thumbnailFilename },
-      uploadDir
+    // Read the stream into a buffer once
+    const streamBuffer = await new Promise((resolve, reject) => {
+      const chunks = [];
+      const stream = createReadStream();
+      stream.on("data", (chunk) => chunks.push(chunk));
+      stream.on("end", () => resolve(Buffer.concat(chunks)));
+      stream.on("error", reject);
+    });
+
+    // Process and upload the normal-sized image to S3
+    const normalImageUrl = await uploadCameraImageToS3(
+      { createReadStream: () => streamBuffer, filename },
+      "camera-images"
     );
-    const thumbnailFileUrl = `/uploads/${path.basename(thumbnailFilePath)}`;
+
+    // Process and upload the thumbnail image to S3 with resizing
+    const thumbnailUrl = await uploadCameraImageToS3(
+      { createReadStream: () => streamBuffer, filename },
+      "camera-images/thumbnails",
+      { width: 200, height: 300 } // Resize for thumbnails
+    );
 
     // Generate a random developing time between 4 to 16 minutes
     const developingTime = Math.floor(Math.random() * (16 - 4 + 1)) + 4;
@@ -41,8 +42,8 @@ const createCameraShot = async (_, { image, thumbnail }, { user }) => {
     // Create the new CameraShot with developingTime
     const newShot = new CameraShot({
       author: user,
-      image: originalFileUrl, // Save the original image URL
-      imageThumbnail: thumbnailFileUrl, // Save the thumbnail URL
+      image: normalImageUrl, // Save the normal-sized image URL
+      imageThumbnail: thumbnailUrl, // Save the thumbnail URL
       developingTime,
     });
 
@@ -58,6 +59,9 @@ const createCameraShot = async (_, { image, thumbnail }, { user }) => {
     return {
       success: true,
       message: "Added to developing shots.",
+      imageUrl: normalImageUrl,
+      thumbnailUrl: thumbnailUrl,
+      developingTime,
     };
   } catch (error) {
     console.error("Error creating camera shot:", error.message, error.stack);

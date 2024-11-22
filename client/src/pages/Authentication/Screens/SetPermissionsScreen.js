@@ -118,7 +118,7 @@ export default function SetPermissionsScreen() {
       <View style={{ justifyContent: "space-between", flex: 1 }}>
         {/* Top Container */}
         <View style={styles.topContainer}>
-          <Text style={styles.stepIndicator}>3 of 4 Steps</Text>
+          <Text style={styles.stepIndicator}>4 of 4 Steps</Text>
           <View style={styles.progressBarContainer}>
             <View style={styles.progressBarFilled} />
             <View style={styles.progressBarEmpty} />
@@ -198,12 +198,11 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   progressBarFilled: {
-    flex: 0.75,
+    flex: 1,
     backgroundColor: "#6AB952",
     borderRadius: 4,
   },
   progressBarEmpty: {
-    flex: 0.25,
     backgroundColor: "#1c1c1c",
   },
   middleContainer: {
