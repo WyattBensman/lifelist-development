@@ -444,6 +444,9 @@ export const getUserSettingsInformation = async (_, __, { user }) => {
 };
 
 export const getUserData = async (_, __, { user }) => {
+  console.log("CONTEXT CUMMING UP!");
+  console.log(user);
+
   isUser(user);
 
   const userData = await User.findById(user, [

@@ -15,14 +15,15 @@ provider:
   httpApi:
     cors:
       allowedOrigins:
-        - https://studio.apollographql.com
+        - "*"
       allowedHeaders:
         - Content-Type
         - Authorization
+        - x-apollo-operation-name
+        - apollo-require-preflight
       allowedMethods:
         - OPTIONS
         - POST
-      allowCredentials: true
 
 functions:
   graphql:
@@ -30,7 +31,10 @@ functions:
     events:
       - httpApi:
           path: /graphql
-          method: post
+          method: POST
+      - httpApi:
+          path: /graphql
+          method: GET
 
 package:
   exclude:

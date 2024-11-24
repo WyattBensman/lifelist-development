@@ -349,6 +349,9 @@ type Score {
     getUserIdentityInformation: UserIdentityInformation
     getUserSettingsInformation: UserSettingsInformation
     getAllUsers(limit: Int, offset: Int): [User]
+
+    # Fle Upload Queries
+    getPresignedUrl(folder: String!, fileName: String!, fileType: String!): PresignedUrlResponse!
   
     # Privacy Group Queries
     getAllPrivacyGroups: [PrivacyGroup]
@@ -545,10 +548,22 @@ type Score {
     comments: Int
   }
 
+  input CreateProfileInput {
+    fullName: String!
+    bio: String
+    gender: String
+    profilePicture: String
+    username: String!
+    password: String!
+    email: String
+    phoneNumber: String
+    birthday: String!
+  }
+
   type Mutation {
     # User Authentication Mutations
     login(usernameOrEmailOrPhone: String!, password: String!): Auth
-    createProfile(email: String, phoneNumber: String, birthday: String!, username: String!, password: String!, fullName: String!, gender: String!, profilePicture: Upload, bio: String): Auth
+    createProfile(input: CreateProfileInput!): Auth
     validateContactAndBirthday(email: String, phoneNumber: String, birthday: String!): StandardResponse
     validateUsernameAndPassword(username: String!, password: String!): StandardResponse
     validateProfileDetails(fullName: String!, gender: String!, bio: String): StandardResponse
@@ -718,6 +733,11 @@ type Score {
     success: Boolean
     message: String
     user: UserData
+  }
+
+  type PresignedUrlResponse {
+    presignedUrl: String
+    fileUrl: String    
   }
 
   type UpdateEmailResponse {

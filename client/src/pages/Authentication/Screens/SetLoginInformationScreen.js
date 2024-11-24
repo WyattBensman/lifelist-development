@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, StyleSheet, TextInput, Image, Alert } from "react-native";
+import { Text, View, TextInput, Image, Alert, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { layoutStyles, iconStyles } from "../../../styles";
-import CustomAlert from "../../../components/Alerts/CustomAlert";
+import DangerAlert from "../../../components/Alerts/DangerAlert";
 import { useCreateProfileContext } from "../../../contexts/CreateProfileContext";
 import { useMutation } from "@apollo/client";
 import { VALIDATE_USERNAME_AND_PASSWORD } from "../../../utils/mutations";
-import DangerAlert from "../../../components/Alerts/DangerAlert";
 
 export default function SetLoginInformationScreen() {
-  const { profile, updateProfile } = useCreateProfileContext(); // Access profile and updateProfile from context
+  const { profile, updateProfile, resetProfile } = useCreateProfileContext(); // Access profile and updateProfile from context
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
+  const [confirmPassword, setConfirmPassword] = useState(""); // Local state for confirm password
   const [isValid, setIsValid] = useState(false);
   const [showAlert, setShowAlert] = useState(false); // State to control alert visibility
   const navigation = useNavigation();
+
+  console.log(profile.phoneNumber);
+  console.log(profile.birthday);
 
   // Apollo Mutation
   const [validateUsernameAndPassword, { loading }] = useMutation(
@@ -27,13 +30,12 @@ export default function SetLoginInformationScreen() {
 
   useEffect(() => {
     validateForm();
-  }, [profile.username, profile.password, profile.confirmPassword]);
+  }, [profile.username, profile.password, confirmPassword]);
 
   const validateForm = () => {
     const isValidUsername = profile.username.length >= 5;
     const isValidPassword =
-      profile.password.length >= 8 &&
-      profile.password === profile.confirmPassword;
+      profile.password.length >= 8 && profile.password === confirmPassword;
     setIsValid(isValidUsername && isValidPassword);
   };
 
@@ -66,12 +68,13 @@ export default function SetLoginInformationScreen() {
   };
 
   const handleBackPress = () => {
-    setShowAlert(true); // Show CustomAlert when pressing back
+    setShowAlert(true); // Show DangerAlert when pressing back
   };
 
   const handleConfirmBackPress = () => {
     setShowAlert(false); // Hide the alert
     navigation.goBack(); // Navigate back to the previous screen
+    resetProfile();
   };
 
   return (
@@ -80,7 +83,7 @@ export default function SetLoginInformationScreen() {
         arrow={
           <Icon
             name="chevron.backward"
-            onPress={handleBackPress} // Show CustomAlert when pressing back
+            onPress={handleBackPress} // Show DangerAlert when pressing back
             style={iconStyles.backArrow}
             weight="semibold"
           />
@@ -128,32 +131,26 @@ export default function SetLoginInformationScreen() {
 
           <View style={styles.inputWrapper}>
             <Text style={styles.label}>Password</Text>
-            <View style={styles.passwordWrapper}>
-              <TextInput
-                style={styles.input}
-                value={profile.password} // Use context value
-                placeholder="Enter your password"
-                placeholderTextColor="#c7c7c7"
-                secureTextEntry={!isPasswordVisible}
-                onChangeText={(value) => updateProfile("password", value)} // Update context
-              />
-            </View>
+            <TextInput
+              style={styles.input}
+              value={profile.password} // Use context value
+              placeholder="Enter your password"
+              placeholderTextColor="#c7c7c7"
+              secureTextEntry={!isPasswordVisible}
+              onChangeText={(value) => updateProfile("password", value)} // Update context
+            />
           </View>
 
           <View style={styles.inputWrapper}>
             <Text style={styles.label}>Confirm Password</Text>
-            <View style={styles.passwordWrapper}>
-              <TextInput
-                style={styles.input}
-                value={profile.confirmPassword} // Use context value
-                placeholder="Confirm your password"
-                placeholderTextColor="#c7c7c7"
-                secureTextEntry={!isConfirmPasswordVisible}
-                onChangeText={(value) =>
-                  updateProfile("confirmPassword", value)
-                } // Update context
-              />
-            </View>
+            <TextInput
+              style={styles.input}
+              value={confirmPassword} // Local state
+              placeholder="Confirm your password"
+              placeholderTextColor="#c7c7c7"
+              secureTextEntry={!isConfirmPasswordVisible}
+              onChangeText={(value) => setConfirmPassword(value)} // Update local state
+            />
           </View>
 
           <ButtonSolid
@@ -174,7 +171,7 @@ export default function SetLoginInformationScreen() {
           />
         </View>
 
-        {/* Custom Alert for Back Navigation */}
+        {/* DangerAlert for Back Navigation */}
         <DangerAlert
           visible={showAlert}
           onRequestClose={() => setShowAlert(false)}

@@ -21,6 +21,7 @@ export default function CreateAccountScreen() {
   const [useEmail, setUseEmail] = useState(false);
   const [isValid, setIsValid] = useState(false);
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const [formattedPhoneNumber, setFormattedPhoneNumber] = useState(""); // For display only
   const navigation = useNavigation();
 
   const [validateContactAndBirthday, { loading }] = useMutation(
@@ -29,9 +30,10 @@ export default function CreateAccountScreen() {
 
   // Phone Number Formatter
   const handlePhoneChange = (text) => {
-    let cleaned = text.replace(/\D/g, "");
-    let formatted = cleaned;
+    const cleaned = text.replace(/\D/g, ""); // Remove non-digit characters
 
+    // Format for display
+    let formatted = cleaned;
     if (cleaned.length > 0) {
       formatted = `(${cleaned.substring(0, 3)}`;
     }
@@ -42,12 +44,13 @@ export default function CreateAccountScreen() {
       formatted += `-${cleaned.substring(6, 10)}`;
     }
 
-    updateProfile("phoneNumber", formatted);
+    // Update local state for display
+    setFormattedPhoneNumber(formatted);
   };
 
-  // Email change handler
+  // Email Change Handler
   const handleEmailChange = (text) => {
-    updateProfile("email", text);
+    setFormattedPhoneNumber(""); // Reset phone input when switching to email
   };
 
   // Open and close the date picker
@@ -67,7 +70,7 @@ export default function CreateAccountScreen() {
 
   // Check if the inputs are valid
   const validateInputs = () => {
-    const phoneIsValid = profile.phoneNumber.length === 14;
+    const phoneIsValid = formattedPhoneNumber.replace(/\D/g, "").length === 10; // Validate cleaned phone number
     const emailIsValid = profile.email.includes("@");
     const birthdayIsValid = profile.birthday.length === 10;
     setIsValid((useEmail ? emailIsValid : phoneIsValid) && birthdayIsValid);
@@ -76,6 +79,7 @@ export default function CreateAccountScreen() {
   // Reset fields on screen focus
   useFocusEffect(
     React.useCallback(() => {
+      setFormattedPhoneNumber("");
       updateProfile("phoneNumber", "");
       updateProfile("email", "");
       updateProfile("birthday", "");
@@ -85,16 +89,24 @@ export default function CreateAccountScreen() {
   // Run validation when inputs change
   useEffect(() => {
     validateInputs();
-  }, [profile.phoneNumber, profile.email, profile.birthday]);
+  }, [formattedPhoneNumber, profile.email, profile.birthday]);
 
   const handleNextStep = async () => {
     try {
+      const cleanedPhoneNumber = formattedPhoneNumber.replace(/\D/g, ""); // Clean phone number
       const [mm, dd, yyyy] = profile.birthday.split("/");
       const formattedBirthday = `${yyyy}-${mm}-${dd}`;
 
+      // Save cleaned phoneNumber and email to the context
+      if (!useEmail) {
+        updateProfile("phoneNumber", cleanedPhoneNumber);
+      } else {
+        updateProfile("email", profile.email);
+      }
+
       const variables = {
         email: useEmail ? profile.email : null,
-        phoneNumber: !useEmail ? profile.phoneNumber.replace(/\D/g, "") : null,
+        phoneNumber: !useEmail ? cleanedPhoneNumber : null,
         birthday: formattedBirthday,
       };
 
@@ -140,8 +152,7 @@ export default function CreateAccountScreen() {
             <Pressable
               onPress={() => {
                 setUseEmail(!useEmail);
-                updateProfile("phoneNumber", "");
-                updateProfile("email", "");
+                setFormattedPhoneNumber(""); // Reset formatted phone number
               }}
             >
               <Text style={styles.switchText}>
@@ -162,7 +173,7 @@ export default function CreateAccountScreen() {
 
           <TextInput
             style={styles.input}
-            value={useEmail ? profile.email : profile.phoneNumber}
+            value={useEmail ? profile.email : formattedPhoneNumber} // Display formatted phone number
             placeholder={useEmail ? "steve@example.com" : "(xxx)xxx-xxxx"}
             placeholderTextColor="#c7c7c7"
             keyboardType={useEmail ? "email-address" : "phone-pad"}

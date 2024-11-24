@@ -14,26 +14,10 @@ const createCameraShot = async (_, { image }, { user }) => {
     // Extract the file stream and filename
     const { createReadStream, filename } = await image.promise;
 
-    // Read the stream into a buffer once
-    const streamBuffer = await new Promise((resolve, reject) => {
-      const chunks = [];
-      const stream = createReadStream();
-      stream.on("data", (chunk) => chunks.push(chunk));
-      stream.on("end", () => resolve(Buffer.concat(chunks)));
-      stream.on("error", reject);
-    });
-
-    // Process and upload the normal-sized image to S3
-    const normalImageUrl = await uploadCameraImageToS3(
-      { createReadStream: () => streamBuffer, filename },
-      "camera-images"
-    );
-
-    // Process and upload the thumbnail image to S3 with resizing
-    const thumbnailUrl = await uploadCameraImageToS3(
-      { createReadStream: () => streamBuffer, filename },
-      "camera-images/thumbnails",
-      { width: 200, height: 300 } // Resize for thumbnails
+    // Upload full-size and thumbnail images to S3
+    const { fullSizeUrl, thumbnailUrl } = await uploadCameraImageToS3(
+      { createReadStream, filename },
+      "camera-images" // Folder in your S3 bucket
     );
 
     // Generate a random developing time between 4 to 16 minutes
@@ -42,7 +26,7 @@ const createCameraShot = async (_, { image }, { user }) => {
     // Create the new CameraShot with developingTime
     const newShot = new CameraShot({
       author: user,
-      image: normalImageUrl, // Save the normal-sized image URL
+      image: fullSizeUrl, // Save the normal-sized image URL
       imageThumbnail: thumbnailUrl, // Save the thumbnail URL
       developingTime,
     });
@@ -59,8 +43,8 @@ const createCameraShot = async (_, { image }, { user }) => {
     return {
       success: true,
       message: "Added to developing shots.",
-      imageUrl: normalImageUrl,
-      thumbnailUrl: thumbnailUrl,
+      imageUrl: fullSizeUrl,
+      thumbnailUrl,
       developingTime,
     };
   } catch (error) {

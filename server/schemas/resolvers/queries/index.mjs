@@ -6,6 +6,7 @@ import * as lifeListQueries from "./lifelist/lifeListQueries.mjs";
 import * as privacyGroupQueries from "./privacyGroup/privacyGroupQueries.mjs";
 import * as inboxQueries from "./inbox/inboxQueries.mjs";
 import * as mainFeedQueries from "./mainFeed/mainFeedQueries.mjs";
+import { getPresignedUrl } from "./fileUploads/getPresignedUrl.mjs";
 
 const queries = {
   ...userQueries,
@@ -16,6 +17,7 @@ const queries = {
   ...privacyGroupQueries,
   ...inboxQueries,
   ...mainFeedQueries,
+  getPresignedUrl,
 };
 
 export default queries;

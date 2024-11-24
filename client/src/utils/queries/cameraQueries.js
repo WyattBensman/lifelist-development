@@ -1,5 +1,18 @@
 import { gql } from "@apollo/client";
 
+export const GET_PRESIGNED_URL = gql`
+  query GetPresignedUrl(
+    $folder: String!
+    $fileName: String!
+    $fileType: String!
+  ) {
+    getPresignedUrl(folder: $folder, fileName: $fileName, fileType: $fileType) {
+      presignedUrl
+      fileUrl
+    }
+  }
+`;
+
 // Daily camera shots left for the user
 export const GET_DAILY_CAMERA_SHOTS_LEFT = gql`
   query GetDailyCameraShotsLeft {

@@ -1,34 +1,35 @@
 import jwt from "jsonwebtoken";
 import { promisify } from "util";
-import { GraphQLError } from "graphql";
 import dotenv from "dotenv";
 import { Collage, LifeList, PrivacyGroup, Comment } from "../models/index.mjs";
+import { AuthenticationError } from "apollo-server-errors";
 dotenv.config();
 
 const expiration = "365d";
 const secret = process.env.JWT_SECRET || "mysecretssshhhhhhh";
 const verifyToken = promisify(jwt.verify);
 
-export const AuthenticationError = new GraphQLError(
-  "Could not authenticate user.",
-  {
-    extensions: {
-      code: "UNAUTHENTICATED",
-    },
-  }
-);
+export { AuthenticationError };
 
 export const authMiddleware = async function (req) {
+  console.log("Req:", req);
+
   let token =
     req.headers.authorization?.split(" ")[1] ||
     req.body.token ||
     req.query.token;
+
+  console.log("Authorization Header:", req.headers.authorization); // Log raw header
+  console.log("Extracted Token:", token); // Log extracted token
+
   if (!token) {
+    console.error("No token provided");
     return req;
   }
 
   try {
     const decoded = await verifyToken(token, secret, { maxAge: expiration });
+    console.log("Decoded Token:", decoded); // Log decoded details
     req.user = decoded.id; // Assuming the token contains a user ID at 'id'
   } catch (error) {
     console.error(`Invalid token: ${error.message}`);
@@ -42,8 +43,9 @@ export const generateToken = (userId) =>
   jwt.sign({ id: userId }, secret, { expiresIn: expiration });
 
 const ensureAuthenticatedUser = (user) => {
+  console.log(user);
   if (!user) {
-    throw new AuthenticationError("User not authenticated");
+    throw new AuthenticationError(`User not authenticateddddd ${user}`);
   }
 };
 

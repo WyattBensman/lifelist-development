@@ -1,34 +1,18 @@
 import { gql } from "@apollo/client";
 
 export const CREATE_PROFILE = gql`
-  mutation CreateProfile(
-    $email: String
-    $phoneNumber: String
-    $birthday: String!
-    $username: String!
-    $password: String!
-    $fullName: String!
-    $gender: String!
-    $profilePicture: Upload
-    $bio: String
-  ) {
-    createProfile(
-      email: $email
-      phoneNumber: $phoneNumber
-      birthday: $birthday
-      username: $username
-      password: $password
-      fullName: $fullName
-      gender: $gender
-      profilePicture: $profilePicture
-      bio: $bio
-    ) {
+  mutation CreateProfile($input: CreateProfileInput!) {
+    createProfile(input: $input) {
       token
       user {
-        id
-        username
+        _id
         fullName
+        username
+        email
+        phoneNumber
         profilePicture
+        birthday
+        gender
       }
     }
   }

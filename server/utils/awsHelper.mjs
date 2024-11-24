@@ -100,7 +100,16 @@ export const uploadCameraImageToS3 = async (
   folder = "camera-images",
   resizeOptions = null // Optional resizing for thumbnails
 ) => {
-  return await uploadImageToS3(file, folder, resizeOptions);
+  // Upload full-size image
+  const fullSizeUrl = await uploadImageToS3(file, folder);
+
+  // Upload thumbnail (resize to 400x600px)
+  const thumbnailUrl = await uploadImageToS3(file, `${folder}/thumbnails`, {
+    width: 400,
+    height: 600,
+  });
+
+  return { fullSizeUrl, thumbnailUrl };
 };
 
 // Upload profile images (fixed resizing to 200x200 pixels)

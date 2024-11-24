@@ -1,95 +1,137 @@
 import React, { useState, useEffect } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Pressable,
-  Image,
-  Alert,
-  Linking,
-} from "react-native";
+import { Text, View, StyleSheet, Pressable, Image, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useCameraPermissions } from "expo-camera";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { layoutStyles, iconStyles } from "../../../styles";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useMutation, useLazyQuery } from "@apollo/client";
+import { GET_PRESIGNED_URL } from "../../../utils/queries";
+import { CREATE_PROFILE } from "../../../utils/mutations";
+import { useAuth } from "../../../contexts/AuthContext";
+import { useCreateProfileContext } from "../../../contexts/CreateProfileContext";
 
 export default function SetPermissionsScreen() {
-  const [cameraPermission, requestCameraPermission, getCameraPermission] =
-    useCameraPermissions();
+  const navigation = useNavigation();
+  const { login } = useAuth();
+  const { profile } = useCreateProfileContext();
+  const [createProfile] = useMutation(CREATE_PROFILE);
+  const [getPresignedUrl] = useLazyQuery(GET_PRESIGNED_URL);
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [cameraPermissionLocked, setCameraPermissionLocked] = useState(false);
   const [isValid, setIsValid] = useState(false);
-  const [permissionsChecked, setPermissionsChecked] = useState(false);
-  const navigation = useNavigation();
+
+  console.log("HI");
+  console.log(profile);
+
+  const checkPermissions = async () => {
+    const { status } = await cameraPermission.get();
+    setIsValid(status === "granted");
+    setCameraPermissionLocked(status === "granted");
+  };
 
   useEffect(() => {
-    if (!permissionsChecked) {
-      checkPermissions();
-    }
-  }, [permissionsChecked]);
+    checkPermissions();
+  }, []);
 
-  // Function to check camera permissions
-  const checkPermissions = async () => {
+  const requestPermissionHandler = async () => {
+    const { status } = await requestCameraPermission();
+    setIsValid(status === "granted");
+    setCameraPermissionLocked(status === "granted");
+  };
+
+  const handleCreateProfile = async () => {
+    if (!isValid) {
+      Alert.alert("Permissions Required", "Camera access is required.");
+      return;
+    }
+
+    let profilePictureUrl = null;
+
     try {
-      const cameraStatus = await getCameraPermission();
-      const cameraGranted = cameraStatus.status === "granted";
+      // Log start of the process
+      console.log("Starting CreateProfile process...");
 
-      setCameraPermissionLocked(cameraGranted);
-      setIsValid(cameraGranted);
+      // Step 1: Get Presigned URL if a profile picture exists
+      if (profile.profilePicture) {
+        console.log("Profile picture exists, preparing to upload...");
 
-      setPermissionsChecked(true);
-    } catch (error) {
-      console.error("Error checking permissions: ", error);
-    }
-  };
+        const fileName = profile.profilePicture.split("/").pop();
+        console.log(`Extracted file name: ${fileName}`);
 
-  const requestCameraPermissionHandler = async () => {
-    try {
-      const { status, canAskAgain } = await requestCameraPermission();
-      if (status === "granted") {
-        setCameraPermissionLocked(true);
-        setIsValid(true);
-      } else if (status === "denied" && !canAskAgain) {
-        setCameraPermissionLocked(true);
-        showSettingsAlert("Camera");
+        const { data } = await getPresignedUrl({
+          variables: {
+            folder: "profile-images",
+            fileName,
+            fileType: "image/jpeg",
+          },
+        });
+
+        console.log("Received presigned URL data:", data);
+
+        const { presignedUrl, fileUrl } = data.getPresignedUrl;
+
+        // Log presigned URL and file URL
+        console.log("Presigned URL:", presignedUrl);
+        console.log("File URL:", fileUrl);
+
+        // Step 2: Upload the image to S3
+        console.log("Fetching image from profile picture URI...");
+        const response = await fetch(profile.profilePicture);
+
+        if (!response.ok) {
+          console.error("Error fetching profile picture:", response.statusText);
+          throw new Error("Failed to fetch profile picture.");
+        }
+
+        const blob = await response.blob();
+
+        console.log("Uploading image to S3...");
+        const uploadResponse = await fetch(presignedUrl, {
+          method: "PUT",
+          headers: { "Content-Type": blob.type },
+          body: blob,
+        });
+
+        if (!uploadResponse.ok) {
+          console.error("Error uploading to S3:", uploadResponse.statusText);
+          console.log("Upload response:", await uploadResponse.text());
+          throw new Error("Failed to upload image to S3.");
+        }
+
+        console.log("Image uploaded successfully!");
+        profilePictureUrl = fileUrl; // Save the S3 URL
+      } else {
+        console.log("No profile picture provided, skipping upload.");
       }
+
+      // Step 3: Execute CreateProfile mutation
+      console.log("Preparing to execute CreateProfile mutation...");
+      console.log("Mutation input data:", {
+        ...profile,
+        profilePicture: profilePictureUrl,
+      });
+      const { data } = await createProfile({
+        variables: {
+          input: {
+            ...profile,
+            profilePicture: profilePictureUrl,
+          },
+        },
+      });
+
+      console.log("Profile creation successful:", data);
+
+      const { token } = data.createProfile;
+
+      console.log("Logging in user...");
+      await login(token);
+
+      console.log("User logged in successfully, navigating to Dashboard.");
     } catch (error) {
-      console.error("Error requesting camera permission:", error);
-    }
-  };
-
-  const showSettingsAlert = (permissionType) => {
-    Alert.alert(
-      `${permissionType} Permission Required`,
-      `Access to ${permissionType.toLowerCase()} has been permanently denied. Please go to your phone's settings to enable it.`,
-      [
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-        {
-          text: "Open Settings",
-          onPress: () => Linking.openSettings(),
-        },
-      ]
-    );
-  };
-
-  const handleNextStep = async () => {
-    if (isValid) {
-      try {
-        await AsyncStorage.setItem("registrationProgress", "ShareEarlyAccess");
-        navigation.navigate("ShareEarlyAccess");
-      } catch (error) {
-        console.error("Error saving registration progress:", error);
-      }
-    } else {
-      Alert.alert(
-        "Permissions Required",
-        "Camera permission is required to proceed."
-      );
+      console.error("Create Profile Error:", error.message);
+      Alert.alert("Error", "Failed to create profile. Please try again.");
     }
   };
 
@@ -102,15 +144,6 @@ export default function SetPermissionsScreen() {
             onPress={() => navigation.goBack()}
             style={iconStyles.backArrow}
             weight="semibold"
-          />
-        }
-        button1={
-          <Icon
-            name="chevron.forward"
-            weight="heavy"
-            tintColor={isValid ? "#6AB952" : "#696969"} // Green if valid, gray if not
-            style={iconStyles.backArrow}
-            onPress={isValid ? handleNextStep : null} // Only navigate if permissions are valid
           />
         }
         hasBorder={false}
@@ -127,7 +160,7 @@ export default function SetPermissionsScreen() {
 
         {/* Middle Container */}
         <View style={styles.middleContainer}>
-          <Text style={styles.stepTitle}>Step 3</Text>
+          <Text style={styles.stepTitle}>Step 4</Text>
           <Text style={styles.mainTitle}>Don't forget your Camera!</Text>
           <Text style={styles.subtitle}>
             Grant camera access to take pictures and capture moments.
@@ -138,10 +171,10 @@ export default function SetPermissionsScreen() {
             <Pressable
               style={[
                 styles.permissionBox,
-                cameraPermissionLocked && { backgroundColor: "#25252550" }, // Lock visually if granted
+                cameraPermissionLocked && { backgroundColor: "#25252550" },
               ]}
               onPress={
-                !cameraPermissionLocked ? requestCameraPermissionHandler : null
+                !cameraPermissionLocked ? requestPermissionHandler : null
               }
             >
               <Icon
@@ -166,7 +199,7 @@ export default function SetPermissionsScreen() {
             textColor={isValid ? "#6AB952" : "#696969"}
             width="50%"
             text="Create Profile"
-            onPress={handleNextStep}
+            onPress={handleCreateProfile}
           />
         </View>
 
@@ -268,10 +301,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 41.6,
   },
-  /* cameraIcon: {
-    width: 36,
-    height: 36,
-  }, */
   cameraIcon: {
     width: 32,
     height: 25.3,

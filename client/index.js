@@ -1,24 +1,15 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import createUploadLink from "apollo-upload-client/createUploadLink.mjs";
-import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
+import { HttpLink } from "@apollo/client";
 import * as SecureStore from "expo-secure-store";
 
-// Check if in a development environment and load error messages
-if (process.env.NODE_ENV !== "production") {
-  loadDevMessages();
-  loadErrorMessages();
-}
+const graphqlUri =
+  "https://ggu5enboke.execute-api.us-east-2.amazonaws.com/graphql";
 
-// Use the Heroku server URL
-const graphqlUri = "https://lifelist-server-6ad435fbc893.herokuapp.com/graphql";
+// Add Authorization header with token if available
+const authLink = setContext((_, { headers }) => {
+  const token = SecureStore.getItem("authToken");
 
-const uploadLink = createUploadLink({
-  uri: graphqlUri,
-});
-
-const authLink = setContext(async (_, { headers }) => {
-  const token = await SecureStore.getItemAsync("authToken");
   return {
     headers: {
       ...headers,
@@ -27,7 +18,8 @@ const authLink = setContext(async (_, { headers }) => {
   };
 });
 
+// Configure Apollo Client
 export const client = new ApolloClient({
-  link: authLink.concat(uploadLink),
+  link: authLink.concat(new HttpLink({ uri: graphqlUri })),
   cache: new InMemoryCache(),
 });

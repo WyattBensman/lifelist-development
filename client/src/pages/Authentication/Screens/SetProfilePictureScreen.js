@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { Text, View, StyleSheet, Image, Pressable, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import * as ImagePicker from "expo-image-picker"; // Import image picker
+import * as ImagePicker from "expo-image-picker";
+import * as ImageManipulator from "expo-image-manipulator";
+import { useLazyQuery } from "@apollo/client";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { layoutStyles, iconStyles } from "../../../styles";
 import { useCreateProfileContext } from "../../../contexts/CreateProfileContext"; // Import context
+import { GET_PRESIGNED_URL } from "../../../utils/queries";
 
 export default function SetProfilePictureScreen() {
   const navigation = useNavigation();
@@ -17,30 +20,46 @@ export default function SetProfilePictureScreen() {
     navigation.navigate("SetPermissions");
   };
 
-  const uploadProfilePicture = async () => {
-    // Request permission to access photos
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permissionResult.granted) {
+  const resizeAndCompressImage = async (uri) => {
+    try {
+      const manipulatedImage = await ImageManipulator.manipulateAsync(
+        uri,
+        [{ resize: { width: 300, height: 300 } }],
+        { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+      );
+      return manipulatedImage.uri;
+    } catch (error) {
+      console.error("Error resizing/compressing image:", error.message);
+      throw error;
+    }
+  };
+
+  const selectProfilePicture = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
       Alert.alert(
         "Permission Denied",
-        "You need to enable permissions to upload a profile picture."
+        "You need to enable permissions to access your camera roll."
       );
       return;
     }
 
-    // Launch image picker
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [1, 1], // Ensure square cropping
+      aspect: [1, 1],
       quality: 1,
     });
 
     if (!result.canceled) {
       const selectedImage = result.assets[0].uri;
-      setProfilePicture(selectedImage); // Update local state
-      updateProfile("profilePicture", selectedImage); // Save to context
+      try {
+        const resizedImageUri = await resizeAndCompressImage(selectedImage);
+        setProfilePicture(resizedImageUri); // Update preview
+        updateProfile("profilePicture", resizedImageUri); // Save locally in context
+      } catch (error) {
+        Alert.alert("Image Error", "Failed to process the selected image.");
+      }
     }
   };
 
@@ -85,7 +104,7 @@ export default function SetProfilePictureScreen() {
           </Text>
 
           {/* Centered Square */}
-          <Pressable style={styles.square} onPress={uploadProfilePicture}>
+          <Pressable style={styles.square} onPress={selectProfilePicture}>
             {profilePicture ? (
               <Image
                 source={{ uri: profilePicture }}

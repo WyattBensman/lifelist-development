@@ -1,21 +1,19 @@
 import { User } from "../../../../models/index.mjs";
 import { generateToken } from "../../../../utils/auth.mjs";
-import { uploadProfileImageToS3 } from "../../../../utils/awsHelper.mjs";
 
-const createProfile = async (
-  _,
-  {
+const createProfile = async (_, { input }) => {
+  const {
     fullName,
     bio,
     gender,
-    profilePicture,
+    profilePicture, // This is now the S3 file URL
     username,
     password,
     email,
     phoneNumber,
     birthday,
-  }
-) => {
+  } = input;
+
   try {
     // Ensure required fields are present
     if (
@@ -30,7 +28,7 @@ const createProfile = async (
       );
     }
 
-    // Re-check username availability
+    // Validate username availability
     const existingUsername = await User.findOne({
       username: username.toLowerCase(),
     });
@@ -38,7 +36,7 @@ const createProfile = async (
       throw new Error("The username is already taken.");
     }
 
-    // Re-check email availability if provided
+    // Validate email availability (if provided)
     if (email) {
       const existingEmail = await User.findOne({ email: email.toLowerCase() });
       if (existingEmail) {
@@ -46,7 +44,7 @@ const createProfile = async (
       }
     }
 
-    // Re-check phone number availability if provided
+    // Validate phone number availability (if provided)
     if (phoneNumber) {
       const existingPhoneNumber = await User.findOne({ phoneNumber });
       if (existingPhoneNumber) {
@@ -66,26 +64,12 @@ const createProfile = async (
       throw new Error("You must be at least 18 years old to create a profile.");
     }
 
-    // Handle profile picture upload to S3
-    let fileUrl = `${process.env.CLOUDFRONT_URL}/profile-images/default-avatar.jpg`; // Default profile picture
-    if (profilePicture) {
-      try {
-        const { createReadStream, filename } = await profilePicture.file;
-        fileUrl = await uploadProfileImageToS3({ createReadStream, filename });
-      } catch (uploadError) {
-        console.error(
-          `Error uploading profile picture: ${uploadError.message}`
-        );
-        throw new Error("Failed to upload profile picture. Please try again.");
-      }
-    }
-
     // Create the user in the database
     const newUser = await User.create({
       fullName,
       bio,
       gender,
-      profilePicture: fileUrl,
+      profilePicture, // Store the URL provided by the frontend
       username: username.toLowerCase(),
       password,
       email: email ? email.toLowerCase() : null,
