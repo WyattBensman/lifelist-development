@@ -7,38 +7,37 @@ import HeaderStack from "../../../components/Headers/HeaderStack";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import SelectableShotCard from "../Cards/SelectableShotCard";
 import { CREATE_CAMERA_ALBUM } from "../../../utils/mutations/cameraMutations";
-import { useAuth } from "../../../contexts/AuthContext";
 import Icon from "../../../components/Icons/Icon";
+import { useCameraAlbums } from "../../../contexts/CameraAlbumContext";
 
 export default function CreateAlbum() {
   const navigation = useNavigation();
-  const { currentUser, updateCurrentUser } = useAuth();
+  const route = useRoute();
+  const { albumTitle } = route.params; // Album title passed from the modal
+
   const [selectedShots, setSelectedShots] = useState([]);
   const [changesMade, setChangesMade] = useState(false);
 
-  // Get album title from route params
-  const route = useRoute();
-  const { albumTitle } = route.params;
+  // Access cached albums and add functionality from the context
+  const { addAlbumToCache } = useCameraAlbums();
 
   const { data, loading, error } = useQuery(GET_ALL_CAMERA_SHOTS);
   const [createCameraAlbum] = useMutation(CREATE_CAMERA_ALBUM);
 
   useEffect(() => {
-    if (selectedShots.length > 0) {
-      setChangesMade(true);
-    } else {
-      setChangesMade(false);
-    }
+    setChangesMade(selectedShots.length > 0);
   }, [selectedShots]);
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
+  const handleCheckboxToggle = (shot) => {
+    const isAlreadySelected = selectedShots.find((s) => s.shotId === shot._id);
 
-  const handleCheckboxToggle = (shotId) => {
-    if (selectedShots.includes(shotId)) {
-      setSelectedShots(selectedShots.filter((id) => id !== shotId));
+    if (isAlreadySelected) {
+      setSelectedShots((prev) => prev.filter((s) => s.shotId !== shot._id));
     } else {
-      setSelectedShots([...selectedShots, shotId]);
+      setSelectedShots((prev) => [
+        ...prev,
+        { shotId: shot._id, image: shot.image },
+      ]);
     }
   };
 
@@ -46,18 +45,19 @@ export default function CreateAlbum() {
     try {
       const { data } = await createCameraAlbum({
         variables: {
-          title: albumTitle, // Use the album title passed from the modal
-          shots: selectedShots,
+          title: albumTitle,
+          shots: selectedShots.map((shot) => shot.shotId),
+          shotsCount: selectedShots.length,
+          coverImage: selectedShots[0]?.image, // Use the first selected shot as cover
         },
       });
 
-      // Update the currentUser's cameraAlbums in the AuthContext
-      updateCurrentUser({
-        ...currentUser,
-        cameraAlbums: [...currentUser.cameraAlbums, data.createCameraAlbum],
-      });
+      const newAlbum = data.createCameraAlbum;
 
-      // Navigate to the newly created album's view page by passing albumId
+      // Add the new album to the cache
+      await addAlbumToCache(newAlbum);
+
+      // Navigate to the newly created album's view page
       navigation.navigate("ViewAlbum", { albumId: newAlbum._id });
     } catch (error) {
       console.error("Error creating camera album:", error);
@@ -67,10 +67,13 @@ export default function CreateAlbum() {
   const renderShot = ({ item }) => (
     <SelectableShotCard
       shot={item}
-      isSelected={selectedShots.includes(item._id)}
-      onCheckboxToggle={handleCheckboxToggle}
+      isSelected={!!selectedShots.find((s) => s.shotId === item._id)}
+      onCheckboxToggle={() => handleCheckboxToggle(item)}
     />
   );
+
+  if (loading) return <Text>Loading...</Text>;
+  if (error) return <Text>Error: {error.message}</Text>;
 
   return (
     <View style={layoutStyles.wrapper}>

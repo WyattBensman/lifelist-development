@@ -6,6 +6,9 @@ import AuthenticationStack from "./src/routes/AuthenticationStack";
 import { useAuth } from "./src/contexts/AuthContext";
 import LoadingScreen from "./src/pages/Loading/LoadingScreen";
 import { ProfileProvider } from "./src/contexts/ProfileContext";
+import { DevelopingRollProvider } from "./src/contexts/DevelopingRollContext";
+import { CameraAlbumProvider } from "./src/contexts/CameraAlbumContext";
+import { CameraRollProvider } from "./src/contexts/CameraRollContext";
 
 export default function AppNavigator() {
   const [isEarlyAccessUnlocked, setIsEarlyAccessUnlocked] = useState(null);
@@ -40,7 +43,13 @@ export default function AppNavigator() {
     // Wrap NavigationTab with ProfileProvider
     content = (
       <ProfileProvider>
-        <NavigationTab />
+        <CameraAlbumProvider>
+          <CameraRollProvider>
+            <DevelopingRollProvider>
+              <NavigationTab />
+            </DevelopingRollProvider>
+          </CameraRollProvider>
+        </CameraAlbumProvider>
       </ProfileProvider>
     );
   }

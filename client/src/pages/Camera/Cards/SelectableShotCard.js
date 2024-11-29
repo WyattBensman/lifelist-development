@@ -1,6 +1,5 @@
 import { Dimensions, Image, StyleSheet, View, Pressable } from "react-native";
 import { Checkbox } from "expo-checkbox";
-import { BASE_URL } from "../../../utils/config";
 
 const { width } = Dimensions.get("window");
 const spacing = 1.5;
@@ -12,12 +11,10 @@ export default function SelectableShotCard({
   isSelected,
   onCheckboxToggle,
 }) {
-  const imageUrl = `${BASE_URL}${shot.image}`;
-
   return (
     <Pressable onPress={() => onCheckboxToggle(shot._id)}>
       <View style={styles.shotContainer}>
-        <Image source={{ uri: imageUrl }} style={styles.shotImage} />
+        <Image source={{ uri: shot.imageThumbnail }} style={styles.shotImage} />
         {/* Overlay border */}
         {isSelected && <View style={styles.overlayBorder} />}
         {/* Checkbox */}

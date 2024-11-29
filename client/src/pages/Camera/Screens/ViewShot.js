@@ -20,7 +20,6 @@ import { BASE_URL } from "../../../utils/config";
 import { DELETE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
 import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import DropdownMenuShot from "../../../components/Dropdowns/DropdownMenuShot";
-import CustomAlert from "../../../components/Alerts/CustomAlert";
 import OptionsAlert from "../../../components/Alerts/OptionsAlert";
 import DangerAlert from "../../../components/Alerts/DangerAlert";
 
@@ -31,14 +30,14 @@ const imageHeight = width * aspectRatio;
 export default function ViewShot() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { shotId, fromAlbum } = route.params; // Add fromAlbum to determine if this is an album context
+  const { shotId, fromAlbum } = route.params;
   const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_SHOTS);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const [deleteCameraShot] = useMutation(DELETE_CAMERA_SHOT);
   const [isDeleteAlertVisible, setIsDeleteAlertVisible] = useState(false);
-  const [isOptionsAlertVisible, setIsOptionsAlertVisible] = useState(false); // State for OptionsAlert
+  const [isOptionsAlertVisible, setIsOptionsAlertVisible] = useState(false);
 
   useEffect(() => {
     if (data) {

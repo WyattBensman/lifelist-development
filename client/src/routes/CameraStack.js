@@ -9,6 +9,7 @@ import ManageAlbumShots from "../pages/Camera/Screens/ManageAlbumShots";
 import RemoveShotsFromAlbum from "../pages/Camera/Screens/RemoveShotsFromAlbum.mjs";
 import CameraRoll from "../pages/Camera/Screens/CameraRoll";
 import CameraHome from "../pages/Camera/Screens/CameraHome";
+import ViewDevelopingShot from "../pages/Camera/Cards/ViewDevelopingShot";
 
 const Stack = createNativeStackNavigator();
 
@@ -30,7 +31,10 @@ export default function CameraStack() {
       <Stack.Screen
         name="CameraRoll"
         component={CameraRoll}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+          animation: "slide_from_left",
+        }}
       />
       <Stack.Screen
         name="DevelopingRoll"
@@ -45,6 +49,11 @@ export default function CameraStack() {
       <Stack.Screen
         name="ViewShot"
         component={ViewShot}
+        options={{ headerShown: false, animation: "none" }}
+      />
+      <Stack.Screen
+        name="ViewDevelopingShot"
+        component={ViewDevelopingShot}
         options={{ headerShown: false, animation: "none" }}
       />
       <Stack.Screen

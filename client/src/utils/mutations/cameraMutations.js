@@ -2,20 +2,32 @@ import { gql } from "@apollo/client";
 
 // Create a camera shot
 export const CREATE_CAMERA_SHOT = gql`
-  mutation CreateCameraShot($image: Upload!, $thumbnail: Upload!) {
+  mutation CreateCameraShot($image: String!, $thumbnail: String!) {
     createCameraShot(image: $image, thumbnail: $thumbnail) {
       success
       message
+      cameraShot {
+        _id
+        imageThumbnail
+        developingTime
+        isDeveloped
+        readyToReviewAt
+        transferredToRoll
+      }
     }
   }
 `;
 
 // Trasnfer a camera shot to Camera Roll
-export const TRANSFER_CAMERA_SHOT = gql`
-  mutation TransferCameraShot($shotId: ID!) {
-    transferCameraShot(shotId: $shotId) {
+export const GET_AND_TRANSFER_CAMERA_SHOT = gql`
+  mutation GetAndTransferCameraShot($shotId: ID!) {
+    getAndTransferCameraShot(shotId: $shotId) {
       success
       message
+      cameraShot {
+        _id
+        image
+      }
     }
   }
 `;
@@ -44,17 +56,18 @@ export const DELETE_CAMERA_SHOT = gql`
 export const CREATE_CAMERA_ALBUM = gql`
   mutation CreateCameraAlbum(
     $title: String!
-    $description: String
     $shots: [ID]
+    $shotsCount: Int
+    $coverImage: String
   ) {
-    createCameraAlbum(title: $title, description: $description, shots: $shots) {
-      _id
-      title
-      description
-      shots {
-        _id
-        image
-      }
+    createCameraAlbum(
+      title: $title
+      shots: $shots
+      shotsCount: $shotsCount
+      coverImage: $coverImage
+    ) {
+      success
+      message
     }
   }
 `;

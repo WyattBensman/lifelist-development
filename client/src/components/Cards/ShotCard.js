@@ -13,7 +13,7 @@ export default function ShotCard({
   onCheckboxToggle,
   navigation,
 }) {
-  const imageUrl = `${BASE_URL}${shot.image}`;
+  const imageUrl = shot.imageThumbnail;
 
   const handlePress = () => {
     if (isSelected !== undefined && onCheckboxToggle) {

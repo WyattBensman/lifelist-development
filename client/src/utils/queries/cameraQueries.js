@@ -26,13 +26,7 @@ export const GET_ALL_CAMERA_ALBUMS = gql`
     getAllCameraAlbums {
       _id
       title
-      description
       coverImage
-      shots {
-        _id
-        image
-        capturedAt
-      }
       shotsCount
     }
   }
@@ -47,7 +41,7 @@ export const GET_CAMERA_ALBUM = gql`
       description
       shots {
         _id
-        image
+        imageThumbnail
         capturedAt
       }
     }
@@ -56,11 +50,15 @@ export const GET_CAMERA_ALBUM = gql`
 
 // Get all camera shots for the user
 export const GET_ALL_CAMERA_SHOTS = gql`
-  query GetAllCameraShots {
-    getAllCameraShots {
-      _id
-      image
-      capturedAt
+  query GetAllCameraShots($cursor: ID, $limit: Int) {
+    getAllCameraShots(cursor: $cursor, limit: $limit) {
+      shots {
+        _id
+        imageThumbnail
+        capturedAt
+      }
+      nextCursor
+      hasNextPage
     }
   }
 `;
@@ -81,7 +79,8 @@ export const GET_DEVELOPING_CAMERA_SHOTS = gql`
   query GetDevelopingCameraShots {
     getDevelopingCameraShots {
       _id
-      image
+      imageThumbnail
+      capturedAt
       developingTime
       isDeveloped
       readyToReviewAt

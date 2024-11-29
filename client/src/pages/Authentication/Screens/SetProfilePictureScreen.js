@@ -3,13 +3,11 @@ import { Text, View, StyleSheet, Image, Pressable, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
-import { useLazyQuery } from "@apollo/client";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { layoutStyles, iconStyles } from "../../../styles";
 import { useCreateProfileContext } from "../../../contexts/CreateProfileContext"; // Import context
-import { GET_PRESIGNED_URL } from "../../../utils/queries";
 
 export default function SetProfilePictureScreen() {
   const navigation = useNavigation();

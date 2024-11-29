@@ -3,7 +3,7 @@ import { isUser } from "../../../../utils/auth.mjs";
 
 const createCameraAlbum = async (
   _,
-  { title, description, shots },
+  { title, shots, shotsCount, coverImage },
   { user }
 ) => {
   try {
@@ -12,10 +12,11 @@ const createCameraAlbum = async (
     const newAlbum = new CameraAlbum({
       author: user,
       title,
-      description,
       shots,
-      coverImage: shots.length > 0 ? shots[0] : null,
+      shotsCount,
+      coverImage,
     });
+
     await newAlbum.save();
 
     // Update the User model to include the new album in their cameraAlbums field
@@ -23,10 +24,16 @@ const createCameraAlbum = async (
       $push: { cameraAlbums: newAlbum._id },
     });
 
-    return newAlbum;
+    return {
+      success: true,
+      message: "Camera album created successfully.",
+    };
   } catch (error) {
     console.error("Error creating camera album:", error);
-    throw new Error("Failed to create camera album.");
+    return {
+      success: false,
+      message: "Failed to create camera album.",
+    };
   }
 };
 

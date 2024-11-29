@@ -31,6 +31,8 @@ export default function AdminProfile() {
   const [collagesCursor, setCollagesCursor] = useState(null);
   const [repostsCursor, setRepostsCursor] = useState(null);
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  console.log(`Profile: ${profile}`);
+  console.log(profile);
 
   const cacheKeys = {
     collagesMetadata: `collages_metadata_${currentUser}`,
@@ -46,10 +48,13 @@ export default function AdminProfile() {
       const cachedCollages = await getFromAsyncStorage(
         cacheKeys.collagesMetadata
       );
+
       const cachedReposts = await getFromAsyncStorage(
         cacheKeys.repostsMetadata
       );
+
       const cachedCounts = await getFromAsyncStorage(cacheKeys.followerCounts);
+
       const countsTimestamp = await getFromAsyncStorage(
         cacheKeys.countsTimestamp
       );
@@ -113,10 +118,12 @@ export default function AdminProfile() {
     skip: !!(collagesData.length && repostsData.length),
     onCompleted: (data) => {
       const { collages, repostedCollages } = data.getCollagesAndReposts;
+      console.log(collages.items);
+      console.log(repostedCollages.items);
 
       // Temporarily update state with raw data (without caching images)
-      setCollagesData(collagesMetadata);
-      setRepostsData(repostsMetadata);
+      setCollagesData(collages.items);
+      setRepostsData(repostedCollages.items);
 
       setCollagesCursor(collages.nextCursor);
       setRepostsCursor(repostedCollages.nextCursor);

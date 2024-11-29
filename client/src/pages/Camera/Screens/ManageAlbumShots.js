@@ -12,6 +12,7 @@ import { UPDATE_ALBUM_SHOTS } from "../../../utils/mutations";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
+import { useCameraAlbums } from "../../../contexts/CameraAlbumContext";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function ManageAlbumShots() {
@@ -19,6 +20,9 @@ export default function ManageAlbumShots() {
   const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
   const { albumId, associatedShots } = route.params;
+
+  const { updateAlbumInCache } = useCameraAlbums();
+
   const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_SHOTS);
   const [updateShots] = useMutation(UPDATE_ALBUM_SHOTS);
 
@@ -26,10 +30,13 @@ export default function ManageAlbumShots() {
   const [isModified, setIsModified] = useState(false);
   const [title, setTitle] = useState("Manage Shots");
 
+  // Hide the tab bar when this screen is focused
   useFocusEffect(() => {
     setIsTabBarVisible(false);
+    return () => setIsTabBarVisible(true);
   });
 
+  // Set the initial state of selected shots
   useEffect(() => {
     if (associatedShots) {
       setSelectedShots(associatedShots);
@@ -37,6 +44,7 @@ export default function ManageAlbumShots() {
     }
   }, [associatedShots]);
 
+  // Check if changes have been made to the selected shots
   useEffect(() => {
     setIsModified(
       selectedShots.length !== associatedShots.length ||
@@ -47,6 +55,7 @@ export default function ManageAlbumShots() {
     );
   }, [selectedShots, associatedShots]);
 
+  // Toggle a shot's selection
   const handleCheckboxToggle = (shot) => {
     setSelectedShots((prev) => {
       const isAlreadySelected = prev.some((s) => s._id === shot._id);
@@ -57,29 +66,36 @@ export default function ManageAlbumShots() {
     });
   };
 
+  // Save changes and update cache
   const handleSave = async () => {
     if (!isModified) return;
+
     try {
-      await updateShots({
+      const { data } = await updateShots({
         variables: {
           albumId,
           shotIds: selectedShots.map((shot) => shot._id),
         },
       });
+
+      // Update the album in the cache with the new shots and shotsCount
+      updateAlbumInCache(albumId, {
+        shots: selectedShots,
+        shotsCount: selectedShots.length, // Update shotsCount
+      });
+
       navigation.goBack();
     } catch (error) {
       console.error("Failed to update associated shots:", error);
     }
   };
 
+  // Refetch all available shots when the screen is focused
   useFocusEffect(
     useCallback(() => {
       refetch();
     }, [refetch])
   );
-
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
 
   return (
     <View style={layoutStyles.wrapper}>

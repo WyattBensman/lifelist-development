@@ -34,6 +34,7 @@ export const AuthProvider = ({ children }) => {
     await AuthService.saveToken(token);
     console.log("Token storage complete, setting isAuthenticated");
     setIsAuthenticated(true);
+    console.log(`isAuthenticated: ${isAuthenticated}`);
 
     const userData = await AuthService.getUser();
     setCurrentUser(userData);

@@ -1,34 +1,32 @@
-import { uploadCameraImageToS3 } from "../../../../utils/awsHelper.mjs";
 import { CameraShot, User } from "../../../../models/index.mjs";
 
-const createCameraShot = async (_, { image }, { user }) => {
+const createCameraShot = async (_, { image, thumbnail }, { user }) => {
   try {
     // Find the current user
     const currentUser = await User.findById(user);
+
+    if (!currentUser) throw new Error("User not found.");
 
     // Check if the user has shots left
     if (currentUser.shotsLeft <= 0) {
       throw new Error("You have no shots left for today.");
     }
 
-    // Extract the file stream and filename
-    const { createReadStream, filename } = await image.promise;
-
-    // Upload full-size and thumbnail images to S3
-    const { fullSizeUrl, thumbnailUrl } = await uploadCameraImageToS3(
-      { createReadStream, filename },
-      "camera-images" // Folder in your S3 bucket
-    );
-
     // Generate a random developing time between 4 to 16 minutes
     const developingTime = Math.floor(Math.random() * (16 - 4 + 1)) + 4;
 
-    // Create the new CameraShot with developingTime
+    // Calculate when the shot will be ready for review
+    const readyToReviewAt = new Date(Date.now() + developingTime * 60 * 1000);
+
+    // Create the new CameraShot
     const newShot = new CameraShot({
       author: user,
-      image: fullSizeUrl, // Save the normal-sized image URL
-      imageThumbnail: thumbnailUrl, // Save the thumbnail URL
+      image, // Full-size image URL passed from the client
+      imageThumbnail: thumbnail, // Thumbnail URL passed from the client
       developingTime,
+      readyToReviewAt,
+      isDeveloped: false, // Initial state
+      transferredToRoll: false, // Initial state
     });
 
     await newShot.save();
@@ -43,9 +41,14 @@ const createCameraShot = async (_, { image }, { user }) => {
     return {
       success: true,
       message: "Added to developing shots.",
-      imageUrl: fullSizeUrl,
-      thumbnailUrl,
-      developingTime,
+      cameraShot: {
+        _id: newShot._id,
+        imageThumbnail: newShot.imageThumbnail,
+        developingTime: newShot.developingTime,
+        isDeveloped: newShot.isDeveloped,
+        readyToReviewAt: newShot.readyToReviewAt,
+        transferredToRoll: newShot.transferredToRoll,
+      },
     };
   } catch (error) {
     console.error("Error creating camera shot:", error.message, error.stack);

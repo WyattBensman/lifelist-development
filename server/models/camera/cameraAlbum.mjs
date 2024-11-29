@@ -31,22 +31,6 @@ const cameraAlbumSchema = new Schema({
   },
 });
 
-// Pre-save hook to update shotsCount and coverImage
-cameraAlbumSchema.pre("save", async function (next) {
-  this.shotsCount = this.shots.length;
-
-  if (this.shots.length > 0) {
-    const firstShot = await this.model("CameraShot").findById(this.shots[0]);
-    if (firstShot) {
-      this.coverImage = firstShot.image;
-    }
-  } else {
-    this.coverImage = "";
-  }
-
-  next();
-});
-
 const CameraAlbum = model("CameraAlbum", cameraAlbumSchema);
 
 export default CameraAlbum;

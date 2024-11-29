@@ -1,107 +1,153 @@
 import React, { useState, useEffect } from "react";
-import { FlatList, Text, View, StyleSheet, ScrollView } from "react-native";
+import {
+  FlatList,
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { headerStyles, iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useNavigation } from "@react-navigation/native";
-import { useQuery } from "@apollo/client";
-import {
-  GET_ALL_CAMERA_ALBUMS,
-  GET_ALL_CAMERA_SHOTS,
-} from "../../../utils/queries/cameraQueries";
 import AlbumCard from "../Cards/AlbumCard";
 import ShotCard from "../Cards/ShotCard";
 import { useAuth } from "../../../contexts/AuthContext";
 import Icon from "../../../components/Icons/Icon";
 import FormAlert from "../../../components/Alerts/FormAlert";
+import { useCameraAlbums } from "../../../contexts/CameraAlbumContext";
+import { useCameraRoll } from "../../../contexts/CameraRollContext";
 
 export default function CameraRoll() {
   const navigation = useNavigation();
   const { currentUser } = useAuth();
   const [albumModalVisible, setAlbumModalVisible] = useState(false);
-  const [newAlbumTitle, setNewAlbumTitle] = useState("");
-  const [albumsData, setAlbumsData] = useState(null);
-  const [shotsData, setShotsData] = useState(null);
-  const [isDataLoading, setIsDataLoading] = useState(true);
 
-  // Load cached data on component mount
+  // Camera albums context
+  const { albums, initializeAlbumCache, isAlbumCacheInitialized } =
+    useCameraAlbums();
+
+  // Camera roll context
+  const {
+    shots,
+    loadNextPage,
+    initializeCameraRollCache,
+    isCameraRollCacheInitialized,
+    hasNextPage,
+  } = useCameraRoll();
+
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+
+  // Initialize caches on component mount
   useEffect(() => {
-    const loadCachedData = async () => {
-      try {
-        const cachedAlbums = await getCachedAlbumMetadata();
-        if (cachedAlbums) setAlbumsData(cachedAlbums);
-
-        const cachedShots = await getCachedCameraShots();
-        if (cachedShots) setShotsData(cachedShots);
-
-        setIsDataLoading(!cachedAlbums || !cachedShots);
-      } catch (error) {
-        console.error("Error loading cached data:", error);
-      }
-    };
-    loadCachedData();
-  }, []);
-
-  // Fetch albums data from server if not cached
-  const { loading: albumsLoading, error: albumsError } = useQuery(
-    GET_ALL_CAMERA_ALBUMS,
-    {
-      variables: { userId: currentUser },
-      skip: !!albumsData, // Skip fetching if albums data is cached
-      onCompleted: async (data) => {
-        setAlbumsData(data.getAllCameraAlbums);
-        await cacheAlbumMetadata(data.getAllCameraAlbums);
-
-        // Cache album cover images
-        for (let album of data.getAllCameraAlbums) {
-          await saveImageToFileSystem(
-            `album_cover_${album._id}`,
-            album.coverImage
-          );
-        }
-      },
+    if (!isAlbumCacheInitialized) {
+      initializeAlbumCache();
     }
-  );
 
-  // Fetch camera shots data from server if not cached
-  const { loading: shotsLoading, error: shotsError } = useQuery(
-    GET_ALL_CAMERA_SHOTS,
-    {
-      variables: { userId: currentUser._id },
-      skip: !!shotsData, // Skip fetching if shots data is cached
-      onCompleted: async (data) => {
-        setShotsData(data.getAllCameraShots);
-        await cacheCameraShots(data.getAllCameraShots);
-
-        // Cache all shot images
-        for (let shot of data.getAllCameraShots) {
-          await saveImageToFileSystem(`camera_shot_${shot._id}`, shot.image);
-        }
-      },
+    if (!isCameraRollCacheInitialized) {
+      initializeCameraRollCache();
     }
-  );
+  }, [isAlbumCacheInitialized, isCameraRollCacheInitialized]);
 
-  const renderAlbum = ({ item }) => (
-    <AlbumCard album={item} navigation={navigation} />
-  );
-  const renderShot = ({ item, index }) => (
-    <ShotCard
-      shot={item}
-      shots={shotsData}
-      navigation={navigation}
-      index={index}
-    />
-  );
-
+  // Handle album creation
   const handleCreateAlbum = (title) => {
     setAlbumModalVisible(false);
     navigation.navigate("CreateAlbum", { albumTitle: title });
-    setNewAlbumTitle(""); // Reset album title
   };
+
+  // Load more shots when reaching the end of the list
+  const loadMoreShots = async () => {
+    if (!hasNextPage || isFetchingMore) return;
+
+    setIsFetchingMore(true);
+    try {
+      await loadNextPage();
+    } catch (error) {
+      console.error("Error fetching more shots:", error);
+    } finally {
+      setIsFetchingMore(false);
+    }
+  };
+
+  // Render album section
+  const renderAlbumsSection = () => {
+    const hasAlbums = albums.length > 0;
+
+    return (
+      <View>
+        <Text style={[headerStyles.headerMedium, { marginLeft: 10 }]}>
+          Albums
+        </Text>
+        {hasAlbums ? (
+          <FlatList
+            data={albums}
+            renderItem={({ item }) => (
+              <AlbumCard album={item} navigation={navigation} />
+            )}
+            keyExtractor={(item) => item._id}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={layoutStyles.paddingLeftXxs}
+          />
+        ) : (
+          <Pressable
+            style={styles.placeholderContainer}
+            onPress={() => setAlbumModalVisible(true)}
+          >
+            <Text style={styles.placeholderText}>Create Album</Text>
+          </Pressable>
+        )}
+      </View>
+    );
+  };
+
+  // Render shots section
+  const renderShotsSection = () => (
+    <View style={layoutStyles.marginTopMd}>
+      <Text style={[headerStyles.headerMedium, { marginLeft: 10 }]}>
+        Camera Shots
+      </Text>
+      {shots.length > 0 ? (
+        <FlatList
+          data={shots}
+          renderItem={({ item, index }) => (
+            <ShotCard shot={item} navigation={navigation} index={index} />
+          )}
+          keyExtractor={(item) => item._id}
+          numColumns={3}
+          columnWrapperStyle={styles.columnWrapper}
+          showsVerticalScrollIndicator={false}
+          onEndReached={loadMoreShots} // Load more shots on scroll
+          onEndReachedThreshold={0.5} // Trigger load when 50% of the list remains
+          ListFooterComponent={
+            isFetchingMore ? (
+              <ActivityIndicator size="small" color="#0000ff" />
+            ) : null
+          }
+        />
+      ) : (
+        <Text style={styles.emptyStateText}>No camera shots available.</Text>
+      )}
+    </View>
+  );
+
+  // Combine album and shots sections into a single list
+  const renderMainList = () => (
+    <FlatList
+      data={[{ key: "albums" }, { key: "shots" }]}
+      renderItem={({ item }) =>
+        item.key === "albums" ? renderAlbumsSection() : renderShotsSection()
+      }
+      keyExtractor={(item) => item.key}
+      showsVerticalScrollIndicator={false}
+      style={{ paddingTop: 12 }}
+    />
+  );
 
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
-        title={"Camera Roll"}
+        title="Camera Roll"
         arrow={
           <Icon
             name="chevron.backward"
@@ -128,35 +174,13 @@ export default function CameraRoll() {
         onSave={handleCreateAlbum}
       />
 
-      <ScrollView
-        style={layoutStyles.paddingTopXs}
-        showsVerticalScrollIndicator={false}
-      >
-        <Text style={[headerStyles.headerMedium, { marginLeft: 10 }]}>
-          Albums
-        </Text>
-        <FlatList
-          data={albumsData}
-          renderItem={renderAlbum}
-          keyExtractor={(item) => item._id}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={layoutStyles.paddingLeftXxs}
-        />
-        <View style={layoutStyles.marginTopMd}>
-          <Text style={[headerStyles.headerMedium, { marginLeft: 10 }]}>
-            Camera Shots
-          </Text>
-          <FlatList
-            data={shotsData}
-            renderItem={renderShot}
-            keyExtractor={(item) => item._id}
-            numColumns={3}
-            columnWrapperStyle={styles.columnWrapper}
-            showsVerticalScrollIndicator={false}
-          />
+      {isAlbumCacheInitialized && isCameraRollCacheInitialized ? (
+        renderMainList()
+      ) : (
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading...</Text>
         </View>
-      </ScrollView>
+      )}
     </View>
   );
 }
@@ -164,5 +188,32 @@ export default function CameraRoll() {
 const styles = StyleSheet.create({
   columnWrapper: {
     justifyContent: "space-between",
+  },
+  placeholderContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 100,
+    backgroundColor: "#f0f0f0",
+    marginHorizontal: 10,
+    borderRadius: 10,
+  },
+  placeholderText: {
+    color: "#999",
+    fontSize: 16,
+  },
+  emptyStateText: {
+    textAlign: "center",
+    marginTop: 20,
+    fontSize: 16,
+    color: "#888",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    fontSize: 16,
+    color: "#888",
   },
 });

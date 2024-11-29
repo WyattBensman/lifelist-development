@@ -47,10 +47,13 @@ export default function ProfileOverview({
   // Fetch the cached profile picture URI or fallback to server URL
   useEffect(() => {
     const loadProfilePicture = async () => {
+      console.log("LOAD PROFILE PICTURE STARTED");
       const imageKey = `profile_picture_${userId}`;
+
       const fallbackUrl = profile?.profilePicture;
       const cachedUri = await fetchCachedImageUri(imageKey, fallbackUrl);
       setProfilePictureUrl(cachedUri);
+      console.log(`cachedUri: ${cachedUri}`);
     };
 
     loadProfilePicture();

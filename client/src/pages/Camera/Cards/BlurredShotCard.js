@@ -8,102 +8,85 @@ import {
   Pressable,
 } from "react-native";
 import { BlurView } from "expo-blur";
-import { useMutation } from "@apollo/client";
-import { TRANSFER_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
-import {
-  saveImageToCache,
-  getImageFromCache,
-} from "../../../utils/cacheHelper";
+import { fetchCachedImageUri } from "../../../utils/cacheHelper";
+import moment from "moment";
 
 const { width } = Dimensions.get("window");
 const spacing = 1.5;
 const imageWidth = (width - spacing * 2) / 2;
 const imageHeight = (imageWidth * 3) / 2;
 
-export default function BlurredShotCard({ shot, refetchShots }) {
+export default function BlurredShotCard({ shot, onShotDeveloped, onPress }) {
   const [timeLeft, setTimeLeft] = useState(null);
   const [isDeveloped, setIsDeveloped] = useState(shot.isDeveloped);
-  const [blurIntensity, setBlurIntensity] = useState(50); // Start with high intensity
   const [imageUri, setImageUri] = useState(null);
 
-  const [transferCameraShot] = useMutation(TRANSFER_CAMERA_SHOT, {
-    onCompleted: () => {
-      refetchShots(); // Refetch shots once a transfer is successful
-    },
-  });
-
   useEffect(() => {
-    const cacheImage = async () => {
-      const cachedImage = await getImageFromCache(shot._id, shot.image);
-      if (cachedImage) {
-        setImageUri(cachedImage);
-      } else {
-        const newCachedUri = await saveImageToCache(shot._id, shot.image);
-        setImageUri(newCachedUri);
-      }
+    const loadImageUri = async () => {
+      const cacheKey = `developing_shot_${shot._id}`;
+      const cachedUri = await fetchCachedImageUri(
+        cacheKey,
+        shot.imageThumbnail
+      );
+      setImageUri(cachedUri);
     };
 
-    cacheImage();
-  }, [shot.image, shot._id]);
+    loadImageUri();
+  }, [shot.imageThumbnail, shot._id]);
 
   useEffect(() => {
-    // Update the countdown timer and blur intensity every second
+    const now = moment();
+    const readyTime = moment(shot.readyToReviewAt);
+
+    if (now.isAfter(readyTime)) {
+      setIsDeveloped(true);
+      setTimeLeft(null);
+      onShotDeveloped(shot._id);
+    } else {
+      const duration = moment.duration(readyTime.diff(now));
+      setIsDeveloped(false);
+      setTimeLeft(duration);
+    }
+  }, [shot.readyToReviewAt]);
+
+  useEffect(() => {
+    if (!timeLeft) return;
+
     const interval = setInterval(() => {
       const now = moment();
       const readyTime = moment(shot.readyToReviewAt);
       const duration = moment.duration(readyTime.diff(now));
 
       if (duration.asSeconds() <= 0) {
-        // Shot is developed
         setIsDeveloped(true);
-        setBlurIntensity(0); // No blur when fully developed
+        setTimeLeft(null);
         clearInterval(interval);
+        onShotDeveloped(shot._id);
       } else {
-        // Calculate remaining time and update blur intensity
         setTimeLeft(duration);
-
-        const totalDevelopmentTime = moment.duration(
-          moment(shot.readyToReviewAt).diff(moment(shot.capturedAt))
-        );
-        const remainingTime = duration.asSeconds();
-        const totalTime = totalDevelopmentTime.asSeconds();
-        const newBlurIntensity = Math.max(
-          0,
-          Math.floor((remainingTime / totalTime) * 50)
-        );
-        setBlurIntensity(newBlurIntensity);
       }
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [shot.readyToReviewAt, shot.capturedAt]);
-
-  const handleOpenShot = async () => {
-    if (isDeveloped) {
-      try {
-        await transferCameraShot({ variables: { shotId: shot._id } });
-      } catch (error) {
-        console.error("Error transferring shot:", error.message);
-      }
-    }
-  };
+  }, [timeLeft, shot.readyToReviewAt]);
 
   return (
-    <Pressable onPress={handleOpenShot} style={styles.container}>
+    <Pressable onPress={onPress} style={styles.container}>
       <View style={styles.imageContainer}>
-        {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-        {!isDeveloped && (
-          <BlurView intensity={blurIntensity} style={styles.blurView}>
-            {/* Display the countdown timer */}
-            {timeLeft && (
-              <Text style={styles.timerText}>
-                {timeLeft.minutes()}:
-                {timeLeft.seconds().toString().padStart(2, "0")}
-              </Text>
-            )}
-          </BlurView>
+        {imageUri ? (
+          <Image source={{ uri: imageUri }} style={styles.image} />
+        ) : (
+          <Text style={styles.loadingText}>Loading...</Text>
         )}
-        {isDeveloped && <Text style={styles.readyText}>Ready!</Text>}
+        <BlurView intensity={20} style={styles.blurView}>
+          {!isDeveloped && timeLeft && (
+            <Text style={styles.timerText}>
+              {timeLeft.minutes()}:
+              {timeLeft.seconds().toString().padStart(2, "0")}
+            </Text>
+          )}
+          {isDeveloped && <Text style={styles.readyText}>Ready!</Text>}
+        </BlurView>
       </View>
     </Pressable>
   );
@@ -124,12 +107,19 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
+    borderRadius: 10,
   },
   blurView: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.3)",
+    borderRadius: 10,
+  },
+  loadingText: {
+    textAlign: "center",
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   timerText: {
     color: "#ffffff",

@@ -12,21 +12,31 @@ import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
-import { useMutation } from "@apollo/client";
+import { useMutation, useLazyQuery } from "@apollo/client";
 import { CREATE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
+import { GET_PRESIGNED_URL } from "../../../utils/queries";
 import {
   saveMetaDataToCache,
   getMetaDataFromCache,
   saveToAsyncStorage,
   getFromAsyncStorage,
 } from "../../../utils/cacheHelper";
-import { GET_DAILY_CAMERA_SHOTS_LEFT } from "../../../utils/queries"; // Import query
-import { ImageManipulator } from "expo-image-manipulator";
+import * as ImageManipulator from "expo-image-manipulator";
+import { applyFilterToImage } from "../../../utils/cameraUtils/applyFilterToImage";
+import { useDevelopingRoll } from "../../../contexts/DevelopingRollContext";
+
+const screenWidth = Dimensions.get("window").width;
+const cameraHeight = screenWidth * (3 / 2); // 3:2 aspect ratio
+
+const MAX_SHOTS_PER_DAY = 10;
 
 export default function CameraHome() {
   const { setIsTabBarVisible } = useNavigationContext();
+  const { addShotToCache, cachedShots, initializeCache, isCacheInitialized } =
+    useDevelopingRoll();
   const [showHeaderOptions, setShowHeaderOptions] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
+  const [shotsLeft, setShotsLeft] = useState(MAX_SHOTS_PER_DAY);
 
   // Load camera settings from cache
   const [facing, setFacing] = useState(
@@ -37,23 +47,35 @@ export default function CameraHome() {
   );
 
   const [zoom, setZoom] = useState(0);
-  const [capturedImage, setCapturedImage] = useState(null); // Captured photo
-  const [filteredUri, setFilteredUri] = useState(null);
-  const [shotsLeft, setShotsLeft] = useState(10); // Store shots left
   const cameraRef = useRef(null);
   const [createCameraShot] = useMutation(CREATE_CAMERA_SHOT);
+  const [getPresignedUrl] = useLazyQuery(GET_PRESIGNED_URL);
 
   const rotateAnim = useRef(new Animated.Value(0)).current;
   const screenWidth = Dimensions.get("window").width;
   const cameraHeight = (screenWidth * 3) / 2;
 
-  // Calculate time until midnight in seconds
-  const getSecondsUntilMidnight = () => {
-    const now = new Date();
-    const nextMidnight = new Date();
-    nextMidnight.setHours(24, 0, 0, 0); // Midnight
-    return Math.floor((nextMidnight - now) / 1000); // Seconds until midnight
+  const calculateTodayShots = () => {
+    const today = new Date().toISOString().split("T")[0];
+    return cachedShots.filter(
+      (shot) => new Date(shot.capturedAt).toISOString().split("T")[0] === today
+    ).length;
   };
+
+  useEffect(() => {
+    const loadCacheAndCalculateShots = async () => {
+      if (!isCacheInitialized) {
+        await initializeCache();
+      }
+      const todayShots = calculateTodayShots();
+      console.log(todayShots);
+
+      setShotsLeft(MAX_SHOTS_PER_DAY - todayShots);
+      console.log(shotsLeft);
+    };
+
+    loadCacheAndCalculateShots();
+  }, [isCacheInitialized, cachedShots]);
 
   const [cameraType, setCameraType] = useState("Standard");
 
@@ -68,24 +90,29 @@ export default function CameraHome() {
     loadCameraType();
   }, []);
 
-  const [filter, setFilter] = useState("standardFilter");
+  // Reset shots at midnight
+  const resetShotsAtMidnight = async () => {
+    const now = new Date();
+    const today = now.toISOString().split("T")[0]; // Get today's date (YYYY-MM-DD)
+    const storedDate = await getFromAsyncStorage("shotsLastResetDate");
 
-  // Fetch camera shots left and cache it
-  const fetchCameraShotsLeft = async () => {
-    const cachedShots = getFromAsyncStorage("cameraShotsLeft");
-    if (cachedShots !== null) {
-      setShotsLeft(cachedShots);
-      return;
+    if (storedDate !== today) {
+      // If the stored date is different, reset the shot count
+      await saveToAsyncStorage("shotsLeft", MAX_SHOTS_PER_DAY);
+      await saveToAsyncStorage("shotsLastResetDate", today);
+      setShotsLeft(MAX_SHOTS_PER_DAY);
     } else {
-      const response = await client.query({
-        query: GET_DAILY_CAMERA_SHOTS_LEFT,
-      });
-      const shots = response.data.getDailyCameraShotsLeft;
-      setShotsLeft(shots);
-      const ttl = getSecondsUntilMidnight();
-      saveToAsyncStorage("cameraShotsLeft", shots, ttl); // Cache shotsLeft until midnight
+      // Load the shots left from the cache
+      const cachedShots = await getFromAsyncStorage("shotsLeft");
+      if (cachedShots !== null) {
+        setShotsLeft(cachedShots);
+      }
     }
   };
+
+  useEffect(() => {
+    resetShotsAtMidnight();
+  }, []);
 
   useEffect(() => {
     setIsTabBarVisible(false);
@@ -99,6 +126,13 @@ export default function CameraHome() {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  // Initialize DevelopingRollContext Cache
+  useEffect(() => {
+    if (!isCacheInitialized) {
+      initializeCache();
+    }
+  }, [isCacheInitialized]);
 
   const rotation = rotateAnim.interpolate({
     inputRange: [0, 1],
@@ -120,18 +154,16 @@ export default function CameraHome() {
     );
   }
 
-  // Toggle between front and back camera and cache the state
   const toggleCameraFacing = () => {
     const newFacing = facing === "back" ? "front" : "back";
     setFacing(newFacing);
-    saveMetaDataToCache("cameraFacing", newFacing, 0); // No expiration, store the facing state
+    saveMetaDataToCache("cameraFacing", newFacing, 0);
   };
 
-  // Toggle flash state and cache the state
   const toggleFlash = () => {
     const newFlash = flash === "off" ? "on" : "off";
     setFlash(newFlash);
-    saveMetaDataToCache("cameraFlash", newFlash, 0); // No expiration, store the flash state
+    saveMetaDataToCache("cameraFlash", newFlash, 0);
   };
 
   const handleZoomChange = (zoomLevel) => {
@@ -144,8 +176,7 @@ export default function CameraHome() {
 
   const handleSelectCameraType = (type) => {
     setCameraType(type);
-    setFilter(type === "Standard" ? "standardFilter" : "fujiFilter");
-    saveToAsyncStorage("cameraType", type); // Persist camera type in AsyncStorage
+    saveToAsyncStorage("cameraType", type);
   };
 
   const handleTakePhoto = async () => {
@@ -154,96 +185,139 @@ export default function CameraHome() {
       return;
     }
 
+    // Initialize cache if not already done
+    if (!isCacheInitialized) {
+      await initializeCache();
+    }
+
     if (cameraRef.current) {
       const newShotsLeft = shotsLeft - 1;
       setShotsLeft(newShotsLeft);
 
       try {
+        // Capture the photo
         const photo = await cameraRef.current.takePictureAsync({
-          quality: 0.8,
+          quality: 1, // Capture at max quality
         });
-        setCapturedImage(photo.uri);
 
-        // Apply the filter to the original photo
-        const filteredOriginalUri = await applyFilter(photo.uri);
-        console.log("Filtered Original URI:", filteredOriginalUri);
+        // Resize and compress the original image
+        const resizedUri = await resizeOriginalImage(photo.uri);
 
-        // Generate a thumbnail and apply the filter to it
-        const thumbnailUri = await generateThumbnail(filteredOriginalUri);
-        const filteredThumbnailUri = await applyFilter(thumbnailUri);
-        console.log("Filtered Thumbnail URI:", filteredThumbnailUri);
+        // Generate a smaller thumbnail
+        const thumbnailUri = await generateThumbnail(photo.uri);
 
-        // Upload both filtered original and filtered thumbnail
-        await handleUploadPhoto(filteredOriginalUri, filteredThumbnailUri);
+        // Upload the resized image and thumbnail
+        const newShot = await handleUploadPhoto(resizedUri, thumbnailUri);
 
-        const ttl = getTTLForMidnight();
-        saveToAsyncStorage("cameraShotsLeft", newShotsLeft, ttl); // Update shots left in cache
+        addShotToCache(newShot);
+
+        saveToAsyncStorage("cameraShotsLeft", newShotsLeft);
       } catch (error) {
-        setShotsLeft(shotsLeft); // Revert shots left if error occurs
+        setShotsLeft((prev) => prev + 1);
         alert("Error taking photo. Please try again.");
         console.error("Error taking photo:", error);
       }
     }
   };
 
-  // Utility function to convert URI to File object
   const uriToFile = async (uri) => {
     const response = await fetch(uri);
-    const blob = await response.blob(); // Convert URI to Blob
-
-    // Extract the file extension from the MIME type (e.g., 'image/jpeg' becomes 'jpeg')
-    const fileExtension = blob.type.split("/")[1];
-    const fileName = `filtered_image.${fileExtension}`; // Dynamic filename based on MIME type
-
-    const file = new File([blob], fileName, { type: blob.type }); // Create File object
-    console.log(`FILE: ${file}`);
-
-    return file;
+    const blob = await response.blob();
+    const fileName = `photo_${Date.now()}.jpg`;
+    return new File([blob], fileName, { type: blob.type });
   };
 
-  // Function to generate a thumbnail with 180x120 dimensions
+  const resizeOriginalImage = async (imageUri) => {
+    try {
+      const result = await ImageManipulator.manipulateAsync(
+        imageUri,
+        [{ resize: { width: 1280, height: 1920 } }], // Resize image, maintain aspect ratio
+        { compress: 1, format: ImageManipulator.SaveFormat.JPEG } // Compression
+      );
+
+      return result.uri; // Return the resized image URI
+    } catch (error) {
+      console.error("Error resizing original image:", error);
+      throw error;
+    }
+  };
+
   const generateThumbnail = async (imageUri) => {
     try {
       const result = await ImageManipulator.manipulateAsync(
         imageUri,
-        [
-          { resize: { width: 120, height: 180 } }, // Resize to 120x180
-        ],
+        [{ resize: { width: 400, height: 600 } }],
         { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
       );
-      return result.uri; // Return the thumbnail URI
+
+      return result.uri;
     } catch (error) {
       console.error("Error generating thumbnail:", error);
-      throw new Error("Failed to generate thumbnail.");
+      throw error;
     }
   };
 
-  // Handle the upload of both the original and thumbnail images
+  const uploadImageToS3 = async (fileUri, presignedUrl) => {
+    const response = await fetch(fileUri);
+    const blob = await response.blob();
+    await fetch(presignedUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": blob.type,
+      },
+      body: blob,
+    });
+  };
+
   const handleUploadPhoto = async (originalUri, thumbnailUri) => {
     try {
-      // Convert URIs to File objects
       const originalFile = await uriToFile(originalUri);
       const thumbnailFile = await uriToFile(thumbnailUri);
 
-      // Log file details
-      console.log("Original File:", originalFile);
-      console.log("Thumbnail File:", thumbnailFile);
-
-      // Upload both images to the backend
-      const { data: result } = await createCameraShot({
+      // Fetch presigned URLs for both original and thumbnail images
+      const originalPresigned = await getPresignedUrl({
         variables: {
-          image: originalFile,
-          thumbnail: thumbnailFile,
+          folder: "camera-images",
+          fileName: originalFile.name,
+          fileType: originalFile.type,
         },
       });
 
-      if (result.createCameraShot.success) {
-        console.log("Image uploaded successfully!");
+      const thumbnailPresigned = await getPresignedUrl({
+        variables: {
+          folder: "camera-images",
+          fileName: thumbnailFile.name,
+          fileType: thumbnailFile.type,
+        },
+      });
+
+      // Upload the images to S3
+      await uploadImageToS3(
+        originalUri,
+        originalPresigned.data.getPresignedUrl.presignedUrl
+      );
+      await uploadImageToS3(
+        thumbnailUri,
+        thumbnailPresigned.data.getPresignedUrl.presignedUrl
+      );
+
+      // Create the camera shot in the backend
+      const result = await createCameraShot({
+        variables: {
+          image: originalPresigned.data.getPresignedUrl.fileUrl,
+          thumbnail: thumbnailPresigned.data.getPresignedUrl.fileUrl,
+        },
+      });
+
+      // Validate the response
+      if (result.data.createCameraShot.success) {
+        return result.data.createCameraShot.cameraShot; // Return the new shot details
       } else {
-        console.error("Upload failed:", result.createCameraShot.message);
+        throw new Error(result.data.createCameraShot.message);
       }
     } catch (error) {
-      console.error("Error uploading image:", error);
+      console.error("Error uploading photo:", error);
+      throw error; // Propagate the error to the caller
     }
   };
 
@@ -261,15 +335,10 @@ export default function CameraHome() {
         onToggleOptions={handleToggleHeaderOptions}
       />
       <View style={{ flex: 1 }}>
-        <View style={{ height: cameraHeight, width: screenWidth }}>
-          <CameraView
-            ref={cameraRef}
-            style={{ height: "100%", width: "100%" }}
-            facing={facing}
-            flash={flash}
-            zoom={zoom}
-          />
-        </View>
+        <CameraView
+          ref={cameraRef}
+          style={{ height: cameraHeight, width: screenWidth }}
+        />
         <Footer
           cameraRef={cameraRef}
           rotation={rotation}

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Dimensions, Image, StyleSheet, View, Pressable } from "react-native";
 import Checkbox from "expo-checkbox";
-import { fetchCachedImageUri } from "../../../utils/cacheHelper";
 
 const { width } = Dimensions.get("window");
 const spacing = 1.5;
@@ -15,22 +14,6 @@ export default function ShotCard({
   navigation,
   index,
 }) {
-  const [cachedImageUri, setCachedImageUri] = useState(null);
-
-  useEffect(() => {
-    // Fetch or cache the image URI
-    const fetchImage = async () => {
-      const uri = await fetchCachedImageUri(
-        `camera_shot_${shot._id}`,
-        shot.image
-      );
-      setCachedImageUri(uri);
-    };
-    fetchImage();
-  }, [shot._id, shot.image]);
-
-  if (!cachedImageUri) return null; // Render nothing while loading
-
   return (
     <Pressable
       onPress={() => navigation.navigate("ViewShot", { shotId: shot._id })}
@@ -43,7 +26,7 @@ export default function ShotCard({
     >
       <View style={styles.shotContainer}>
         {/* Image */}
-        <Image source={{ uri: cachedImageUri }} style={styles.shotImage} />
+        <Image source={{ uri: shot.imageThumbnail }} style={styles.shotImage} />
 
         {/* Overlay Border */}
         {isSelected && <View style={styles.overlayBorder} />}

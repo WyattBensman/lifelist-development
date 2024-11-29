@@ -375,7 +375,7 @@ type Score {
     getDailyCameraShotsLeft: Int
     getAllCameraAlbums: [CameraAlbum]
     getCameraAlbum(albumId: ID!): CameraAlbum
-    getAllCameraShots: [CameraShot]
+    getAllCameraShots(cursor: ID, limit: Int): CameraRollPagination
     getCameraShot(shotId: ID!): CameraShot
     getDevelopingCameraShots: [CameraShot]
   
@@ -426,10 +426,17 @@ type Score {
   }
 
   type ExperiencePagination {
-  experiences: [Experience]
-  nextCursor: ID
-  hasNextPage: Boolean
-}
+    experiences: [Experience]
+    nextCursor: ID
+    hasNextPage: Boolean
+  }
+
+  type CameraRollPagination {
+    shots: [CameraShot]
+    nextCursor: ID
+    hasNextPage: Boolean
+  }
+
 
   type UserWithRelationshipStatus {
     user: User
@@ -659,11 +666,11 @@ type Score {
     updateAssociatedCollages(lifeListExperienceId: ID!, collageIds: [ID]): StandardResponse
 
     # Camera Mutationss
-    createCameraShot(image: Upload!, thumbnail: Upload!): StandardResponse
-    transferCameraShot(shotId: ID!): StandardResponse
+    createCameraShot(image: String!, thumbnail: String!): CreateCameraShotResponse
+    getAndTransferCameraShot(shotId: ID!): GetAndTransferCameraShotResponse
     editCameraShot(shotId: ID!, image: String!): StandardResponse
     deleteCameraShot(shotId: ID!): StandardResponse
-    createCameraAlbum(title: String!, description: String, shots: [ID]): CameraAlbum
+    createCameraAlbum(title: String!, shots: [ID], shotsCount: Int, coverImage: String): StandardResponse
     editCameraAlbum(albumId: ID!, title: String, description: String): CameraAlbum
     deleteCameraAlbum(albumId: ID!): StandardResponse
     addShotToAlbum(albumId: ID!, shotId: ID!): StandardResponse
@@ -723,10 +730,27 @@ type Score {
     user: User
   }
 
+  type GetAndTransferCameraShotResponse {
+    success: Boolean!
+    message: String!
+    cameraShot: CameraShotDetails
+  }
+
+type CameraShotDetails {
+  _id: ID!
+  image: String!
+}
+
   type CollageCreationResponse {
     success: Boolean!
     message: String!
     collageId: ID!
+  }
+
+  type CreateCameraShotResponse {
+    success: Boolean!
+    message: String!
+    cameraShot: CameraShot
   }
 
   type UpdateUserResponse {

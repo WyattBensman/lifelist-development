@@ -85,6 +85,24 @@ export const getImageFromCache = async (key, imagePath) => {
   }
 };
 
+export const deleteImageFromFileSystem = async (cacheKey) => {
+  try {
+    const fileUri = `${FileSystem.documentDirectory}${cacheKey}`;
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
+
+    if (fileInfo.exists) {
+      await FileSystem.deleteAsync(fileUri);
+      console.log(`Deleted cached image: ${fileUri}`);
+      return true;
+    }
+    console.warn(`File does not exist: ${fileUri}`);
+    return false;
+  } catch (error) {
+    console.error(`Failed to delete cached image: ${error.message}`);
+    throw error; // Optionally rethrow for higher-level handling
+  }
+};
+
 // Clear specific image cache
 export const clearImageFromCache = async (key, imagePath) => {
   try {
@@ -177,21 +195,24 @@ export const clearFromAsyncStorage = async (key) => {
 // Clear all persistent caches
 export const clearAllAsyncStorage = async () => {
   try {
-    // Get the current value of isEarlyAccessUnlocked
-    const isEarlyAccessUnlocked = await AsyncStorage.getItem(
-      "isEarlyAccessUnlocked"
-    );
+    // Get all keys in AsyncStorage
+    const keys = await AsyncStorage.getAllKeys();
 
-    // Clear AsyncStorage
-    await AsyncStorage.clear();
+    // Keys to preserve
+    const keysToPreserve = ["isEarlyAccessUnlocked"];
 
-    // Restore isEarlyAccessUnlocked if it existed
-    if (isEarlyAccessUnlocked !== null) {
-      await AsyncStorage.setItem(
-        "isEarlyAccessUnlocked",
-        isEarlyAccessUnlocked
-      );
+    // Filter keys to remove
+    const keysToRemove = keys.filter((key) => !keysToPreserve.includes(key));
+
+    // Remove only keys that are not preserved
+    if (keysToRemove.length > 0) {
+      await AsyncStorage.multiRemove(keysToRemove);
     }
+
+    console.log(
+      "AsyncStorage cleared except for preserved keys:",
+      keysToPreserve
+    );
   } catch (error) {
     console.error("Error clearing AsyncStorage:", error);
   }
@@ -211,7 +232,7 @@ const getFileExtension = (uri) => {
 export const saveImageToFileSystem = async (key, imagePath) => {
   try {
     // Construct the full URL using BASE_URL and the image path
-    const fullImageUrl = `${BASE_URL}${imagePath}`;
+    const fullImageUrl = imagePath;
 
     // Determine the file extension from the path
     const fileExtension = getFileExtension(imagePath);
@@ -305,7 +326,7 @@ export const fetchCachedImageUri = async (imageKey, fallbackUrl) => {
     const cachedUri = await getImageFromFileSystem(imageKey);
     console.log(`FETCHED CACHE IMAGE URI: ${cachedUri}`);
 
-    return cachedUri || `${BASE_URL}${fallbackUrl}`;
+    return cachedUri || fallbackUrl;
   } catch (error) {
     console.error("Error fetching cached image:", error);
     return `${BASE_URL}${fallbackUrl}`;

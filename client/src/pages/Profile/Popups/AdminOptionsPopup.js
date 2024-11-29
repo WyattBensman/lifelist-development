@@ -8,11 +8,7 @@ import {
 } from "../../../styles";
 import { useAuth } from "../../../contexts/AuthContext";
 import IconStatic from "../../../components/Icons/IconStatic";
-import {
-  clearAllAsyncStorage,
-  clearAllFileSystemCache,
-  clearAllCaches,
-} from "../../../utils/cacheHelper";
+import { clearAllCaches } from "../../../utils/cacheHelper";
 
 export default function AdminOptionsPopup({
   visible,

@@ -48,21 +48,27 @@ export const ProfileProvider = ({ children }) => {
     };
 
     initializeProfile();
-  }, []);
+  }, [CACHE_KEY]);
 
   const { data } = useQuery(GET_USER_DATA, {
     skip: !shouldRefetch,
     onCompleted: async (data) => {
+      console.log("Query completed with data:", data);
+
       const userData = data.getUserData;
+      console.log(`Profile Picture: ${userData.profilePicture}`);
+
       const profilePictureUri = await saveImageToFileSystem(
         PROFILE_PICTURE_KEY,
         userData.profilePicture
       );
+      console.log(`profilePictureUri: ${profilePictureUri}`);
 
       const profileWithImage = {
         ...userData,
         profilePicture: profilePictureUri || userData.profilePicture,
       };
+      console.log(profileWithImage);
 
       setProfile(profileWithImage);
       setOriginalProfile(profileWithImage);

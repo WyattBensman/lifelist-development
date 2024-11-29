@@ -22,9 +22,6 @@ export default function SetPermissionsScreen() {
   const [cameraPermissionLocked, setCameraPermissionLocked] = useState(false);
   const [isValid, setIsValid] = useState(false);
 
-  console.log("HI");
-  console.log(profile);
-
   const checkPermissions = async () => {
     const { status } = await cameraPermission.get();
     setIsValid(status === "granted");
