@@ -13,6 +13,7 @@ export default function CategoryExperiencesList({
   editMode,
   searchQuery,
   onDelete,
+  userId,
 }) {
   const filteredList = lifeList.experiences
     .filter(
@@ -29,6 +30,7 @@ export default function CategoryExperiencesList({
       hasAssociatedShots={item.hasAssociatedShots}
       editMode={editMode}
       onDelete={onDelete}
+      userId={userId}
     />
   );
 

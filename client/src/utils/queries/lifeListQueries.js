@@ -26,8 +26,8 @@ export const GET_CURRENT_USER_LIFELIST = gql`
 `;
 
 export const GET_USER_LIFELIST = gql`
-  query GetUserLifeList($userId: ID!) {
-    getUserLifeList(userId: $userId) {
+  query GetUserLifeList($userId: ID!, $cursor: ID, $limit: Int) {
+    getUserLifeList(userId: $userId, cursor: $cursor, limit: $limit) {
       _id
       experiences {
         _id
@@ -40,8 +40,13 @@ export const GET_USER_LIFELIST = gql`
           subCategory
         }
         hasAssociatedShots
-        hasAssociatedCollages
+        associatedShots {
+          _id
+          imageThumbnail
+        }
       }
+      nextCursor
+      hasNextPage
     }
   }
 `;
@@ -91,28 +96,29 @@ export const GET_WISHLISTED_LIST = gql`
 `;
 
 export const GET_LIFELIST_EXPERIENCE = gql`
-  query GetLifeListExperience($experienceId: ID!) {
-    getLifeListExperience(experienceId: $experienceId) {
-      _id
-      list
-      experience {
+  query GetLifeListExperience($experienceId: ID!, $cursor: ID, $limit: Int) {
+    getLifeListExperience(
+      experienceId: $experienceId
+      cursor: $cursor
+      limit: $limit
+    ) {
+      lifeListExperience {
         _id
-        image
-        title
-        category
-        subCategory
-      }
-      associatedCollages {
-        _id
-        coverImage
-      }
-      associatedShots {
-        isHidden
-        shot {
+        list
+        experience {
           _id
           image
+          title
+          category
+          subCategory
+        }
+        associatedShots {
+          _id
+          imageThumbnail
         }
       }
+      nextCursor
+      hasNextPage
     }
   }
 `;

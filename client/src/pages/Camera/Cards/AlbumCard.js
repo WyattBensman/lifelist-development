@@ -3,8 +3,6 @@ import { Image, Pressable, StyleSheet, Text } from "react-native";
 import { truncateText } from "../../../utils/utils";
 
 export default function AlbumCard({ album, navigation }) {
-  console.log(album);
-
   const truncatedTitle = truncateText(album.title, 18);
 
   return (

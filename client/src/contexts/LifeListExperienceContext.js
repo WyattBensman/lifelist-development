@@ -12,7 +12,6 @@ export const LifeListExperienceProvider = ({ children }) => {
       experience,
       list: null,
       associatedShots: [],
-      associatedCollages: [],
       year: null,
       venue: null,
       performers: [],

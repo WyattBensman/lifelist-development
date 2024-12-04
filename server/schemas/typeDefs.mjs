@@ -142,8 +142,7 @@ enum InviteStatus {
     lifeList: LifeList
     experience: Experience
     list: LifeListListEnum
-    associatedShots: [CameraShotInfo]
-    associatedCollages: [Collage]
+    associatedShots: [CameraShot]
     year: Int
     venue: Experience
     performers: [Experience]
@@ -154,21 +153,6 @@ enum InviteStatus {
   enum LifeListListEnum {
     EXPERIENCED
     WISHLISTED
-  }
-
-  type CameraShotInfo {
-    shot: CameraShot
-    isHidden: Boolean
-  }
-
-  type Experience {
-    _id: ID!
-    title: String
-    image: String
-    location: String
-    coordinates: Coordinates
-    category: ExperienceCategory
-    collages: [Collage]
   }
 
   type Experience {
@@ -359,10 +343,10 @@ type Score {
   
     # LifeList Queries
     getCurrentUserLifeList: LifeList
-    getUserLifeList(userId: ID!): LifeListResponse
+    getUserLifeList(userId: ID!, cursor: ID, limit: Int): LifeListPagination
     getExperiencedList(lifeListId: ID!): [LifeListExperience]
     getWishListedList(lifeListId: ID!): [LifeListExperience]
-    getLifeListExperience(experienceId: ID!): LifeListExperience
+    getLifeListExperience(experienceId: ID!, cursor: ID, limit: Int): LifeListExperiencePagination
     getLifeListExperiencesByExperienceIds(lifeListId: ID!, experienceIds: [ID]): [LifeListExperience]
   
     # Collage Queries
@@ -374,7 +358,7 @@ type Score {
     # Camera Queries
     getDailyCameraShotsLeft: Int
     getAllCameraAlbums: [CameraAlbum]
-    getCameraAlbum(albumId: ID!): CameraAlbum
+    getCameraAlbum(albumId: ID!, cursor: ID, limit: Int = 12): CameraAlbumPagination
     getAllCameraShots(cursor: ID, limit: Int): CameraRollPagination
     getCameraShot(shotId: ID!): CameraShot
     getDevelopingCameraShots: [CameraShot]
@@ -413,6 +397,40 @@ type Score {
     hasNextPage: Boolean
   }
 
+  type LifeListPagination {
+    _id: ID!
+    experiences: [LifeListExperienceWithDetails]
+    nextCursor: ID
+    hasNextPage: Boolean
+  }
+
+  type LifeListExperiencePagination {
+    lifeListExperience: LifeListExperience
+    nextCursor: ID
+    hasNextPage: Boolean
+  }
+
+type LifeListExperienceWithDetails {
+  _id: ID!
+  list: LifeListListEnum
+  experience: ExperienceDetails
+  hasAssociatedShots: Boolean
+  associatedShots: [CameraShotMetadata]
+}
+
+type CameraShotMetadata {
+  _id: ID!
+  imageThumbnail: String
+}
+
+type ExperienceDetails {
+  _id: ID!
+  title: String
+  image: String
+  category: String
+  subCategory: String
+}
+
   type CollageRepostPagination {
     items: [Collage]
     nextCursor: ID
@@ -437,6 +455,12 @@ type Score {
     hasNextPage: Boolean
   }
 
+  type CameraAlbumPagination {
+    album: CameraAlbum
+    shots: [CameraShot]
+    nextCursor: ID
+    hasNextPage: Boolean
+  }
 
   type UserWithRelationshipStatus {
     user: User
@@ -498,7 +522,6 @@ type Score {
     list: String
     experience: ExperienceResponse
     hasAssociatedShots: Boolean
-    hasAssociatedCollages: Boolean
   }
 
   type ExperienceResponse {
@@ -649,13 +672,24 @@ type Score {
   
 
     # LifeList Mutations
-    addExperienceToLifeList(
+    addLifeListExperience(
       lifeListId: ID!
       experienceId: ID!
-      list: String!
+      list: LifeListListEnum!
       associatedShots: [ID]
-      associatedCollages: [ID]
+    ): AddLifeListExperienceResponse
+
+    updateLifeListExperience(
+      lifeListExperienceId: ID!
+      list: LifeListListEnum
+      associatedShots: [ID]
     ): StandardResponse
+
+    removeLifeListExperience(
+      lifeListId: ID!
+      lifeListExperienceId: ID!
+    ): StandardResponse
+
     removeExperienceFromLifeList(lifeListId: ID!, lifeListExperienceId: ID!): StandardResponse
     updateLifeListExperienceListStatus(lifeListExperienceId: ID!, newListStatus: String!): StandardResponse
     addCollagesToLifeListExperience(lifeListExperienceId: ID!, collageIds: [ID]): LifeListExperience
@@ -670,7 +704,12 @@ type Score {
     getAndTransferCameraShot(shotId: ID!): GetAndTransferCameraShotResponse
     editCameraShot(shotId: ID!, image: String!): StandardResponse
     deleteCameraShot(shotId: ID!): StandardResponse
-    createCameraAlbum(title: String!, shots: [ID], shotsCount: Int, coverImage: String): StandardResponse
+      createCameraAlbum(
+    title: String!
+    shots: [ID]
+    shotsCount: Int
+    coverImage: String
+  ): CreateCameraAlbumResponse
     editCameraAlbum(albumId: ID!, title: String, description: String): CameraAlbum
     deleteCameraAlbum(albumId: ID!): StandardResponse
     addShotToAlbum(albumId: ID!, shotId: ID!): StandardResponse
@@ -728,6 +767,18 @@ type Score {
     success: Boolean!
     message: String!
     user: User
+  }
+
+  type AddLifeListExperienceResponse {
+    success: Boolean!
+    message: String!
+    lifeListExperienceId: ID
+  }
+
+  type CreateCameraAlbumResponse {
+    success: Boolean!
+    message: String!
+    albumId: ID
   }
 
   type GetAndTransferCameraShotResponse {

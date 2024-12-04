@@ -1,19 +1,50 @@
 import { gql } from "@apollo/client";
 
-export const ADD_EXPERIENCE_TO_LIFELIST = gql`
-  mutation AddExperienceToLifeList(
+export const ADD_LIFELIST_EXPERIENCE = gql`
+  mutation AddLifeListExperience(
     $lifeListId: ID!
     $experienceId: ID!
-    $list: String!
+    $list: LifeListListEnum!
     $associatedShots: [ID]
-    $associatedCollages: [ID]
   ) {
-    addExperienceToLifeList(
+    addLifeListExperience(
       lifeListId: $lifeListId
       experienceId: $experienceId
       list: $list
       associatedShots: $associatedShots
-      associatedCollages: $associatedCollages
+    ) {
+      success
+      message
+      lifeListExperienceId
+    }
+  }
+`;
+
+export const UPDATE_LIFELIST_EXPERIENCE = gql`
+  mutation UpdateLifeListExperience(
+    $lifeListExperienceId: ID!
+    $list: LifeListListEnum
+    $associatedShots: [ID]
+  ) {
+    updateLifeListExperience(
+      lifeListExperienceId: $lifeListExperienceId
+      list: $list
+      associatedShots: $associatedShots
+    ) {
+      success
+      message
+    }
+  }
+`;
+
+export const REMOVE_LIFELIST_EXPERIENCE = gql`
+  mutation RemoveLifeListExperience(
+    $lifeListId: ID!
+    $lifeListExperienceId: ID!
+  ) {
+    removeLifeListExperience(
+      lifeListId: $lifeListId
+      lifeListExperienceId: $lifeListExperienceId
     ) {
       success
       message

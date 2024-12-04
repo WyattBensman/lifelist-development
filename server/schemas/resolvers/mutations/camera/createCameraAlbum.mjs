@@ -27,12 +27,14 @@ const createCameraAlbum = async (
     return {
       success: true,
       message: "Camera album created successfully.",
+      albumId: newAlbum._id, // Rename `_id` to `albumId`
     };
   } catch (error) {
     console.error("Error creating camera album:", error);
     return {
       success: false,
       message: "Failed to create camera album.",
+      albumId: null, // Use `albumId` instead of `_id`
     };
   }
 };

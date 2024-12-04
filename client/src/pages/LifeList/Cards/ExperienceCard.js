@@ -8,8 +8,13 @@ import {
   Pressable,
 } from "react-native";
 import { capitalizeText, truncateText } from "../../../utils/utils";
-import { fetchCachedImageUri } from "../../../utils/cacheHelper";
 import { SymbolView } from "expo-symbols";
+import { getImageFromFileSystem } from "../../../utils/newCacheHelper";
+
+const screenWidth = Dimensions.get("window").width;
+const cardWidth = screenWidth * 0.44;
+const imageHeight = cardWidth * 1.3375;
+const cardHeight = imageHeight + 44;
 
 export default function ExperienceCard({
   experience,
@@ -17,39 +22,31 @@ export default function ExperienceCard({
   hasAssociatedShots,
   navigation,
 }) {
-  const screenWidth = Dimensions.get("window").width;
-  const cardWidth = screenWidth * 0.44;
-  const imageHeight = cardWidth * 1.3375;
-  const cardHeight = imageHeight + 44;
-
   const [imageUri, setImageUri] = useState(null);
 
-  // Construct the image key for caching
-  const imageKey = `experience_image_${experience._id}`;
-
-  // Fetch cached image URI using the helper function
-  useEffect(() => {
-    const fetchImage = async () => {
-      const uri = await fetchCachedImageUri(imageKey, experience.image);
-      setImageUri(uri);
-    };
-    fetchImage();
-  }, [imageKey, experience.image]);
-
-  const truncatedTitle = truncateText(experience.title, 20);
+  const truncatedTitle = truncateText(experience.title, 19);
   const capitalizedCategory = capitalizeText(experience.category);
 
-  const handlePress = () => {
-    if (hasAssociatedShots) {
-      navigation.navigate("LifeListStack", {
-        screen: "ViewExperience",
-        params: { experienceId: lifeListExperienceId },
-      });
-    }
+  useEffect(() => {
+    const fetchCachedImage = async () => {
+      const cacheKey = `experience_image_${experience._id}`;
+
+      const cachedUri = await getImageFromFileSystem(cacheKey);
+
+      setImageUri(cachedUri || experience.image);
+    };
+    fetchCachedImage();
+  }, [experience]);
+
+  const handleNavigateToDetails = () => {
+    navigation.navigate("LifeListStack", {
+      screen: "ViewExperience",
+      params: { experienceId: lifeListExperienceId },
+    });
   };
 
   return (
-    <Pressable onPress={handlePress} disabled={!hasAssociatedShots}>
+    <Pressable onPress={handleNavigateToDetails} disabled={!hasAssociatedShots}>
       <View
         style={[
           styles.cardContainer,
@@ -60,12 +57,6 @@ export default function ExperienceCard({
         <Image
           source={{ uri: imageUri }}
           style={[styles.image, { height: imageHeight }]}
-          onError={(error) =>
-            console.error(
-              `Error loading image from URI: ${imageUri}`,
-              error.nativeEvent
-            )
-          }
         />
         <View style={styles.spacer}>
           <Text style={styles.title}>{truncatedTitle}</Text>

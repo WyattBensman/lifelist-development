@@ -28,22 +28,29 @@ export const GET_ALL_CAMERA_ALBUMS = gql`
       title
       coverImage
       shotsCount
+      shots {
+        _id
+      }
     }
   }
 `;
 
 // Get a specific camera album by ID
 export const GET_CAMERA_ALBUM = gql`
-  query GetCameraAlbum($albumId: ID!) {
-    getCameraAlbum(albumId: $albumId) {
-      _id
-      title
-      description
+  query GetCameraAlbum($albumId: ID!, $cursor: ID, $limit: Int) {
+    getCameraAlbum(albumId: $albumId, cursor: $cursor, limit: $limit) {
+      album {
+        _id
+        coverImage
+        title
+      }
       shots {
         _id
         imageThumbnail
         capturedAt
       }
+      hasNextPage
+      nextCursor
     }
   }
 `;

@@ -4,32 +4,25 @@ import { useRoute } from "@react-navigation/native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import ListViewNavigator from "../Navigation/ListViewNavigator";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
-import { useMutation } from "@apollo/client";
-import { REMOVE_EXPERIENCE_FROM_LIFELIST } from "../../../utils/mutations";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useLifeList } from "../../../contexts/LifeListContext";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
-import LoadingScreen from "../../Loading/LoadingScreen";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
 import Icon from "../../../components/Icons/Icon";
 
 export default function ListView({ navigation }) {
   const route = useRoute();
   const { setIsTabBarVisible } = useNavigationContext();
-  const { currentUser } = useAuth();
+  const { lifeLists, removeLifeListExperienceFromCache } = useLifeList();
+
   const [editMode, setEditMode] = useState(false);
   const [viewType, setViewType] = useState("EXPERIENCED");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedExperienceId, setSelectedExperienceId] = useState(null);
 
-  // Initialize lifeList state with the data passed from the route params
-  const [lifeList, setLifeList] = useState(
-    route.params?.lifeList || { experiences: [] }
-  );
-
+  // Determine user and LifeList details from route or context
   const userId = route.params?.userId || currentUser;
-  const isCurrentUser = userId === currentUser;
+  const isCurrentUser = route.params?.isAdmin || userId === currentUser;
+  const lifeList = lifeLists[userId] || { experiences: [] };
 
   useEffect(() => {
     setIsTabBarVisible(false);
@@ -43,7 +36,7 @@ export default function ListView({ navigation }) {
   }, [route.params?.editMode]);
 
   const toggleEditMode = () => {
-    setEditMode(!editMode);
+    setEditMode((prev) => !prev);
   };
 
   const handleViewTypeChange = (type) => {
@@ -60,8 +53,6 @@ export default function ListView({ navigation }) {
     }
   };
 
-  const [removeExperience] = useMutation(REMOVE_EXPERIENCE_FROM_LIFELIST);
-
   const handleDeleteExperience = (experienceId) => {
     setSelectedExperienceId(experienceId);
     setModalVisible(true);
@@ -69,18 +60,10 @@ export default function ListView({ navigation }) {
 
   const confirmDeleteExperience = async () => {
     try {
-      await removeExperience({
-        variables: {
-          lifeListId: lifeList._id,
-          lifeListExperienceId: selectedExperienceId,
-        },
-      });
-      setLifeList((prevList) => ({
-        ...prevList,
-        experiences: prevList.experiences.filter(
-          (exp) => exp._id !== selectedExperienceId
-        ),
-      }));
+      await removeLifeListExperienceFromCache(
+        selectedExperienceId,
+        isCurrentUser
+      );
     } catch (error) {
       console.error("Failed to remove experience:", error);
     } finally {
@@ -110,10 +93,6 @@ export default function ListView({ navigation }) {
           )
         }
         hasBorder={false}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        isSearchFocused={isSearchFocused}
-        onSearchFocusChange={setIsSearchFocused}
       />
       <View style={[layoutStyles.flex, styles.buttonContainer]}>
         <Pressable
@@ -154,9 +133,9 @@ export default function ListView({ navigation }) {
         lifeList={lifeList}
         viewType={viewType}
         editMode={editMode}
-        searchQuery={searchQuery}
         navigation={navigation}
         onDelete={handleDeleteExperience}
+        userId={userId}
       />
       <CustomAlert
         visible={isModalVisible}

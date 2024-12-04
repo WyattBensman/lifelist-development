@@ -1,14 +1,12 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { View, Text, FlatList, StyleSheet, Alert } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { useQuery } from "@apollo/client";
-import { useAuth } from "../../../contexts/AuthContext";
 import SearchItemCard from "../Cards/SearchItemCard";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import AddExperiencesBottomContainer from "../Components/AddExperiencesBottomContainer";
 import { GET_ALL_EXPERIENCES } from "../../../utils/queries";
-import CustomAlert from "../../../components/Alerts/CustomAlert";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useLifeListExperienceContext } from "../../../contexts/LifeListExperienceContext";

@@ -4,17 +4,17 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
 import EditProfileBottomContainer from "../../Components/EditProfileBottomContainer";
 import CustomAlert from "../../../../components/Alerts/CustomAlert";
-import { useProfile } from "../../../../contexts/ProfileContext";
+import { useAdminProfile } from "../../../../contexts/AdminProfileContext"; // Updated context
 
 export default function EditContact() {
   const navigation = useNavigation();
   const {
-    profile,
-    updateProfileField,
-    saveProfile,
-    resetChanges,
+    adminProfile,
+    updateAdminProfileField,
+    saveAdminProfile,
+    resetAdminChanges,
     unsavedChanges,
-  } = useProfile();
+  } = useAdminProfile(); // Updated to use AdminProfileContext
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -56,8 +56,8 @@ export default function EditContact() {
         <View style={styles.row}>
           <Text style={styles.label}>Email</Text>
           <TextInput
-            value={profile?.email || ""}
-            onChangeText={(value) => updateProfileField("email", value)}
+            value={adminProfile?.email || ""}
+            onChangeText={(value) => updateAdminProfileField("email", value)}
             style={styles.input}
             placeholder="Enter your email"
             placeholderTextColor="#d4d4d4"
@@ -66,8 +66,8 @@ export default function EditContact() {
         <View style={styles.row}>
           <Text style={styles.label}>Phone</Text>
           <TextInput
-            value={profile?.phone || ""}
-            onChangeText={(value) => updateProfileField("phone", value)}
+            value={adminProfile?.phone || ""}
+            onChangeText={(value) => updateAdminProfileField("phone", value)}
             style={styles.input}
             placeholder="Enter your phone number"
             placeholderTextColor="#d4d4d4"
@@ -117,8 +117,8 @@ export default function EditContact() {
         </View>
         {unsavedChanges && (
           <EditProfileBottomContainer
-            saveChanges={saveProfile}
-            discardChanges={resetChanges}
+            saveChanges={saveAdminProfile}
+            discardChanges={resetAdminChanges}
           />
         )}
       </View>
@@ -130,7 +130,7 @@ export default function EditContact() {
         title="Unsaved Changes"
         message="You have unsaved changes. Are you sure you want to leave without saving?"
         onConfirm={() => {
-          resetChanges();
+          resetAdminChanges();
           setShowAlert(false);
           navigation.goBack();
         }}

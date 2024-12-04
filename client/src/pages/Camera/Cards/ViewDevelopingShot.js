@@ -22,7 +22,7 @@ const aspectRatio = 3 / 2;
 const imageHeight = width * aspectRatio;
 
 export default function ViewDevelopingShot({ shotId, onClose }) {
-  const { removeShotFromCache } = useDevelopingRoll();
+  const { removeShotFromDevelopingRoll } = useDevelopingRoll(); // Updated function name
   const [getAndTransferCameraShot, { data, loading, error }] = useMutation(
     GET_AND_TRANSFER_CAMERA_SHOT
   );
@@ -46,7 +46,7 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
           setImageUri(fullImage);
 
           if (!isRemovedFromCache) {
-            removeShotFromCache(shotId);
+            removeShotFromDevelopingRoll(shotId); // Updated function name
             setIsRemovedFromCache(true); // Ensure the cache is updated only once
           }
         } else {
@@ -64,7 +64,7 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
   }, [
     shotId,
     getAndTransferCameraShot,
-    removeShotFromCache,
+    removeShotFromDevelopingRoll, // Updated function name
     isRemovedFromCache,
   ]);
 
@@ -125,15 +125,8 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
     );
   }
 
-  console.log(imageUri);
-
   return (
     <View style={styles.container}>
-      {/* Blurred Background */}
-      <Pressable style={StyleSheet.absoluteFill} onPress={onClose}>
-        <View style={styles.blurOverlay} />
-      </Pressable>
-
       {/* Draggable Image */}
       <Animated.View
         {...panResponder.panHandlers}

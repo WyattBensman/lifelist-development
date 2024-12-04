@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Image, Text, View, Pressable } from "react-native";
 import { useNavigation } from "@react-navigation/native"; // Import navigation hook
 import { truncateText, capitalizeText } from "../../../utils/utils";
-import { BASE_URL } from "../../../utils/config";
 import IconStatic from "../../../components/Icons/IconStatic";
 import { StyleSheet } from "react-native";
 import { cardStyles, iconStyles } from "../../../styles";
@@ -17,7 +16,7 @@ export default function AddExperienceCard({
   const [listStatus, setListStatus] = useState(list || "");
 
   // Ensure the image URL is constructed properly with BASE_URL
-  const imageUrl = experience?.image ? `${BASE_URL}${experience.image}` : "";
+  const imageUrl = experience?.image;
   const truncatedTitle = truncateText(experience?.title || "", 30);
   const capitalizedCategory = capitalizeText(experience?.category || "");
 

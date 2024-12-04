@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Image, Text, View, Pressable, StyleSheet } from "react-native";
-import { useMutation } from "@apollo/client";
 import { cardStyles } from "../../../styles";
 import { truncateText, capitalizeText } from "../../../utils/utils";
 import { BASE_URL } from "../../../utils/config";
-import {
-  ADD_SHOT_TO_EXPERIENCE,
-  REMOVE_SHOT_FROM_EXPERIENCE,
-} from "../../../utils/mutations";
+import { useLifeList } from "../../../contexts/LifeListContext";
 
 export default function AddShotToExperienceCard({ experience, shotId }) {
+  const { updateAssociatedShotsInCache } = useLifeList();
   const [isShotAdded, setIsShotAdded] = useState(false);
 
   const imageUrl = `${BASE_URL}${experience.experience.image}`;
@@ -17,31 +14,20 @@ export default function AddShotToExperienceCard({ experience, shotId }) {
   const capitalizedCategory = capitalizeText(experience.experience.category);
   const { _id, associatedShots } = experience;
 
-  const [addShotToExperience] = useMutation(ADD_SHOT_TO_EXPERIENCE);
-  const [removeShotFromExperience] = useMutation(REMOVE_SHOT_FROM_EXPERIENCE);
-
+  // Check if the shot is already associated with the experience
   useEffect(() => {
     setIsShotAdded(associatedShots.some((shot) => shot._id === shotId));
   }, [associatedShots, shotId]);
 
   const handleAddRemoveShot = async () => {
     try {
-      if (isShotAdded) {
-        await removeShotFromExperience({
-          variables: {
-            experienceId: _id,
-            shotId: shotId,
-          },
-        });
-      } else {
-        await addShotToExperience({
-          variables: {
-            experienceId: _id,
-            shotId: shotId,
-          },
-        });
-      }
-      setIsShotAdded(!isShotAdded);
+      const updatedShots = isShotAdded
+        ? associatedShots.filter((shot) => shot._id !== shotId) // Remove the shot
+        : [...associatedShots, { _id: shotId }]; // Add the shot
+
+      // Update the cache
+      await updateAssociatedShotsInCache(_id, updatedShots);
+      setIsShotAdded(!isShotAdded); // Toggle the button state
     } catch (error) {
       console.error("Failed to update associated shots:", error);
     }
@@ -110,23 +96,22 @@ const styles = StyleSheet.create({
     color: "#aaa",
     marginTop: 1.5,
   },
-  // "Add" button uses the dark background and white text (similar to commentsButton)
   addButtonContainer: {
-    backgroundColor: "#252525", // Darker background for the "Add" button
-    borderRadius: 24, // Rounded corners
+    backgroundColor: "#252525",
+    borderRadius: 24,
     paddingVertical: 6,
     paddingHorizontal: 12,
     justifyContent: "center",
     alignItems: "center",
   },
   addButtonText: {
-    color: "#aaa", // White text for the "Add" button
+    color: "#aaa",
     fontSize: 12,
     fontWeight: "500",
   },
   addedButtonContainer: {
-    backgroundColor: "#6AB95230", // Light green background
-    borderRadius: 24, // Rounded corners
+    backgroundColor: "#6AB95230",
+    borderRadius: 24,
     borderWidth: 1,
     borderColor: "#6AB95250",
     paddingVertical: 5,
@@ -135,7 +120,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   addedButtonText: {
-    color: "#6AB952", // Green text color for the "Added" button
+    color: "#6AB952",
     fontSize: 12,
     fontWeight: "500",
   },

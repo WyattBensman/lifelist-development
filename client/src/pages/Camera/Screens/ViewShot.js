@@ -10,17 +10,13 @@ import {
   Animated,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useMutation, useQuery } from "@apollo/client";
-import { iconStyles, layoutStyles } from "../../../styles";
+import { useCameraRoll } from "../../../contexts/CameraRollContext";
+import { layoutStyles, iconStyles } from "../../../styles";
 import Icon from "../../../components/Icons/Icon";
 import ViewShotHeader from "../../../components/Headers/ViewShotHeader";
 import ViewShotCard from "../Cards/ViewShotCard";
 import * as Sharing from "expo-sharing";
-import { BASE_URL } from "../../../utils/config";
-import { DELETE_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
-import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import DropdownMenuShot from "../../../components/Dropdowns/DropdownMenuShot";
-import OptionsAlert from "../../../components/Alerts/OptionsAlert";
 import DangerAlert from "../../../components/Alerts/DangerAlert";
 
 const { width } = Dimensions.get("window");
@@ -31,38 +27,46 @@ export default function ViewShot() {
   const navigation = useNavigation();
   const route = useRoute();
   const { shotId, fromAlbum } = route.params;
-  const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_SHOTS);
+
+  const {
+    shots,
+    fetchFullResolutionImage,
+    preloadFullResolutionImages,
+    removeShotFromRoll,
+  } = useCameraRoll();
+
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentShot, setCurrentShot] = useState(null);
   const [isMenuVisible, setIsMenuVisible] = useState(false);
-  const rotateAnim = useRef(new Animated.Value(0)).current;
-  const [deleteCameraShot] = useMutation(DELETE_CAMERA_SHOT);
   const [isDeleteAlertVisible, setIsDeleteAlertVisible] = useState(false);
   const [isOptionsAlertVisible, setIsOptionsAlertVisible] = useState(false);
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
+  // Set the initial index based on shotId
   useEffect(() => {
-    if (data) {
-      const initialIndex = data.getAllCameraShots.findIndex(
-        (shot) => shot._id === shotId
-      );
-      setCurrentIndex(initialIndex);
-    }
-  }, [data, shotId]);
+    const initialIndex = shots.findIndex((shot) => shot._id === shotId);
+    setCurrentIndex(initialIndex);
+  }, [shotId, shots]);
 
-  if (loading) return <ActivityIndicator size="large" color="#0000ff" />;
-  if (error) return <Text>Error: {error.message}</Text>;
+  const handleViewableItemsChanged = useCallback(
+    async ({ viewableItems }) => {
+      if (viewableItems.length > 0) {
+        const newIndex = viewableItems[0].index;
+        setCurrentIndex(newIndex);
 
-  const shotsData = data.getAllCameraShots;
-  const currentShot = shotsData[currentIndex];
-  const date = new Date(currentShot.capturedAt).toLocaleDateString("en-US", {
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-  const time = new Date(currentShot.capturedAt).toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  });
+        // Preload adjacent images
+        await preloadFullResolutionImages(newIndex);
+
+        // Fetch the current shot's full-resolution image
+        const shot = shots[newIndex];
+        if (shot) {
+          const fullResolutionImage = await fetchFullResolutionImage(shot._id);
+          setCurrentShot({ ...shot, image: fullResolutionImage });
+        }
+      }
+    },
+    [shots, fetchFullResolutionImage, preloadFullResolutionImages]
+  );
 
   useEffect(() => {
     Animated.timing(rotateAnim, {
@@ -77,78 +81,69 @@ export default function ViewShot() {
     outputRange: ["0deg", "90deg"],
   });
 
-  const handleViewableItemsChanged = useCallback(({ viewableItems }) => {
-    if (viewableItems.length > 0) {
-      setCurrentIndex(viewableItems[0].index);
-    }
-  }, []);
-
-  const handleSharePress = async () => {
-    if (await Sharing.isAvailableAsync()) {
-      await Sharing.shareAsync(`${BASE_URL}${currentShot.image}`);
-    } else {
-      alert("Sharing is not available on this device");
-    }
-  };
-
   const toggleMenu = () => {
     setIsMenuVisible(!isMenuVisible);
   };
 
-  // Handle Options Alert actions
-  const handleDeletePress = () => {
-    setIsDeleteAlertVisible(true); // Show CustomAlert for deletion confirmation
+  const handleSharePress = async () => {
+    if (!currentShot?.image) return;
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(currentShot.image);
+    } else {
+      alert("Sharing is not available on this device.");
+    }
   };
 
-  const handleRemoveFromAlbumPress = () => {
-    alert("Remove from Camera Album (implement logic)");
-    setIsOptionsAlertVisible(false);
+  const handleDeletePress = () => {
+    setIsDeleteAlertVisible(true);
   };
 
   const confirmDelete = async () => {
     try {
-      const { data } = await deleteCameraShot({
-        variables: { shotId: currentShot._id },
-      });
-      if (data.deleteCameraShot.success) {
-        const newShotsData = shotsData.filter(
-          (shot) => shot._id !== currentShot._id
-        );
-        if (newShotsData.length > 0) {
-          setCurrentIndex((prevIndex) =>
-            prevIndex === newShotsData.length ? prevIndex - 1 : prevIndex
-          );
-          refetch(); // Refetch to get the updated list of shots
-        } else {
-          navigation.goBack(); // If no shots are left, go back
-        }
-      } else {
-        alert(data.deleteCameraShot.message);
+      const shotId = currentShot?._id;
+      if (shotId) {
+        await removeShotFromRoll(shotId);
+        const nextIndex =
+          currentIndex === shots.length - 1 ? currentIndex - 1 : currentIndex;
+        setCurrentIndex(nextIndex);
       }
     } catch (error) {
       console.error("Error deleting shot:", error);
-      alert("Failed to delete shot. Please try again.");
+      alert("Failed to delete shot.");
+    } finally {
+      setIsDeleteAlertVisible(false);
     }
-    setIsDeleteAlertVisible(false);
   };
 
-  const handleAddToExperiencePress = () => {
-    navigation.navigate("AddShotToExperience", { shotId: currentShot._id });
-  };
+  if (shots.length === 0) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
-  const handleAddToAlbumPress = () => {
-    navigation.navigate("AddShotToAlbum", { shotId: currentShot._id });
-  };
+  const date = currentShot
+    ? new Date(currentShot.capturedAt).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "";
+  const time = currentShot
+    ? new Date(currentShot.capturedAt).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      })
+    : "";
 
-  // Dropdown items
   const dropdownItems = [
     {
       icon: "trash",
       style: iconStyles.deleteIcon,
       label: "Delete Shot",
-      onPress: fromAlbum
-        ? () => setIsOptionsAlertVisible(true) // Show OptionsAlert if from album
-        : handleDeletePress, // Show delete confirmation otherwise
+      onPress: handleDeletePress,
       backgroundColor: "#FF634730",
       tintColor: "#FF6347",
     },
@@ -156,7 +151,8 @@ export default function ViewShot() {
       icon: "folder.badge.plus",
       style: iconStyles.addToAlbum,
       label: "Add to Album",
-      onPress: handleAddToAlbumPress,
+      onPress: () =>
+        navigation.navigate("AddShotToAlbum", { shotId: currentShot?._id }),
       backgroundColor: "#5FC4ED30",
       tintColor: "#5FC4ED",
     },
@@ -164,7 +160,10 @@ export default function ViewShot() {
       icon: "plus",
       style: iconStyles.addExperienceIcon,
       label: "Add to Exp",
-      onPress: handleAddToExperiencePress,
+      onPress: () =>
+        navigation.navigate("AddShotToExperience", {
+          shotId: currentShot?._id,
+        }),
       backgroundColor: "#6AB95230",
       tintColor: "#6AB952",
     },
@@ -179,100 +178,96 @@ export default function ViewShot() {
 
   return (
     <View style={layoutStyles.wrapper}>
-      {shotsData.length > 0 && (
-        <>
-          <ViewShotHeader
-            arrow={
-              <Icon
-                name="xmark"
-                style={iconStyles.exit}
-                onPress={() => navigation.goBack()}
-                weight={"semibold"}
-              />
-            }
-            date={date}
-            time={time}
-            ellipsis={
-              <Animated.View style={{ transform: [{ rotate: rotation }] }}>
-                <Icon
-                  name="ellipsis"
-                  style={iconStyles.ellipsis}
-                  weight="bold"
-                  onPress={toggleMenu}
-                />
-              </Animated.View>
-            }
-            hasBorder={false}
-            dropdownVisible={isMenuVisible}
-            dropdownContent={dropdownContent}
+      <ViewShotHeader
+        arrow={
+          <Icon
+            name="xmark"
+            style={iconStyles.exit}
+            onPress={() => navigation.goBack()}
+            weight="semibold"
           />
-          <View style={{ height: imageHeight }}>
-            <FlatList
-              data={shotsData}
-              renderItem={({ item }) => (
-                <View style={{ width }}>
-                  <ViewShotCard imageUrl={item.image} shotId={item._id} />
-                </View>
-              )}
-              keyExtractor={(item) => item._id.toString()}
-              horizontal
-              pagingEnabled
-              onViewableItemsChanged={handleViewableItemsChanged}
-              showsHorizontalScrollIndicator={false}
-              snapToAlignment="start"
-              decelerationRate="fast"
-              initialScrollIndex={currentIndex}
-              getItemLayout={(data, index) => ({
-                length: width,
-                offset: width * index,
-                index,
-              })}
+        }
+        date={date}
+        time={time}
+        ellipsis={
+          <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+            <Icon
+              name="ellipsis"
+              style={iconStyles.ellipsis}
+              weight="bold"
+              onPress={toggleMenu}
             />
-          </View>
-        </>
-      )}
+          </Animated.View>
+        }
+        hasBorder={false}
+        dropdownVisible={isMenuVisible}
+        dropdownContent={dropdownContent}
+      />
+
+      <View style={{ height: imageHeight }}>
+        <FlatList
+          data={shots}
+          renderItem={({ item, index }) => (
+            <View style={{ width }}>
+              <ViewShotCard
+                imageUrl={item.image}
+                shotId={item._id}
+                fullResolution={currentShot?.image || item.imageThumbnail}
+                isVisible={index === currentIndex}
+              />
+            </View>
+          )}
+          keyExtractor={(item) => item._id.toString()}
+          horizontal
+          pagingEnabled
+          initialNumToRender={3}
+          maxToRenderPerBatch={5}
+          onViewableItemsChanged={handleViewableItemsChanged}
+          showsHorizontalScrollIndicator={false}
+          initialScrollIndex={currentIndex}
+          getItemLayout={(data, index) => ({
+            length: width,
+            offset: width * index,
+            index,
+          })}
+        />
+      </View>
+
       <View style={styles.bottomContainer}>
         <Pressable
           style={[styles.iconButton, isMenuVisible && styles.disabledButton]}
-          onPress={!isMenuVisible ? handleSharePress : null}
-          disabled={isMenuVisible}
+          onPress={handleSharePress}
         >
           <Icon name="paperplane" style={iconStyles.shareIcon} weight="bold" />
         </Pressable>
       </View>
 
-      {/* Custom Alert for Delete Confirmation */}
       <DangerAlert
         visible={isDeleteAlertVisible}
         onRequestClose={() => setIsDeleteAlertVisible(false)}
         title="Delete Camera Shot"
         message="Are you sure you want to delete this shot?"
         onConfirm={confirmDelete}
-        onCancel={() => setIsDeleteAlertVisible(false)} // Explicit cancel action
+        onCancel={() => setIsDeleteAlertVisible(false)}
         cancelButtonText="Discard"
-      />
-
-      {/* Options Alert for Album */}
-      <OptionsAlert
-        visible={isOptionsAlertVisible}
-        onRequestClose={() => setIsOptionsAlertVisible(false)}
-        button1Text="Remove from Camera Album"
-        button2Text="Delete Camera Shot"
-        onButton1Press={handleRemoveFromAlbumPress}
-        onButton2Press={handleDeletePress}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#121212",
+  },
   bottomContainer: {
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-end",
     paddingHorizontal: 20,
-    width: "100%",
     backgroundColor: "#121212",
   },
   iconButton: {

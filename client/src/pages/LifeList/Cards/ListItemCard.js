@@ -4,30 +4,28 @@ import {
   Text,
   View,
   Pressable,
-  StyleSheet,
   Animated,
+  StyleSheet,
 } from "react-native";
-import { useMutation } from "@apollo/client";
 import { cardStyles, iconStyles } from "../../../styles";
 import { truncateText, capitalizeText } from "../../../utils/utils";
-import { fetchCachedImageUri } from "../../../utils/cacheHelper";
-import {
-  UPDATE_LIFELIST_EXPERIENCE_LIST_STATUS,
-  UPDATE_ASSOCIATED_SHOTS,
-} from "../../../utils/mutations";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "../../../components/Icons/Icon";
 import IconStatic from "../../../components/Icons/IconStatic";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
 import { SymbolView } from "expo-symbols";
+import { getImageFromFileSystem } from "../../../utils/newCacheHelper";
+import { useLifeList } from "../../../contexts/LifeListContext";
 
 export default function ListItemCard({
+  lifeListExperienceId,
   experience,
   editMode,
   onDelete,
   hasAssociatedShots,
 }) {
   const navigation = useNavigation();
+  const { updateLifeListExperienceInCache } = useLifeList(); // Context method for updates
   const [isSelected, setIsSelected] = useState(false);
   const [isEditMode, setIsEditMode] = useState(editMode);
   const [listStatus, setListStatus] = useState(experience.list);
@@ -39,25 +37,14 @@ export default function ListItemCard({
   const capitalizedCategory = capitalizeText(experience.experience.category);
   const { _id, associatedShots } = experience;
 
-  // Construct the image key for caching
-  const imageKey = `experience_image_${experience.experience._id}`;
-
-  // Fetch cached image URI using the helper function
   useEffect(() => {
-    const fetchImage = async () => {
-      const uri = await fetchCachedImageUri(
-        imageKey,
-        experience.experience.image
-      );
-      setImageUri(uri);
+    const fetchCachedImage = async () => {
+      const cacheKey = `experience_image_${experience._id}`;
+      const cachedUri = await getImageFromFileSystem(cacheKey);
+      setImageUri(cachedUri || experience.experience.image);
     };
-    fetchImage();
-  }, [imageKey, experience.experience.image]);
-
-  const [updateListStatus] = useMutation(
-    UPDATE_LIFELIST_EXPERIENCE_LIST_STATUS
-  );
-  const [updateShots] = useMutation(UPDATE_ASSOCIATED_SHOTS);
+    fetchCachedImage();
+  }, [experience]);
 
   const handlePress = () => {
     if (isEditMode) {
@@ -65,7 +52,7 @@ export default function ListItemCard({
     } else if (hasAssociatedShots) {
       navigation.navigate("LifeListStack", {
         screen: "ViewExperience",
-        params: { experienceId: _id },
+        params: { experienceId: lifeListExperienceId },
       });
     }
   };
@@ -75,44 +62,41 @@ export default function ListItemCard({
   };
 
   const handleToggleListStatus = async () => {
+    const newListStatus =
+      listStatus === "EXPERIENCED" ? "WISHLISTED" : "EXPERIENCED";
+
     if (listStatus === "EXPERIENCED" && hasAssociatedShots) {
       setIsAlertVisible(true);
-    } else {
-      const newListStatus =
-        listStatus === "EXPERIENCED" ? "WISHLISTED" : "EXPERIENCED";
-      setListStatus(newListStatus);
-      try {
-        await updateListStatus({
-          variables: {
-            lifeListExperienceId: _id,
-            newListStatus,
-          },
-        });
-      } catch (error) {
-        console.error("Failed to update list status:", error);
-      }
+      return;
+    }
+
+    const previousStatus = listStatus;
+    setListStatus(newListStatus);
+
+    try {
+      // Pass the updated item directly
+      await updateLifeListExperienceInCache({
+        lifeListExperienceId: lifeListExperienceId,
+        list: newListStatus,
+        associatedShots: newListStatus === "WISHLISTED" ? [] : associatedShots,
+      });
+    } catch (error) {
+      console.error("Failed to update list status:", error);
+      setListStatus(previousStatus); // Rollback UI update on failure
     }
   };
 
   const confirmChangeListStatus = async () => {
     const newListStatus =
       listStatus === "EXPERIENCED" ? "WISHLISTED" : "EXPERIENCED";
-    setListStatus(newListStatus);
+
     try {
-      await updateListStatus({
-        variables: {
-          lifeListExperienceId: _id,
-          newListStatus,
-        },
+      setListStatus(newListStatus);
+      await updateLifeListExperienceInCache({
+        lifeListExperienceId,
+        list: newListStatus,
+        associatedShots: [],
       });
-      if (listStatus === "EXPERIENCED") {
-        await updateShots({
-          variables: {
-            lifeListExperienceId: _id,
-            shotIds: [],
-          },
-        });
-      }
       setIsAlertVisible(false);
     } catch (error) {
       console.error(
@@ -124,22 +108,9 @@ export default function ListItemCard({
 
   const handleManageShots = () => {
     navigation.navigate("ManageShots", {
-      experienceId: _id,
+      experienceId: lifeListExperienceId,
       associatedShots,
     });
-  };
-
-  const handleUpdateShots = async (newShots) => {
-    try {
-      await updateShots({
-        variables: {
-          lifeListExperienceId: _id,
-          shotIds: newShots.map((shot) => shot._id),
-        },
-      });
-    } catch (error) {
-      console.error("Failed to update associated shots:", error);
-    }
   };
 
   useEffect(() => {
@@ -333,24 +304,3 @@ const styles = StyleSheet.create({
     borderColor: "#5FC4ED50",
   },
 });
-
-/*   const [cachedImageUri, setCachedImageUri] = useState(null);
-
-  // Construct the image key
-  const imageKey = `experience_image_${experience._id}`;
-
-  useEffect(() => {
-    const fetchCachedImage = async () => {
-      try {
-        const cachedUri = await getImageFromFileSystem(imageKey);
-        if (cachedUri) {
-          setCachedImageUri(cachedUri);
-        }
-      } catch (error) {
-        console.error("Error fetching cached image:", error);
-      }
-    };
-    fetchCachedImage();
-  }, [imageKey]);
-
-  const imageUrl = cachedImageUri || `${BASE_URL}${experience.image}`; */

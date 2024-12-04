@@ -1,79 +1,107 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
-import { useQuery, useMutation } from "@apollo/client";
 import { headerStyles, layoutStyles, iconStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries/cameraQueries";
 import SelectableShotCard from "../Cards/SelectableShotCard";
-import { CREATE_CAMERA_ALBUM } from "../../../utils/mutations/cameraMutations";
 import Icon from "../../../components/Icons/Icon";
-import { useCameraAlbums } from "../../../contexts/CameraAlbumContext";
+import { useCameraAlbums } from "../../../contexts/CameraAlbumContext"; // CameraAlbum context
+import { useCameraRoll } from "../../../contexts/CameraRollContext"; // CameraRoll context
 
 export default function CreateAlbum() {
   const navigation = useNavigation();
   const route = useRoute();
   const { albumTitle } = route.params; // Album title passed from the modal
 
-  const [selectedShots, setSelectedShots] = useState([]);
-  const [changesMade, setChangesMade] = useState(false);
+  const [selectedShots, setSelectedShots] = useState([]); // Shots selected by the user
+  const [changesMade, setChangesMade] = useState(false); // Tracks whether any shots are selected
 
-  // Access cached albums and add functionality from the context
+  // Contexts for camera roll and albums
   const { addAlbumToCache } = useCameraAlbums();
+  const {
+    initializeCameraRollCache,
+    shots: cameraRollShots,
+    isCameraRollCacheInitialized,
+  } = useCameraRoll();
 
-  const { data, loading, error } = useQuery(GET_ALL_CAMERA_SHOTS);
-  const [createCameraAlbum] = useMutation(CREATE_CAMERA_ALBUM);
+  // Initialize the camera roll cache on mount
+  useEffect(() => {
+    const initializeCache = async () => {
+      if (!isCameraRollCacheInitialized) {
+        await initializeCameraRollCache();
+      }
+    };
+    initializeCache();
+  }, [initializeCameraRollCache, isCameraRollCacheInitialized]);
 
+  // Check if changes were made (i.e., any shots are selected)
   useEffect(() => {
     setChangesMade(selectedShots.length > 0);
   }, [selectedShots]);
 
+  // Toggle shot selection
   const handleCheckboxToggle = (shot) => {
-    const isAlreadySelected = selectedShots.find((s) => s.shotId === shot._id);
+    const isAlreadySelected = selectedShots.some((s) => s.shotId === shot._id);
 
     if (isAlreadySelected) {
       setSelectedShots((prev) => prev.filter((s) => s.shotId !== shot._id));
     } else {
       setSelectedShots((prev) => [
         ...prev,
-        { shotId: shot._id, image: shot.image },
+        { shotId: shot._id, image: shot.imageThumbnail },
       ]);
     }
   };
 
+  // Save the new album
   const saveChanges = async () => {
     try {
-      const { data } = await createCameraAlbum({
-        variables: {
-          title: albumTitle,
-          shots: selectedShots.map((shot) => shot.shotId),
-          shotsCount: selectedShots.length,
-          coverImage: selectedShots[0]?.image, // Use the first selected shot as cover
-        },
-      });
+      if (!selectedShots.length) {
+        Alert.alert(
+          "Error",
+          "Please select at least one shot to create an album."
+        );
+        return;
+      }
 
-      const newAlbum = data.createCameraAlbum;
+      const newAlbumData = {
+        title: albumTitle,
+        shots: selectedShots.map((shot) => shot.shotId),
+        shotsCount: selectedShots.length,
+        coverImage: selectedShots[0]?.image, // Use the first selected shot as the cover image
+      };
 
-      // Add the new album to the cache
-      await addAlbumToCache(newAlbum);
+      const newAlbumId = await addAlbumToCache(newAlbumData);
 
-      // Navigate to the newly created album's view page
-      navigation.navigate("ViewAlbum", { albumId: newAlbum._id });
+      if (newAlbumId) {
+        navigation.navigate("ViewAlbum", { albumId: newAlbumId });
+      } else {
+        Alert.alert("Error", "Failed to create album. Please try again.");
+      }
     } catch (error) {
-      console.error("Error creating camera album:", error);
+      console.error("[CreateAlbum] Error creating album:", error);
+      Alert.alert("Error", "An error occurred while creating the album.");
     }
   };
 
+  // Render each shot card
   const renderShot = ({ item }) => (
     <SelectableShotCard
       shot={item}
-      isSelected={!!selectedShots.find((s) => s.shotId === item._id)}
+      isSelected={selectedShots.some((s) => s.shotId === item._id)}
       onCheckboxToggle={() => handleCheckboxToggle(item)}
     />
   );
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
+  // If the camera roll is still loading, show a loading indicator
+  if (!isCameraRollCacheInitialized) return <Text>Loading Camera Roll...</Text>;
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -102,7 +130,7 @@ export default function CreateAlbum() {
       />
 
       <FlatList
-        data={data.getAllCameraShots}
+        data={cameraRollShots} // Use shots from CameraRollContext
         renderItem={renderShot}
         keyExtractor={(item) => item._id}
         numColumns={3}

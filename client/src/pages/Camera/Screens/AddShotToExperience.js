@@ -1,54 +1,77 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
-import { useQuery } from "@apollo/client";
-import { GET_USER_LIFELIST } from "../../../utils/queries/lifeListQueries";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useLifeList } from "../../../contexts/LifeListContext";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
 import Icon from "../../../components/Icons/Icon";
 import ListViewNavigator from "../Navigators/ListViewNavigator";
 import AddShotToExperienceCard from "../Cards/AddShotToExperienceCard";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function AddShotToExperience({ navigation, route }) {
   const { setIsTabBarVisible } = useNavigationContext();
+  const { lifeLists, initializeLifeListCache, isLifeListCacheInitialized } =
+    useLifeList();
+  const { currentUser } = useAuth();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [filteredExperiences, setFilteredExperiences] = useState([]);
 
-  const { currentUser } = useAuth();
-  const userId = currentUser;
   const shotId = route.params.shotId;
 
-  const { data, loading, error, refetch } = useQuery(GET_USER_LIFELIST, {
-    variables: { userId },
+  // Hide tab bar when component is focused
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
   });
 
-  const [lifeList, setLifeList] = useState({ experiences: [] });
-
-  useFocusEffect(
-    useCallback(() => {
-      setIsTabBarVisible(false);
-      refetch();
-    }, [refetch])
-  );
-
+  // Initialize caches on component mount
   useEffect(() => {
-    if (data) {
-      setLifeList(data.getUserLifeList);
+    const initializeCaches = async () => {
+      try {
+        if (!isLifeListCacheInitialized[currentUser]) {
+          await initializeLifeListCache(currentUser);
+        }
+      } catch (error) {
+        console.error(
+          "[AddShotToExperience] Error initializing caches:",
+          error
+        );
+      }
+    };
+    initializeCaches();
+  }, [isLifeListCacheInitialized, currentUser]);
+
+  // Filter experiences by list type and search query
+  useEffect(() => {
+    const lifeList = lifeLists[currentUser];
+    if (lifeList) {
+      const experiences = lifeList.experiences.filter(
+        (exp) => exp.list === "EXPERIENCED"
+      );
+
+      const filtered = experiences.filter((exp) =>
+        exp.experience.title
+          .toLowerCase()
+          .includes(searchQuery.trim().toLowerCase())
+      );
+
+      setFilteredExperiences(filtered);
     }
-  }, [data]);
+  }, [lifeLists, currentUser, searchQuery]);
 
-  const experiencedExperiences = lifeList.experiences.filter(
-    (exp) => exp.list === "EXPERIENCED"
-  );
+  const handleBackPress = () => navigation.goBack();
 
-  const handleBackPress = () => {
-    navigation.goBack();
-  };
-
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (!isLifeListCacheInitialized[currentUser]) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={styles.loadingText}>Loading LifeList...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -67,7 +90,7 @@ export default function AddShotToExperience({ navigation, route }) {
         onSearchFocusChange={setIsSearchFocused}
       />
       <ListViewNavigator
-        lifeList={{ experiences: experiencedExperiences }}
+        lifeList={{ experiences: filteredExperiences }}
         searchQuery={searchQuery}
         navigation={navigation}
         cardComponent={(props) => (
@@ -79,13 +102,15 @@ export default function AddShotToExperience({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 32,
-    paddingTop: 2,
-    paddingBottom: 12,
-    borderBottomWidth: 0.5,
-    borderBottomColor: "#252525",
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#121212",
+  },
+  loadingText: {
+    color: "#fff",
+    marginTop: 10,
+    fontSize: 16,
   },
 });

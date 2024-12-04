@@ -1,46 +1,38 @@
 import React, { useState, useEffect } from "react";
 import { Image, Text, View, Pressable, StyleSheet } from "react-native";
-import { useMutation } from "@apollo/client";
+import { useCameraAlbums } from "../../../contexts/CameraAlbumContext";
 import { cardStyles } from "../../../styles";
 import { truncateText } from "../../../utils/utils";
-import { BASE_URL } from "../../../utils/config";
-import {
-  ADD_SHOT_TO_ALBUM,
-  REMOVE_SHOT_FROM_ALBUM,
-} from "../../../utils/mutations";
 
 export default function AddShotToAlbumCard({ album, shotId }) {
+  const { updateAlbumShotsInCache } = useCameraAlbums();
   const [isShotAdded, setIsShotAdded] = useState(false);
 
-  const imageUrl = `${BASE_URL}${album.coverImage}`;
+  const imageUrl = album.coverImage; // Use the coverImage directly
   const truncatedTitle = truncateText(album.title, 40);
-  const shotsCount = album.shots.length;
 
   useEffect(() => {
-    setIsShotAdded(album.shots.some((shot) => shot._id === shotId));
+    // Check if the shot exists in the album's `shots`
+    const shots = album.shots || []; // Default to an empty array if `shots` is undefined
+    setIsShotAdded(shots.some((shot) => shot._id === shotId));
   }, [album.shots, shotId]);
-
-  const [addShotToAlbum] = useMutation(ADD_SHOT_TO_ALBUM);
-  const [removeShotFromAlbum] = useMutation(REMOVE_SHOT_FROM_ALBUM);
 
   const handleAddRemoveShot = async () => {
     try {
+      const shots = album.shots || []; // Default to an empty array
+      let updatedShots;
+
       if (isShotAdded) {
-        await removeShotFromAlbum({
-          variables: {
-            albumId: album._id,
-            shotId: shotId,
-          },
-        });
+        // Remove the shot from the album
+        updatedShots = shots.filter((shot) => shot._id !== shotId);
       } else {
-        await addShotToAlbum({
-          variables: {
-            albumId: album._id,
-            shotId: shotId,
-          },
-        });
+        // Add the shot to the album
+        updatedShots = [...shots, { _id: shotId }];
       }
-      setIsShotAdded(!isShotAdded);
+
+      // Update the shots in the cache
+      await updateAlbumShotsInCache(album._id, updatedShots);
+      setIsShotAdded(!isShotAdded); // Toggle the state
     } catch (error) {
       console.error("Failed to update album shots:", error);
     }
@@ -53,7 +45,9 @@ export default function AddShotToAlbumCard({ album, shotId }) {
           <Image source={{ uri: imageUrl }} style={cardStyles.imageMd} />
           <View style={styles.textContainer}>
             <Text style={styles.title}>{truncatedTitle}</Text>
-            <Text style={styles.secondaryText}>{`Shots: ${shotsCount}`}</Text>
+            <Text style={styles.secondaryText}>
+              Shots: {album.shots ? album.shots.length : album.shotsCount || 0}
+            </Text>
           </View>
           <Pressable onPress={handleAddRemoveShot}>
             <View
@@ -109,25 +103,24 @@ const styles = StyleSheet.create({
     color: "#aaa",
     marginTop: 1.5,
   },
-  // "Add" button uses the commentsButton styling with dark background and white text
   addButtonContainer: {
-    backgroundColor: "#252525", // Dark background for the "Add" button
-    borderRadius: 24, // Rounded corners
+    backgroundColor: "#252525",
+    borderRadius: 24,
     paddingVertical: 6,
     paddingHorizontal: 12,
     justifyContent: "center",
     alignItems: "center",
   },
   addButtonText: {
-    color: "#aaa", // White text for the "Add" button
+    color: "#aaa",
     fontSize: 12,
     fontWeight: "500",
   },
   addedButtonContainer: {
-    backgroundColor: "#6AB95230", // Light green background
-    borderRadius: 24, // Rounded corners
+    backgroundColor: "#6AB95230",
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: "#6AB95250", // Green border color
+    borderColor: "#6AB95250",
     paddingVertical: 5,
     paddingHorizontal: 12,
     justifyContent: "center",

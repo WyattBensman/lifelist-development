@@ -12,7 +12,6 @@ import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useNavigation } from "@react-navigation/native";
 import AlbumCard from "../Cards/AlbumCard";
 import ShotCard from "../Cards/ShotCard";
-import { useAuth } from "../../../contexts/AuthContext";
 import Icon from "../../../components/Icons/Icon";
 import FormAlert from "../../../components/Alerts/FormAlert";
 import { useCameraAlbums } from "../../../contexts/CameraAlbumContext";
@@ -20,14 +19,10 @@ import { useCameraRoll } from "../../../contexts/CameraRollContext";
 
 export default function CameraRoll() {
   const navigation = useNavigation();
-  const { currentUser } = useAuth();
   const [albumModalVisible, setAlbumModalVisible] = useState(false);
 
-  // Camera albums context
   const { albums, initializeAlbumCache, isAlbumCacheInitialized } =
     useCameraAlbums();
-
-  // Camera roll context
   const {
     shots,
     loadNextPage,
@@ -40,22 +35,22 @@ export default function CameraRoll() {
 
   // Initialize caches on component mount
   useEffect(() => {
-    if (!isAlbumCacheInitialized) {
-      initializeAlbumCache();
-    }
-
-    if (!isCameraRollCacheInitialized) {
-      initializeCameraRollCache();
-    }
+    const initializeCaches = async () => {
+      try {
+        if (!isAlbumCacheInitialized) await initializeAlbumCache();
+        if (!isCameraRollCacheInitialized) await initializeCameraRollCache();
+      } catch (error) {
+        console.error("[CameraRoll] Error initializing caches:", error);
+      }
+    };
+    initializeCaches();
   }, [isAlbumCacheInitialized, isCameraRollCacheInitialized]);
 
-  // Handle album creation
   const handleCreateAlbum = (title) => {
     setAlbumModalVisible(false);
     navigation.navigate("CreateAlbum", { albumTitle: title });
   };
 
-  // Load more shots when reaching the end of the list
   const loadMoreShots = async () => {
     if (!hasNextPage || isFetchingMore) return;
 
@@ -63,13 +58,12 @@ export default function CameraRoll() {
     try {
       await loadNextPage();
     } catch (error) {
-      console.error("Error fetching more shots:", error);
+      console.error("[CameraRoll] Error fetching more shots:", error);
     } finally {
       setIsFetchingMore(false);
     }
   };
 
-  // Render album section
   const renderAlbumsSection = () => {
     const hasAlbums = albums.length > 0;
 
@@ -93,6 +87,9 @@ export default function CameraRoll() {
           <Pressable
             style={styles.placeholderContainer}
             onPress={() => setAlbumModalVisible(true)}
+            accessible
+            accessibilityLabel="Create Album"
+            accessibilityHint="Opens a modal to create a new album."
           >
             <Text style={styles.placeholderText}>Create Album</Text>
           </Pressable>
@@ -101,7 +98,6 @@ export default function CameraRoll() {
     );
   };
 
-  // Render shots section
   const renderShotsSection = () => (
     <View style={layoutStyles.marginTopMd}>
       <Text style={[headerStyles.headerMedium, { marginLeft: 10 }]}>
@@ -117,8 +113,8 @@ export default function CameraRoll() {
           numColumns={3}
           columnWrapperStyle={styles.columnWrapper}
           showsVerticalScrollIndicator={false}
-          onEndReached={loadMoreShots} // Load more shots on scroll
-          onEndReachedThreshold={0.5} // Trigger load when 50% of the list remains
+          onEndReached={loadMoreShots}
+          onEndReachedThreshold={0.5}
           ListFooterComponent={
             isFetchingMore ? (
               <ActivityIndicator size="small" color="#0000ff" />
@@ -131,7 +127,6 @@ export default function CameraRoll() {
     </View>
   );
 
-  // Combine album and shots sections into a single list
   const renderMainList = () => (
     <FlatList
       data={[{ key: "albums" }, { key: "shots" }]}

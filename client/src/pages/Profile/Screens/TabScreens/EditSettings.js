@@ -11,17 +11,17 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import IconStatic from "../../../../components/Icons/IconStatic";
 import EditProfileBottomContainer from "../../Components/EditProfileBottomContainer";
 import CustomAlert from "../../../../components/Alerts/CustomAlert";
-import { useProfile } from "../../../../contexts/ProfileContext";
+import { useAdminProfile } from "../../../../contexts/AdminProfileContext"; // Updated context
 
 export default function EditSettings() {
   const navigation = useNavigation();
   const {
-    profile,
-    updateProfileField,
-    saveProfile,
-    resetChanges,
+    adminProfile,
+    updateAdminProfileField,
+    saveAdminProfile,
+    resetAdminChanges,
     unsavedChanges,
-  } = useProfile();
+  } = useAdminProfile(); // Updated to use AdminProfileContext
 
   const [showAlert, setShowAlert] = useState(false);
 
@@ -60,10 +60,10 @@ export default function EditSettings() {
         <View style={[layoutStyles.flex, layoutStyles.marginBtmMd]}>
           <Text style={styles.text}>Private</Text>
           <GlobalSwitch
-            isOn={profile?.settings?.isProfilePrivate || false}
+            isOn={adminProfile?.settings?.isProfilePrivate || false}
             onToggle={(value) =>
-              updateProfileField("settings", {
-                ...profile.settings,
+              updateAdminProfileField("settings", {
+                ...adminProfile.settings,
                 isProfilePrivate: value,
               })
             }
@@ -106,10 +106,10 @@ export default function EditSettings() {
           <View style={[layoutStyles.flex, layoutStyles.marginBtmMd]}>
             <Text style={styles.text}>Dark Mode</Text>
             <GlobalSwitch
-              isOn={profile?.settings?.darkMode || false}
+              isOn={adminProfile?.settings?.darkMode || false}
               onToggle={(value) =>
-                updateProfileField("settings", {
-                  ...profile.settings,
+                updateAdminProfileField("settings", {
+                  ...adminProfile.settings,
                   darkMode: value,
                 })
               }
@@ -143,8 +143,8 @@ export default function EditSettings() {
       </View>
       {unsavedChanges && (
         <EditProfileBottomContainer
-          saveChanges={saveProfile} // Save changes via context
-          discardChanges={resetChanges} // Discard changes via context
+          saveChanges={saveAdminProfile} // Save changes via context
+          discardChanges={resetAdminChanges} // Discard changes via context
         />
       )}
 
@@ -155,7 +155,7 @@ export default function EditSettings() {
         title="Unsaved Changes"
         message="You have unsaved changes. Are you sure you want to leave without saving?"
         onConfirm={() => {
-          resetChanges(); // Reset to original state
+          resetAdminChanges(); // Reset to original state
           setShowAlert(false); // Close the alert
           navigation.goBack(); // Navigate back
         }}

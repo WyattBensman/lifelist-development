@@ -68,6 +68,7 @@ export const CREATE_CAMERA_ALBUM = gql`
     ) {
       success
       message
+      albumId
     }
   }
 `;

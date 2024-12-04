@@ -7,30 +7,28 @@ import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import Icon from "../../../components/Icons/Icon";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
-import { useProfile } from "../../../contexts/ProfileContext";
+import { useAdminProfile } from "../../../contexts/AdminProfileContext";
 
 export default function EditProfile() {
   const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
-  const { unsavedChanges, resetChanges } = useProfile();
+  const { unsavedChanges, resetAdminChanges } = useAdminProfile(); // Updated to use AdminProfileContext
   const [showAlert, setShowAlert] = useState(false);
 
   useFocusEffect(() => {
     setIsTabBarVisible(false);
   });
 
-  console.log("Navigating back from:", navigation.getState());
-
   const handleBackPress = () => {
     if (unsavedChanges) {
-      setShowAlert(true); // Show alert if there arekk unsaved changes
+      setShowAlert(true); // Show alert if there are unsaved changes
     } else {
       navigation.goBack(); // Navigate back if there are no changes
     }
   };
 
   const handleDiscardChanges = () => {
-    resetChanges(); // Reset changes to the original state
+    resetAdminChanges(); // Reset changes to the original state
     setShowAlert(false);
     navigation.goBack(); // Navigate back
   };

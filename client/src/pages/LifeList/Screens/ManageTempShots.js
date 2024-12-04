@@ -1,31 +1,33 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
-import { useQuery } from "@apollo/client";
 import {
   useNavigation,
   useFocusEffect,
   useRoute,
 } from "@react-navigation/native";
 import ShotCard from "../../../components/Cards/ShotCard";
-import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
-import { useLifeListExperienceContext } from "../../../contexts/LifeListExperienceContext"; // Import LifeListExperienceContext
+import { useLifeListExperienceContext } from "../../../contexts/LifeListExperienceContext";
+import { useCameraRoll } from "../../../contexts/CameraRollContext";
 
 export default function ManageTempShots() {
   const route = useRoute();
   const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
-  const { experienceId } = route.params; // Use experienceId from route params
-
-  const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_SHOTS);
+  const { experienceId } = route.params;
 
   const { lifeListExperiences, updateLifeListExperience } =
-    useLifeListExperienceContext(); // Use LifeListExperienceContext
+    useLifeListExperienceContext();
+  const {
+    shots,
+    loadNextPage,
+    initializeCameraRollCache,
+    isCameraRollCacheInitialized,
+  } = useCameraRoll();
 
-  // Find the associated shots for this experience
   const associatedShots =
     lifeListExperiences.find((exp) => exp.experience._id === experienceId)
       ?.associatedShots || [];
@@ -37,6 +39,12 @@ export default function ManageTempShots() {
   useFocusEffect(() => {
     setIsTabBarVisible(false);
   });
+
+  useEffect(() => {
+    if (!isCameraRollCacheInitialized) {
+      initializeCameraRollCache();
+    }
+  }, [isCameraRollCacheInitialized, initializeCameraRollCache]);
 
   useEffect(() => {
     if (associatedShots) {
@@ -61,6 +69,8 @@ export default function ManageTempShots() {
       const newShots = isAlreadySelected
         ? prev.filter((s) => s._id !== shot._id)
         : [...prev, shot];
+      console.log(newShots);
+
       return newShots;
     });
   };
@@ -68,7 +78,6 @@ export default function ManageTempShots() {
   const handleSave = () => {
     if (!isModified) return;
 
-    // Update the LifeListExperience with the new shots
     updateLifeListExperience(experienceId, {
       associatedShots: selectedShots,
     });
@@ -76,14 +85,11 @@ export default function ManageTempShots() {
     navigation.goBack();
   };
 
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
+  const handleEndReached = () => {
+    loadNextPage();
+  };
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
+  if (!isCameraRollCacheInitialized) return <Text>Loading Camera Roll...</Text>;
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -114,7 +120,7 @@ export default function ManageTempShots() {
         }
       />
       <FlatList
-        data={data.getAllCameraShots}
+        data={shots}
         renderItem={({ item }) => (
           <ShotCard
             shot={item}
@@ -126,6 +132,8 @@ export default function ManageTempShots() {
         keyExtractor={(item) => item._id}
         numColumns={3}
         columnWrapperStyle={styles.columnWrapper}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
       />
     </View>
   );

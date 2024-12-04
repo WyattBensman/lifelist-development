@@ -16,18 +16,18 @@ import Modal from "react-native-modal";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import IconStatic from "../../../../components/Icons/IconStatic";
 import EditProfileBottomContainer from "../../Components/EditProfileBottomContainer";
-import { useProfile } from "../../../../contexts/ProfileContext";
+import { useAdminProfile } from "../../../../contexts/AdminProfileContext"; // Updated import
 import { BASE_URL } from "../../../../utils/config";
 import { Picker } from "@react-native-picker/picker";
 
 export default function EditProfileTab() {
   const {
-    profile,
-    updateProfileField,
-    saveProfile,
-    resetChanges,
+    adminProfile,
+    updateAdminProfileField,
+    saveAdminProfile,
+    resetAdminChanges,
     unsavedChanges,
-  } = useProfile();
+  } = useAdminProfile(); // Updated to use AdminProfileContext
 
   const [showGenderPicker, setShowGenderPicker] = useState(false);
   const [showBirthdayPicker, setShowBirthdayPicker] = useState(false);
@@ -43,7 +43,7 @@ export default function EditProfileTab() {
     });
 
     if (!result.cancelled) {
-      updateProfileField("profilePicture", result.uri);
+      updateAdminProfileField("profilePicture", result.uri);
     }
   };
 
@@ -74,12 +74,12 @@ export default function EditProfileTab() {
 
   const handleBirthdaySave = () => {
     if (temporaryBirthday) {
-      updateProfileField("birthday", temporaryBirthday.toISOString());
+      updateAdminProfileField("birthday", temporaryBirthday.toISOString());
       setShowBirthdayPicker(false);
     }
   };
 
-  const profilePictureUrl = `${BASE_URL}${profile?.profilePicture || ""}`;
+  const profilePictureUrl = `${BASE_URL}${adminProfile?.profilePicture || ""}`;
 
   return (
     <KeyboardAvoidingView
@@ -108,8 +108,8 @@ export default function EditProfileTab() {
         <View style={styles.row}>
           <Text style={styles.label}>Name</Text>
           <TextInput
-            value={profile?.fullName || ""}
-            onChangeText={(value) => updateProfileField("fullName", value)}
+            value={adminProfile?.fullName || ""}
+            onChangeText={(value) => updateAdminProfileField("fullName", value)}
             style={styles.input}
             placeholder="Enter your full name"
             placeholderTextColor="#d4d4d4"
@@ -118,8 +118,8 @@ export default function EditProfileTab() {
         <View style={styles.row}>
           <Text style={styles.label}>Username</Text>
           <TextInput
-            value={profile?.username || ""}
-            onChangeText={(value) => updateProfileField("username", value)}
+            value={adminProfile?.username || ""}
+            onChangeText={(value) => updateAdminProfileField("username", value)}
             style={styles.input}
             placeholder="Enter your username"
             placeholderTextColor="#d4d4d4"
@@ -128,8 +128,8 @@ export default function EditProfileTab() {
         <View style={styles.row}>
           <Text style={styles.label}>Bio</Text>
           <TextInput
-            value={profile?.bio || ""}
-            onChangeText={(value) => updateProfileField("bio", value)}
+            value={adminProfile?.bio || ""}
+            onChangeText={(value) => updateAdminProfileField("bio", value)}
             style={styles.input}
             placeholder="Tell us about yourself"
             placeholderTextColor="#d4d4d4"
@@ -141,14 +141,14 @@ export default function EditProfileTab() {
           <Pressable
             style={styles.input}
             onPress={() => {
-              setTemporaryGender(profile?.gender || "");
+              setTemporaryGender(adminProfile?.gender || "");
               setShowGenderPicker(true);
             }}
           >
-            <Text style={{ color: profile?.gender ? "#fff" : "#d4d4d4" }}>
-              {profile?.gender
-                ? profile.gender.charAt(0).toUpperCase() +
-                  profile.gender.slice(1).toLowerCase()
+            <Text style={{ color: adminProfile?.gender ? "#fff" : "#d4d4d4" }}>
+              {adminProfile?.gender
+                ? adminProfile.gender.charAt(0).toUpperCase() +
+                  adminProfile.gender.slice(1).toLowerCase()
                 : "Select your gender"}
             </Text>
             <IconStatic
@@ -164,13 +164,15 @@ export default function EditProfileTab() {
           <Pressable
             style={styles.input}
             onPress={() => {
-              setTemporaryBirthday(new Date(profile?.birthday || ""));
+              setTemporaryBirthday(new Date(adminProfile?.birthday || ""));
               setShowBirthdayPicker(true);
             }}
           >
-            <Text style={{ color: profile?.birthday ? "#fff" : "#d4d4d4" }}>
-              {profile?.birthday
-                ? formatDate(profile.birthday)
+            <Text
+              style={{ color: adminProfile?.birthday ? "#fff" : "#d4d4d4" }}
+            >
+              {adminProfile?.birthday
+                ? formatDate(adminProfile.birthday)
                 : "Select your birthday"}
             </Text>
             <IconStatic
@@ -184,8 +186,8 @@ export default function EditProfileTab() {
       </ScrollView>
       {unsavedChanges && (
         <EditProfileBottomContainer
-          saveChanges={saveProfile}
-          discardChanges={resetChanges}
+          saveChanges={saveAdminProfile}
+          discardChanges={resetAdminChanges}
         />
       )}
 
@@ -216,7 +218,7 @@ export default function EditProfileTab() {
             <Pressable
               style={styles.confirmButton}
               onPress={() => {
-                updateProfileField("gender", temporaryGender);
+                updateAdminProfileField("gender", temporaryGender);
                 setShowGenderPicker(false);
               }}
             >

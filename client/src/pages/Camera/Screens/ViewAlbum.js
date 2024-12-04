@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { View, Text, FlatList, Animated, Alert } from "react-native";
+import {
+  View,
+  FlatList,
+  Animated,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import {
   useNavigation,
   useRoute,
   useFocusEffect,
 } from "@react-navigation/native";
-import { useQuery, useMutation } from "@apollo/client";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { GET_CAMERA_ALBUM } from "../../../utils/queries/cameraQueries";
 import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
 import Icon from "../../../components/Icons/Icon";
 import NavigableShotCard from "../Cards/NavigableShotCard";
-import { DELETE_CAMERA_ALBUM } from "../../../utils/mutations";
 import DangerAlert from "../../../components/Alerts/DangerAlert";
 import { useCameraAlbums } from "../../../contexts/CameraAlbumContext";
 
@@ -20,18 +23,20 @@ export default function ViewAlbum() {
   const navigation = useNavigation();
   const route = useRoute();
   const { albumId } = route.params;
+  console.log("albumId:", albumId);
 
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
+  const [shots, setShots] = useState([]); // Store paginated shots
+  const [loading, setLoading] = useState(false);
+  const [hasNextPage, setHasNextPage] = useState(true);
+  const [nextCursor, setNextCursor] = useState(null);
+
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
-  const { removeAlbumFromCache } = useCameraAlbums();
-  const { data, loading, error, refetch } = useQuery(GET_CAMERA_ALBUM, {
-    variables: { albumId },
-  });
+  const { fetchPaginatedAlbumShots, removeAlbumFromCache } = useCameraAlbums();
 
-  const [deleteAlbum] = useMutation(DELETE_CAMERA_ALBUM);
-
+  // Dropdown animation
   useEffect(() => {
     Animated.timing(rotateAnim, {
       toValue: dropdownVisible ? 1 : 0,
@@ -40,15 +45,50 @@ export default function ViewAlbum() {
     }).start();
   }, [dropdownVisible]);
 
-  // Refetch the album's data when this screen gains focus
+  const rotation = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "90deg"],
+  });
+
+  // Fetch paginated shots
+  const loadMoreShots = async () => {
+    if (loading || !hasNextPage || !albumId) return;
+
+    setLoading(true);
+    try {
+      const {
+        shots: newShots,
+        nextCursor: newCursor,
+        hasNextPage: newHasNext,
+      } = await fetchPaginatedAlbumShots(albumId, nextCursor);
+
+      if (newShots.length === 0 && !newCursor) return; // Skip updates for empty data
+
+      const uniqueShots = [
+        ...shots,
+        ...newShots.filter(
+          (newShot) => !shots.some((shot) => shot._id === newShot._id)
+        ),
+      ];
+
+      setShots(uniqueShots);
+      setNextCursor(newCursor);
+      setHasNextPage(newHasNext);
+    } catch (error) {
+      console.error("[ViewAlbum] Error loading more shots:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Reload album shots when screen regains focus
   useFocusEffect(
     useCallback(() => {
-      refetch();
-    }, [refetch])
+      loadMoreShots();
+    }, [])
   );
 
-  const album = data?.getCameraAlbum;
-
+  // Render individual shots
   const renderShot = ({ item }) => (
     <NavigableShotCard shot={item} navigation={navigation} fromAlbum={true} />
   );
@@ -64,19 +104,11 @@ export default function ViewAlbum() {
   const confirmDeleteAlbum = async () => {
     setAlertVisible(false);
     try {
-      const { data } = await deleteAlbum({ variables: { albumId } });
-
-      if (data?.deleteCameraAlbum?.success) {
-        removeAlbumFromCache(albumId);
-        navigation.goBack();
-      } else {
-        Alert.alert(
-          "Error",
-          data?.deleteCameraAlbum?.message || "Failed to delete album."
-        );
-      }
+      // Call the context function to delete the album and update the cache
+      await removeAlbumFromCache(albumId);
+      navigation.goBack();
     } catch (error) {
-      console.error("Failed to delete album:", error);
+      console.error("[ViewAlbum] Failed to delete album:", error);
       Alert.alert("Error", "Failed to delete album.");
     }
   };
@@ -88,8 +120,8 @@ export default function ViewAlbum() {
       label: "Manage Shots",
       onPress: () =>
         navigation.navigate("ManageAlbumShots", {
-          albumId: album._id,
-          associatedShots: album.shots,
+          albumId,
+          associatedShots: shots,
         }),
       backgroundColor: "#6AB95230",
       tintColor: "#6AB952",
@@ -104,11 +136,6 @@ export default function ViewAlbum() {
     },
   ];
 
-  const rotation = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "90deg"],
-  });
-
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
@@ -120,7 +147,7 @@ export default function ViewAlbum() {
             weight="semibold"
           />
         }
-        title={album.title}
+        title={`Album`}
         button1={
           <Animated.View style={{ transform: [{ rotate: rotation }] }}>
             <Icon
@@ -135,10 +162,15 @@ export default function ViewAlbum() {
         dropdownContent={<DropdownMenu items={dropdownItems} />}
       />
       <FlatList
-        data={album.shots}
+        data={shots}
         renderItem={renderShot}
         keyExtractor={(item) => item._id}
         numColumns={3}
+        onEndReached={loadMoreShots}
+        onEndReachedThreshold={0.5} // Trigger when 50% of the list remains
+        ListFooterComponent={
+          loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
+        }
       />
       <DangerAlert
         visible={alertVisible}

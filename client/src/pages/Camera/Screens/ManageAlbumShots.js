@@ -1,32 +1,40 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { View, Text, FlatList, Pressable, StyleSheet } from "react-native";
-import { useQuery, useMutation } from "@apollo/client";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  Pressable,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import {
   useNavigation,
   useFocusEffect,
   useRoute,
 } from "@react-navigation/native";
 import ShotCard from "../../../components/Cards/ShotCard";
-import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries";
-import { UPDATE_ALBUM_SHOTS } from "../../../utils/mutations";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { useCameraAlbums } from "../../../contexts/CameraAlbumContext";
+import { useCameraRoll } from "../../../contexts/CameraRollContext";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 
 export default function ManageAlbumShots() {
   const route = useRoute();
   const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
-  const { albumId, associatedShots } = route.params;
+  const { albumId, associatedShots = [] } = route.params;
 
-  const { updateAlbumInCache } = useCameraAlbums();
+  const { initializeAlbumCache, updateAlbumShotsInCache } = useCameraAlbums();
+  const {
+    initializeCameraRollCache,
+    shots: cameraRollShots,
+    loadNextPage,
+    isCameraRollCacheInitialized,
+  } = useCameraRoll();
 
-  const { data, loading, error, refetch } = useQuery(GET_ALL_CAMERA_SHOTS);
-  const [updateShots] = useMutation(UPDATE_ALBUM_SHOTS);
-
-  const [selectedShots, setSelectedShots] = useState([]);
+  const [selectedShots, setSelectedShots] = useState(associatedShots);
   const [isModified, setIsModified] = useState(false);
   const [title, setTitle] = useState("Manage Shots");
 
@@ -36,66 +44,72 @@ export default function ManageAlbumShots() {
     return () => setIsTabBarVisible(true);
   });
 
-  // Set the initial state of selected shots
+  // Initialize album and camera roll caches once
   useEffect(() => {
-    if (associatedShots) {
-      setSelectedShots(associatedShots);
-      setTitle(associatedShots.length === 0 ? "Add Shots" : "Manage Shots");
-    }
-  }, [associatedShots]);
+    const initCaches = async () => {
+      if (!isCameraRollCacheInitialized) {
+        await initializeCameraRollCache();
+      }
+      await initializeAlbumCache();
+    };
+    initCaches();
+  }, [
+    initializeAlbumCache,
+    initializeCameraRollCache,
+    isCameraRollCacheInitialized,
+  ]);
 
-  // Check if changes have been made to the selected shots
+  // Update title and check for modifications when `associatedShots` changes
   useEffect(() => {
+    setTitle(associatedShots.length === 0 ? "Add Shots" : "Manage Shots");
     setIsModified(
       selectedShots.length !== associatedShots.length ||
         selectedShots.some(
-          (shot) =>
-            !associatedShots.some((initialShot) => initialShot._id === shot._id)
+          (shot) => !associatedShots.some((s) => s._id === shot._id)
         )
     );
-  }, [selectedShots, associatedShots]);
+  }, [associatedShots, selectedShots]);
 
-  // Toggle a shot's selection
+  // Create a prioritized data array for the FlatList
+  const prioritizedShots = [
+    ...selectedShots, // Selected shots first
+    ...cameraRollShots.filter(
+      (shot) => !selectedShots.some((s) => s._id === shot._id)
+    ), // Remaining shots
+  ];
+
+  // Toggle selection for a shot
   const handleCheckboxToggle = (shot) => {
     setSelectedShots((prev) => {
-      const isAlreadySelected = prev.some((s) => s._id === shot._id);
-      const newShots = isAlreadySelected
+      const isSelected = prev.some((s) => s._id === shot._id);
+      return isSelected
         ? prev.filter((s) => s._id !== shot._id)
         : [...prev, shot];
-      return newShots;
     });
   };
 
-  // Save changes and update cache
+  // Save changes and update the cache
   const handleSave = async () => {
     if (!isModified) return;
 
     try {
-      const { data } = await updateShots({
-        variables: {
-          albumId,
-          shotIds: selectedShots.map((shot) => shot._id),
-        },
-      });
-
-      // Update the album in the cache with the new shots and shotsCount
-      updateAlbumInCache(albumId, {
-        shots: selectedShots,
-        shotsCount: selectedShots.length, // Update shotsCount
-      });
-
+      await updateAlbumShotsInCache(albumId, selectedShots);
       navigation.goBack();
     } catch (error) {
-      console.error("Failed to update associated shots:", error);
+      console.error("Failed to update album shots:", error);
+      Alert.alert(
+        "Save Failed",
+        "We were unable to save your changes. Please try again."
+      );
     }
   };
 
-  // Refetch all available shots when the screen is focused
-  useFocusEffect(
-    useCallback(() => {
-      refetch();
-    }, [refetch])
-  );
+  // Fetch additional shots when reaching the end of the list
+  const handleEndReached = () => {
+    if (isCameraRollCacheInitialized) loadNextPage();
+  };
+
+  if (!isCameraRollCacheInitialized) return <Text>Loading Camera Roll...</Text>;
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -120,7 +134,7 @@ export default function ManageAlbumShots() {
         }
       />
       <FlatList
-        data={data.getAllCameraShots}
+        data={prioritizedShots} // Use prioritized data array
         renderItem={({ item }) => (
           <ShotCard
             shot={item}
@@ -132,6 +146,9 @@ export default function ManageAlbumShots() {
         keyExtractor={(item) => item._id}
         numColumns={3}
         columnWrapperStyle={styles.columnWrapper}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
+        refreshing={false}
       />
     </View>
   );

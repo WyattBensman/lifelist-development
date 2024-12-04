@@ -1,6 +1,5 @@
 import { Dimensions, Image, StyleSheet, View, Pressable } from "react-native";
 import Checkbox from "expo-checkbox";
-import { BASE_URL } from "../../utils/config";
 
 const screenWidth = Dimensions.get("window").width;
 const spacing = 1.5;
@@ -13,6 +12,8 @@ export default function ShotCard({
   onCheckboxToggle,
   navigation,
 }) {
+  console.log(shot);
+
   const imageUrl = shot.imageThumbnail;
 
   const handlePress = () => {

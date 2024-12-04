@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState } from "react";
-import { useQuery } from "@apollo/client";
-import { GET_ALL_CAMERA_SHOTS } from "../utils/queries/cameraQueries";
+import { useLazyQuery, useQuery } from "@apollo/client";
+import {
+  GET_ALL_CAMERA_SHOTS,
+  GET_CAMERA_SHOT,
+} from "../utils/queries/cameraQueries";
 import {
   saveMetadataToCache,
   getMetadataFromCache,
@@ -19,145 +22,195 @@ const FULL_RESOLUTION_CACHE_LIMIT = 16; // Max full-resolution images in memory
 const fullResolutionCache = new LRUCache(FULL_RESOLUTION_CACHE_LIMIT);
 
 export const CameraRollProvider = ({ children }) => {
-  const [shots, setShots] = useState([]); // Camera shots
-  const [nextCursor, setNextCursor] = useState(null); // For pagination
-  const [hasNextPage, setHasNextPage] = useState(true); // Pagination state
+  const [shots, setShots] = useState([]);
+  const [nextCursor, setNextCursor] = useState(null);
+  const [hasNextPage, setHasNextPage] = useState(true);
   const [isCameraRollCacheInitialized, setIsCameraRollCacheInitialized] =
-    useState(false); // Cache init state
+    useState(false);
 
   const { refetch: fetchShots } = useQuery(GET_ALL_CAMERA_SHOTS, {
-    skip: true, // Skip running automatically, use refetch instead
+    skip: true, // Use refetch for manual invocation
   });
+
+  const [fetchShot] = useLazyQuery(GET_CAMERA_SHOT);
 
   // Initialize shots from cache or fetch from server
   const initializeCameraRollCache = async () => {
-    console.log(`Running: ${initializeCameraRollCache}`);
-
     if (isCameraRollCacheInitialized) return;
 
     try {
       const cachedData = await getMetadataFromCache(CACHE_KEY_METADATA);
       if (cachedData) {
-        console.log(`Reusing Cache: ${cachedData}`);
         setShots(cachedData.shots);
         setNextCursor(cachedData.nextCursor);
         setHasNextPage(cachedData.hasNextPage);
       } else {
-        console.log(`Load new Cache`);
-        await loadNextPage(); // Fetch the first page
+        await loadNextPage();
       }
       setIsCameraRollCacheInitialized(true);
     } catch (error) {
-      console.error("Error initializing camera roll cache:", error);
+      console.error("[CameraRoll] Error initializing cache:", error);
     }
   };
 
   // Load the next page of shots
   const loadNextPage = async () => {
-    if (!hasNextPage) return; // No more pages to fetch
+    if (!hasNextPage) return;
 
     try {
       const { data } = await fetchShots({ cursor: nextCursor, limit: 12 });
 
-      const newShots = data.getAllCameraShots.shots;
-      const newCursor = data.getAllCameraShots.nextCursor;
-      const newHasNextPage = data.getAllCameraShots.hasNextPage;
+      if (data?.getAllCameraShots) {
+        const newShots = data.getAllCameraShots.shots || [];
+        const newCursor = data.getAllCameraShots.nextCursor;
+        const newHasNextPage = data.getAllCameraShots.hasNextPage;
 
-      const mergedShots = [...shots, ...newShots];
-      setShots(mergedShots);
-      setNextCursor(newCursor);
-      setHasNextPage(newHasNextPage);
+        const mergedShots = [...shots, ...newShots];
+        setShots(mergedShots);
+        setNextCursor(newCursor);
+        setHasNextPage(newHasNextPage);
 
-      // Save updated shots to persistent storage
-      await saveMetadataToCache(CACHE_KEY_METADATA, {
-        shots: mergedShots,
-        nextCursor: newCursor,
-        hasNextPage: newHasNextPage,
-      });
+        // Save updated metadata and thumbnails
+        await saveMetadataToCache(CACHE_KEY_METADATA, {
+          shots: mergedShots,
+          nextCursor: newCursor,
+          hasNextPage: newHasNextPage,
+        });
 
-      // Save thumbnails for the first 24 shots
-      for (
-        let i = shots.length;
-        i < Math.min(mergedShots.length, DOCUMENT_THUMBNAIL_LIMIT);
-        i++
-      ) {
-        const shot = mergedShots[i];
-        const thumbnailKey = `thumbnail_${shot._id}`;
-        await saveImageToFileSystem(thumbnailKey, shot.imageThumbnail, true); // Save to DOCUMENT_DIR
+        // Save thumbnails for new shots up to the limit
+        const startIndex = shots.length;
+        for (
+          let i = startIndex;
+          i < Math.min(mergedShots.length, DOCUMENT_THUMBNAIL_LIMIT);
+          i++
+        ) {
+          const shot = mergedShots[i];
+          const thumbnailKey = `thumbnail_${shot._id}`;
+          await saveImageToFileSystem(thumbnailKey, shot.imageThumbnail, true);
+        }
+      } else {
+        console.warn("[CameraRoll] No data returned from fetchShots.");
       }
     } catch (error) {
-      console.error("Error loading next page of shots:", error);
+      console.error("[CameraRoll] Error loading next page:", error);
     }
   };
 
   // Fetch a full-resolution image with LRU caching
-  const getFullResolutionImage = async (shotId, fetchImageFn) => {
-    let imagePath = fullResolutionCache.get(shotId);
+  const fetchFullResolutionImage = async (shotId) => {
+    try {
+      let imagePath = fullResolutionCache.get(shotId);
 
-    if (!imagePath) {
-      imagePath = await getImageFromFileSystem(shotId);
       if (!imagePath) {
-        imagePath = await fetchImageFn(shotId);
-        await saveImageToFileSystem(shotId, imagePath, false); // Save to CACHE_DIR
+        imagePath = await getImageFromFileSystem(shotId);
+        if (!imagePath) {
+          const { data } = await fetchShot({ variables: { shotId } });
+          if (!data?.getCameraShot) throw new Error("Image not found.");
+          imagePath = data.getCameraShot.image;
+          await saveImageToFileSystem(shotId, imagePath, false); // Save to cache directory
+        }
+        fullResolutionCache.put(shotId, imagePath);
       }
-      fullResolutionCache.put(shotId, imagePath);
-    }
 
-    return imagePath;
+      return imagePath;
+    } catch (error) {
+      console.error(
+        `[CameraRoll] Error fetching full-resolution image for ${shotId}:`,
+        error
+      );
+      return null;
+    }
+  };
+
+  // Preload full-resolution images around the current index
+  const preloadFullResolutionImages = async (currentIndex) => {
+    try {
+      const preloadIndices = [currentIndex - 1, currentIndex, currentIndex + 1];
+      const validIndices = preloadIndices.filter(
+        (index) => index >= 0 && index < shots.length
+      );
+
+      for (const index of validIndices) {
+        const shotId = shots[index]._id;
+        await fetchFullResolutionImage(shotId);
+      }
+    } catch (error) {
+      console.error("[CameraRoll] Error preloading images:", error);
+    }
   };
 
   // Add a new shot to the camera roll
   const addShotToRoll = async (newShot) => {
-    const updatedShots = [newShot, ...shots];
-    setShots(updatedShots);
+    try {
+      const updatedShots = [newShot, ...shots];
+      setShots(updatedShots);
 
-    await saveMetadataToCache(CACHE_KEY_METADATA, {
-      shots: updatedShots,
-      nextCursor,
-      hasNextPage,
-    });
+      await saveMetadataToCache(CACHE_KEY_METADATA, {
+        shots: updatedShots,
+        nextCursor,
+        hasNextPage,
+      });
 
-    const thumbnailKey = `thumbnail_${newShot._id}`;
-    if (updatedShots.length <= DOCUMENT_THUMBNAIL_LIMIT) {
-      await saveImageToFileSystem(thumbnailKey, newShot.imageThumbnail, true); // Save to DOCUMENT_DIR
-    } else {
-      await saveImageToFileSystem(thumbnailKey, newShot.imageThumbnail, false); // Save to CACHE_DIR
+      const thumbnailKey = `thumbnail_${newShot._id}`;
+      if (updatedShots.length <= DOCUMENT_THUMBNAIL_LIMIT) {
+        await saveImageToFileSystem(thumbnailKey, newShot.imageThumbnail, true);
+      } else {
+        await saveImageToFileSystem(
+          thumbnailKey,
+          newShot.imageThumbnail,
+          false
+        );
+      }
+    } catch (error) {
+      console.error("[CameraRoll] Error adding shot:", error);
     }
   };
 
   // Remove a shot from the camera roll
   const removeShotFromRoll = async (shotId) => {
-    const updatedShots = shots.filter((shot) => shot._id !== shotId);
-    setShots(updatedShots);
+    try {
+      const updatedShots = shots.filter((shot) => shot._id !== shotId);
+      setShots(updatedShots);
 
-    await saveMetadataToCache(CACHE_KEY_METADATA, {
-      shots: updatedShots,
-      nextCursor,
-      hasNextPage,
-    });
+      await saveMetadataToCache(CACHE_KEY_METADATA, {
+        shots: updatedShots,
+        nextCursor,
+        hasNextPage,
+      });
 
-    const thumbnailKey = `thumbnail_${shotId}`;
-    await deleteImageFromFileSystem(thumbnailKey);
+      const thumbnailKey = `thumbnail_${shotId}`;
+      await deleteImageFromFileSystem(thumbnailKey);
+    } catch (error) {
+      console.error(`[CameraRoll] Error removing shot ${shotId}:`, error);
+    }
   };
 
   // Update metadata for a shot
   const updateShotMetadata = (shotId, updates) => {
-    const updatedShots = shots.map((shot) =>
-      shot._id === shotId ? { ...shot, ...updates } : shot
-    );
-    setShots(updatedShots);
+    try {
+      const updatedShots = shots.map((shot) =>
+        shot._id === shotId ? { ...shot, ...updates } : shot
+      );
+      setShots(updatedShots);
 
-    saveMetadataToCache(CACHE_KEY_METADATA, {
-      shots: updatedShots,
-      nextCursor,
-      hasNextPage,
-    });
+      saveMetadataToCache(CACHE_KEY_METADATA, {
+        shots: updatedShots,
+        nextCursor,
+        hasNextPage,
+      });
+    } catch (error) {
+      console.error(
+        `[CameraRoll] Error updating metadata for ${shotId}:`,
+        error
+      );
+    }
   };
 
   const contextValue = {
     shots,
     loadNextPage,
-    getFullResolutionImage,
+    fetchFullResolutionImage,
+    preloadFullResolutionImages,
     addShotToRoll,
     removeShotFromRoll,
     updateShotMetadata,

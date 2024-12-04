@@ -2,142 +2,136 @@ import React, { createContext, useContext, useState } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { GET_DEVELOPING_CAMERA_SHOTS } from "../utils/queries/cameraQueries";
 import {
-  saveMetaDataToCache,
-  getMetaDataFromCache,
+  saveMetadataToCache,
+  getMetadataFromCache,
   saveImageToFileSystem,
   deleteImageFromFileSystem,
-} from "../utils/cacheHelper";
+} from "../utils/newCacheHelper";
 
 const DevelopingRollContext = createContext();
 
-const CACHE_KEY = "developingCameraShots";
+const CACHE_KEY_DEVELOPING = "developingCameraShots";
 
 export const DevelopingRollProvider = ({ children }) => {
-  const [cachedShots, setCachedShots] = useState([]);
-  const [isCacheInitialized, setIsCacheInitialized] = useState(false);
+  const [developingShots, setDevelopingShots] = useState([]);
+  const [
+    isDevelopingRollCacheInitialized,
+    setIsDevelopingRollCacheInitialized,
+  ] = useState(false);
 
   // Lazy query to fetch developing shots
   const [fetchShots] = useLazyQuery(GET_DEVELOPING_CAMERA_SHOTS, {
     fetchPolicy: "network-only",
     onCompleted: async (fetchedData) => {
-      console.log(`Fetched the Developing Shots!`);
-      const serverShots = fetchedData?.getDevelopingCameraShots || [];
+      try {
+        const serverShots = fetchedData?.getDevelopingCameraShots || [];
 
-      console.log(serverShots);
-
-      // Save each shot's thumbnail to the file system
-      for (const shot of serverShots) {
-        const cacheKey = `developing_shot_${shot._id}`;
-        try {
-          await saveImageToFileSystem(cacheKey, shot.imageThumbnail);
-          console.log(`Saved thumbnail to file system: ${cacheKey}`);
-        } catch (error) {
-          console.error(
-            `[DevelopingRollContext] Error saving thumbnail for ${cacheKey}:`,
-            error
-          );
+        // Save each shot's thumbnail to the file system
+        for (const shot of serverShots) {
+          const cacheKey = `developing_shot_${shot._id}`;
+          await saveImageToFileSystem(cacheKey, shot.imageThumbnail, true); // Save to DOCUMENT_DIR
         }
-      }
 
-      // Update state and cache metadata
-      setCachedShots(serverShots);
-      saveMetaDataToCache(CACHE_KEY, serverShots);
-      setIsCacheInitialized(true);
+        // Update state and cache metadata
+        setDevelopingShots(serverShots);
+        await saveMetadataToCache(CACHE_KEY_DEVELOPING, serverShots);
+        setIsDevelopingRollCacheInitialized(true);
+      } catch (error) {
+        console.error(
+          "[DevelopingRollContext] Error processing fetched shots:",
+          error
+        );
+      }
     },
     onError: (error) => {
       console.error("[DevelopingRollContext] Error fetching shots:", error);
     },
   });
 
-  // Explicitly initialize the cache
-  const initializeCache = async () => {
+  // Initialize developing roll cache from local storage or fetch from server
+  const initializeDevelopingRollCache = async () => {
+    if (isDevelopingRollCacheInitialized) return; // Skip if already initialized
+
     try {
-      console.log(`Checking if Cache is Initialized`);
-
-      if (isCacheInitialized) return; // Avoid re-initialization
-
-      const cachedData = getMetaDataFromCache(CACHE_KEY);
+      const cachedData = await getMetadataFromCache(CACHE_KEY_DEVELOPING);
 
       if (cachedData) {
-        console.log(`There's cached data`);
-        setCachedShots(cachedData);
-        setIsCacheInitialized(true);
+        setDevelopingShots(cachedData);
+        setIsDevelopingRollCacheInitialized(true);
       } else {
-        console.log(`There's NO cached data`);
         await fetchShots(); // Fetch fresh data if cache is empty
       }
     } catch (error) {
-      console.error("[DevelopingRollContext] Error initializing cache:", error);
-    }
-  };
-
-  // Add a new shot to the cache
-  const addShotToCache = async (newShot) => {
-    try {
-      console.log("Adding shot to cache");
-
-      setCachedShots((prevShots) => {
-        const updatedShots = [...prevShots, newShot];
-        saveMetaDataToCache(CACHE_KEY, updatedShots);
-        return updatedShots;
-      });
-
-      const cacheKey = `developing_shot_${newShot._id}`;
-      await saveImageToFileSystem(cacheKey, newShot.imageThumbnail);
-      console.log(`Added Shot to Cache!`);
-    } catch (error) {
       console.error(
-        "[DevelopingRollContext] Error adding shot to cache:",
+        "[DevelopingRollContext] Error initializing developing roll cache:",
         error
       );
     }
   };
 
-  // Remove a shot from the cache
-  const removeShotFromCache = async (shotId) => {
+  // Add a new shot to the developing roll cache
+  const addShotToDevelopingRoll = async (newShot) => {
     try {
-      setCachedShots((prevShots) => {
-        const updatedShots = prevShots.filter((shot) => shot._id !== shotId);
-        saveMetaDataToCache(CACHE_KEY, updatedShots);
-        return updatedShots;
-      });
+      const updatedShots = [newShot, ...developingShots];
+      setDevelopingShots(updatedShots);
 
+      // Save updated metadata and thumbnail
+      await saveMetadataToCache(CACHE_KEY_DEVELOPING, updatedShots);
+      const cacheKey = `developing_shot_${newShot._id}`;
+      await saveImageToFileSystem(cacheKey, newShot.imageThumbnail, true);
+    } catch (error) {
+      console.error(
+        "[DevelopingRollContext] Error adding shot to developing roll:",
+        error
+      );
+    }
+  };
+
+  // Remove a shot from the developing roll cache
+  const removeShotFromDevelopingRoll = async (shotId) => {
+    try {
+      const updatedShots = developingShots.filter(
+        (shot) => shot._id !== shotId
+      );
+      setDevelopingShots(updatedShots);
+
+      // Update metadata and delete thumbnail
+      await saveMetadataToCache(CACHE_KEY_DEVELOPING, updatedShots);
       const cacheKey = `developing_shot_${shotId}`;
       await deleteImageFromFileSystem(cacheKey);
-      console.log(`Removed Shot from Cache!`);
     } catch (error) {
       console.error(
-        "[DevelopingRollContext] Error removing shot from cache:",
+        "[DevelopingRollContext] Error removing shot from developing roll:",
         error
       );
     }
   };
 
-  // Update a shot in the cache
-  const updateShotInCache = (shotId, updatedData) => {
+  // Update a shot in the developing roll cache
+  const updateShotInDevelopingRoll = (shotId, updatedData) => {
     try {
-      setCachedShots((prevShots) => {
-        const updatedShots = prevShots.map((shot) =>
-          shot._id === shotId ? { ...shot, ...updatedData } : shot
-        );
-        saveMetaDataToCache(CACHE_KEY, updatedShots);
-        return updatedShots;
-      });
+      const updatedShots = developingShots.map((shot) =>
+        shot._id === shotId ? { ...shot, ...updatedData } : shot
+      );
+      setDevelopingShots(updatedShots);
+
+      // Update metadata
+      saveMetadataToCache(CACHE_KEY_DEVELOPING, updatedShots);
     } catch (error) {
       console.error(
-        "[DevelopingRollContext] Error updating shot in cache:",
+        "[DevelopingRollContext] Error updating shot in developing roll:",
         error
       );
     }
   };
 
   const contextValue = {
-    cachedShots,
-    addShotToCache,
-    removeShotFromCache,
-    updateShotInCache,
-    initializeCache,
-    isCacheInitialized,
+    developingShots,
+    addShotToDevelopingRoll,
+    removeShotFromDevelopingRoll,
+    updateShotInDevelopingRoll,
+    initializeDevelopingRollCache,
+    isDevelopingRollCacheInitialized,
   };
 
   return (

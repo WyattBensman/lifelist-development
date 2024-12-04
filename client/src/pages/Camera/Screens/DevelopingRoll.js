@@ -26,18 +26,18 @@ export default function DevelopingRoll() {
 
   // Access DevelopingRoll context
   const {
-    cachedShots,
-    updateShotInCache,
-    initializeCache,
-    isCacheInitialized,
+    developingShots,
+    updateShotInDevelopingRoll,
+    initializeDevelopingRollCache,
+    isDevelopingRollCacheInitialized,
   } = useDevelopingRoll();
 
   // Initialize cache when component mounts
   useEffect(() => {
-    if (!isCacheInitialized) {
-      initializeCache(); // Ensure cache is populated if not already initialized
+    if (!isDevelopingRollCacheInitialized) {
+      initializeDevelopingRollCache(); // Ensure cache is populated if not already initialized
     }
-  }, [isCacheInitialized, initializeCache]);
+  }, [isDevelopingRollCacheInitialized, initializeDevelopingRollCache]);
 
   const toggleAlert = () => {
     setAlertVisible(!alertVisible);
@@ -54,10 +54,10 @@ export default function DevelopingRoll() {
   };
 
   const handleShotDeveloped = (shotId) => {
-    updateShotInCache(shotId, { isDeveloped: true }); // Update shot in cache
+    updateShotInDevelopingRoll(shotId, { isDeveloped: true }); // Update shot in cache
   };
 
-  if (!isCacheInitialized) {
+  if (!isDevelopingRollCacheInitialized) {
     return (
       <View style={layoutStyles.wrapper}>
         <ActivityIndicator size="large" color="#0000ff" />
@@ -92,9 +92,9 @@ export default function DevelopingRoll() {
         }
       />
 
-      {cachedShots.length > 0 ? (
+      {developingShots.length > 0 ? (
         <FlatList
-          data={cachedShots}
+          data={developingShots}
           renderItem={({ item }) => (
             <BlurredShotCard
               shot={item}

@@ -12,7 +12,7 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import CustomAlert from "../../../components/Alerts/CustomAlert";
-import { useProfile } from "../../../contexts/ProfileContext";
+import { useAdminProfile } from "../../../contexts/AdminProfileContext";
 
 const { width } = Dimensions.get("window");
 
@@ -23,7 +23,7 @@ const tabs = [
 ];
 
 export default function EditProfileNavigator() {
-  const { unsavedChanges, resetChanges } = useProfile();
+  const { unsavedChanges, resetAdminChanges } = useAdminProfile();
   const route = useRoute();
   const initialTab = route.params?.initialTab || "Profile";
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -54,7 +54,7 @@ export default function EditProfileNavigator() {
   };
 
   const handleDiscardChanges = () => {
-    resetChanges(); // Reset unsaved changes globally
+    resetAdminChanges(); // Reset unsaved changes globally
     setActiveTab(pendingTab); // Switch to the new tab
     setShowAlert(false); // Close the alert
   };

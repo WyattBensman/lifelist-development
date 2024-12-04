@@ -5,10 +5,11 @@ import NavigationTab from "./src/routes/NavigationTab";
 import AuthenticationStack from "./src/routes/AuthenticationStack";
 import { useAuth } from "./src/contexts/AuthContext";
 import LoadingScreen from "./src/pages/Loading/LoadingScreen";
-import { ProfileProvider } from "./src/contexts/ProfileContext";
 import { DevelopingRollProvider } from "./src/contexts/DevelopingRollContext";
 import { CameraAlbumProvider } from "./src/contexts/CameraAlbumContext";
 import { CameraRollProvider } from "./src/contexts/CameraRollContext";
+import { LifeListProvider } from "./src/contexts/LifeListContext";
+import { AdminProfileProvider } from "./src/contexts/AdminProfileContext";
 
 export default function AppNavigator() {
   const [isEarlyAccessUnlocked, setIsEarlyAccessUnlocked] = useState(null);
@@ -42,15 +43,17 @@ export default function AppNavigator() {
   } else {
     // Wrap NavigationTab with ProfileProvider
     content = (
-      <ProfileProvider>
-        <CameraAlbumProvider>
-          <CameraRollProvider>
-            <DevelopingRollProvider>
-              <NavigationTab />
-            </DevelopingRollProvider>
-          </CameraRollProvider>
-        </CameraAlbumProvider>
-      </ProfileProvider>
+      <AdminProfileProvider>
+        <LifeListProvider>
+          <CameraAlbumProvider>
+            <CameraRollProvider>
+              <DevelopingRollProvider>
+                <NavigationTab />
+              </DevelopingRollProvider>
+            </CameraRollProvider>
+          </CameraAlbumProvider>
+        </LifeListProvider>
+      </AdminProfileProvider>
     );
   }
 

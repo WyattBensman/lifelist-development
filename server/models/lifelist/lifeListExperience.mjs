@@ -16,20 +16,8 @@ const lifeListExperienceSchema = new Schema({
   },
   associatedShots: [
     {
-      shot: {
-        type: Schema.Types.ObjectId,
-        ref: "CameraShot",
-      },
-      isHidden: {
-        type: Boolean,
-        default: false,
-      },
-    },
-  ],
-  associatedCollages: [
-    {
       type: Schema.Types.ObjectId,
-      ref: "Collage",
+      ref: "CameraShot",
     },
   ],
   year: {

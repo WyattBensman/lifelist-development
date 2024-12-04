@@ -7,7 +7,7 @@ import CustomProfileNavigator from "../Navigators/CustomProfileNavigator";
 import AdminOptionsPopup from "../Popups/AdminOptionsPopup";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../../contexts/AuthContext";
-import { useProfile } from "../../../contexts/ProfileContext";
+import { useAdminProfile } from "../../../contexts/AdminProfileContext";
 import { useQuery } from "@apollo/client";
 import {
   GET_COLLAGES_REPOSTS,
@@ -23,7 +23,7 @@ import {
 export default function AdminProfile() {
   const navigation = useNavigation();
   const { currentUser } = useAuth();
-  const { profile, loading: profileLoading } = useProfile();
+  const { adminProfile, refreshAdminProfile } = useAdminProfile();
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
   const [followerData, setFollowerData] = useState(null);
   const [collagesData, setCollagesData] = useState([]);
@@ -31,8 +31,6 @@ export default function AdminProfile() {
   const [collagesCursor, setCollagesCursor] = useState(null);
   const [repostsCursor, setRepostsCursor] = useState(null);
   const rotateAnim = useRef(new Animated.Value(0)).current;
-  console.log(`Profile: ${profile}`);
-  console.log(profile);
 
   const cacheKeys = {
     collagesMetadata: `collages_metadata_${currentUser}`,
@@ -48,13 +46,10 @@ export default function AdminProfile() {
       const cachedCollages = await getFromAsyncStorage(
         cacheKeys.collagesMetadata
       );
-
       const cachedReposts = await getFromAsyncStorage(
         cacheKeys.repostsMetadata
       );
-
       const cachedCounts = await getFromAsyncStorage(cacheKeys.followerCounts);
-
       const countsTimestamp = await getFromAsyncStorage(
         cacheKeys.countsTimestamp
       );
@@ -64,9 +59,7 @@ export default function AdminProfile() {
         countsTimestamp &&
         Date.now() - countsTimestamp < COUNTS_TTL;
 
-      if (cachedCollages) {
-        setCollagesData(cachedCollages);
-      }
+      if (cachedCollages) setCollagesData(cachedCollages);
       if (cachedReposts) setRepostsData(cachedReposts);
       if (countsAreValid) {
         setFollowerData(cachedCounts);
@@ -86,7 +79,6 @@ export default function AdminProfile() {
     loadCachedData();
   }, []);
 
-  // Query for follower counts
   const { data: countsData, refetch: refetchCounts } = useQuery(
     GET_USER_COUNTS,
     {
@@ -103,7 +95,6 @@ export default function AdminProfile() {
     }
   );
 
-  // Query for collages and reposts
   const {
     data: collagesRepostsData,
     fetchMore: fetchMoreCollagesReposts,
@@ -118,19 +109,14 @@ export default function AdminProfile() {
     skip: !!(collagesData.length && repostsData.length),
     onCompleted: (data) => {
       const { collages, repostedCollages } = data.getCollagesAndReposts;
-      console.log(collages.items);
-      console.log(repostedCollages.items);
 
-      // Temporarily update state with raw data (without caching images)
       setCollagesData(collages.items);
       setRepostsData(repostedCollages.items);
-
       setCollagesCursor(collages.nextCursor);
       setRepostsCursor(repostedCollages.nextCursor);
     },
   });
 
-  // Handle image caching in a separate effect
   useEffect(() => {
     if (collagesRepostsData) {
       const { collages, repostedCollages } =
@@ -158,7 +144,6 @@ export default function AdminProfile() {
             }))
           );
 
-          // Update state and cache
           setCollagesData(collagesMetadata);
           setRepostsData(repostsMetadata);
 
@@ -216,13 +201,13 @@ export default function AdminProfile() {
     setOptionsPopupVisible(!optionsPopupVisible);
   };
 
-  if (profileLoading) return <Text>Loading...</Text>;
+  if (!adminProfile) return <Text>Loading...</Text>;
 
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderMain
         titleComponent={
-          <Text style={headerStyles.headerHeavy}>{profile?.fullName}</Text>
+          <Text style={headerStyles.headerHeavy}>{adminProfile?.fullName}</Text>
         }
         icon1={
           <Animated.View style={{ transform: [{ rotate: rotation }] }}>
@@ -253,7 +238,7 @@ export default function AdminProfile() {
         )}
         ListHeaderComponent={() => (
           <ProfileOverview
-            profile={profile}
+            profile={adminProfile}
             followerData={followerData}
             userId={currentUser}
             isAdminView

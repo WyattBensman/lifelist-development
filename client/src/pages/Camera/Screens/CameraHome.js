@@ -32,8 +32,13 @@ const MAX_SHOTS_PER_DAY = 10;
 
 export default function CameraHome() {
   const { setIsTabBarVisible } = useNavigationContext();
-  const { addShotToCache, cachedShots, initializeCache, isCacheInitialized } =
-    useDevelopingRoll();
+  const {
+    developingShots,
+    addShotToDevelopingRoll,
+    initializeDevelopingRollCache,
+    isDevelopingRollCacheInitialized,
+  } = useDevelopingRoll();
+
   const [showHeaderOptions, setShowHeaderOptions] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const [shotsLeft, setShotsLeft] = useState(MAX_SHOTS_PER_DAY);
@@ -57,25 +62,22 @@ export default function CameraHome() {
 
   const calculateTodayShots = () => {
     const today = new Date().toISOString().split("T")[0];
-    return cachedShots.filter(
+    return developingShots.filter(
       (shot) => new Date(shot.capturedAt).toISOString().split("T")[0] === today
     ).length;
   };
 
   useEffect(() => {
     const loadCacheAndCalculateShots = async () => {
-      if (!isCacheInitialized) {
-        await initializeCache();
+      if (!isDevelopingRollCacheInitialized) {
+        await initializeDevelopingRollCache();
       }
       const todayShots = calculateTodayShots();
-      console.log(todayShots);
-
       setShotsLeft(MAX_SHOTS_PER_DAY - todayShots);
-      console.log(shotsLeft);
     };
 
     loadCacheAndCalculateShots();
-  }, [isCacheInitialized, cachedShots]);
+  }, [isDevelopingRollCacheInitialized, developingShots]);
 
   const [cameraType, setCameraType] = useState("Standard");
 
@@ -103,9 +105,9 @@ export default function CameraHome() {
       setShotsLeft(MAX_SHOTS_PER_DAY);
     } else {
       // Load the shots left from the cache
-      const cachedShots = await getFromAsyncStorage("shotsLeft");
-      if (cachedShots !== null) {
-        setShotsLeft(cachedShots);
+      const developingShots = await getFromAsyncStorage("shotsLeft");
+      if (developingShots !== null) {
+        setShotsLeft(developingShots);
       }
     }
   };
@@ -129,10 +131,10 @@ export default function CameraHome() {
 
   // Initialize DevelopingRollContext Cache
   useEffect(() => {
-    if (!isCacheInitialized) {
-      initializeCache();
+    if (!isDevelopingRollCacheInitialized) {
+      initializeDevelopingRollCache();
     }
-  }, [isCacheInitialized]);
+  }, [isDevelopingRollCacheInitialized]);
 
   const rotation = rotateAnim.interpolate({
     inputRange: [0, 1],
@@ -186,8 +188,8 @@ export default function CameraHome() {
     }
 
     // Initialize cache if not already done
-    if (!isCacheInitialized) {
-      await initializeCache();
+    if (!isDevelopingRollCacheInitialized) {
+      await initializeDevelopingRollCache();
     }
 
     if (cameraRef.current) {
@@ -209,7 +211,7 @@ export default function CameraHome() {
         // Upload the resized image and thumbnail
         const newShot = await handleUploadPhoto(resizedUri, thumbnailUri);
 
-        addShotToCache(newShot);
+        addShotToDevelopingRoll(newShot);
 
         saveToAsyncStorage("cameraShotsLeft", newShotsLeft);
       } catch (error) {

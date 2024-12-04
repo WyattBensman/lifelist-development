@@ -12,34 +12,31 @@ import {
   useNavigation,
   useRoute,
 } from "@react-navigation/native";
-import { useMutation } from "@apollo/client";
-import { useAuth } from "../../../contexts/AuthContext";
 import AddExperienceCard from "../Cards/AddExperienceCard";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import Icon from "../../../components/Icons/Icon";
 import { layoutStyles, iconStyles } from "../../../styles";
-import { ADD_EXPERIENCE_TO_LIFELIST } from "../../../utils/mutations";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useLifeListExperienceContext } from "../../../contexts/LifeListExperienceContext";
+import { useLifeList } from "../../../contexts/LifeListContext";
 
 export default function AddExperiencesOverview() {
-  const { currentUser } = useAuth();
   const navigation = useNavigation();
   const { setIsTabBarVisible } = useNavigationContext();
+  const { addLifeListExperienceToCache } = useLifeList(); // Use LifeListContext for adding and caching experiences
 
   // Retrieve lifeListId from route params
   const route = useRoute();
   const { lifeListId } = route.params;
 
-  // Access lifeListExperience context
+  // Access LifeListExperience context
   const {
     lifeListExperiences,
     updateLifeListExperience,
     removeLifeListExperience,
   } = useLifeListExperienceContext();
 
-  // Mutation to add experiences to the user's LifeList
-  const [addExperienceToLifeList] = useMutation(ADD_EXPERIENCE_TO_LIFELIST);
+  console.log(lifeListExperiences);
 
   // Focus effect for hiding the tab bar
   useFocusEffect(
@@ -68,33 +65,22 @@ export default function AddExperiencesOverview() {
     removeLifeListExperience(experienceId);
   };
 
+  // Handle adding multiple experiences to the LifeList
   const handleAddExperiences = async () => {
     if (!allExperiencesHaveList || !hasExperiences) return;
 
     try {
-      for (const exp of lifeListExperiences) {
-        const response = await addExperienceToLifeList({
-          variables: {
-            lifeListId: lifeListId,
-            experienceId: exp.experience._id, // Correctly referencing experience._id now
-            list: exp.list,
-            associatedShots: exp.associatedShots
-              ? exp.associatedShots.map((shot) => shot._id)
-              : [],
-            associatedCollages: exp.associatedCollages
-              ? exp.associatedCollages.map((collage) => collage._id)
-              : [],
-          },
-        });
+      console.log("Adding multiple experiences:", lifeListExperiences);
 
-        if (!response.data.addExperienceToLifeList.success) {
-          console.error(
-            "Failed to add experience:",
-            response.data.addExperienceToLifeList.message
-          );
-          return;
-        }
-      }
+      await addLifeListExperienceToCache(
+        lifeListExperiences.map((exp) => ({
+          lifeListId,
+          experience: exp.experience,
+          list: exp.list,
+          associatedShots: exp.associatedShots,
+        })),
+        true
+      );
 
       // Navigate to another screen upon success
       navigation.navigate("AdminLifeList");
