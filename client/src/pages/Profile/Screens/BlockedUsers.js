@@ -16,12 +16,11 @@ import {
 } from "../../../utils/cacheHelper";
 
 const CACHE_KEY = "blocked_users";
-const CACHE_TTL = 5 * 60; // 5 minutes in seconds
 
 export default function BlockedUsers() {
   const navigation = useNavigation();
   const [blockedUsers, setBlockedUsers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [isLoading, setIsLoading] = useState(true);
   const [fetchBlockedUsers, { data, loading, error }] =
     useLazyQuery(GET_BLOCKED_USERS);
 
@@ -68,7 +67,7 @@ export default function BlockedUsers() {
 
       // Save metadata to the cache
       console.log("Saving blocked users metadata to cache...");
-      saveMetaDataToCache(CACHE_KEY, blockedUsers, CACHE_TTL);
+      saveMetaDataToCache(CACHE_KEY, blockedUsers);
 
       // Update state
       setBlockedUsers(blockedUsers);
@@ -80,12 +79,12 @@ export default function BlockedUsers() {
     onCompleted: (mutationData) => {
       if (mutationData.unblockUser.success) {
         console.log(
-          `User ${mutationData.unblockUser.userId} successfully unblocked.`
+          `User ${mutationData.unblockUser.userIdToUnblock} successfully unblocked.`
         );
         // Update the state to remove the unblocked user
         setBlockedUsers((currentUsers) =>
           currentUsers.filter(
-            (user) => user._id !== mutationData.unblockUser.userId
+            (user) => user._id !== mutationData.unblockUser.userIdToUnblock
           )
         );
 
@@ -93,9 +92,8 @@ export default function BlockedUsers() {
         saveMetaDataToCache(
           CACHE_KEY,
           blockedUsers.filter(
-            (user) => user._id !== mutationData.unblockUser.userId
-          ),
-          CACHE_TTL
+            (user) => user._id !== mutationData.unblockUser.userIdToUnblock
+          )
         );
       }
     },
@@ -103,7 +101,7 @@ export default function BlockedUsers() {
 
   const handleUnblock = (userId) => {
     console.log(`Unblocking user: ${userId}`);
-    unblockUserMutation({ variables: { userId } });
+    unblockUserMutation({ variables: { userIdToUnblock: userId } });
   };
 
   const renderBlockedUserCard = ({ item }) => (
@@ -144,74 +142,3 @@ export default function BlockedUsers() {
     </View>
   );
 }
-
-/* import { FlatList, View } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import BlockedUserCard from "../Cards/BlockedUserCard";
-import HeaderStack from "../../../components/Headers/HeaderStack";
-import { iconStyles, layoutStyles } from "../../../styles";
-import { useMutation, useQuery } from "@apollo/client";
-import { useEffect, useState } from "react";
-import { GET_BLOCKED_USERS } from "../../../utils/queries/userQueries";
-import { UNBLOCK_USER } from "../../../utils/mutations/userRelationsMutations";
-import Icon from "../../../components/Icons/Icon";
-
-export default function BlockedUsers() {
-  const navigation = useNavigation();
-  const { data, loading, error } = useQuery(GET_BLOCKED_USERS);
-  const [blockedUsers, setBlockedUsers] = useState([]);
-
-  // Initialize the blocked users state when data is fetched
-  useEffect(() => {
-    if (data) {
-      setBlockedUsers(data.getBlockedUsers);
-    }
-  }, [data]);
-
-  const [unblockUserMutation] = useMutation(UNBLOCK_USER, {
-    onCompleted: (data) => {
-      if (data.unblockUser.success) {
-        // Update the state to remove the unblocked user
-        setBlockedUsers((currentUsers) =>
-          currentUsers.filter((user) => user !== data.unblockUser.userId)
-        );
-      }
-    },
-  });
-
-  const handleUnblock = (userId) => {
-    unblockUserMutation({ variables: { userId } });
-  };
-
-  const renderBlockedUserCard = ({ item }) => (
-    <BlockedUserCard
-      userId={item._id}
-      fullName={item.fullName}
-      username={item.username}
-      profilePicture={item.profilePicture}
-      onUnblock={handleUnblock}
-    />
-  );
-
-  return (
-    <View style={layoutStyles.wrapper}>
-      <HeaderStack
-        title={"Blocked Users"}
-        arrow={
-          <Icon
-            name="chevron.backward"
-            onPress={() => navigation.goBack()}
-            style={iconStyles.backArrow}
-            weight="semibold"
-          />
-        }
-      />
-      <FlatList
-        data={blockedUsers}
-        renderItem={renderBlockedUserCard}
-        keyExtractor={(item) => item._id.toString()}
-      />
-    </View>
-  );
-}
- */

@@ -76,6 +76,7 @@ export const UNBLOCK_USER = gql`
     unblockUser(userIdToUnblock: $userIdToUnblock) {
       success
       message
+      userIdToUnblock
     }
   }
 `;

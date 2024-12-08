@@ -10,7 +10,6 @@ import {
 import { layoutStyles, formStyles, iconStyles } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { BASE_URL } from "../../../utils/config";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
@@ -30,7 +29,7 @@ export default function Overview() {
   }, []);
 
   // If there's no cover image yet, use the first image in the collage
-  const currentCoverImage = coverImage || images[0]?.image || null;
+  const currentCoverImage = coverImage || images[0]?.imageThumbnail || null;
 
   // Handle caption change: Update directly into the collage context
   const handleCaptionChange = (text) => {
@@ -84,10 +83,7 @@ export default function Overview() {
           onPress={handleChangeCoverImage}
         >
           {currentCoverImage ? (
-            <Image
-              source={{ uri: `${BASE_URL}${currentCoverImage}` }}
-              style={styles.image}
-            />
+            <Image source={{ uri: currentCoverImage }} style={styles.image} />
           ) : (
             <Text style={styles.placeholderText}>No Cover Image Selected</Text>
           )}

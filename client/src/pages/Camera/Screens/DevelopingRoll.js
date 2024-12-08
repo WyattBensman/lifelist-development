@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   FlatList,
   Text,
@@ -10,7 +10,7 @@ import {
 import { BlurView } from "expo-blur";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import Icon from "../../../components/Icons/Icon";
 import BlurredShotCard from "../Cards/BlurredShotCard";
 import MessageAlert from "../../../components/Alerts/MessageAlert";
@@ -27,6 +27,7 @@ export default function DevelopingRoll() {
   // Access DevelopingRoll context
   const {
     developingShots,
+    recalculateDevelopedStatus,
     updateShotInDevelopingRoll,
     initializeDevelopingRollCache,
     isDevelopingRollCacheInitialized,
@@ -38,6 +39,13 @@ export default function DevelopingRoll() {
       initializeDevelopingRollCache(); // Ensure cache is populated if not already initialized
     }
   }, [isDevelopingRollCacheInitialized, initializeDevelopingRollCache]);
+
+  // Recalculate developed status whenever the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      recalculateDevelopedStatus();
+    }, [recalculateDevelopedStatus]) // Use only stable dependencies
+  );
 
   const toggleAlert = () => {
     setAlertVisible(!alertVisible);

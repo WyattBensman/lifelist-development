@@ -6,11 +6,14 @@ import {
   Image,
   TextInput,
   Animated,
+  Alert,
 } from "react-native";
 import { layoutStyles } from "../../../styles";
 import LockIcon from "../Icons/LockIcon"; // Ensure this icon can accept a color prop
-import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage
-import { useNavigation } from "@react-navigation/native"; // Import navigation hook
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useNavigation } from "@react-navigation/native";
+import { useMutation } from "@apollo/client";
+import { VERIFY_ACCESS_CODE } from "../../../utils/mutations/accessCodeMutations";
 
 export default function EarlyAccessScreen() {
   const [inputValue, setInputValue] = useState(""); // State to store input value
@@ -23,6 +26,33 @@ export default function EarlyAccessScreen() {
   const opacityValue = useState(new Animated.Value(0))[0]; // For fade-in of "Access Granted"
   const slideUpValue = useState(new Animated.Value(0))[0]; // For slide-up effect
   const welcomeOpacity = useState(new Animated.Value(0))[0]; // For "Welcome to LifeList"
+
+  // Apollo mutation for verifying the access code
+  const [verifyAccessCode, { loading }] = useMutation(VERIFY_ACCESS_CODE, {
+    onCompleted: async (data) => {
+      if (data.verifyAccessCode.success) {
+        try {
+          // Store the access code in AsyncStorage
+          await AsyncStorage.setItem("earlyAccessCode", inputValue);
+
+          // Mark the access state as unlocked
+          await AsyncStorage.setItem("isEarlyAccessUnlocked", "true");
+        } catch (error) {
+          Alert.alert(
+            "Error",
+            "Unable to save access status. Please try again."
+          );
+          console.error("AsyncStorage error:", error);
+        }
+      } else {
+        Alert.alert("Error", data.verifyAccessCode.message);
+      }
+    },
+    onError: (error) => {
+      Alert.alert("Error", error.message || "An unexpected error occurred.");
+      console.error("Verification error:", error);
+    },
+  });
 
   const handleInputChange = (text) => {
     setInputValue(text.toUpperCase()); // Convert input to uppercase
@@ -61,20 +91,34 @@ export default function EarlyAccessScreen() {
     });
   };
 
-  // Handle lock icon press
   const handleLockPress = async () => {
-    if (inputValue.length === 8 && !isAnimating) {
-      setAccessGranted(true);
+    if (!inputValue) {
+      Alert.alert("Invalid Code", "Please enter a valid access code.");
+      return;
+    }
 
+    if (!isAnimating && !loading) {
       try {
-        await AsyncStorage.setItem("isEarlyAccessUnlocked", "true");
-        runAnimation(() => {
-          navigation.navigate("CreateAccount");
+        const { data } = await verifyAccessCode({
+          variables: { code: inputValue },
         });
+        if (data.verifyAccessCode.success) {
+          // Set accessGranted to true to trigger animation
+          setAccessGranted(true);
+
+          // Save to AsyncStorage
+          await AsyncStorage.setItem("earlyAccessCode", inputValue);
+
+          // Run animations and navigate
+          runAnimation(() => {
+            navigation.navigate("CreateAccount");
+          });
+        } else {
+          Alert.alert("Access Denied", data.verifyAccessCode.message);
+        }
       } catch (error) {
-        Alert.alert("Error", "Unable to save access status. Please try again.");
-        console.error("AsyncStorage error:", error);
-        setAccessGranted(false);
+        console.error("Verify Access Code Error:", error.message);
+        Alert.alert("Error", "Failed to verify access code. Please try again.");
       }
     }
   };
@@ -94,19 +138,14 @@ export default function EarlyAccessScreen() {
               style={styles.input}
               value={inputValue}
               onChangeText={handleInputChange}
-              maxLength={8} // Limit input to 8 characters
               autoCapitalize="characters" // Automatically capitalize input
             />
 
             {/* Lock Icon */}
             <LockIcon
-              color={inputValue.length === 8 ? "#6AB952" : "#252525"}
-              backgroundColor={
-                inputValue.length === 8 ? "#6AB95230" : "transparent"
-              }
-              borderColor={
-                inputValue.length === 8 ? "#6AB95250" : "transparent"
-              }
+              color={inputValue ? "#6AB952" : "#252525"}
+              backgroundColor={inputValue ? "#6AB95230" : "transparent"}
+              borderColor={inputValue ? "#6AB95250" : "transparent"}
               onPress={handleLockPress}
             />
           </>

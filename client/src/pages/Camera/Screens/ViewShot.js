@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   Dimensions,
   Text,
-  Animated,
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { useCameraRoll } from "../../../contexts/CameraRollContext";
@@ -16,8 +15,9 @@ import Icon from "../../../components/Icons/Icon";
 import ViewShotHeader from "../../../components/Headers/ViewShotHeader";
 import ViewShotCard from "../Cards/ViewShotCard";
 import * as Sharing from "expo-sharing";
-import DropdownMenuShot from "../../../components/Dropdowns/DropdownMenuShot";
 import DangerAlert from "../../../components/Alerts/DangerAlert";
+import { POST_STORY } from "../../../utils/mutations/storyMutations";
+import { useMutation } from "@apollo/client";
 
 const { width } = Dimensions.get("window");
 const aspectRatio = 3 / 2;
@@ -37,10 +37,11 @@ export default function ViewShot() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentShot, setCurrentShot] = useState(null);
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
+  const [isPostingToStory, setIsPostingToStory] = useState(false);
+  const [isAdditionalOptionsVisible, setIsAdditionalOptionsVisible] =
+    useState(false);
   const [isDeleteAlertVisible, setIsDeleteAlertVisible] = useState(false);
-  const [isOptionsAlertVisible, setIsOptionsAlertVisible] = useState(false);
-  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const [feedbackMessage, setFeedbackMessage] = useState("");
 
   // Set the initial index based on shotId
   useEffect(() => {
@@ -68,21 +69,35 @@ export default function ViewShot() {
     [shots, fetchFullResolutionImage, preloadFullResolutionImages]
   );
 
-  useEffect(() => {
-    Animated.timing(rotateAnim, {
-      toValue: isMenuVisible ? 1 : 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [isMenuVisible]);
+  const [postStory, { loading: posting, error: postError }] =
+    useMutation(POST_STORY);
 
-  const rotation = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "90deg"],
-  });
+  // ACTIONS
+  const handlePostToStoryPress = () => {
+    setIsPostingToStory(true); // Enable confirmation workflow
+  };
 
-  const toggleMenu = () => {
-    setIsMenuVisible(!isMenuVisible);
+  const handleConfirmPostToStory = async () => {
+    try {
+      if (!currentShot?._id) return;
+
+      // Run the mutation
+      await postStory({ variables: { cameraShotId: currentShot._id } });
+
+      // Success feedback
+      setFeedbackMessage("Story successfully posted!");
+    } catch (err) {
+      console.error("Error posting story:", err);
+      setFeedbackMessage("Failed to post story.");
+    } finally {
+      // Always reset the state
+      setTimeout(() => setFeedbackMessage(""), 2000); // Clear feedback after 2 seconds
+      setIsPostingToStory(false);
+    }
+  };
+
+  const handleCancelPostToStory = () => {
+    setIsPostingToStory(false);
   };
 
   const handleSharePress = async () => {
@@ -94,8 +109,21 @@ export default function ViewShot() {
     }
   };
 
-  const handleDeletePress = () => {
-    setIsDeleteAlertVisible(true);
+  const handleDeletePress = () => setIsDeleteAlertVisible(true);
+
+  const handleAddToPress = () => setIsAdditionalOptionsVisible(true);
+
+  const handleAlbumPress = () => {
+    navigation.navigate("AddShotToAlbum", { shotId: currentShot?._id });
+  };
+
+  const handleExperiencePress = () => {
+    navigation.navigate("AddShotToExperience", { shotId: currentShot?._id });
+  };
+
+  const resetToMainButtons = () => {
+    setIsAdditionalOptionsVisible(false);
+    setIsPostingToStory(false);
   };
 
   const confirmDelete = async () => {
@@ -138,44 +166,6 @@ export default function ViewShot() {
       })
     : "";
 
-  const dropdownItems = [
-    {
-      icon: "trash",
-      style: iconStyles.deleteIcon,
-      label: "Delete Shot",
-      onPress: handleDeletePress,
-      backgroundColor: "#FF634730",
-      tintColor: "#FF6347",
-    },
-    {
-      icon: "folder.badge.plus",
-      style: iconStyles.addToAlbum,
-      label: "Add to Album",
-      onPress: () =>
-        navigation.navigate("AddShotToAlbum", { shotId: currentShot?._id }),
-      backgroundColor: "#5FC4ED30",
-      tintColor: "#5FC4ED",
-    },
-    {
-      icon: "plus",
-      style: iconStyles.addExperienceIcon,
-      label: "Add to Exp",
-      onPress: () =>
-        navigation.navigate("AddShotToExperience", {
-          shotId: currentShot?._id,
-        }),
-      backgroundColor: "#6AB95230",
-      tintColor: "#6AB952",
-    },
-  ];
-
-  const dropdownContent = (
-    <DropdownMenuShot
-      items={dropdownItems}
-      containerStyle={{ alignItems: "flex-start" }}
-    />
-  );
-
   return (
     <View style={layoutStyles.wrapper}>
       <ViewShotHeader
@@ -190,18 +180,16 @@ export default function ViewShot() {
         date={date}
         time={time}
         ellipsis={
-          <Animated.View style={{ transform: [{ rotate: rotation }] }}>
-            <Icon
-              name="ellipsis"
-              style={iconStyles.ellipsis}
-              weight="bold"
-              onPress={toggleMenu}
-            />
-          </Animated.View>
+          <Icon
+            name="trash"
+            style={styles.trashIcon}
+            weight="bold"
+            onPress={handleDeletePress}
+            noFill={true}
+            tintColor={"red"}
+          />
         }
         hasBorder={false}
-        dropdownVisible={isMenuVisible}
-        dropdownContent={dropdownContent}
       />
 
       <View style={{ height: imageHeight }}>
@@ -233,14 +221,175 @@ export default function ViewShot() {
         />
       </View>
 
-      <View style={styles.bottomContainer}>
-        <Pressable
-          style={[styles.iconButton, isMenuVisible && styles.disabledButton]}
-          onPress={handleSharePress}
-        >
-          <Icon name="paperplane" style={iconStyles.shareIcon} weight="bold" />
-        </Pressable>
-      </View>
+      {/* Feedback */}
+      {feedbackMessage ? (
+        <View style={styles.feedbackContainer}>
+          <View style={styles.feedbackBox}>
+            <Text style={styles.feedbackText}>{feedbackMessage}</Text>
+          </View>
+        </View>
+      ) : (
+        // Bottom Container
+        <View style={styles.bottomContainer}>
+          {!isPostingToStory ? (
+            !isAdditionalOptionsVisible ? (
+              <>
+                <Pressable
+                  style={styles.iconWithLabel}
+                  onPress={handleSharePress}
+                >
+                  <Pressable
+                    style={styles.iconButton}
+                    onPress={handleSharePress}
+                  >
+                    <Icon
+                      name="paperplane"
+                      style={styles.icon}
+                      weight="bold"
+                      onPress={handleSharePress}
+                    />
+                  </Pressable>
+                  <Text style={styles.labelText}>Share</Text>
+                </Pressable>
+
+                <Pressable
+                  style={styles.iconWithLabel}
+                  onPress={handlePostToStoryPress}
+                >
+                  <Pressable
+                    style={styles.iconButton}
+                    onPress={handlePostToStoryPress}
+                  >
+                    <Icon
+                      name="rectangle.portrait.on.rectangle.portrait.angled"
+                      style={styles.icon}
+                      weight="bold"
+                      onPress={handlePostToStoryPress}
+                    />
+                  </Pressable>
+                  <Text style={styles.labelText}>Post to Story</Text>
+                </Pressable>
+
+                <Pressable
+                  style={styles.iconWithLabel}
+                  onPress={handleAddToPress}
+                >
+                  <Pressable
+                    style={styles.iconButton}
+                    onPress={handleAddToPress}
+                  >
+                    <Icon
+                      name="folder"
+                      style={styles.icon}
+                      weight="bold"
+                      onPress={handleAddToPress}
+                    />
+                  </Pressable>
+                  <Text style={styles.labelText}>Add To</Text>
+                </Pressable>
+              </>
+            ) : (
+              <>
+                <Pressable
+                  style={styles.iconWithLabel}
+                  onPress={handleAlbumPress}
+                >
+                  <Pressable
+                    style={styles.iconButton}
+                    onPress={handleAlbumPress}
+                  >
+                    <Icon
+                      name="folder"
+                      style={styles.icon}
+                      weight="bold"
+                      onPress={handleAlbumPress}
+                    />
+                  </Pressable>
+                  <Text style={styles.labelText}>Album</Text>
+                </Pressable>
+
+                <Pressable
+                  style={styles.iconWithLabel}
+                  onPress={handleExperiencePress}
+                >
+                  <Pressable
+                    style={styles.iconButton}
+                    onPress={handleExperiencePress}
+                  >
+                    <Icon
+                      name="star"
+                      style={styles.icon}
+                      weight="bold"
+                      onPress={handleExperiencePress}
+                    />
+                  </Pressable>
+                  <Text style={styles.labelText}>Experience</Text>
+                </Pressable>
+
+                <Pressable
+                  style={styles.iconWithLabel}
+                  onPress={resetToMainButtons}
+                >
+                  <Pressable
+                    style={styles.iconButton}
+                    onPress={resetToMainButtons}
+                  >
+                    <Icon
+                      name="arrow.left"
+                      style={styles.icon}
+                      weight="bold"
+                      onPress={resetToMainButtons}
+                    />
+                  </Pressable>
+                  <Text style={styles.labelText}>Back</Text>
+                </Pressable>
+              </>
+            )
+          ) : (
+            <>
+              <Pressable
+                style={styles.iconWithLabel}
+                onPress={handleConfirmPostToStory}
+                disabled={posting}
+              >
+                <Pressable
+                  style={[styles.iconButton, posting && styles.disabledButton]}
+                  onPress={handleConfirmPostToStory}
+                  disabled={posting}
+                >
+                  <Icon
+                    name="checkmark"
+                    style={styles.icon}
+                    weight="bold"
+                    onPress={handleConfirmPostToStory}
+                  />
+                </Pressable>
+                <Text style={styles.labelText}>
+                  {posting ? "Posting..." : "Confirm Story"}
+                </Text>
+              </Pressable>
+
+              <Pressable
+                style={styles.iconWithLabel}
+                onPress={handleCancelPostToStory}
+              >
+                <Pressable
+                  style={styles.iconButton}
+                  onPress={handleCancelPostToStory}
+                >
+                  <Icon
+                    name="xmark"
+                    style={styles.icon}
+                    weight="bold"
+                    onPress={handleCancelPostToStory}
+                  />
+                </Pressable>
+                <Text style={styles.labelText}>Cancel</Text>
+              </Pressable>
+            </>
+          )}
+        </View>
+      )}
 
       <DangerAlert
         visible={isDeleteAlertVisible}
@@ -266,16 +415,50 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-end",
-    paddingHorizontal: 20,
+    justifyContent: "center",
     backgroundColor: "#121212",
+  },
+  iconWithLabel: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  labelText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: 500,
+    marginTop: 6,
   },
   iconButton: {
     backgroundColor: "#252525",
     borderRadius: 50,
-    padding: 12,
+    padding: 10,
     justifyContent: "center",
     alignItems: "center",
+    marginHorizontal: 20,
+  },
+  feedbackContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#121212",
+  },
+  feedbackBox: {
+    backgroundColor: "#252525",
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    borderRadius: 32,
+  },
+  feedbackText: {
+    color: "#fff",
+    backgroundColor: "#252525",
+    paddingVertical: 8,
+    fontSize: 12,
+    fontWeight: "500",
+    textAlign: "center",
+  },
+  trashIcon: {
+    height: 18.28,
+    width: 15,
   },
   disabledButton: {
     opacity: 0.5,

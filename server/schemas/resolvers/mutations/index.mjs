@@ -8,6 +8,8 @@ import * as lifeListMutations from "./lifelist/index.mjs";
 import * as messagingMutations from "./messaging/index.mjs";
 import * as notificationsMutations from "./notifications/index.mjs";
 import * as privacyGroupsMutations from "./privacyGroups/index.mjs";
+import * as earlyAccessMutations from "./earlyAccess/index.mjs";
+import * as storyMutations from "./stories/index.mjs";
 
 const mutations = {
   ...userActionsMutations,
@@ -20,6 +22,8 @@ const mutations = {
   ...messagingMutations,
   ...notificationsMutations,
   ...privacyGroupsMutations,
+  ...earlyAccessMutations,
+  ...storyMutations,
 };
 
 export default mutations;

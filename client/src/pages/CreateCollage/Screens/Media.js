@@ -1,7 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Text, FlatList } from "react-native";
-import { useQuery } from "@apollo/client";
-import { GET_ALL_CAMERA_SHOTS } from "../../../utils/queries";
 import { iconStyles, layoutStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
@@ -13,17 +11,30 @@ import ShotCard from "../Cards/ShotCard";
 import SelectedShotCard from "../Cards/SelectedShotCard";
 import DangerAlert from "../../../components/Alerts/DangerAlert";
 import { useCreateCollageContext } from "../../../contexts/CreateCollageContext";
+import { useCameraRoll } from "../../../contexts/CameraRollContext";
 
 export default function Media() {
   const navigation = useNavigation();
-  const { data, loading, error } = useQuery(GET_ALL_CAMERA_SHOTS);
   const { collage, updateCollage, resetCollage, hasModified } =
     useCreateCollageContext();
   const { setIsTabBarVisible } = useNavigationContext();
   const [showAlert, setShowAlert] = useState(false);
 
+  // Camera Roll Context
+  const {
+    shots,
+    initializeCameraRollCache,
+    loadNextPage,
+    isCameraRollCacheInitialized,
+  } = useCameraRoll();
+
   useFocusEffect(() => {
     setIsTabBarVisible(false);
+
+    // Initialize camera roll cache
+    if (!isCameraRollCacheInitialized) {
+      initializeCameraRollCache();
+    }
   });
 
   // Show the alert on back press if more than 3 images or hasModified is true
@@ -42,9 +53,6 @@ export default function Media() {
     navigation.goBack(); // Proceed with the back action
   };
 
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
-
   // Toggle the checkbox for the image selection
   const handleCheckboxToggle = (id) => {
     const isSelected = collage.images.some((shot) => shot._id === id);
@@ -58,9 +66,7 @@ export default function Media() {
       );
     } else {
       // Add the image to the collage if not already selected
-      const selectedShot = data.getAllCameraShots.find(
-        (shot) => shot._id === id
-      );
+      const selectedShot = shots.find((shot) => shot._id === id);
       updateCollage(
         {
           images: [...collage.images, selectedShot],
@@ -151,12 +157,14 @@ export default function Media() {
       {/* Image Gallery Section */}
       <Text style={styles.instructions}>Camera Shots</Text>
       <FlatList
-        data={data.getAllCameraShots}
+        data={shots}
         renderItem={renderShotItem} // Render each gallery image
         keyExtractor={(item) => item._id.toString()}
         numColumns={3} // Display images in a 3-column grid
         columnWrapperStyle={styles.columnWrapper}
         contentContainerStyle={styles.flatListContent}
+        onEndReached={loadNextPage} // Load more images when reaching the end
+        onEndReachedThreshold={0.5} // Trigger load when 50% from the bottom
       />
 
       {/* Custom Alert for Back Press */}

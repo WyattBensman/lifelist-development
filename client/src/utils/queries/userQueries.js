@@ -17,6 +17,9 @@ export const GET_USER_PROFILE = gql`
         _id
         coverImage
       }
+      collagesCount
+      followersCount
+      followingCount
     }
   }
 `;

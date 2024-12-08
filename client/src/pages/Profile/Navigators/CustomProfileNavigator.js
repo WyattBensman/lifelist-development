@@ -13,13 +13,11 @@ const { width } = Dimensions.get("window");
 const tabs = [
   { name: "Collages", component: Collages },
   { name: "Reposts", component: Reposts },
-  { name: "LifeList", component: null },
+  { name: "Stories", component: null },
 ];
 
 export default function CustomProfileNavigator({
   userId,
-  isAdmin,
-  isAdminScreen,
   collages,
   repostedCollages,
   fetchMoreCollages,
@@ -28,9 +26,6 @@ export default function CustomProfileNavigator({
 }) {
   const [activeTab, setActiveTab] = useState("Collages");
   const translateX = useSharedValue(0);
-
-  console.log(`INITIAL COLLAGES IN NAVIGATOR: ${collages}`);
-  console.log(`INITIAL REPOSTS IN NAVIGATOR: ${repostedCollages}`);
 
   useEffect(() => {
     translateX.value = activeTab === "Collages" ? 0 : -width;
@@ -41,16 +36,12 @@ export default function CustomProfileNavigator({
   );
 
   const handleTabPress = (tabName) => {
-    if (tabName === "LifeList") {
-      if (isAdmin && isAdminScreen) {
-        navigation.navigate("AdminLifeListStack");
-      } else {
-        navigation.navigate("LifeListStack", { userId });
-      }
-      setActiveTab("Collages"); // Reset to Collages after navigation
-    } else {
-      setActiveTab(tabName);
+    if (tabName === "Stories") {
+      navigation.navigate("Stories", { userId }); // Navigate to Stories screen
+      setActiveTab("Collages"); // Immediately reset activeTab to Collages
+      return; // Prevent further execution for Stories tab
     }
+    setActiveTab(tabName); // Set activeTab for other tabs
   };
 
   const animatedStyle = useAnimatedStyle(() => ({

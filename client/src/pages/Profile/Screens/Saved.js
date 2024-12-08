@@ -9,14 +9,14 @@ import CollageCard from "../Cards/CollageCard";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import {
-  getMetaDataFromCache,
-  saveMetaDataToCache,
-  getImageFromCache,
-  saveImageToCache,
-} from "../../../utils/cacheHelper";
+  saveMetadataToCache,
+  getMetadataFromCache,
+  saveImageToFileSystem,
+  getImageFromFileSystem,
+} from "../../../utils/newCacheHelper";
 
 const { height: screenHeight } = Dimensions.get("window");
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 16;
 
 export default function Saved() {
   const navigation = useNavigation();
@@ -25,18 +25,13 @@ export default function Saved() {
   const [cursor, setCursor] = useState(null);
   const [hasMore, setHasMore] = useState(true);
 
-  // Load initial data from cache on mount
   useEffect(() => {
     const loadCachedData = async () => {
-      console.log("Attempting to load cached saved collages data...");
-      const cachedData = await getMetaDataFromCache("savedCollages");
+      const cachedData = await getMetadataFromCache("savedCollages");
       if (cachedData) {
-        console.log("Cached saved collages data found, loading...");
         setSavedCollages(cachedData.collages);
         setCursor(cachedData.nextCursor);
         setHasMore(cachedData.hasNextPage);
-      } else {
-        console.log("No cached data found for saved collages.");
       }
     };
     loadCachedData();
@@ -46,45 +41,27 @@ export default function Saved() {
     variables: { cursor, limit: PAGE_SIZE },
     fetchPolicy: "cache-and-network",
     onCompleted: async (fetchedData) => {
-      console.log("Data fetched from network for saved collages:", fetchedData);
-
       const { collages, nextCursor, hasNextPage } =
         fetchedData.getSavedCollages;
 
-      // Save collages metadata to cache
-      console.log("Saving collages metadata to cache...");
-      await saveMetaDataToCache("savedCollages", {
+      await saveMetadataToCache("savedCollages", {
         collages,
         nextCursor,
         hasNextPage,
       });
 
-      // Attempt to cache each collage image if not already cached
       for (const collage of collages) {
         const imageKey = `saved_collage_${collage._id}`;
-        console.log(`Attempting to load cached image for key: ${imageKey}`);
-
-        const cachedImageUri = await getImageFromCache(
-          imageKey,
-          collage.coverImage
-        );
-        if (!cachedImageUri) {
-          console.log(
-            `Image not found in cache, downloading and caching: ${imageKey}`
-          );
-          await saveImageToCache(imageKey, collage.coverImage);
-        } else {
-          console.log(`Image already cached for key: ${imageKey}`);
+        if (!(await getImageFromFileSystem(imageKey))) {
+          await saveImageToFileSystem(imageKey, collage.coverImage);
         }
       }
 
-      // Remove any duplicates by checking against current state
       const newUniqueCollages = collages.filter(
         (newCollage) =>
           !savedCollages.some((saved) => saved._id === newCollage._id)
       );
 
-      // Update state with new data
       setSavedCollages((prevCollages) => [
         ...prevCollages,
         ...newUniqueCollages,
@@ -100,31 +77,13 @@ export default function Saved() {
 
   const loadMore = async () => {
     if (hasMore && !loading) {
-      console.log("Loading more saved collages...");
       await fetchMore({
         variables: { cursor, limit: PAGE_SIZE },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev;
-          console.log("Fetched additional collages from network.");
-
-          return {
-            getSavedCollages: {
-              ...fetchMoreResult.getSavedCollages,
-              collages: [
-                ...prev.getSavedCollages.collages,
-                ...fetchMoreResult.getSavedCollages.collages,
-              ],
-            },
-          };
-        },
       });
     }
   };
 
-  if (error) {
-    console.log("Error loading saved collages:", error.message);
-    return <Text>Error loading saved collages: {error.message}</Text>;
-  }
+  if (error) return <Text>Error loading saved collages: {error.message}</Text>;
 
   return (
     <View style={layoutStyles.wrapper}>

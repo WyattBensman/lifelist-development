@@ -7,10 +7,7 @@ export default function SelectedShotCard({ item, handleImagePress, drag }) {
   return (
     <Pressable onPress={() => handleImagePress(item._id)} onLongPress={drag}>
       <View style={styles.shotContainer}>
-        <Image
-          source={{ uri: `${BASE_URL}${item.image}` }}
-          style={styles.shotImage}
-        />
+        <Image source={{ uri: item.imageThumbnail }} style={styles.shotImage} />
         {/* Trash icon for removing the selected image */}
         <SymbolView name="trash" style={styles.trash} tintColor={"#d4d4d4"} />
       </View>

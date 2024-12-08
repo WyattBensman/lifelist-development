@@ -73,6 +73,7 @@ export default function CameraHome() {
         await initializeDevelopingRollCache();
       }
       const todayShots = calculateTodayShots();
+
       setShotsLeft(MAX_SHOTS_PER_DAY - todayShots);
     };
 

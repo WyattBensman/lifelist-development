@@ -1,10 +1,8 @@
 import { User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const getUserProfileById = async (_, { userId }, { user }) => {
+export const getUserProfileById = async (_, { userId }) => {
   try {
-    isUser(user);
-
     const foundUser = await User.findById(userId)
       .populate({
         path: "collages",
@@ -23,8 +21,24 @@ export const getUserProfileById = async (_, { userId }, { user }) => {
       throw new Error("User not found.");
     }
 
+    const [followersCount, followingCount] = await Promise.all([
+      User.countDocuments({ following: userId }),
+      User.countDocuments({ followers: userId }),
+    ]);
+
+    const collagesCount = foundUser.collages.length;
+
     return {
-      ...foundUser.toObject(),
+      _id: foundUser._id,
+      fullName: foundUser.fullName,
+      username: foundUser.username,
+      bio: foundUser.bio,
+      profilePicture: foundUser.profilePicture,
+      collages: foundUser.collages,
+      repostedCollages: foundUser.repostedCollages,
+      followersCount,
+      followingCount,
+      collagesCount,
     };
   } catch (error) {
     throw new Error("Database error: " + error.message);

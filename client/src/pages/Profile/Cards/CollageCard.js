@@ -1,7 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Image, StyleSheet, Dimensions, Pressable } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Dimensions,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { fetchCachedImageUri } from "../../../utils/cacheHelper"; // Import your fetch function
+import {
+  getImageFromFileSystem,
+  saveImageToFileSystem,
+} from "../../../utils/newCacheHelper"; //
 
 const screenWidth = Dimensions.get("window").width;
 const spacing = 1.5;
@@ -16,32 +25,48 @@ export default function CollageCard({
 }) {
   const navigation = useNavigation();
   const [imageUri, setImageUri] = useState(null);
-
-  console.log(`COLLAGES FROM CARD: ${collages}`);
-
-  useEffect(() => {
-    // Fetch the cached image URI or fallback to the original URL
-    const fetchImage = async () => {
-      const cacheKey = `${cacheKeyPrefix}${collageId}`;
-      const cachedUri = await fetchCachedImageUri(cacheKey, path);
-      setImageUri(cachedUri);
-    };
-
-    fetchImage();
-  }, [collageId, path, cacheKeyPrefix]);
+  const [loading, setLoading] = useState(true);
 
   const handlePress = () => {
     navigation.navigate("ViewCollage", { collages, initialIndex: index });
   };
 
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const cacheKey = `${cacheKeyPrefix}${collageId}`;
+        let uri = await getImageFromFileSystem(cacheKey);
+
+        if (!uri) {
+          uri = await saveImageToFileSystem(cacheKey, path);
+        }
+
+        setImageUri(uri);
+      } catch (error) {
+        console.error(
+          `[CollageCard] Error fetching image for ${collageId}:`,
+          error
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchImage();
+  }, [collageId, path, cacheKeyPrefix]);
+
   return (
     <Pressable onPress={handlePress} style={styles.container}>
-      {imageUri && (
-        <Image
-          source={{ uri: imageUri }}
-          style={styles.image}
-          resizeMode="cover"
-        />
+      {loading ? (
+        <ActivityIndicator size="small" color="#fff" />
+      ) : (
+        imageUri && (
+          <Image
+            source={{ uri: imageUri }}
+            style={styles.image}
+            resizeMode="cover"
+          />
+        )
       )}
     </Pressable>
   );
@@ -53,6 +78,9 @@ const styles = StyleSheet.create({
     height: imageWidth,
     marginRight: spacing,
     marginBottom: spacing,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#252525", // Fallback background color while loading
   },
   image: {
     width: "100%",

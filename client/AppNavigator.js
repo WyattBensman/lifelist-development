@@ -10,6 +10,7 @@ import { CameraAlbumProvider } from "./src/contexts/CameraAlbumContext";
 import { CameraRollProvider } from "./src/contexts/CameraRollContext";
 import { LifeListProvider } from "./src/contexts/LifeListContext";
 import { AdminProfileProvider } from "./src/contexts/AdminProfileContext";
+import { ProfileCacheProvider } from "./src/contexts/ProfileCacheContext";
 
 export default function AppNavigator() {
   const [isEarlyAccessUnlocked, setIsEarlyAccessUnlocked] = useState(null);
@@ -44,15 +45,17 @@ export default function AppNavigator() {
     // Wrap NavigationTab with ProfileProvider
     content = (
       <AdminProfileProvider>
-        <LifeListProvider>
-          <CameraAlbumProvider>
-            <CameraRollProvider>
-              <DevelopingRollProvider>
-                <NavigationTab />
-              </DevelopingRollProvider>
-            </CameraRollProvider>
-          </CameraAlbumProvider>
-        </LifeListProvider>
+        <ProfileCacheProvider>
+          <LifeListProvider>
+            <CameraAlbumProvider>
+              <CameraRollProvider>
+                <DevelopingRollProvider>
+                  <NavigationTab />
+                </DevelopingRollProvider>
+              </CameraRollProvider>
+            </CameraAlbumProvider>
+          </LifeListProvider>
+        </ProfileCacheProvider>
       </AdminProfileProvider>
     );
   }

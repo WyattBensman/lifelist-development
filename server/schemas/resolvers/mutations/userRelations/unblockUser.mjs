@@ -15,6 +15,7 @@ const unblockUser = async (_, { userIdToUnblock }, { user }) => {
     return {
       success: true,
       message: "User successfully unblocked.",
+      userIdToUnblock,
     };
   } catch (error) {
     console.error(`Unblock User Error: ${error.message}`);

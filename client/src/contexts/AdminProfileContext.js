@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { UPDATE_USER_DATA } from "../utils/mutations";
-import { GET_USER_DATA } from "../utils/queries"; // Using GET_USER_DATA as specified
+import { GET_USER_DATA } from "../utils/queries";
 import {
   saveImageToFileSystem,
   getImageFromFileSystem,
-  saveToAsyncStorage,
-  getFromAsyncStorage,
-} from "../utils/cacheHelper";
+  saveMetadataToCache,
+  getMetadataFromCache,
+} from "../utils/newCacheHelper";
 import { useAuth } from "./AuthContext";
 
 const AdminProfileContext = createContext();
@@ -15,7 +15,7 @@ const AdminProfileContext = createContext();
 export const AdminProfileProvider = ({ children }) => {
   const { currentUser } = useAuth();
   const [adminProfile, setAdminProfile] = useState(null);
-  const [originalAdminProfile, setOriginalAdminProfile] = useState(null); // Store original data for reset
+  const [originalAdminProfile, setOriginalAdminProfile] = useState(null);
   const [unsavedChanges, setUnsavedChanges] = useState(false);
   const [shouldRefetch, setShouldRefetch] = useState(false);
 
@@ -24,7 +24,7 @@ export const AdminProfileProvider = ({ children }) => {
 
   useEffect(() => {
     const initializeAdminProfile = async () => {
-      const cachedData = await getFromAsyncStorage(CACHE_KEY);
+      const cachedData = await getMetadataFromCache(CACHE_KEY);
       const cachedProfilePicture = await getImageFromFileSystem(
         PROFILE_PICTURE_KEY
       );
@@ -45,7 +45,7 @@ export const AdminProfileProvider = ({ children }) => {
   }, [CACHE_KEY]);
 
   const { data } = useQuery(GET_USER_DATA, {
-    variables: { userId: currentUser }, // Assuming `GET_USER_DATA` requires a `userId`
+    variables: { userId: currentUser },
     skip: !shouldRefetch,
     onCompleted: async (data) => {
       const userData = data.getUserData;
@@ -63,12 +63,12 @@ export const AdminProfileProvider = ({ children }) => {
       setAdminProfile(profileWithImage);
       setOriginalAdminProfile(profileWithImage);
 
-      await saveToAsyncStorage(CACHE_KEY, userData); // Save metadata
+      await saveMetadataToCache(CACHE_KEY, userData); // Save metadata to the new cache
       setShouldRefetch(false);
     },
   });
 
-  const [updateAdminDataMutation] = useMutation(UPDATE_USER_DATA); // Reuse or replace with an admin-specific mutation
+  const [updateAdminDataMutation] = useMutation(UPDATE_USER_DATA);
 
   const updateAdminProfileField = (key, value) => {
     setAdminProfile((prev) => ({ ...prev, [key]: value }));
@@ -80,7 +80,7 @@ export const AdminProfileProvider = ({ children }) => {
       const result = await updateAdminDataMutation({
         variables: { ...adminProfile },
       });
-      const updatedUserData = result.data.updateUserData.user; // Adjust if the mutation response differs
+      const updatedUserData = result.data.updateUserData.user;
 
       const profilePictureUri = await saveImageToFileSystem(
         PROFILE_PICTURE_KEY,
@@ -95,7 +95,7 @@ export const AdminProfileProvider = ({ children }) => {
       setAdminProfile(profileWithImage);
       setOriginalAdminProfile(profileWithImage);
 
-      await saveToAsyncStorage(CACHE_KEY, updatedUserData);
+      await saveMetadataToCache(CACHE_KEY, updatedUserData);
       setUnsavedChanges(false);
     } catch (error) {
       console.error("Failed to save admin profile:", error);

@@ -3,16 +3,14 @@ import { Image, Pressable, StyleSheet, Text, View, Alert } from "react-native";
 import ButtonSkinny from "../../../components/Buttons/ButtonSkinny";
 import { useNavigation } from "@react-navigation/native";
 import { layoutStyles } from "../../../styles";
-import { useMutation, useQuery } from "@apollo/client";
-import { useAuth } from "../../../contexts/AuthContext";
+import { useProfileCache } from "../../../contexts/ProfileCacheContext";
 import {
   FOLLOW_USER,
   UNFOLLOW_USER,
   SEND_FOLLOW_REQUEST,
   UNSEND_FOLLOW_REQUEST,
 } from "../../../utils/mutations/userRelationsMutations";
-import { CHECK_IS_FOLLOWING } from "../../../utils/queries/userQueries";
-import { fetchCachedImageUri } from "../../../utils/cacheHelper";
+import { useMutation } from "@apollo/client";
 
 export default function ProfileOverview({
   profile,
@@ -22,84 +20,46 @@ export default function ProfileOverview({
   isAdminScreen,
 }) {
   const navigation = useNavigation();
-  const { currentUser, updateCurrentUser } = useAuth();
+  const { followUser, unfollowUser, sendFollowRequest, unsendFollowRequest } =
+    useProfileCache();
 
+  const [buttonState, setButtonState] = useState("Follow");
   const [isFollowing, setIsFollowing] = useState(false);
   const [isPendingRequest, setIsPendingRequest] = useState(false);
-  const [buttonState, setButtonState] = useState("Follow");
-  const [profilePictureUrl, setProfilePictureUrl] = useState(null);
-
-  // Query to check if the current user is following this profile
-  const { data: isFollowingData } = useQuery(CHECK_IS_FOLLOWING, {
-    variables: { userId },
-    skip: userId === currentUser, // Skip for self-profile
-    onCompleted: (data) => {
-      setIsFollowing(data?.checkIsFollowing?.isFollowing || false);
-    },
-  });
-
-  // Mutations
-  const [followUser] = useMutation(FOLLOW_USER);
-  const [unfollowUser] = useMutation(UNFOLLOW_USER);
-  const [sendFollowRequest] = useMutation(SEND_FOLLOW_REQUEST);
-  const [unsendFollowRequest] = useMutation(UNSEND_FOLLOW_REQUEST);
-
-  // Fetch the cached profile picture URI or fallback to server URL
-  useEffect(() => {
-    const loadProfilePicture = async () => {
-      console.log("LOAD PROFILE PICTURE STARTED");
-      const imageKey = `profile_picture_${userId}`;
-
-      const fallbackUrl = profile?.profilePicture;
-      const cachedUri = await fetchCachedImageUri(imageKey, fallbackUrl);
-      setProfilePictureUrl(cachedUri);
-      console.log(`cachedUri: ${cachedUri}`);
-    };
-
-    loadProfilePicture();
-  }, [profile?.profilePicture, userId]);
 
   useEffect(() => {
-    let hasPendingRequest = false;
-
-    if (profile?.followRequests) {
-      hasPendingRequest = profile.followRequests.some(
-        (req) => req._id === currentUser
-      );
-    }
+    // Determine the button state based on following and pending status
+    const hasPendingRequest =
+      profile?.followRequests?.some((req) => req._id === userId) || false;
 
     setIsPendingRequest(hasPendingRequest);
 
-    if (isFollowing) {
+    if (isAdminView) {
+      setButtonState("Edit Profile");
+    } else if (isFollowing) {
       setButtonState("Following");
     } else if (hasPendingRequest) {
       setButtonState("Pending Request");
     } else {
       setButtonState("Follow");
     }
-  }, [isFollowing, profile?.followRequests, currentUser]);
+  }, [isFollowing, isAdminView, profile?.followRequests, userId]);
 
   const handleFollow = async () => {
     try {
       if (profile?.isProfilePrivate) {
-        const { data } = await sendFollowRequest({
-          variables: { userIdToFollow: userId },
-        });
-        Alert.alert("Request Sent", data.sendFollowRequest.message);
+        const response = await sendFollowRequest(userId);
+        Alert.alert(
+          "Request Sent",
+          response?.message || "Follow request sent."
+        );
         setIsPendingRequest(true);
         setButtonState("Pending Request");
       } else {
-        const { data } = await followUser({
-          variables: { userIdToFollow: userId },
-        });
-        Alert.alert("Follow", data.followUser.message);
+        const response = await followUser(userId);
+        Alert.alert("Follow", response?.message || "You are now following.");
         setIsFollowing(true);
-        setFollowerCount((prevCount) => prevCount + 1);
         setButtonState("Following");
-        updateCurrentUser((prevUser) => ({
-          ...prevUser,
-          following: [...prevUser.following, userId],
-        }));
       }
     } catch (error) {
       Alert.alert("Error", error.message);
@@ -108,17 +68,10 @@ export default function ProfileOverview({
 
   const handleUnfollow = async () => {
     try {
-      const { data } = await unfollowUser({
-        variables: { userIdToUnfollow: userId },
-      });
-      Alert.alert("Unfollow", data.unfollowUser.message);
+      const response = await unfollowUser(userId);
+      Alert.alert("Unfollow", response?.message || "Unfollowed successfully.");
       setIsFollowing(false);
-      setFollowerCount((prevCount) => Math.max(prevCount - 1, 0));
       setButtonState("Follow");
-      updateCurrentUser((prevUser) => ({
-        ...prevUser,
-        following: prevUser.following.filter((id) => id !== userId),
-      }));
     } catch (error) {
       Alert.alert("Error", error.message);
     }
@@ -126,10 +79,11 @@ export default function ProfileOverview({
 
   const handleUnsendRequest = async () => {
     try {
-      const { data } = await unsendFollowRequest({
-        variables: { userIdToUnfollow: userId },
-      });
-      Alert.alert("Request Withdrawn", data.unsendFollowRequest.message);
+      const response = await unsendFollowRequest(userId);
+      Alert.alert(
+        "Request Withdrawn",
+        response?.message || "Request withdrawn."
+      );
       setIsPendingRequest(false);
       setButtonState("Follow");
     } catch (error) {
@@ -147,7 +101,7 @@ export default function ProfileOverview({
     >
       <View style={[layoutStyles.flex, { height: 100 }]}>
         <Image
-          source={{ uri: profilePictureUrl }}
+          source={{ uri: profile?.profilePicture }}
           style={styles.profilePicture}
         />
         <View style={styles.rightContainer}>
@@ -156,51 +110,35 @@ export default function ProfileOverview({
           >
             <View style={styles.col}>
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {followerData?.collagesCount}
+                {followerData?.collagesCount || 0}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Collages</Text>
             </View>
             <Pressable
               style={styles.col}
               onPress={() =>
-                isAdminScreen
-                  ? navigation.push("ProfileStack", {
-                      screen: "UserRelations",
-                      params: {
-                        userId: userId,
-                        initialTab: "Followers",
-                      },
-                    })
-                  : navigation.push("UserRelations", {
-                      userId: userId,
-                      initialTab: "Followers",
-                    })
+                navigation.push("UserRelations", {
+                  userId: userId,
+                  initialTab: "Followers",
+                })
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {followerData?.followersCount}
+                {followerData?.followersCount || 0}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Followers</Text>
             </Pressable>
             <Pressable
               style={styles.col}
               onPress={() =>
-                isAdminScreen
-                  ? navigation.push("ProfileStack", {
-                      screen: "UserRelations",
-                      params: {
-                        userId: userId,
-                        initialTab: "Following",
-                      },
-                    })
-                  : navigation.push("UserRelations", {
-                      userId: userId,
-                      initialTab: "Following",
-                    })
+                navigation.push("UserRelations", {
+                  userId: userId,
+                  initialTab: "Following",
+                })
               }
             >
               <Text style={{ fontWeight: "700", color: "#fff" }}>
-                {followerData?.followingCount}
+                {followerData?.followingCount || 0}
               </Text>
               <Text style={{ fontSize: 12, color: "#fff" }}>Following</Text>
             </Pressable>
@@ -212,43 +150,37 @@ export default function ProfileOverview({
               backgroundColor="#252525"
               textColor="#fff"
             />
+          ) : buttonState === "Following" ? (
+            <View style={styles.buttonRow}>
+              <ButtonSkinny
+                onPress={handleUnfollow}
+                text="Following"
+                backgroundColor="#222"
+                textColor="#6AB952"
+                style={{ flex: 1, marginRight: 4 }}
+              />
+              <ButtonSkinny
+                onPress={() => navigation.push("Message", { user: profile })}
+                text="Message"
+                backgroundColor="#222"
+                textColor="#fff"
+                style={{ flex: 1, marginLeft: 4 }}
+              />
+            </View>
+          ) : buttonState === "Pending Request" ? (
+            <ButtonSkinny
+              onPress={handleUnsendRequest}
+              text="Pending Request"
+              backgroundColor="#222"
+              textColor="#fff"
+            />
           ) : (
-            <>
-              {buttonState === "Following" ? (
-                <View style={styles.buttonRow}>
-                  <ButtonSkinny
-                    onPress={handleUnfollow}
-                    text="Following"
-                    backgroundColor="#222"
-                    textColor="#6AB952"
-                    style={{ flex: 1, marginRight: 4 }}
-                  />
-                  <ButtonSkinny
-                    onPress={() =>
-                      navigation.push("Message", { user: profile })
-                    }
-                    text="Message"
-                    backgroundColor="#222"
-                    textColor="#fff"
-                    style={{ flex: 1, marginLeft: 4 }}
-                  />
-                </View>
-              ) : buttonState === "Pending Request" ? (
-                <ButtonSkinny
-                  onPress={handleUnsendRequest}
-                  text="Pending Request"
-                  backgroundColor="#222"
-                  textColor="#fff"
-                />
-              ) : (
-                <ButtonSkinny
-                  onPress={handleFollow}
-                  text="Follow"
-                  backgroundColor="#222"
-                  textColor="#fff"
-                />
-              )}
-            </>
+            <ButtonSkinny
+              onPress={handleFollow}
+              text="Follow"
+              backgroundColor="#222"
+              textColor="#fff"
+            />
           )}
         </View>
       </View>
@@ -283,8 +215,5 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginTop: 8,
-  },
-  messageButton: {
-    marginLeft: 8,
   },
 });

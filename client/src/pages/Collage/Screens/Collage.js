@@ -129,7 +129,7 @@ export default function Collage({
     <Image
       style={styles.image}
       source={{
-        uri: `${BASE_URL}${item}`,
+        uri: item,
       }}
     />
   );
@@ -206,7 +206,7 @@ export default function Collage({
               <Image
                 style={styles.profilePicture}
                 source={{
-                  uri: `${BASE_URL}${author.profilePicture}`,
+                  uri: author.profilePicture,
                 }}
               />
             </Pressable>

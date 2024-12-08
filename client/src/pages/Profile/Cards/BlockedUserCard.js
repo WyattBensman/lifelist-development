@@ -1,8 +1,18 @@
-import { useState } from "react";
-import { Image, Pressable, Text, View, StyleSheet } from "react-native";
+import { useState, useEffect } from "react";
+import {
+  Image,
+  Pressable,
+  Text,
+  View,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 import UnblockUserModal from "../Popups/UnblockUserModal";
-import { BASE_URL } from "../../../utils/config";
+import {
+  getImageFromCache,
+  saveImageToCache,
+} from "../../../utils/cacheHelper";
 
 export default function BlockedUserCard({
   userId,
@@ -12,14 +22,39 @@ export default function BlockedUserCard({
   onUnblock,
 }) {
   const [modalVisible, setModalVisible] = useState(false);
-  const profilePictureUrl = `${BASE_URL}${profilePicture}`;
+  const [cachedImageUri, setCachedImageUri] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const toggleModal = () => setModalVisible(!modalVisible);
+
+  useEffect(() => {
+    const cacheProfilePicture = async () => {
+      const imageKey = `blocked_user_${userId}`;
+      const cachedUri = await getImageFromCache(imageKey);
+
+      if (cachedUri) {
+        console.log(`Cached profile picture found for user: ${userId}`);
+        setCachedImageUri(cachedUri);
+      } else {
+        console.log(`Caching profile picture for user: ${userId}`);
+        const savedUri = await saveImageToCache(imageKey, profilePicture);
+        setCachedImageUri(savedUri);
+      }
+
+      setIsLoading(false);
+    };
+
+    cacheProfilePicture();
+  }, [userId, profilePicture]);
 
   return (
     <View style={styles.listItemContainer}>
       <View style={styles.contentContainer}>
-        <Image source={{ uri: profilePictureUrl }} style={styles.imageMd} />
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#d4d4d4" />
+        ) : (
+          <Image source={{ uri: cachedImageUri }} style={styles.imageMd} />
+        )}
         <Pressable style={styles.textContainer}>
           <Text style={styles.primaryText}>{fullName}</Text>
           <Text style={[styles.secondaryText, { marginTop: 2 }]}>

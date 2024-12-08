@@ -16,23 +16,30 @@ import Icon from "../../../components/Icons/Icon";
 import { useDevelopingRoll } from "../../../contexts/DevelopingRollContext";
 import * as Sharing from "expo-sharing";
 import { iconStyles } from "../../../styles";
+import DangerAlert from "../../../components/Alerts/DangerAlert";
+import { useNavigation } from "@react-navigation/native";
+import ViewShotHeader from "../../../components/Headers/ViewShotHeader";
+import ViewShotCard from "./ViewShotCard";
 
 const { width } = Dimensions.get("window");
 const aspectRatio = 3 / 2;
 const imageHeight = width * aspectRatio;
 
 export default function ViewDevelopingShot({ shotId, onClose }) {
-  const { removeShotFromDevelopingRoll } = useDevelopingRoll(); // Updated function name
-  const [getAndTransferCameraShot, { data, loading, error }] = useMutation(
+  const { developingShots, removeShotFromDevelopingRoll } = useDevelopingRoll();
+  const [getAndTransferCameraShot, { loading, error }] = useMutation(
     GET_AND_TRANSFER_CAMERA_SHOT
   );
   const [imageUri, setImageUri] = useState(null);
-  const [isRemovedFromCache, setIsRemovedFromCache] = useState(false); // Track cache removal
+  const [isAdditionalOptionsVisible, setIsAdditionalOptionsVisible] =
+    useState(false); // Toggle state for "Album" and "Experience"
+  const [isDeleteAlertVisible, setIsDeleteAlertVisible] = useState(false);
+
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const pan = useRef(new Animated.ValueXY()).current;
+  const navigation = useNavigation(); // Navigation for Album and Experience
   const threshold = 75;
 
-  // Fetch the full-quality image
   useEffect(() => {
     const fetchShot = async () => {
       try {
@@ -45,9 +52,12 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
             response.data.getAndTransferCameraShot.cameraShot.image;
           setImageUri(fullImage);
 
-          if (!isRemovedFromCache) {
-            removeShotFromDevelopingRoll(shotId); // Updated function name
-            setIsRemovedFromCache(true); // Ensure the cache is updated only once
+          // Remove from cache only if it exists in developingShots
+          const shotExists = developingShots.some(
+            (shot) => shot._id === shotId
+          );
+          if (shotExists) {
+            removeShotFromDevelopingRoll(shotId);
           }
         } else {
           console.error(
@@ -61,14 +71,8 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
     };
 
     fetchShot();
-  }, [
-    shotId,
-    getAndTransferCameraShot,
-    removeShotFromDevelopingRoll, // Updated function name
-    isRemovedFromCache,
-  ]);
+  }, [shotId, getAndTransferCameraShot, removeShotFromDevelopingRoll]);
 
-  // Trigger fade-in animation when the image is loaded
   useEffect(() => {
     if (imageUri) {
       Animated.timing(fadeAnim, {
@@ -102,7 +106,11 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
     })
   ).current;
 
-  const handleShare = async () => {
+  const handleSharePress = async () => {
+    if (!imageUri) {
+      alert("No image to share.");
+      return;
+    }
     if (await Sharing.isAvailableAsync()) {
       await Sharing.shareAsync(imageUri);
     } else {
@@ -110,8 +118,31 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
     }
   };
 
-  const handleDelete = () => {
-    alert("Delete logic to be implemented.");
+  const handleDeletePress = () => setIsDeleteAlertVisible(true);
+
+  const handleAddToPress = () => setIsAdditionalOptionsVisible(true);
+
+  const handleAlbumPress = () =>
+    navigation.navigate("AddShotToAlbum", { shotId });
+
+  const handleExperiencePress = () =>
+    navigation.navigate("AddShotToExperience", { shotId });
+
+  const resetToMainButtons = () => setIsAdditionalOptionsVisible(false);
+
+  const confirmDelete = async () => {
+    try {
+      const shotExists = developingShots.some((shot) => shot._id === shotId);
+      if (shotExists) {
+        removeShotFromDevelopingRoll(shotId); // Remove the shot from the developing roll
+      }
+      onClose(); // Close the view
+    } catch (error) {
+      console.error("Error deleting shot:", error);
+      alert("Failed to delete shot.");
+    } finally {
+      setIsDeleteAlertVisible(false);
+    }
   };
 
   if (loading || !imageUri) {
@@ -127,50 +158,138 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
 
   return (
     <View style={styles.container}>
+      <ViewShotHeader
+        arrow={
+          <Icon
+            name="xmark"
+            style={iconStyles.exit}
+            onPress={() => navigation.goBack()}
+            weight="semibold"
+          />
+        }
+        ellipsis={
+          <Icon
+            name="trash"
+            style={styles.trashIcon}
+            weight="bold"
+            onPress={handleDeletePress}
+            noFill={true}
+            tintColor={"red"}
+          />
+        }
+        hasBorder={false}
+      />
+
       {/* Draggable Image */}
       <Animated.View
         {...panResponder.panHandlers}
         style={[
-          styles.imageContainer,
           {
             transform: [{ translateX: pan.x }, { translateY: pan.y }],
+            width: width,
           },
         ]}
       >
-        <Image source={{ uri: imageUri }} style={styles.image} />
+        <ViewShotCard imageUrl={item.image} shotId={item._id} />
       </Animated.View>
 
-      {/* Close Button */}
-      <View style={styles.closeButton}>
-        <Icon
-          name="chevron.backward"
-          onPress={onClose}
-          style={iconStyles.backArrow}
-          weight="semibold"
-        />
+      {/* Bottom Container */}
+      <View style={styles.bottomContainer}>
+        {!isAdditionalOptionsVisible ? (
+          // Main button set
+          <>
+            <Pressable style={styles.iconWithLabel} onPress={handleSharePress}>
+              <Pressable style={styles.iconButton} onPress={handleSharePress}>
+                <Icon
+                  name="paperplane"
+                  style={styles.icon}
+                  weight="bold"
+                  onPress={handleSharePress}
+                />
+              </Pressable>
+              <Text style={styles.labelText}>Share</Text>
+            </Pressable>
+
+            <View style={styles.iconWithLabel}>
+              <Pressable style={styles.iconButton} onPress={handleDeletePress}>
+                <Icon
+                  name="rectangle.portrait.on.rectangle.portrait.angled"
+                  style={styles.icon}
+                  weight="bold"
+                />
+              </Pressable>
+              <Text style={styles.labelText}>Post to Story</Text>
+            </View>
+
+            <Pressable style={styles.iconWithLabel} onPress={handleAddToPress}>
+              <Pressable style={styles.iconButton} onPress={handleAddToPress}>
+                <Icon
+                  name="folder"
+                  style={styles.icon}
+                  weight="bold"
+                  onPress={handleAddToPress}
+                />
+              </Pressable>
+              <Text style={styles.labelText}>Add To</Text>
+            </Pressable>
+          </>
+        ) : (
+          // Secondary button set (Album and Experience)
+          <>
+            <Pressable style={styles.iconWithLabel} onPress={handleAlbumPress}>
+              <Pressable style={styles.iconButton} onPress={handleAlbumPress}>
+                <Icon
+                  name="folder"
+                  style={styles.icon}
+                  weight="bold"
+                  onPress={handleAlbumPress}
+                />
+              </Pressable>
+              <Text style={styles.labelText}>Album</Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.iconWithLabel}
+              onPress={handleExperiencePress}
+            >
+              <Pressable
+                style={styles.iconButton}
+                onPress={handleExperiencePress}
+              >
+                <Icon
+                  name="star"
+                  style={styles.icon}
+                  weight="bold"
+                  onPress={handleExperiencePress}
+                />
+              </Pressable>
+              <Text style={styles.labelText}>Experience</Text>
+            </Pressable>
+
+            <View style={styles.iconWithLabel} onPress={resetToMainButtons}>
+              <Pressable style={styles.iconButton} onPress={resetToMainButtons}>
+                <Icon
+                  name="arrow.left"
+                  style={styles.icon}
+                  weight="bold"
+                  onPress={resetToMainButtons}
+                />
+              </Pressable>
+              <Text style={styles.labelText}>Back</Text>
+            </View>
+          </>
+        )}
       </View>
 
-      {/* Action Buttons */}
-      <View style={styles.actionButtonsContainer}>
-        <Pressable style={styles.actionButton} onPress={handleShare}>
-          <Icon
-            name="paperplane"
-            style={{ height: 19, width: 19 }}
-            backgroundColor={"transparent"}
-            tintColor="#252525"
-          />
-          <Text style={styles.actionText}>Share</Text>
-        </Pressable>
-        <Pressable style={styles.actionButton} onPress={handleDelete}>
-          <Icon
-            name="trash"
-            style={{ height: 20, width: 20 }}
-            backgroundColor={"transparent"}
-            tintColor="#252525"
-          />
-          <Text style={styles.actionText}>Delete</Text>
-        </Pressable>
-      </View>
+      <DangerAlert
+        visible={isDeleteAlertVisible}
+        onRequestClose={() => setIsDeleteAlertVisible(false)}
+        title="Delete Camera Shot"
+        message="Are you sure you want to delete this shot?"
+        onConfirm={confirmDelete}
+        onCancel={() => setIsDeleteAlertVisible(false)}
+        cancelButtonText="Discard"
+      />
     </View>
   );
 }
@@ -178,46 +297,21 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    borderWidth: 3,
+    borderColor: "red",
   },
-  closeButton: {
-    position: "absolute",
-    top: 60,
-    left: 20,
-    zIndex: 10,
-  },
-  imageContainer: {
+  /*   imageContainer: {
     width: width - 60,
     height: imageHeight,
-  },
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  }, */
   image: {
     width: "100%",
     height: "100%",
     borderRadius: 4,
     resizeMode: "cover",
-  },
-  actionButtonsContainer: {
-    flexDirection: "row",
-    position: "absolute",
-    bottom: 40,
-    justifyContent: "space-around",
-    width: "75%",
-  },
-  actionButton: {
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 8,
-    backgroundColor: "#fff",
-    borderRadius: 30,
-    flexDirection: "row",
-    width: 120,
-  },
-  actionText: {
-    fontSize: 14,
-    color: "#000",
-    fontWeight: "500",
-    marginLeft: 4,
   },
   loadingContainer: {
     flex: 1,
@@ -228,5 +322,33 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     marginTop: 10,
+  },
+  bottomContainer: {
+    flexDirection: "row",
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    width: "100%",
+    paddingHorizontal: 20,
+    backgroundColor: "#121212",
+  },
+  iconWithLabel: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  labelText: {
+    color: "#fff",
+    fontSize: 12,
+    marginTop: 5,
+  },
+  iconButton: {
+    backgroundColor: "#252525",
+    borderRadius: 50,
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  trashIcon: {
+    height: 18.28,
+    width: 15,
   },
 });

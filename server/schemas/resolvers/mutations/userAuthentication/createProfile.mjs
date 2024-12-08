@@ -1,4 +1,4 @@
-import { User } from "../../../../models/index.mjs";
+import { User, AccessCode } from "../../../../models/index.mjs";
 import { generateToken } from "../../../../utils/auth.mjs";
 
 const createProfile = async (_, { input }) => {
@@ -12,6 +12,7 @@ const createProfile = async (_, { input }) => {
     email,
     phoneNumber,
     birthday,
+    accessCode, // Optional access code
   } = input;
 
   try {
@@ -64,6 +65,20 @@ const createProfile = async (_, { input }) => {
       throw new Error("You must be at least 18 years old to create a profile.");
     }
 
+    // Attempt to handle access code if provided
+    let validatedAccessCode = null;
+    if (accessCode) {
+      validatedAccessCode = await AccessCode.findOne({ code: accessCode });
+
+      if (validatedAccessCode) {
+        // Add the user to the `users` field of the access code
+        validatedAccessCode.users.push({ userId: null }); // We'll set the userId after user creation
+        await validatedAccessCode.save();
+      } else {
+        console.warn("Provided access code is invalid or not found.");
+      }
+    }
+
     // Create the user in the database
     const newUser = await User.create({
       fullName,
@@ -75,7 +90,20 @@ const createProfile = async (_, { input }) => {
       email: email ? email.toLowerCase() : null,
       phoneNumber,
       birthday,
+      accessCode: validatedAccessCode ? validatedAccessCode._id : null, // Link access code if validated
     });
+
+    // If access code was valid, update the userId in the access code's `users` field
+    if (validatedAccessCode) {
+      const userIndex = validatedAccessCode.users.findIndex(
+        (u) => u.userId === null
+      );
+      if (userIndex !== -1) {
+        validatedAccessCode.users[userIndex].userId = newUser._id;
+        validatedAccessCode.users[userIndex].usedAt = new Date();
+        await validatedAccessCode.save();
+      }
+    }
 
     // Generate a JWT token for the user
     const token = generateToken(newUser._id);

@@ -1,6 +1,5 @@
 import { Dimensions, Image, StyleSheet, View, Pressable } from "react-native";
 import Checkbox from "expo-checkbox";
-import { BASE_URL } from "../../../utils/config";
 
 const screenWidth = Dimensions.get("window").width;
 const spacing = 1.5;
@@ -8,7 +7,7 @@ const shotWidth = (screenWidth - spacing * 2) / 3; // Adjust for 3 columns
 const shotHeight = (shotWidth * 3) / 2; // 2:3 ratio
 
 export default function ShotCard({ shot, isSelected, onCheckboxToggle }) {
-  const imageUrl = `${BASE_URL}${shot.image}`;
+  const imageUrl = shot.imageThumbnail;
 
   return (
     <Pressable onPress={() => onCheckboxToggle(shot._id)}>

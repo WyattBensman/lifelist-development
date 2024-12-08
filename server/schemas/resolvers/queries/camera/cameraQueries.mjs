@@ -86,7 +86,7 @@ export const getAllCameraShots = async (
         sort: { _id: 1 }, // Sort by _id in ascending order
         limit: limit + 1, // Fetch one extra record to check for the next page
       },
-      select: "_id capturedAt imageThumbnail", // Select only required fields
+      select: "_id capturedAt image imageThumbnail", // Select only required fields
     })
     .exec();
 

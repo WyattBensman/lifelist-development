@@ -76,6 +76,12 @@ const userSchema = new Schema({
   savedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
   archivedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
   taggedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
+  stories: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Story",
+    },
+  ],
 
   // Camera
   developingCameraShots: [{ type: Schema.Types.ObjectId, ref: "CameraShot" }],
@@ -115,6 +121,10 @@ const userSchema = new Schema({
   hasAcceptedTerms: { type: Boolean, default: false },
 
   // Verification
+  accessCode: {
+    type: String,
+    default: null,
+  },
   verified: {
     type: Boolean,
     default: false,

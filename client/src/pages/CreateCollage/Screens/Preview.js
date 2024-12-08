@@ -11,7 +11,6 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useMutation, useQuery } from "@apollo/client";
 import { iconStyles, layoutStyles } from "../../../styles";
-import { BASE_URL } from "../../../utils/config";
 import IconCollage from "../../../components/Icons/IconCollage";
 import { useAuth } from "../../../contexts/AuthContext";
 import Participants from "../Popups/Participants";
@@ -28,6 +27,7 @@ export default function CollagePreview() {
   const navigation = useNavigation();
   const { collage } = useCreateCollageContext(); // Access collage data from context
   const { images, caption, taggedUsers, coverImage } = collage; // Destructure collage data
+  console.log(images);
 
   const [showParticipants, setShowParticipants] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -53,7 +53,7 @@ export default function CollagePreview() {
     <Image
       style={styles.image}
       source={{
-        uri: `${BASE_URL}${item.image}`,
+        uri: item.image,
       }}
     />
   );
@@ -73,6 +73,7 @@ export default function CollagePreview() {
 
     // Extract the image paths
     const imagePaths = images.map((item) => item.image);
+    console.log(imagePaths);
 
     // Post the collage
     createCollage({
@@ -80,7 +81,7 @@ export default function CollagePreview() {
         caption: caption || "", // Use empty string if no caption
         images: imagePaths, // Pass only the extracted image paths
         taggedUsers: taggedUsers.map((user) => user._id), // Extract IDs for tagged users
-        coverImage: coverImage || imagePaths[0],
+        coverImage: coverImage,
       },
     })
       .then(() => {
@@ -91,9 +92,6 @@ export default function CollagePreview() {
         console.error("Error creating collage:", error.message);
       });
   };
-
-  if (loading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
 
   // Extract user profile data
   const userProfile = data?.getUserProfileById || {};
@@ -150,7 +148,7 @@ export default function CollagePreview() {
               <Image
                 style={styles.profilePicture}
                 source={{
-                  uri: `${BASE_URL}${userProfile.profilePicture}`,
+                  uri: userProfile.profilePicture,
                 }}
               />
             </Pressable>
@@ -207,7 +205,7 @@ export default function CollagePreview() {
             <Image
               style={styles.smallProfilePicture}
               source={{
-                uri: `${BASE_URL}${userProfile.profilePicture}`,
+                uri: userProfile.profilePicture,
               }}
             />
           </Pressable>

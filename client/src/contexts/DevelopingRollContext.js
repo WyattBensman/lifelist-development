@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useCallback, useContext, useState } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { GET_DEVELOPING_CAMERA_SHOTS } from "../utils/queries/cameraQueries";
 import {
@@ -125,6 +125,27 @@ export const DevelopingRollProvider = ({ children }) => {
     }
   };
 
+  const recalculateDevelopedStatus = useCallback(async () => {
+    try {
+      const now = new Date();
+      const updatedShots = developingShots.map((shot) => {
+        const isDeveloped = new Date(shot.readyToReviewAt) <= now;
+        return { ...shot, isDeveloped };
+      });
+
+      // Update context state only if there's a change
+      if (JSON.stringify(updatedShots) !== JSON.stringify(developingShots)) {
+        setDevelopingShots(updatedShots);
+        await saveMetadataToCache(CACHE_KEY_DEVELOPING, updatedShots);
+      }
+    } catch (error) {
+      console.error(
+        "[DevelopingRollContext] Error recalculating status:",
+        error
+      );
+    }
+  }, [developingShots]);
+
   const contextValue = {
     developingShots,
     addShotToDevelopingRoll,
@@ -132,6 +153,7 @@ export const DevelopingRollProvider = ({ children }) => {
     updateShotInDevelopingRoll,
     initializeDevelopingRollCache,
     isDevelopingRollCacheInitialized,
+    recalculateDevelopedStatus,
   };
 
   return (

@@ -51,11 +51,12 @@ const styles = StyleSheet.create({
     aspectRatio: 2 / 3,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#000", // Fallback background color while loading
+    backgroundColor: "#121212", // Fallback background color while loading
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: "98%",
+    height: "98%",
     resizeMode: "cover",
+    borderRadius: 4,
   },
 });

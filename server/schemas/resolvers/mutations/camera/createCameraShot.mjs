@@ -8,9 +8,9 @@ const createCameraShot = async (_, { image, thumbnail }, { user }) => {
     if (!currentUser) throw new Error("User not found.");
 
     // Check if the user has shots left
-    if (currentUser.shotsLeft <= 0) {
+    /* if (currentUser.shotsLeft <= 0) {
       throw new Error("You have no shots left for today.");
-    }
+    } */
 
     // Generate a random developing time between 4 to 16 minutes
     const developingTime = Math.floor(Math.random() * (16 - 4 + 1)) + 4;
@@ -35,7 +35,7 @@ const createCameraShot = async (_, { image, thumbnail }, { user }) => {
     currentUser.developingCameraShots.push(newShot._id);
 
     // Decrement the user's shotsLeft count by 1
-    currentUser.shotsLeft -= 1;
+    /* currentUser.shotsLeft -= 1; */
     await currentUser.save();
 
     return {

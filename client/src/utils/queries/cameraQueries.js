@@ -61,6 +61,7 @@ export const GET_ALL_CAMERA_SHOTS = gql`
     getAllCameraShots(cursor: $cursor, limit: $limit) {
       shots {
         _id
+        image
         imageThumbnail
         capturedAt
       }

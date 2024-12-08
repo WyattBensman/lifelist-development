@@ -9,14 +9,14 @@ import CollageCard from "../Cards/CollageCard";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import {
-  getMetaDataFromCache,
-  saveMetaDataToCache,
-  getImageFromCache,
-  saveImageToCache,
-} from "../../../utils/cacheHelper";
+  saveMetadataToCache,
+  getMetadataFromCache,
+  saveImageToFileSystem,
+  getImageFromFileSystem,
+} from "../../../utils/newCacheHelper";
 
 const { height: screenHeight } = Dimensions.get("window");
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 16;
 
 export default function Archived() {
   const navigation = useNavigation();
@@ -25,18 +25,13 @@ export default function Archived() {
   const [cursor, setCursor] = useState(null);
   const [hasMore, setHasMore] = useState(true);
 
-  // Load initial data from cache on mount
   useEffect(() => {
     const loadCachedData = async () => {
-      console.log("Attempting to load cached archived collages data...");
-      const cachedData = await getMetaDataFromCache("archivedCollages");
+      const cachedData = await getMetadataFromCache("archivedCollages");
       if (cachedData) {
-        console.log("Cached archived collages data found, loading...");
         setArchivedCollages(cachedData.collages);
         setCursor(cachedData.nextCursor);
         setHasMore(cachedData.hasNextPage);
-      } else {
-        console.log("No cached data found for archived collages.");
       }
     };
     loadCachedData();
@@ -46,48 +41,27 @@ export default function Archived() {
     variables: { cursor, limit: PAGE_SIZE },
     fetchPolicy: "cache-and-network",
     onCompleted: async (fetchedData) => {
-      console.log(
-        "Data fetched from network for archived collages:",
-        fetchedData
-      );
-
       const { collages, nextCursor, hasNextPage } =
         fetchedData.getArchivedCollages;
 
-      // Save collages metadata to cache
-      console.log("Saving collages metadata to cache...");
-      await saveMetaDataToCache("archivedCollages", {
+      await saveMetadataToCache("archivedCollages", {
         collages,
         nextCursor,
         hasNextPage,
       });
 
-      // Attempt to cache each collage image if not already cached
       for (const collage of collages) {
         const imageKey = `archived_collage_${collage._id}`;
-        console.log(`Attempting to load cached image for key: ${imageKey}`);
-
-        const cachedImageUri = await getImageFromCache(
-          imageKey,
-          collage.coverImage
-        );
-        if (!cachedImageUri) {
-          console.log(
-            `Image not found in cache, downloading and caching: ${imageKey}`
-          );
-          await saveImageToCache(imageKey, collage.coverImage);
-        } else {
-          console.log(`Image already cached for key: ${imageKey}`);
+        if (!(await getImageFromFileSystem(imageKey))) {
+          await saveImageToFileSystem(imageKey, collage.coverImage);
         }
       }
 
-      // Remove any duplicates by checking against current state
       const newUniqueCollages = collages.filter(
         (newCollage) =>
           !archivedCollages.some((archived) => archived._id === newCollage._id)
       );
 
-      // Update state with new data
       setArchivedCollages((prevCollages) => [
         ...prevCollages,
         ...newUniqueCollages,
@@ -103,31 +77,14 @@ export default function Archived() {
 
   const loadMore = async () => {
     if (hasMore && !loading) {
-      console.log("Loading more archived collages...");
       await fetchMore({
         variables: { cursor, limit: PAGE_SIZE },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev;
-          console.log("Fetched additional collages from network.");
-
-          return {
-            getArchivedCollages: {
-              ...fetchMoreResult.getArchivedCollages,
-              collages: [
-                ...prev.getArchivedCollages.collages,
-                ...fetchMoreResult.getArchivedCollages.collages,
-              ],
-            },
-          };
-        },
       });
     }
   };
 
-  if (error) {
-    console.log("Error loading archived collages:", error.message);
+  if (error)
     return <Text>Error loading archived collages: {error.message}</Text>;
-  }
 
   return (
     <View style={layoutStyles.wrapper}>

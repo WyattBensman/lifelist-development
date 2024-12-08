@@ -23,6 +23,7 @@ type User {
   taggedCollages: [Collage]
   savedCollages: [Collage]
   archivedCollages: [Collage]
+  stories: [Story]
   shotsLeft: Int
   developingCameraShots: [CameraShot]
   cameraShots: [CameraShot]
@@ -33,6 +34,7 @@ type User {
   settings: UserSettings
   privacyGroups: [PrivacyGroup]
   blocked: [User]
+  accessCode: String
   isOnboardingComplete: Boolean
   hasAcceptedPermissions: Boolean
   invitedFriends: [InvitedFriend]
@@ -47,6 +49,20 @@ type User {
   type Auth {
     token: ID!
     user: User
+  }
+
+  type AccessCode {
+    id: ID!
+    code: String!
+    endDate: String!
+    count: Int!
+    users: [AccessCodeUser]
+    isActive: Boolean!
+  }
+
+  type AccessCodeUser {
+    userId: ID
+    usedAt: String
   }
 
   type InvitedFriend {
@@ -313,6 +329,15 @@ type Score {
     transferredToRoll: Boolean!
   }
 
+  type Story {
+    _id: ID!
+    author: User
+    cameraShot: CameraShot
+    createdAt: String
+    expiresAt: String
+    views: [User]
+  }
+
   type Query {
     # User Queries
     getUserProfileById(userId: ID!): UserProfileResponse
@@ -333,6 +358,10 @@ type Score {
     getUserIdentityInformation: UserIdentityInformation
     getUserSettingsInformation: UserSettingsInformation
     getAllUsers(limit: Int, offset: Int): [User]
+
+    # Story Queries
+    getUserStories(userId: ID!): [Story]
+    getFollowingUsersStories: [Story]
 
     # Fle Upload Queries
     getPresignedUrl(folder: String!, fileName: String!, fileType: String!): PresignedUrlResponse!
@@ -378,6 +407,9 @@ type Score {
 
     # Main Feed Queries
     getMainFeed(userId: ID!, page: Int!): FeedResult
+
+    # Explore Queries
+    getRecommendedStories(cursor: ID, limit: Int): StoryPagination
   }
 
   # Query Responses
@@ -393,6 +425,12 @@ type Score {
 
   type CollagePagination {
     collages: [Collage]
+    nextCursor: ID
+    hasNextPage: Boolean
+  }
+
+  type StoryPagination {
+    stories: [Story]
     nextCursor: ID
     hasNextPage: Boolean
   }
@@ -483,6 +521,9 @@ type ExperienceDetails {
     profilePicture: String
     collages: [Collage]
     repostedCollages: [Collage]
+    followersCount: Int!
+    followingCount: Int!
+    collagesCount: Int!
   }
 
   type UserCountsResponse {
@@ -588,6 +629,7 @@ type ExperienceDetails {
     email: String
     phoneNumber: String
     birthday: String!
+   accessCode: String
   }
 
   type Mutation {
@@ -604,6 +646,15 @@ type ExperienceDetails {
     setProfileInformation(fullName: String!, gender: String!, profilePicture: Upload, bio: String): UserResponse!
     inviteFriend(name: String!, phoneNumber: String!): StandardResponse
     updateInviteStatus(inviteCode: String!): StandardResponse
+
+    # Early Access Mutations
+    verifyAccessCode(code: String!): StandardResponse!
+    associateUserWithAccessCode(userId: ID!, code: String!): StandardResponse!
+    createAccessCode(
+      code: String!
+      endDate: String!
+      isActive: Boolean
+    ): CreateAccessCodeResponse!
 
     # User Actions Mutations
     updatePhoneNumber(phoneNumber: String!): UpdatePhoneNumberResponse!
@@ -639,7 +690,7 @@ type ExperienceDetails {
     acceptFollowRequest(userIdToAccept: ID!): StandardResponse!
     denyFollowRequest(userIdToDeny: ID!): StandardResponse!
     blockUser(userIdToBlock: ID!): StandardResponse!
-    unblockUser(userIdToUnblock: ID!): StandardResponse!
+    unblockUser(userIdToUnblock: ID!): UnblockUserResponse!
 
     #Collage Creation Mutations
     startCollage(images: [Upload]): CollageCreationResponse!
@@ -670,7 +721,6 @@ type ExperienceDetails {
     likeComment(commentId: ID!): ActionResponse!
     unlikeComment(commentId: ID!): ActionResponse!
   
-
     # LifeList Mutations
     addLifeListExperience(
       lifeListId: ID!
@@ -717,6 +767,11 @@ type ExperienceDetails {
     addShotToExperience(experienceId: ID!, shotId: ID!): StandardResponse
     removeShotFromExperience(experienceId: ID!, shotId: ID!): StandardResponse
     updateAlbumShots(albumId: ID!, shotIds: [ID]!): StandardResponse
+
+    # Story Mutations
+    postStory(cameraShotId: ID!): StandardResponse
+    deleteStory(storyId: ID!): StandardResponse
+    markStoryAsViewed(storyId: ID!): Boolean
 
     # Privacy Group Mutations
     createPrivacyGroup(groupName: String!, userIds: [ID]!): PrivacyGroup
@@ -767,6 +822,18 @@ type ExperienceDetails {
     success: Boolean!
     message: String!
     user: User
+  } 
+
+  type CreateAccessCodeResponse {
+    success: Boolean!
+    message: String!
+    accessCode: AccessCode
+  }
+
+  type UnblockUserResponse {
+    success: Boolean!
+    message: String!
+    userIdToUnblock: ID!
   }
 
   type AddLifeListExperienceResponse {
