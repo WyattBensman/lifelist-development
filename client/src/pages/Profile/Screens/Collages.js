@@ -55,6 +55,6 @@ export default function Collages({ data: collages, fetchMore }) {
 
 const styles = StyleSheet.create({
   columnWrapper: {
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
   },
 });

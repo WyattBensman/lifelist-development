@@ -80,7 +80,7 @@ export default function ExperienceCard({
 const styles = StyleSheet.create({
   cardContainer: {
     marginRight: 6,
-    backgroundColor: "#1C1C1C",
+    // backgroundColor: "#1C1C1C",
     borderRadius: 6,
   },
   image: {

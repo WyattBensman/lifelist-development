@@ -22,7 +22,6 @@ const reportCollage = async (_, { collageId, reason }, { user }) => {
     return {
       success: true,
       message: "Collage successfully reported.",
-      action: "REPORT_COLLAGE",
     };
   } catch (error) {
     console.error(`Report Collage Error: ${error.message}`);

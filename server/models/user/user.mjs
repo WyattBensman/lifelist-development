@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 import { LifeList, Message } from "../index.mjs";
 import userSettingsSchema from "./userSettings.mjs";
+import reportSchema from "../collage/reportSchema.mjs";
 
 // Regular expression constants for validation
 const emailRegex = /^\S+@\S+\.\S+$/;
@@ -76,10 +77,10 @@ const userSchema = new Schema({
   savedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
   archivedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
   taggedCollages: [{ type: Schema.Types.ObjectId, ref: "Collage" }],
-  stories: [
+  moments: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Story",
+      ref: "Moment",
     },
   ],
 
@@ -152,6 +153,7 @@ const userSchema = new Schema({
     type: Date,
     default: () => new Date(+new Date() + 48 * 60 * 60 * 1000), // 48 hours from now
   },
+  reports: [reportSchema],
 });
 
 // Middleware for creating a LifeList when a new user is created

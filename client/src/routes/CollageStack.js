@@ -1,10 +1,10 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import ReportOptionsScreen from "../pages/Collage/Screens/ReportOptionsScreen";
 import EditMedia from "../pages/EditCollage/Screens/EditMedia";
 import EditOverview from "../pages/EditCollage/Screens/EditOverview";
 import EditCoverImage from "../pages/EditCollage/Screens/EditCoverImage";
 import EditTaggedUsers from "../pages/EditCollage/Screens/EditTaggedUsers";
 import EditPreview from "../pages/EditCollage/Screens/EditPreview";
+import Report from "../pages/Report/Report";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,8 +18,8 @@ export default function CollageStack() {
       }}
     >
       <Stack.Screen
-        name="ReportOptionsScreen"
-        component={ReportOptionsScreen}
+        name="Report"
+        component={Report}
         options={{ headerShown: false }}
       />
       <Stack.Screen

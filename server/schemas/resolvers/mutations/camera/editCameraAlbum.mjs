@@ -1,17 +1,12 @@
 import { CameraAlbum } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-const editCameraAlbum = async (
-  _,
-  { albumId, title, description },
-  { user }
-) => {
+const editCameraAlbum = async (_, { albumId, title }, { user }) => {
   try {
     isUser(user);
 
     const updates = {};
     if (title) updates.title = title;
-    if (description) updates.description = description;
 
     const updatedAlbum = await CameraAlbum.findByIdAndUpdate(albumId, updates, {
       new: true,

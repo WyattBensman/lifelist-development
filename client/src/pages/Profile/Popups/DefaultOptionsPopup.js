@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
 import BottomPopup from "./BottomPopup";
 import {
   headerStyles,
@@ -8,8 +8,23 @@ import {
 } from "../../../styles";
 
 import IconStatic from "../../../components/Icons/IconStatic";
+import { useNavigation } from "@react-navigation/native";
 
-export default function DefaultOptionsPopup({ visible, onRequestClose }) {
+export default function DefaultOptionsPopup({
+  visible,
+  onRequestClose,
+  profileId,
+}) {
+  const navigation = useNavigation();
+
+  const handleReportPress = () => {
+    onRequestClose();
+    navigation.navigate("Report", {
+      entityId: profileId, // Pass the profile ID
+      entityType: "PROFILE", // Specify entity type as "PROFILE"
+    });
+  };
+
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={288}>
       <View style={popupStyles.popupContainer}>
@@ -62,7 +77,10 @@ export default function DefaultOptionsPopup({ visible, onRequestClose }) {
             Block
           </Text>
         </View>
-        <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
+        <Pressable
+          style={[popupStyles.cardContainer, layoutStyles.flex]}
+          onPress={handleReportPress}
+        >
           <Text
             style={[
               popupStyles.spacer,
@@ -72,7 +90,7 @@ export default function DefaultOptionsPopup({ visible, onRequestClose }) {
           >
             Report
           </Text>
-        </View>
+        </Pressable>
       </View>
     </BottomPopup>
   );

@@ -15,7 +15,8 @@ import CreatePrivacyGroup from "../pages/Profile/Screens/CreatePrivacyGroup";
 import InviteFriends from "../pages/Profile/Screens/InviteFriends";
 import Tagged from "../pages/Profile/Screens/Tagged";
 import CollageStack from "./CollageStack";
-import Stories from "../pages/Profile/Screens/Stories";
+import Moments from "../pages/Profile/Screens/Moments";
+import Report from "../pages/Report/Report";
 
 const Stack = createNativeStackNavigator();
 
@@ -109,8 +110,13 @@ export default function AdminProfileStack() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Stories"
-        component={Stories}
+        name="Moments"
+        component={Moments}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Report"
+        component={Report}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

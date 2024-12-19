@@ -2,24 +2,46 @@ import { gql } from "@apollo/client";
 
 // Get User
 export const GET_USER_PROFILE = gql`
-  query GetUserProfileById($userId: ID!) {
-    getUserProfileById(userId: $userId) {
+  query GetUserProfileById(
+    $userId: ID!
+    $collagesCursor: ID
+    $repostsCursor: ID
+    $limit: Int = 15
+  ) {
+    getUserProfileById(
+      userId: $userId
+      collagesCursor: $collagesCursor
+      repostsCursor: $repostsCursor
+      limit: $limit
+    ) {
       _id
       fullName
       username
       bio
       profilePicture
       collages {
-        _id
-        coverImage
+        items {
+          _id
+          coverImage
+        }
+        nextCursor
+        hasNextPage
       }
       repostedCollages {
-        _id
-        coverImage
+        items {
+          _id
+          coverImage
+        }
+        nextCursor
+        hasNextPage
       }
       collagesCount
       followersCount
       followingCount
+      isFollowing
+      isFollowedBy
+      isFollowRequested
+      hasActiveMoments
     }
   }
 `;
@@ -35,15 +57,15 @@ export const GET_USER_COUNTS = gql`
   }
 `;
 
-// Get Current User Collages & Reposts
-export const GET_COLLAGES_REPOSTS = gql`
-  query GetCollagesAndReposts(
+// Get Current User Collages, Reposts & Moments
+export const GET_COLLAGES_REPOSTS_MOMENTS = gql`
+  query GetCollagesRepostsMoments(
     $userId: ID!
     $collagesCursor: ID
     $repostsCursor: ID
     $limit: Int = 15
   ) {
-    getCollagesAndReposts(
+    getCollagesRepostsMoments(
       userId: $userId
       collagesCursor: $collagesCursor
       repostsCursor: $repostsCursor
@@ -64,6 +86,11 @@ export const GET_COLLAGES_REPOSTS = gql`
         }
         nextCursor
         hasNextPage
+      }
+      moments {
+        _id
+        createdAt
+        expiresAt
       }
     }
   }
@@ -120,26 +147,6 @@ export const GET_FOLLOWING = gql`
       }
       nextCursor
       hasNextPage
-    }
-  }
-`;
-
-// User Collages
-export const GET_USER_COLLAGES = gql`
-  query GetUserCollages($userId: ID!) {
-    getUserCollages(userId: $userId) {
-      _id
-      coverImage
-    }
-  }
-`;
-
-// User's Reposted Collages
-export const GET_REPOSTED_COLLAGES = gql`
-  query GetRepostedCollages($userId: ID!) {
-    getRepostedCollages(userId: $userId) {
-      _id
-      coverImage
     }
   }
 `;
@@ -212,53 +219,6 @@ export const GET_BLOCKED_USERS = gql`
   }
 `;
 
-// User Profile Information
-export const GET_USER_PROFILE_INFORMATION = gql`
-  query GetUserProfileInformation {
-    getUserProfileInformation {
-      profilePicture
-      fullName
-      username
-      bio
-      birthday
-      gender
-    }
-  }
-`;
-
-// User Contact Information
-export const GET_USER_CONTACT_INFORMATION = gql`
-  query GetUserContactInformation {
-    getUserContactInformation {
-      email
-      phoneNumber
-    }
-  }
-`;
-
-// User Identity Information
-export const GET_USER_IDENTITY_INFORMATION = gql`
-  query GetUserIdentityInformation {
-    getUserIdentityInformation {
-      birthday
-      gender
-    }
-  }
-`;
-
-// User Settings Information
-export const GET_USER_SETTINGS_INFORMATION = gql`
-  query GetUserSettingsInformation {
-    getUserSettingsInformation {
-      isProfilePrivate
-      darkMode
-      language
-      notifications
-      postRepostToMainFeed
-    }
-  }
-`;
-
 // User Settings Information
 export const GET_USER_DATA = gql`
   query GetUserData {
@@ -282,16 +242,23 @@ export const GET_USER_DATA = gql`
   }
 `;
 
-// Fetch all users
+// Fetch all users with pagination and optional search
 export const GET_ALL_USERS = gql`
-  query GetAllUsers($limit: Int, $offset: Int) {
-    getAllUsers(limit: $limit, offset: $offset) {
-      _id
-      fullName
-      username
-      profilePicture
-      phoneNumber
-      email
+  query GetAllUsers($limit: Int, $cursor: ID, $searchQuery: String) {
+    getAllUsers(limit: $limit, cursor: $cursor, searchQuery: $searchQuery) {
+      users {
+        user {
+          _id
+          fullName
+          username
+          profilePicture
+        }
+        relationshipStatus
+        isPrivate
+        hasSentFollowRequest
+      }
+      nextCursor
+      hasNextPage
     }
   }
 `;

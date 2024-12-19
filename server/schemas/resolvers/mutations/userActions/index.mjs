@@ -1,17 +1,5 @@
 import deleteUser from "./deleteUser.mjs";
-import updateEmail from "./updateEmail.mjs";
-import updatePhoneNumber from "./updatePhoneNumber.mjs";
-import updatePassword from "./updatePassword.mjs";
-import updateProfile from "./updateProfile.mjs";
-import updateSettings from "./updateSettings.mjs";
-import updateIdentity from "./updateIdentity.mjs";
+import updateUserData from "./updateUserData.mjs";
+import { reportProfile } from "./reportProfile.mjs";
 
-export {
-  deleteUser,
-  updateEmail,
-  updatePhoneNumber,
-  updatePassword,
-  updateProfile,
-  updateSettings,
-  updateIdentity,
-};
+export { deleteUser, updateUserData, reportProfile };

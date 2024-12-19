@@ -12,6 +12,7 @@ import InviteFriends from "../pages/Profile/Screens/InviteFriends";
 import CollageStack from "./CollageStack";
 import AddParticipants from "../pages/CreateCollage/Screens/AddParticipants";
 import ChangeCoverImage from "../pages/CreateCollage/Screens/ChangeCoverImage";
+import Report from "../pages/Report/Report";
 
 const Stack = createNativeStackNavigator();
 
@@ -88,6 +89,11 @@ export default function MainFeedStack() {
       <Stack.Screen
         name="CollageStack"
         component={CollageStack}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Report"
+        component={Report}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

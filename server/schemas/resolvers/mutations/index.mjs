@@ -9,7 +9,7 @@ import * as messagingMutations from "./messaging/index.mjs";
 import * as notificationsMutations from "./notifications/index.mjs";
 import * as privacyGroupsMutations from "./privacyGroups/index.mjs";
 import * as earlyAccessMutations from "./earlyAccess/index.mjs";
-import * as storyMutations from "./stories/index.mjs";
+import * as momentMutations from "./moments/index.mjs";
 
 const mutations = {
   ...userActionsMutations,
@@ -23,7 +23,7 @@ const mutations = {
   ...notificationsMutations,
   ...privacyGroupsMutations,
   ...earlyAccessMutations,
-  ...storyMutations,
+  ...momentMutations,
 };
 
 export default mutations;

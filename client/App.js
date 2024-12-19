@@ -11,6 +11,7 @@ import { LifeListExperienceProvider } from "./src/contexts/LifeListExperienceCon
 import { CreateProfileProvider } from "./src/contexts/CreateProfileContext.js";
 import { CreateCollageProvider } from "./src/contexts/CreateCollageContext.js";
 import "react-native-gesture-handler";
+import { ProfileProvider } from "./src/contexts/ProfileContext.js";
 
 export default function App() {
   return (
@@ -19,15 +20,17 @@ export default function App() {
         <AuthProvider>
           <CallbackProvider>
             <ThemeProvider theme={theme}>
-              <CreateProfileProvider>
-                <CreateCollageProvider>
-                  <LifeListExperienceProvider>
-                    <NavigationProvider>
-                      <AppNavigator />
-                    </NavigationProvider>
-                  </LifeListExperienceProvider>
-                </CreateCollageProvider>
-              </CreateProfileProvider>
+              <ProfileProvider>
+                <CreateProfileProvider>
+                  <CreateCollageProvider>
+                    <LifeListExperienceProvider>
+                      <NavigationProvider>
+                        <AppNavigator />
+                      </NavigationProvider>
+                    </LifeListExperienceProvider>
+                  </CreateCollageProvider>
+                </CreateProfileProvider>
+              </ProfileProvider>
             </ThemeProvider>
           </CallbackProvider>
         </AuthProvider>

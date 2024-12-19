@@ -1,51 +1,40 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  ActivityIndicator,
-  Animated,
-  StyleSheet,
-} from "react-native";
-import { useQuery } from "@apollo/client";
+import React, { useEffect, useState, useRef } from "react";
+import { View, Text, FlatList, Animated, StyleSheet } from "react-native";
 import HeaderStack from "../../../components/Headers/HeaderStack";
-import { GET_LIFELIST_EXPERIENCE } from "../../../utils/queries/lifeListQueries";
 import { iconStyles, layoutStyles } from "../../../styles";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import DropdownMenu from "../../../components/Dropdowns/DropdownMenu";
 import ViewExperienceCard from "../Cards/ViewExperienceCard";
+import { useLifeList } from "../../../contexts/LifeListContext";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function ViewExperience({ route, navigation }) {
   const { setIsTabBarVisible } = useNavigationContext();
   const { experienceId } = route.params;
-
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [shots, setShots] = useState([]);
-  const [hasNextPage, setHasNextPage] = useState(true);
-  const [nextCursor, setNextCursor] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { currentUser } = useAuth();
 
   const rotateAnim = useRef(new Animated.Value(0)).current;
+  const [dropdownVisible, setDropdownVisible] = useState(false);
 
-  const {
-    data,
-    loading: queryLoading,
-    error,
-    fetchMore,
-  } = useQuery(GET_LIFELIST_EXPERIENCE, {
-    variables: { experienceId, cursor: null, limit: 12 },
-    fetchPolicy: "cache-and-network",
-  });
-  console.log(data.getLifeListExperience.lifeListExperience.associatedShots);
+  // LifeListContext
+  const { lifeLists } = useLifeList();
 
-  // Hide the tab bar when this screen is focused
+  // Get current user's LifeList and the experience
+  const currentUserLifeList = lifeLists[currentUser];
+
+  const currentExperience = currentUserLifeList?.experiences?.find(
+    (exp) => exp._id === experienceId
+  );
+
+  const shots = currentExperience?.associatedShots || [];
+
   useEffect(() => {
     setIsTabBarVisible(false);
     return () => setIsTabBarVisible(true);
   }, [setIsTabBarVisible]);
 
-  // Dropdown rotation animation
+  // Dropdown animation
   useEffect(() => {
     Animated.timing(rotateAnim, {
       toValue: dropdownVisible ? 1 : 0,
@@ -59,53 +48,6 @@ export default function ViewExperience({ route, navigation }) {
     outputRange: ["0deg", "90deg"],
   });
 
-  // Load more shots (pagination)
-  const loadMoreShots = useCallback(async () => {
-    if (loading || !hasNextPage) return;
-
-    setLoading(true);
-    try {
-      const { data: moreData } = await fetchMore({
-        variables: { experienceId, cursor: nextCursor, limit: 12 },
-      });
-
-      if (moreData?.getLifeListExperience.lifeListExperience) {
-        const {
-          associatedShots: newShots,
-          nextCursor: newCursor,
-          hasNextPage: newHasNext,
-        } = moreData.getLifeListExperience.lifeListExperience;
-
-        setShots((prev) => [...prev, ...newShots]);
-        setNextCursor(newCursor);
-        setHasNextPage(newHasNext);
-      }
-    } catch (error) {
-      console.error("[ViewExperience] Error fetching more shots:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [experienceId, nextCursor, hasNextPage, fetchMore, loading]);
-
-  // Load initial shots when data changes
-  useEffect(() => {
-    if (data?.getLifeListExperience.lifeListExperience) {
-      const {
-        associatedShots,
-        nextCursor: newCursor,
-        hasNextPage: newHasNext,
-      } = data.getLifeListExperience.lifeListExperience;
-
-      setShots(associatedShots);
-      setNextCursor(newCursor);
-      setHasNextPage(newHasNext);
-    }
-  }, [data]);
-
-  if (queryLoading) return <Text>Loading...</Text>;
-  if (error) return <Text>Error: {error.message}</Text>;
-
-  const experience = data.getLifeListExperience?.experience || {};
   const dropdownItems = [
     {
       icon: "pencil",
@@ -119,13 +61,21 @@ export default function ViewExperience({ route, navigation }) {
   ];
 
   const renderShot = ({ item }) => (
-    <ViewExperienceCard shot={item} navigation={navigation} />
+    <ViewExperienceCard
+      shot={item}
+      associatedShots={shots}
+      navigation={navigation}
+    />
   );
+
+  if (!currentExperience) {
+    return <Text>Loading Experience...</Text>;
+  }
 
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack
-        title={experience.title || "Experience"}
+        title={currentExperience.experience.title || "Experience"}
         arrow={
           <Icon
             name="chevron.backward"
@@ -137,10 +87,15 @@ export default function ViewExperience({ route, navigation }) {
         button1={
           <Animated.View style={{ transform: [{ rotate: rotation }] }}>
             <Icon
-              name="ellipsis"
-              style={iconStyles.ellipsis}
+              name="pencil"
+              style={styles.pencil}
               weight="bold"
-              onPress={() => setDropdownVisible(!dropdownVisible)}
+              onPress={() =>
+                navigation.navigate("ManageShots", {
+                  experienceId,
+                  associatedShots: shots,
+                })
+              }
             />
           </Animated.View>
         }
@@ -153,11 +108,6 @@ export default function ViewExperience({ route, navigation }) {
         keyExtractor={(item) => item._id}
         numColumns={3}
         columnWrapperStyle={styles.columnWrapper}
-        onEndReached={loadMoreShots}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={
-          loading ? <ActivityIndicator size="small" color="#0000ff" /> : null
-        }
       />
     </View>
   );
@@ -167,5 +117,9 @@ const styles = StyleSheet.create({
   columnWrapper: {
     justifyContent: "space-between",
     marginHorizontal: 0,
+  },
+  pencil: {
+    width: 16,
+    height: 15.6,
   },
 });

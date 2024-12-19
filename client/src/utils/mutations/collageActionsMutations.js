@@ -28,7 +28,11 @@ export const REPOST_COLLAGE = gql`
     repostCollage(collageId: $collageId) {
       success
       message
-      action
+      collage {
+        _id
+        coverImage
+        createdAt
+      }
     }
   }
 `;
@@ -39,7 +43,7 @@ export const UNREPOST_COLLAGE = gql`
     unrepostCollage(collageId: $collageId) {
       success
       message
-      action
+      collageId
     }
   }
 `;
@@ -72,7 +76,7 @@ export const ARCHIVE_COLLAGE = gql`
     archiveCollage(collageId: $collageId) {
       success
       message
-      action
+      collageId
     }
   }
 `;
@@ -83,7 +87,11 @@ export const UNARCHIVE_COLLAGE = gql`
     unarchiveCollage(collageId: $collageId) {
       success
       message
-      action
+      collage {
+        _id
+        coverImage
+        createdAt
+      }
     }
   }
 `;
@@ -127,29 +135,27 @@ export const DELETE_COLLAGE = gql`
     deleteCollage(collageId: $collageId) {
       success
       message
-      action
+      collageId
     }
   }
 `;
 
 // Report a collage
 export const REPORT_COLLAGE = gql`
-  mutation ReportCollage($collageId: ID!, $reason: ReportReason!) {
+  mutation ReportCollage($collageId: ID!, $reason: String!) {
     reportCollage(collageId: $collageId, reason: $reason) {
       success
       message
-      action
     }
   }
 `;
 
 // Report a comment
 export const REPORT_COMMENT = gql`
-  mutation ReportComment($commentId: ID!, $reason: ReportReason!) {
+  mutation ReportComment($commentId: ID!, $reason: String!) {
     reportComment(commentId: $commentId, reason: $reason) {
       success
       message
-      action
     }
   }
 `;

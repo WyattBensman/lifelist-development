@@ -103,13 +103,7 @@ export default function ManageShots() {
         }
         title={title}
         button1={
-          <Pressable
-            onPress={handleSave}
-            style={[
-              styles.buttonContainer,
-              isModified && styles.buttonContainerActive,
-            ]}
-          >
+          <Pressable onPress={handleSave} disabled={!isModified}>
             <Text
               style={[styles.buttonText, isModified && styles.buttonTextActive]}
             >
@@ -139,21 +133,14 @@ export default function ManageShots() {
 }
 
 const styles = StyleSheet.create({
-  buttonContainer: {
-    backgroundColor: "#1C1C1C",
-    paddingVertical: 6,
-    paddingHorizontal: 13,
-    borderRadius: 12,
-  },
   buttonText: {
-    color: "#696969",
-  },
-  buttonContainerActive: {
-    backgroundColor: "#6AB95230",
-    fontWeight: "500",
+    fontSize: 12,
+    color: "#696969", // Inactive color
+    fontWeight: "600",
   },
   buttonTextActive: {
-    color: "#6AB952",
+    color: "#6AB952", // Active color when modified
+    fontWeight: "600",
   },
   columnWrapper: {
     justifyContent: "space-between",

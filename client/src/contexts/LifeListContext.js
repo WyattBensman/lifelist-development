@@ -87,7 +87,9 @@ export const LifeListProvider = ({ children }) => {
         ...exp,
         associatedShots: exp.associatedShots.map((shot) => ({
           _id: shot._id,
-          imageThumbnail: shot.imageThumbnail, // Lightweight metadata
+          capturedAt: shot.capturedAt,
+          image: shot.image,
+          imageThumbnail: shot.imageThumbnail,
         })),
       }));
 
@@ -326,6 +328,11 @@ export const LifeListProvider = ({ children }) => {
     }
   };
 
+  const resetLifeListState = () => {
+    setLifeLists({});
+    setIsLifeListCacheInitialized({});
+  };
+
   const contextValue = {
     lifeLists,
     isLifeListCacheInitialized,
@@ -334,6 +341,7 @@ export const LifeListProvider = ({ children }) => {
     updateLifeListExperienceInCache,
     removeLifeListExperienceFromCache,
     updateAssociatedShotsInCache,
+    resetLifeListState,
   };
 
   return (

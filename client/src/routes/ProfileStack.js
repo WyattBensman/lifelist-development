@@ -1,11 +1,11 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import WorldMap from "../pages/Profile/Screens/WorldMap";
 import UserRelations from "../pages/Profile/Screens/UserRelations";
 import Profile from "../pages/Profile/Screens/Profile";
 import LifeListStack from "./LifeListStack";
 import ViewCollage from "../pages/Collage/Screens/ViewCollage";
 import CollageStack from "./CollageStack";
-import Stories from "../pages/Profile/Screens/Stories";
+import Moments from "../pages/Profile/Screens/Moments";
+import Report from "../pages/Report/Report";
 
 const Stack = createNativeStackNavigator();
 
@@ -21,11 +21,6 @@ export default function ProfileStack() {
       <Stack.Screen
         name="Profile"
         component={Profile}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="WorldMap"
-        component={WorldMap}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -49,8 +44,13 @@ export default function ProfileStack() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="Stories"
-        component={Stories}
+        name="Moments"
+        component={Moments}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Report"
+        component={Report}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

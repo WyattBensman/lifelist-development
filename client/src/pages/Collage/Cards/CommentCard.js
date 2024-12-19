@@ -54,9 +54,9 @@ export default function CommentCard({
 
   const handleReportPress = () => {
     onRequestClose();
-    navigation.navigate("CollageStack", {
-      screen: "ReportOptionsScreen",
-      params: { commentId: comment._id },
+    navigation.navigate("Report", {
+      entityId: comment._id, // Pass the comment ID
+      entityType: "COMMENT", // Specify entity type as "COMMENT"
     });
   };
 

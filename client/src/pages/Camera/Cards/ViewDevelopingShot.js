@@ -8,7 +8,6 @@ import {
   Text,
   PanResponder,
   ActivityIndicator,
-  Image,
 } from "react-native";
 import { useMutation } from "@apollo/client";
 import { GET_AND_TRANSFER_CAMERA_SHOT } from "../../../utils/mutations/cameraMutations";
@@ -20,6 +19,9 @@ import DangerAlert from "../../../components/Alerts/DangerAlert";
 import { useNavigation } from "@react-navigation/native";
 import ViewShotHeader from "../../../components/Headers/ViewShotHeader";
 import ViewShotCard from "./ViewShotCard";
+import IconButtonWithLabel from "../../../components/Icons/IconButtonWithLabel";
+import { useCameraRoll } from "../../../contexts/CameraRollContext";
+import { useAdminProfile } from "../../../contexts/AdminProfileContext";
 
 const { width } = Dimensions.get("window");
 const aspectRatio = 3 / 2;
@@ -27,6 +29,8 @@ const imageHeight = width * aspectRatio;
 
 export default function ViewDevelopingShot({ shotId, onClose }) {
   const { developingShots, removeShotFromDevelopingRoll } = useDevelopingRoll();
+  const { addShotToRoll } = useCameraRoll();
+  const { addMoment } = useAdminProfile();
   const [getAndTransferCameraShot, { loading, error }] = useMutation(
     GET_AND_TRANSFER_CAMERA_SHOT
   );
@@ -34,6 +38,8 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
   const [isAdditionalOptionsVisible, setIsAdditionalOptionsVisible] =
     useState(false); // Toggle state for "Album" and "Experience"
   const [isDeleteAlertVisible, setIsDeleteAlertVisible] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [isPostingToMoment, setIsPostingToMoment] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const pan = useRef(new Animated.ValueXY()).current;
@@ -48,11 +54,15 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
         });
 
         if (response.data.getAndTransferCameraShot.success) {
-          const fullImage =
-            response.data.getAndTransferCameraShot.cameraShot.image;
-          setImageUri(fullImage);
+          const fullShot = response.data.getAndTransferCameraShot.cameraShot;
 
-          // Remove from cache only if it exists in developingShots
+          // Set the image URI
+          setImageUri(fullShot.image);
+
+          // Add the shot to the CameraRoll cache
+          await addShotToRoll(fullShot);
+
+          // Remove from DevelopingRoll if it exists
           const shotExists = developingShots.some(
             (shot) => shot._id === shotId
           );
@@ -71,7 +81,12 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
     };
 
     fetchShot();
-  }, [shotId, getAndTransferCameraShot, removeShotFromDevelopingRoll]);
+  }, [
+    shotId,
+    getAndTransferCameraShot,
+    addShotToRoll,
+    removeShotFromDevelopingRoll,
+  ]);
 
   useEffect(() => {
     if (imageUri) {
@@ -106,6 +121,33 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
     })
   ).current;
 
+  // ACTIONS
+  const handlePostToMomentPress = () => {
+    setIsPostingToMoment(true); // Enable confirmation workflow
+  };
+
+  const handleConfirmPostToMoment = async () => {
+    try {
+      if (!shotId) return;
+
+      // Use AdminProfileContext's addMoment
+      await addMoment({ cameraShotId: shotId });
+
+      // Success feedback
+      setFeedbackMessage("Moment successfully posted!");
+    } catch (err) {
+      console.error("Error posting moment:", err);
+      setFeedbackMessage("Failed to post moment.");
+    } finally {
+      setTimeout(() => setFeedbackMessage(""), 2000);
+      setIsPostingToMoment(false);
+    }
+  };
+
+  const handleCancelPostToMoment = () => {
+    setIsPostingToMoment(false);
+  };
+
   const handleSharePress = async () => {
     if (!imageUri) {
       alert("No image to share.");
@@ -128,7 +170,10 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
   const handleExperiencePress = () =>
     navigation.navigate("AddShotToExperience", { shotId });
 
-  const resetToMainButtons = () => setIsAdditionalOptionsVisible(false);
+  const resetToMainButtons = () => {
+    setIsAdditionalOptionsVisible(false);
+    setIsPostingToMoment(false);
+  };
 
   const confirmDelete = async () => {
     try {
@@ -190,96 +235,74 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
           },
         ]}
       >
-        <ViewShotCard imageUrl={item.image} shotId={item._id} />
+        <ViewShotCard imageUrl={imageUri} shotId={shotId} />
       </Animated.View>
 
-      {/* Bottom Container */}
-      <View style={styles.bottomContainer}>
-        {!isAdditionalOptionsVisible ? (
-          // Main button set
-          <>
-            <Pressable style={styles.iconWithLabel} onPress={handleSharePress}>
-              <Pressable style={styles.iconButton} onPress={handleSharePress}>
-                <Icon
-                  name="paperplane"
-                  style={styles.icon}
-                  weight="bold"
+      {/* Feedback */}
+      {feedbackMessage ? (
+        <View style={styles.feedbackContainer}>
+          <View style={styles.feedbackBox}>
+            <Text style={styles.feedbackText}>{feedbackMessage}</Text>
+          </View>
+        </View>
+      ) : (
+        // Bottom Container
+        <View style={styles.bottomContainer}>
+          {!isPostingToMoment ? (
+            !isAdditionalOptionsVisible ? (
+              <>
+                <IconButtonWithLabel
+                  iconName="paperplane"
+                  label="Share"
                   onPress={handleSharePress}
                 />
-              </Pressable>
-              <Text style={styles.labelText}>Share</Text>
-            </Pressable>
-
-            <View style={styles.iconWithLabel}>
-              <Pressable style={styles.iconButton} onPress={handleDeletePress}>
-                <Icon
-                  name="rectangle.portrait.on.rectangle.portrait.angled"
-                  style={styles.icon}
-                  weight="bold"
+                <IconButtonWithLabel
+                  iconName="rectangle.portrait.on.rectangle.portrait.angled"
+                  label="Post Moment"
+                  onPress={handlePostToMomentPress}
                 />
-              </Pressable>
-              <Text style={styles.labelText}>Post to Story</Text>
-            </View>
-
-            <Pressable style={styles.iconWithLabel} onPress={handleAddToPress}>
-              <Pressable style={styles.iconButton} onPress={handleAddToPress}>
-                <Icon
-                  name="folder"
-                  style={styles.icon}
-                  weight="bold"
+                <IconButtonWithLabel
+                  iconName="folder"
+                  label="Add To"
                   onPress={handleAddToPress}
                 />
-              </Pressable>
-              <Text style={styles.labelText}>Add To</Text>
-            </Pressable>
-          </>
-        ) : (
-          // Secondary button set (Album and Experience)
-          <>
-            <Pressable style={styles.iconWithLabel} onPress={handleAlbumPress}>
-              <Pressable style={styles.iconButton} onPress={handleAlbumPress}>
-                <Icon
-                  name="folder"
-                  style={styles.icon}
-                  weight="bold"
+              </>
+            ) : (
+              <>
+                <IconButtonWithLabel
+                  iconName="folder"
+                  label="Album"
                   onPress={handleAlbumPress}
                 />
-              </Pressable>
-              <Text style={styles.labelText}>Album</Text>
-            </Pressable>
-
-            <Pressable
-              style={styles.iconWithLabel}
-              onPress={handleExperiencePress}
-            >
-              <Pressable
-                style={styles.iconButton}
-                onPress={handleExperiencePress}
-              >
-                <Icon
-                  name="star"
-                  style={styles.icon}
-                  weight="bold"
+                <IconButtonWithLabel
+                  iconName="star"
+                  label="Experience"
                   onPress={handleExperiencePress}
                 />
-              </Pressable>
-              <Text style={styles.labelText}>Experience</Text>
-            </Pressable>
-
-            <View style={styles.iconWithLabel} onPress={resetToMainButtons}>
-              <Pressable style={styles.iconButton} onPress={resetToMainButtons}>
-                <Icon
-                  name="arrow.left"
-                  style={styles.icon}
-                  weight="bold"
+                <IconButtonWithLabel
+                  iconName="arrow.left"
+                  label="Back"
                   onPress={resetToMainButtons}
                 />
-              </Pressable>
-              <Text style={styles.labelText}>Back</Text>
-            </View>
-          </>
-        )}
-      </View>
+              </>
+            )
+          ) : (
+            <>
+              <IconButtonWithLabel
+                iconName="checkmark"
+                label={posting ? "Posting..." : "Confirm Moment"}
+                onPress={handleConfirmPostToMoment}
+                disabled={posting}
+              />
+              <IconButtonWithLabel
+                iconName="xmark"
+                label="Cancel"
+                onPress={handleCancelPostToMoment}
+              />
+            </>
+          )}
+        </View>
+      )}
 
       <DangerAlert
         visible={isDeleteAlertVisible}
@@ -297,16 +320,7 @@ export default function ViewDevelopingShot({ shotId, onClose }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    borderWidth: 3,
-    borderColor: "red",
   },
-  /*   imageContainer: {
-    width: width - 60,
-    height: imageHeight,
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  }, */
   image: {
     width: "100%",
     height: "100%",
@@ -324,12 +338,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   bottomContainer: {
+    flex: 1,
     flexDirection: "row",
-    justifyContent: "space-evenly",
     alignItems: "center",
+    justifyContent: "center",
     width: "100%",
-    paddingHorizontal: 20,
-    backgroundColor: "#121212",
   },
   iconWithLabel: {
     justifyContent: "center",
@@ -350,5 +363,25 @@ const styles = StyleSheet.create({
   trashIcon: {
     height: 18.28,
     width: 15,
+  },
+  feedbackContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#121212",
+  },
+  feedbackBox: {
+    backgroundColor: "#252525",
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+    borderRadius: 32,
+  },
+  feedbackText: {
+    color: "#fff",
+    backgroundColor: "#252525",
+    paddingVertical: 8,
+    fontSize: 12,
+    fontWeight: "500",
+    textAlign: "center",
   },
 });

@@ -1,14 +1,6 @@
 import { User, CameraShot, CameraAlbum } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const getDailyCameraShotsLeft = async (_, __, { user }) => {
-  isUser(user);
-  const currentUser = await User.findById(user).exec();
-  if (!currentUser) throw new Error("User not found.");
-
-  return currentUser.shotsLeft;
-};
-
 export const getAllCameraAlbums = async (_, __, { user }) => {
   isUser(user);
 

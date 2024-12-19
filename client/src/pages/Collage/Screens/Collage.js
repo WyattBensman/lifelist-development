@@ -31,15 +31,13 @@ import IconCollage from "../../../components/Icons/IconCollage";
 import { useAuth } from "../../../contexts/AuthContext";
 import AuthorOptions from "../Popups/AuthorOptions";
 import DefaultOptions from "../Popups/DefaultOptions";
+import { useAdminProfile } from "../../../contexts/AdminProfileContext";
 
 const { width } = Dimensions.get("window");
 
-export default function Collage({
-  collageId,
-  isMainFeed,
-  isViewCollageScreen,
-}) {
+export default function Collage({ collageId }) {
   const { currentUser } = useAuth();
+  const { addRepost, removeRepost } = useAdminProfile();
   const navigation = useNavigation();
   const { loading, error, data, refetch } = useQuery(GET_COLLAGE_BY_ID, {
     variables: { collageId },
@@ -148,10 +146,36 @@ export default function Collage({
   };
 
   const handleRepostPress = async () => {
-    if (isReposted) {
-      await unrepostCollage({ variables: { collageId } });
-    } else {
-      await repostCollage({ variables: { collageId } });
+    try {
+      if (isReposted) {
+        const { data } = await unrepostCollage({ variables: { collageId } });
+
+        if (data?.unrepostCollage?.success) {
+          console.log(data.unrepostCollage.message);
+
+          // Remove the repost from state
+          await removeRepost(collageId);
+          setIsReposted(false); // Update UI state
+        }
+      } else {
+        const { data } = await repostCollage({ variables: { collageId } });
+
+        if (data?.repostCollage?.success) {
+          console.log(data.repostCollage.message);
+
+          // Add the repost to state
+          const repost = {
+            _id: data.repostCollage.collage._id,
+            coverImage: data.repostCollage.collage.coverImage,
+            createdAt: data.repostCollage.collage.createdAt,
+          };
+
+          await addRepost(repost);
+          setIsReposted(true); // Update UI state
+        }
+      }
+    } catch (error) {
+      console.error("Error handling repost/unrepost:", error.message);
     }
   };
 

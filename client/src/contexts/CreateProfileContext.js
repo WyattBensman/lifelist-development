@@ -17,8 +17,6 @@ export const CreateProfileProvider = ({ children }) => {
     birthday: "",
   });
 
-  console.log(profile.profilePicture);
-
   const [cameraAccessGranted, setCameraAccessGranted] = useState(false);
   const [contactsAccessGranted, setContactsAccessGranted] = useState(false);
 

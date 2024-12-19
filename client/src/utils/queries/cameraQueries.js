@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 
+// S3 Bucket Presigned URL
 export const GET_PRESIGNED_URL = gql`
   query GetPresignedUrl(
     $folder: String!
@@ -10,13 +11,6 @@ export const GET_PRESIGNED_URL = gql`
       presignedUrl
       fileUrl
     }
-  }
-`;
-
-// Daily camera shots left for the user
-export const GET_DAILY_CAMERA_SHOTS_LEFT = gql`
-  query GetDailyCameraShotsLeft {
-    getDailyCameraShotsLeft
   }
 `;
 

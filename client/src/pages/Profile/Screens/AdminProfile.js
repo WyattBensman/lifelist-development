@@ -6,183 +6,30 @@ import ProfileOverview from "../Components/ProfileOverview";
 import CustomProfileNavigator from "../Navigators/CustomProfileNavigator";
 import AdminOptionsPopup from "../Popups/AdminOptionsPopup";
 import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "../../../contexts/AuthContext";
 import { useAdminProfile } from "../../../contexts/AdminProfileContext";
-import { useQuery } from "@apollo/client";
-import {
-  GET_COLLAGES_REPOSTS,
-  GET_USER_COUNTS,
-} from "../../../utils/queries/userQueries";
 import Icon from "../../../components/Icons/Icon";
-import {
-  saveToAsyncStorage,
-  getFromAsyncStorage,
-  saveImageToFileSystem,
-} from "../../../utils/cacheHelper";
+import { useAuth } from "../../../contexts/AuthContext";
 
 export default function AdminProfile() {
   const navigation = useNavigation();
+  const {
+    adminProfile,
+    collages,
+    reposts,
+    counts,
+    hasActiveMoments,
+    fetchMoreCollages,
+    fetchMoreReposts,
+    refreshAdminProfile,
+  } = useAdminProfile();
   const { currentUser } = useAuth();
-  const { adminProfile, refreshAdminProfile } = useAdminProfile();
+
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
-  const [followerData, setFollowerData] = useState(null);
-  const [collagesData, setCollagesData] = useState([]);
-  const [repostsData, setRepostsData] = useState([]);
-  const [collagesCursor, setCollagesCursor] = useState(null);
-  const [repostsCursor, setRepostsCursor] = useState(null);
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
-  const cacheKeys = {
-    collagesMetadata: `collages_metadata_${currentUser}`,
-    repostsMetadata: `reposts_metadata_${currentUser}`,
-    followerCounts: `follower_counts_${currentUser}`,
-    countsTimestamp: `counts_timestamp_${currentUser}`,
-  };
-
-  const COUNTS_TTL = 15 * 60 * 1000; // 15 minutes
-
-  const loadCachedData = async () => {
-    try {
-      const cachedCollages = await getFromAsyncStorage(
-        cacheKeys.collagesMetadata
-      );
-      const cachedReposts = await getFromAsyncStorage(
-        cacheKeys.repostsMetadata
-      );
-      const cachedCounts = await getFromAsyncStorage(cacheKeys.followerCounts);
-      const countsTimestamp = await getFromAsyncStorage(
-        cacheKeys.countsTimestamp
-      );
-
-      const countsAreValid =
-        cachedCounts &&
-        countsTimestamp &&
-        Date.now() - countsTimestamp < COUNTS_TTL;
-
-      if (cachedCollages) setCollagesData(cachedCollages);
-      if (cachedReposts) setRepostsData(cachedReposts);
-      if (countsAreValid) {
-        setFollowerData(cachedCounts);
-      } else {
-        refetchCounts();
-      }
-
-      if (!cachedCollages || !cachedReposts) {
-        refetchCollagesReposts();
-      }
-    } catch (error) {
-      console.error("Error loading cached data:", error);
-    }
-  };
-
   useEffect(() => {
-    loadCachedData();
+    refreshAdminProfile(); // Ensure fresh data on component mount
   }, []);
-
-  const { data: countsData, refetch: refetchCounts } = useQuery(
-    GET_USER_COUNTS,
-    {
-      variables: { userId: currentUser },
-      skip: !!followerData,
-      onCompleted: (data) => {
-        const { followersCount, followingCount, collagesCount } =
-          data.getUserCounts;
-        const counts = { followersCount, followingCount, collagesCount };
-        setFollowerData(counts);
-        saveToAsyncStorage(cacheKeys.followerCounts, counts);
-        saveToAsyncStorage(cacheKeys.countsTimestamp, Date.now());
-      },
-    }
-  );
-
-  const {
-    data: collagesRepostsData,
-    fetchMore: fetchMoreCollagesReposts,
-    refetch: refetchCollagesReposts,
-  } = useQuery(GET_COLLAGES_REPOSTS, {
-    variables: {
-      userId: currentUser,
-      collagesCursor,
-      repostsCursor,
-      limit: 15,
-    },
-    skip: !!(collagesData.length && repostsData.length),
-    onCompleted: (data) => {
-      const { collages, repostedCollages } = data.getCollagesAndReposts;
-
-      setCollagesData(collages.items);
-      setRepostsData(repostedCollages.items);
-      setCollagesCursor(collages.nextCursor);
-      setRepostsCursor(repostedCollages.nextCursor);
-    },
-  });
-
-  useEffect(() => {
-    if (collagesRepostsData) {
-      const { collages, repostedCollages } =
-        collagesRepostsData.getCollagesAndReposts;
-
-      const cacheImages = async () => {
-        try {
-          const collagesMetadata = await Promise.all(
-            collages.items.map(async (item) => ({
-              _id: item._id,
-              coverImage: await saveImageToFileSystem(
-                `collage_cover_${item._id}`,
-                item.coverImage
-              ),
-            }))
-          );
-
-          const repostsMetadata = await Promise.all(
-            repostedCollages.items.map(async (item) => ({
-              _id: item._id,
-              coverImage: await saveImageToFileSystem(
-                `repost_cover_${item._id}`,
-                item.coverImage
-              ),
-            }))
-          );
-
-          setCollagesData(collagesMetadata);
-          setRepostsData(repostsMetadata);
-
-          saveToAsyncStorage(cacheKeys.collagesMetadata, collagesMetadata);
-          saveToAsyncStorage(cacheKeys.repostsMetadata, repostsMetadata);
-        } catch (error) {
-          console.error("Error caching images:", error);
-        }
-      };
-
-      cacheImages();
-    }
-  }, [collagesRepostsData]);
-
-  const fetchMoreCollages = () => {
-    if (collagesCursor) {
-      fetchMoreCollagesReposts({
-        variables: {
-          userId: currentUser,
-          collagesCursor,
-          repostsCursor: null,
-          limit: 15,
-        },
-      });
-    }
-  };
-
-  const fetchMoreReposts = () => {
-    if (repostsCursor) {
-      fetchMoreCollagesReposts({
-        variables: {
-          userId: currentUser,
-          collagesCursor: null,
-          repostsCursor,
-          limit: 15,
-        },
-      });
-    }
-  };
 
   useEffect(() => {
     Animated.timing(rotateAnim, {
@@ -201,10 +48,13 @@ export default function AdminProfile() {
     setOptionsPopupVisible(!optionsPopupVisible);
   };
 
-  if (!adminProfile) return <Text>Loading...</Text>;
+  if (!adminProfile) {
+    return <Text style={layoutStyles.loadingText}>Loading...</Text>;
+  }
 
   return (
     <View style={layoutStyles.wrapper}>
+      {/* Header */}
       <HeaderMain
         titleComponent={
           <Text style={headerStyles.headerHeavy}>{adminProfile?.fullName}</Text>
@@ -221,6 +71,7 @@ export default function AdminProfile() {
         }
       />
 
+      {/* Profile Content */}
       <FlatList
         data={[{ key: "Collages", component: CustomProfileNavigator }]}
         keyExtractor={(item) => item.key}
@@ -230,17 +81,22 @@ export default function AdminProfile() {
             isAdmin
             isAdminScreen
             navigation={navigation}
-            collages={collagesData}
-            repostedCollages={repostsData}
+            collages={collages}
+            repostedCollages={reposts}
             fetchMoreCollages={fetchMoreCollages}
             fetchMoreReposts={fetchMoreReposts}
+            hasActiveMoments={hasActiveMoments}
           />
         )}
         ListHeaderComponent={() => (
           <ProfileOverview
             profile={adminProfile}
-            followerData={followerData}
-            userId={currentUser}
+            followerData={{
+              followersCount: counts.followersCount,
+              followingCount: counts.followingCount,
+              collagesCount: counts.collagesCount,
+            }}
+            userId={adminProfile._id}
             isAdminView
             isAdminScreen
           />
@@ -248,6 +104,7 @@ export default function AdminProfile() {
         style={layoutStyles.wrapper}
       />
 
+      {/* Options Popup */}
       <AdminOptionsPopup
         visible={optionsPopupVisible}
         onRequestClose={toggleOptionsPopup}

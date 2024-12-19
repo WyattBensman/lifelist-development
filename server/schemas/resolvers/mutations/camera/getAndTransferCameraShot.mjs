@@ -32,7 +32,9 @@ const getAndTransferCameraShot = async (_, { shotId }, { user }) => {
       message: "Camera shot transferred to camera shots.",
       cameraShot: {
         _id: cameraShot._id,
+        imageThumbnail: cameraShot.imageThumbnail,
         image: cameraShot.image,
+        capturedAt: cameraShot.capturedAt,
       },
     };
   } catch (error) {

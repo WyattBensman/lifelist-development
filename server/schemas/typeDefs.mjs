@@ -23,7 +23,7 @@ type User {
   taggedCollages: [Collage]
   savedCollages: [Collage]
   archivedCollages: [Collage]
-  stories: [Story]
+  moments: [Moment]
   shotsLeft: Int
   developingCameraShots: [CameraShot]
   cameraShots: [CameraShot]
@@ -44,6 +44,7 @@ type User {
   phoneVerification: VerificationStatus
   status: String
   expiryDate: Date
+  reports: [Report]
 }
 
   type Auth {
@@ -135,11 +136,6 @@ enum InviteStatus {
     COMMENT
     TAG
     MESSAGE
-  }
-
-  type DailyCameraShots {
-    count: Int
-    lastReset: Date
   }
 
   type VerificationStatus {
@@ -305,6 +301,13 @@ type Score {
     FALSE_INFORMATION_OR_MISREPRESENTATION
     VIOLATES_COMMUNITY_GUIDELINES
     SPAM_OR_SCAMS
+    IMPERSONATION
+    UNSOLICITED_CONTACT
+    HATE_SPEECH_OR_DISCRIMINATION
+    UNDERAGE_ACCOUNT
+    NUDITY_OR_SEXUAL_CONTENT
+    UNAUTHORIZED_ACTIVITY
+    OTHER
   }
 
   type CameraAlbum {
@@ -312,7 +315,6 @@ type Score {
     author: User
     coverImage: String
     title: String
-    description: String
     shots: [CameraShot]
     shotsCount: Int
   }
@@ -329,39 +331,36 @@ type Score {
     transferredToRoll: Boolean!
   }
 
-  type Story {
+  type Moment {
     _id: ID!
     author: User
     cameraShot: CameraShot
     createdAt: String
     expiresAt: String
     views: [User]
+    likes: [User]
+    reports: [Report]
   }
 
   type Query {
     # User Queries
-    getUserProfileById(userId: ID!): UserProfileResponse
+    getUserData: UserData
+    getUserProfileById(userId: ID!, collagesCursor: ID, repostsCursor: ID, limit: Int = 15): UserProfileResponse
     getUserCounts(userId: ID!): UserCountsResponse
-    getCollagesAndReposts(userId: ID!, collagesCursor: ID, repostsCursor: ID, limit: Int = 15): CollagesAndRepostsResponse
+    getCollagesRepostsMoments(userId: ID!, collagesCursor: ID, repostsCursor: ID, limit: Int = 15): CollagesRepostsMomentsResponse
     checkIsFollowing(userId: ID!): FollowStatus
     getFollowers(userId: ID!, cursor: ID, limit: Int): UserWithRelationshipStatusPagination
     getFollowing(userId: ID!, cursor: ID, limit: Int): UserWithRelationshipStatusPagination
-    getUserCollages(userId: ID!): [Collage]
-    getRepostedCollages(userId: ID!): [Collage]
     getTaggedCollages(userId: ID!, cursor: ID, limit: Int): CollagePagination
     getSavedCollages(cursor: ID, limit: Int): CollagePagination
     getArchivedCollages(cursor: ID, limit: Int): CollagePagination
     getBlockedUsers: [User]
-    getUserData: UserData
-    getUserProfileInformation: UserProfileInformation
-    getUserContactInformation: UserContactInformation
-    getUserIdentityInformation: UserIdentityInformation
-    getUserSettingsInformation: UserSettingsInformation
-    getAllUsers(limit: Int, offset: Int): [User]
+    getAllUsers(cursor: ID, limit: Int, searchQuery: String): UserWithRelationshipStatusPagination
 
-    # Story Queries
-    getUserStories(userId: ID!): [Story]
-    getFollowingUsersStories: [Story]
+    # Moment Queries
+    getUserMoments(userId: ID!): [Moment]
+    getFriendsMoments(cursor: String, limit: Int): PaginatedMoments
+    getMomentLikes(momentId: ID!): [User]
 
     # Fle Upload Queries
     getPresignedUrl(folder: String!, fileName: String!, fileType: String!): PresignedUrlResponse!
@@ -371,12 +370,8 @@ type Score {
     getPrivacyGroup(privacyGroupId: ID!): PrivacyGroup
   
     # LifeList Queries
-    getCurrentUserLifeList: LifeList
     getUserLifeList(userId: ID!, cursor: ID, limit: Int): LifeListPagination
-    getExperiencedList(lifeListId: ID!): [LifeListExperience]
-    getWishListedList(lifeListId: ID!): [LifeListExperience]
     getLifeListExperience(experienceId: ID!, cursor: ID, limit: Int): LifeListExperiencePagination
-    getLifeListExperiencesByExperienceIds(lifeListId: ID!, experienceIds: [ID]): [LifeListExperience]
   
     # Collage Queries
     getCollageById(collageId: ID!): CollageResponse
@@ -385,7 +380,6 @@ type Score {
     getInteractions(collageId: ID!): CollageInteractions
   
     # Camera Queries
-    getDailyCameraShotsLeft: Int
     getAllCameraAlbums: [CameraAlbum]
     getCameraAlbum(albumId: ID!, cursor: ID, limit: Int = 12): CameraAlbumPagination
     getAllCameraShots(cursor: ID, limit: Int): CameraRollPagination
@@ -409,7 +403,8 @@ type Score {
     getMainFeed(userId: ID!, page: Int!): FeedResult
 
     # Explore Queries
-    getRecommendedStories(cursor: ID, limit: Int): StoryPagination
+    getRecommendedProfiles(cursor: ID, limit: Int): RecommendedProfilePagination
+    getRecommendedCollages(cursor: ID, limit: Int): RecommendedCollagePagination
   }
 
   # Query Responses
@@ -418,9 +413,10 @@ type Score {
     hasMore: Boolean
   }
 
-  type CollagesAndRepostsResponse {
+  type CollagesRepostsMomentsResponse {
     collages: CollageRepostPagination
     repostedCollages: CollageRepostPagination
+    moments: [Moment]
   }
 
   type CollagePagination {
@@ -429,16 +425,46 @@ type Score {
     hasNextPage: Boolean
   }
 
-  type StoryPagination {
-    stories: [Story]
+  type RecommendedProfilePagination {
+    profiles: [RecommendedProfile]
     nextCursor: ID
     hasNextPage: Boolean
+  }
+
+  type RecommendedProfile {
+    user: User
+    overlapScore: Int
+    followerCount: Int
+  }
+
+  type RecommendedCollagePagination {
+    collages: [RecommendedCollage]
+    nextCursor: ID
+    hasNextPage: Boolean
+  }
+
+  type RecommendedCollage {
+    _id: ID!
+    author: User
+    coverImage: String
+    createdAt: String
+    likesCount: Int
+    repostsCount: Int
+    savesCount: Int
+    overlapScore: Int
+    popularityScore: Int
   }
 
   type LifeListPagination {
     _id: ID!
     experiences: [LifeListExperienceWithDetails]
     nextCursor: ID
+    hasNextPage: Boolean
+  }
+
+  type PaginatedMoments {
+    moments: [Moment]
+    nextCursor: String
     hasNextPage: Boolean
   }
 
@@ -458,6 +484,8 @@ type LifeListExperienceWithDetails {
 
 type CameraShotMetadata {
   _id: ID!
+  capturedAt: Date
+  image: String
   imageThumbnail: String
 }
 
@@ -471,12 +499,6 @@ type ExperienceDetails {
 
   type CollageRepostPagination {
     items: [Collage]
-    nextCursor: ID
-    hasNextPage: Boolean
-  }
-
-  type UserPagination {
-    users: [User]
     nextCursor: ID
     hasNextPage: Boolean
   }
@@ -500,17 +522,17 @@ type ExperienceDetails {
     hasNextPage: Boolean
   }
 
+  type UserWithRelationshipStatusPagination {
+    users: [UserWithRelationshipStatus]
+    nextCursor: ID
+    hasNextPage: Boolean
+  }
+
   type UserWithRelationshipStatus {
     user: User
     relationshipStatus: String
     isPrivate: Boolean
     hasSentFollowRequest: Boolean
-  }
-
-  type UserWithRelationshipStatusPagination {
-    users: [UserWithRelationshipStatus]
-    nextCursor: ID
-    hasNextPage: Boolean
   }
 
   type UserProfileResponse {
@@ -519,11 +541,15 @@ type ExperienceDetails {
     username: String
     bio: String
     profilePicture: String
-    collages: [Collage]
-    repostedCollages: [Collage]
+    collages: CollageRepostPagination
+    repostedCollages: CollageRepostPagination
     followersCount: Int!
     followingCount: Int!
     collagesCount: Int!
+    isFollowing: Boolean!
+    isFollowedBy: Boolean!
+    isFollowRequested: Boolean!
+    hasActiveMoments: Boolean!
   }
 
   type UserCountsResponse {
@@ -536,60 +562,12 @@ type ExperienceDetails {
     isFollowing: Boolean
   }
 
-  type UserRelationsResponse {
-    _id: ID!
-    username: String
-    fullName: String
-    profilePicture: String
-    settings: UserSettings
-    followRequests: [User]
-  }
-
   type CollageResponse {
     collage: Collage
     isLikedByCurrentUser: Boolean
     isRepostedByCurrentUser: Boolean
     isSavedByCurrentUser: Boolean
     hasParticipants: Boolean
-  }
-
-  type LifeListResponse {
-    _id: ID!
-    experiences: [LifeListExperienceResponse]
-  }
-
-  type LifeListExperienceResponse {
-    _id: ID!
-    list: String
-    experience: ExperienceResponse
-    hasAssociatedShots: Boolean
-  }
-
-  type ExperienceResponse {
-    _id: ID!
-    title: String!
-    image: String!
-    category: String!
-    subCategory: String
-  }
-
-  type UserProfileInformation {
-    profilePicture: String
-    fullName: String
-    username: String
-    bio: String
-    birthday: Date
-    gender: String
-  }
-
-  type UserContactInformation {
-    email: String
-    phoneNumber: String
-  }
-  
-  type UserIdentityInformation {
-    birthday: Date
-    gender: String
   }
 
   type UserData {
@@ -602,14 +580,6 @@ type ExperienceDetails {
     email: String
     phoneNumber: String
     settings: UserSettings
-  }
-  
-  type UserSettingsInformation {
-    isProfilePrivate: Boolean
-    darkMode: Boolean
-    language: String
-    notifications: Boolean
-    postRepostToMainFeed: Boolean
   }
 
   type CollageInteractions {
@@ -629,7 +599,7 @@ type ExperienceDetails {
     email: String
     phoneNumber: String
     birthday: String!
-   accessCode: String
+    accessCode: String
   }
 
   type Mutation {
@@ -639,11 +609,6 @@ type ExperienceDetails {
     validateContactAndBirthday(email: String, phoneNumber: String, birthday: String!): StandardResponse
     validateUsernameAndPassword(username: String!, password: String!): StandardResponse
     validateProfileDetails(fullName: String!, gender: String!, bio: String): StandardResponse
-    initializeRegistration(email: String, phoneNumber: String, birthday: String!): AuthResponse!
-    setBasicInformation(fullName: String!, gender: String!): UserResponse!
-    setLoginInformation(username: String!, password: String!): UserResponse!
-    setProfilePictureAndBio(profilePicture: Upload, bio: String): UserResponse!
-    setProfileInformation(fullName: String!, gender: String!, profilePicture: Upload, bio: String): UserResponse!
     inviteFriend(name: String!, phoneNumber: String!): StandardResponse
     updateInviteStatus(inviteCode: String!): StandardResponse
 
@@ -657,13 +622,8 @@ type ExperienceDetails {
     ): CreateAccessCodeResponse!
 
     # User Actions Mutations
-    updatePhoneNumber(phoneNumber: String!): UpdatePhoneNumberResponse!
-    updateEmail(email: String!): UpdateEmailResponse!
-    updatePassword(currentPassword: String!, newPassword: String!): UpdatePasswordResponse!
-    updateProfile(profilePicture: Upload, fullName: String, username: String, bio: String): UpdateProfileResponse!
-    updateIdentity(gender: String, birthday: String): UpdateIdentityResponse!
-    updateSettings(privacy: String, darkMode: Boolean, language: String, notifications: Boolean, postRepostToMainFeed: Boolean): UpdateSettingsResponse!
     deleteUser(userId: ID!): StandardResponse
+    reportProfile(profileId: ID!, reason: String!): StandardResponse
     updateUserData(
     email: String
     currentPassword: String
@@ -693,31 +653,25 @@ type ExperienceDetails {
     unblockUser(userIdToUnblock: ID!): UnblockUserResponse!
 
     #Collage Creation Mutations
-    startCollage(images: [Upload]): CollageCreationResponse!
-    setCoverImage(collageId: ID!, selectedImage: String!): CollageCreationResponse!
-    setCaption(collageId: ID!, caption: String): CollageCreationResponse!
-    setLocation(collageId: ID!, locations: [LocationInput]): CollageCreationResponse!
-    setAudience(collageId: ID!, audience: PrivacySetting!): CollageCreationResponse!
-    tagUsers(collageId: ID!, userIds: [ID]): CollageCreationResponse!
-    untagUsers(collageId: ID!, userIds: [ID]): CollageCreationResponse!
-    createCollage(caption: String, images: [String]!, taggedUsers: [ID], coverImage: String): StandardResponse!
+    createCollage(caption: String, images: [String]!, taggedUsers: [ID], coverImage: String): CreateCollageResponse!
     updateCollage(collageId: ID!, caption: String, images: [String]!, taggedUsers: [ID], coverImage: String): StandardResponse!
 
     # Collage Actions Mutations
     saveCollage(collageId: ID!): ActionResponse!
     unsaveCollage(collageId: ID!): ActionResponse!
-    repostCollage(collageId: ID!): ActionResponse!
-    unrepostCollage(collageId: ID!): ActionResponse!
+    repostCollage(collageId: ID!): CollageCollageResponse
+    unrepostCollage(collageId: ID!): CollageIdResponse
     likeCollage(collageId: ID!): ActionResponse
     unlikeCollage(collageId: ID!): ActionResponse!
-    archiveCollage(collageId: ID!): ActionResponse!
-    unarchiveCollage(collageId: ID!): ActionResponse!
+    archiveCollage(collageId: ID!): CollageIdResponse
+    unarchiveCollage(collageId: ID!): CollageCollageResponse
     createComment(collageId: ID!, text: String!): ActionResponse!
     editComment(commentId: ID!, newText: String!): ActionResponse!
     deleteComment(collageId: ID!, commentId: ID!): ActionResponse!
-    deleteCollage(collageId: ID!): ActionResponse!
-    reportCollage(collageId: ID!, reason: ReportReason!): ActionResponse!
-    reportComment(commentId: ID!, reason: ReportReason!): ActionResponse!
+    deleteCollage(collageId: ID!): CollageIdResponse
+    reportCollage(collageId: ID!, reason: String!): StandardResponse
+    reportComment(commentId: ID!, reason: String!): StandardResponse
+    reportMoment(momentId: ID!, reason: String!): StandardResponse
     likeComment(commentId: ID!): ActionResponse!
     unlikeComment(commentId: ID!): ActionResponse!
   
@@ -740,38 +694,26 @@ type ExperienceDetails {
       lifeListExperienceId: ID!
     ): StandardResponse
 
-    removeExperienceFromLifeList(lifeListId: ID!, lifeListExperienceId: ID!): StandardResponse
-    updateLifeListExperienceListStatus(lifeListExperienceId: ID!, newListStatus: String!): StandardResponse
-    addCollagesToLifeListExperience(lifeListExperienceId: ID!, collageIds: [ID]): LifeListExperience
-    addShotsToLifeListExperience(lifeListExperienceId: ID!, shotIds: [ID]): LifeListExperience
-    removeCollagesFromLifeListExperience(lifeListExperienceId: ID!, collageIds: [ID]): LifeListExperience
-    removeShotsFromLifeListExperience(lifeListExperienceId: ID!, shotIds: [ID]): LifeListExperience
-    updateAssociatedShots(lifeListExperienceId: ID!, shotIds: [ID]): StandardResponse
-    updateAssociatedCollages(lifeListExperienceId: ID!, collageIds: [ID]): StandardResponse
-
     # Camera Mutationss
     createCameraShot(image: String!, thumbnail: String!): CreateCameraShotResponse
     getAndTransferCameraShot(shotId: ID!): GetAndTransferCameraShotResponse
-    editCameraShot(shotId: ID!, image: String!): StandardResponse
     deleteCameraShot(shotId: ID!): StandardResponse
       createCameraAlbum(
     title: String!
     shots: [ID]
     shotsCount: Int
     coverImage: String
-  ): CreateCameraAlbumResponse
-    editCameraAlbum(albumId: ID!, title: String, description: String): CameraAlbum
+    ): CreateCameraAlbumResponse
+    editCameraAlbum(albumId: ID!, title: String): CameraAlbum
     deleteCameraAlbum(albumId: ID!): StandardResponse
-    addShotToAlbum(albumId: ID!, shotId: ID!): StandardResponse
-    removeShotFromAlbum(albumId: ID!, shotId: ID!): StandardResponse
-    addShotToExperience(experienceId: ID!, shotId: ID!): StandardResponse
-    removeShotFromExperience(experienceId: ID!, shotId: ID!): StandardResponse
     updateAlbumShots(albumId: ID!, shotIds: [ID]!): StandardResponse
 
-    # Story Mutations
-    postStory(cameraShotId: ID!): StandardResponse
-    deleteStory(storyId: ID!): StandardResponse
-    markStoryAsViewed(storyId: ID!): Boolean
+    # Moment Mutations
+    postMoment(cameraShotId: ID!): PostMomentResponse
+    deleteMoment(momentId: ID!): DeleteMomentResponse
+    markMomentAsViewed(momentId: ID!): Boolean
+    likeMoment(momentId: ID!): MomentActionResponse
+    unlikeMoment(momentId: ID!): MomentActionResponse
 
     # Privacy Group Mutations
     createPrivacyGroup(groupName: String!, userIds: [ID]!): PrivacyGroup
@@ -811,23 +753,34 @@ type ExperienceDetails {
     action: String
   }
 
-  type AuthResponse {
+  type CollageCollageResponse {
     success: Boolean!
     message: String!
-    token: String
-    user: User
+    collage: Collage
   }
-  
-  type UserResponse {
+
+  type CreateCollageResponse {
     success: Boolean!
     message: String!
-    user: User
-  } 
+    collage: Collage!
+  }
+
+  type CollageIdResponse {
+    success: Boolean!
+    message: String!
+    collageId: ID!
+  }
 
   type CreateAccessCodeResponse {
     success: Boolean!
     message: String!
     accessCode: AccessCode
+  }
+
+  type MomentActionResponse {
+    success: Boolean!
+    message: String!
+    momentId: ID!
   }
 
   type UnblockUserResponse {
@@ -848,21 +801,30 @@ type ExperienceDetails {
     albumId: ID
   }
 
+  type PostMomentResponse {
+    _id: ID!
+    createdAt: String!
+    expiresAt: String!
+    success: Boolean!
+    message: String!
+  }
+
+  type DeleteMomentResponse {
+    deletedMomentId: ID!
+    success: Boolean!
+    message: String!
+  }
+
+
   type GetAndTransferCameraShotResponse {
     success: Boolean!
     message: String!
     cameraShot: CameraShotDetails
   }
 
-type CameraShotDetails {
-  _id: ID!
-  image: String!
-}
-
-  type CollageCreationResponse {
-    success: Boolean!
-    message: String!
-    collageId: ID!
+  type CameraShotDetails {
+    _id: ID!
+    image: String!
   }
 
   type CreateCameraShotResponse {
@@ -880,67 +842,7 @@ type CameraShotDetails {
   type PresignedUrlResponse {
     presignedUrl: String
     fileUrl: String    
-  }
-
-  type UpdateEmailResponse {
-    success: Boolean!
-    message: String!
-    email: String
-  }
-  
-  type UpdatePhoneNumberResponse {
-    success: Boolean!
-    message: String!
-    phoneNumber: String
-  }
-  
-  type UpdatePasswordResponse {
-    success: Boolean!
-    message: String!
-  }
-  
-  type UpdateProfileResponse {
-    profilePicture: String
-    fullName: String
-    username: String
-    bio: String
-  }
-  
-  type UpdateIdentityResponse {
-    gender: String
-    birthday: String
-  }
-  
-  type UpdateSettingsResponse {
-    privacy: String
-    darkMode: Boolean
-    language: String
-    notifications: Boolean
-    postRepostToMainFeed: Boolean
-  }
-
-  input DimensionsInput {
-    width: Int
-    height: Int
-  }
-
-  input LocationInput {
-    name: String
-    coordinates: CoordinatesInput
-  }
-  
-  input CoordinatesInput {
-    latitude: Float
-    longitude: Float
-  }
-
-  input ExperienceInput {
-    experienceId: ID!
-    list: LifeListListEnum!
-    associatedShots: [ID]
-    associatedCollages: [ID]
-  }
-  
-  `;
+  }  
+`;
 
 export default typeDefs;

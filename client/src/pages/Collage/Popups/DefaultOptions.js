@@ -19,11 +19,12 @@ export default function DefaultOptions({
 }) {
   const navigation = useNavigation();
 
+  // Handle report press and navigate to the universal Report page
   const handleReportPress = () => {
     onRequestClose();
-    navigation.navigate("CollageStack", {
-      screen: "ReportOptionsScreen",
-      params: { collageId },
+    navigation.navigate("Report", {
+      entityId: collageId, // Pass the collage ID
+      entityType: "COLLAGE", // Specify entity type as "COLLAGE"
     });
   };
 

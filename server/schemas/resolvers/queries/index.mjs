@@ -7,8 +7,8 @@ import * as privacyGroupQueries from "./privacyGroup/privacyGroupQueries.mjs";
 import * as inboxQueries from "./inbox/inboxQueries.mjs";
 import * as mainFeedQueries from "./mainFeed/mainFeedQueries.mjs";
 import { getPresignedUrl } from "./fileUploads/getPresignedUrl.mjs";
-import * as storyQueries from "./story/storyQueries.mjs";
 import * as exploreQueries from "./explore/exploreQueries.mjs";
+import * as momentQueries from "./moment/momentQueries.mjs";
 
 const queries = {
   ...userQueries,
@@ -20,8 +20,8 @@ const queries = {
   ...inboxQueries,
   ...mainFeedQueries,
   getPresignedUrl,
-  ...storyQueries,
   ...exploreQueries,
+  ...momentQueries,
 };
 
 export default queries;

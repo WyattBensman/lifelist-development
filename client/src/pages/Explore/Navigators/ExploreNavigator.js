@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 
-const tabs = [{ name: "All" }, { name: "Users" }, { name: "Experiences" }];
+const tabs = [{ name: "All" }, { name: "Users" }, { name: "Communities" }];
 
 export default function ExploreNavigator({ activeTab, setActiveTab }) {
   const handleTabPress = (tabName) => {

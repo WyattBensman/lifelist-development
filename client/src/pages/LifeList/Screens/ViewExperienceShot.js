@@ -3,18 +3,23 @@ import {
   View,
   FlatList,
   StyleSheet,
-  Pressable,
   ActivityIndicator,
   Dimensions,
   Animated,
 } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from "@react-navigation/native";
 import { layoutStyles, iconStyles } from "../../../styles";
 import Icon from "../../../components/Icons/Icon";
 import ViewShotHeader from "../../../components/Headers/ViewShotHeader";
 import ViewShotCard from "../../Camera/Cards/ViewShotCard";
 import * as Sharing from "expo-sharing";
 import DangerAlert from "../../../components/Alerts/DangerAlert";
+import { useNavigationContext } from "../../../contexts/NavigationContext";
+import IconButtonWithLabel from "../../../components/Icons/IconButtonWithLabel";
 
 const { width } = Dimensions.get("window");
 const aspectRatio = 3 / 2;
@@ -23,20 +28,24 @@ const imageHeight = width * aspectRatio;
 export default function ViewExperienceShot() {
   const navigation = useNavigation();
   const route = useRoute();
-  const { shotId, associatedShots } = route.params;
+  const { shot, associatedShots } = route.params;
 
   const [shots, setShots] = useState(associatedShots || []);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentShot, setCurrentShot] = useState(null);
-  const [isMenuVisible, setIsMenuVisible] = useState(false);
   const [isDeleteAlertVisible, setIsDeleteAlertVisible] = useState(false);
-  const rotateAnim = useRef(new Animated.Value(0)).current;
+  const { setIsTabBarVisible } = useNavigationContext();
+
+  useFocusEffect(() => {
+    setIsTabBarVisible(false);
+    return () => setIsTabBarVisible(true);
+  });
 
   // Set initial index based on `shotId`
   useEffect(() => {
-    const initialIndex = shots.findIndex((shot) => shot._id === shotId);
+    const initialIndex = shots.findIndex((s) => s._id === shot._id);
     setCurrentIndex(initialIndex >= 0 ? initialIndex : 0);
-  }, [shotId, shots]);
+  }, [shot, shots]);
 
   const handleViewableItemsChanged = useCallback(
     ({ viewableItems }) => {
@@ -48,23 +57,6 @@ export default function ViewExperienceShot() {
     },
     [shots]
   );
-
-  useEffect(() => {
-    Animated.timing(rotateAnim, {
-      toValue: isMenuVisible ? 1 : 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, [isMenuVisible]);
-
-  const rotation = rotateAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "90deg"],
-  });
-
-  const toggleMenu = () => {
-    setIsMenuVisible(!isMenuVisible);
-  };
 
   const handleSharePress = async () => {
     if (!currentShot?.imageThumbnail) return;
@@ -95,16 +87,20 @@ export default function ViewExperienceShot() {
     );
   }
 
-  const dropdownItems = [
-    {
-      icon: "trash",
-      style: iconStyles.deleteIcon,
-      label: "Remove Shot",
-      onPress: handleDeletePress,
-      backgroundColor: "#FF634730",
-      tintColor: "#FF6347",
-    },
-  ];
+  const date = currentShot
+    ? new Date(currentShot.capturedAt).toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "";
+  const time = currentShot
+    ? new Date(currentShot.capturedAt).toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true,
+      })
+    : "";
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -117,24 +113,30 @@ export default function ViewExperienceShot() {
             weight="semibold"
           />
         }
+        date={date}
+        time={time}
         ellipsis={
-          <Animated.View style={{ transform: [{ rotate: rotation }] }}>
-            <Icon
-              name="ellipsis"
-              style={iconStyles.ellipsis}
-              weight="bold"
-              onPress={toggleMenu}
-            />
-          </Animated.View>
+          <Icon
+            name="trash"
+            style={styles.trashIcon}
+            weight="bold"
+            onPress={handleDeletePress}
+            noFill={true}
+            tintColor={"red"}
+          />
         }
         hasBorder={false}
       />
       <View style={{ height: imageHeight }}>
         <FlatList
           data={shots}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <View style={{ width }}>
-              <ViewShotCard imageUrl={item.imageThumbnail} shotId={item._id} />
+              <ViewShotCard
+                shotId={item._id}
+                imageUrl={item.image}
+                isVisible={index === currentIndex}
+              />
             </View>
           )}
           keyExtractor={(item) => item._id}
@@ -152,9 +154,21 @@ export default function ViewExperienceShot() {
           })}
         />
       </View>
-      <Pressable style={styles.iconButton} onPress={handleSharePress}>
-        <Icon name="paperplane" style={iconStyles.shareIcon} weight="bold" />
-      </Pressable>
+
+      {/* Bottom Buttons */}
+      <View style={styles.bottomContainer}>
+        <IconButtonWithLabel
+          iconName="paperplane"
+          label="Share"
+          onPress={handleSharePress}
+        />
+        <IconButtonWithLabel
+          iconName="rectangle.portrait.on.rectangle.portrait.angled"
+          label="Post Moment"
+          onPress={handleDeletePress}
+        />
+      </View>
+
       <DangerAlert
         visible={isDeleteAlertVisible}
         onRequestClose={() => setIsDeleteAlertVisible(false)}
@@ -181,5 +195,16 @@ const styles = StyleSheet.create({
     padding: 12,
     justifyContent: "center",
     alignItems: "center",
+  },
+  bottomContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#121212",
+  },
+  trashIcon: {
+    height: 18.28,
+    width: 15,
   },
 });

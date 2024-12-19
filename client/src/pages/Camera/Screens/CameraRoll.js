@@ -37,6 +37,12 @@ export default function CameraRoll() {
   useEffect(() => {
     const initializeCaches = async () => {
       try {
+        console.log("isAlbumCacheInitialized", isAlbumCacheInitialized);
+        console.log(
+          "isCameraRollCacheInitialized",
+          isCameraRollCacheInitialized
+        );
+
         if (!isAlbumCacheInitialized) await initializeAlbumCache();
         if (!isCameraRollCacheInitialized) await initializeCameraRollCache();
       } catch (error) {
@@ -52,6 +58,8 @@ export default function CameraRoll() {
   };
 
   const loadMoreShots = async () => {
+    console.log("hasNextPage", hasNextPage);
+
     if (!hasNextPage || isFetchingMore) return;
 
     setIsFetchingMore(true);
@@ -113,7 +121,10 @@ export default function CameraRoll() {
           numColumns={3}
           columnWrapperStyle={styles.columnWrapper}
           showsVerticalScrollIndicator={false}
-          onEndReached={loadMoreShots}
+          onEndReached={() => {
+            console.log("[CameraRoll] onEndReached triggered.");
+            loadMoreShots();
+          }}
           onEndReachedThreshold={0.5}
           ListFooterComponent={
             isFetchingMore ? (

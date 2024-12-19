@@ -20,9 +20,6 @@ export default function SetLoginInformationScreen() {
   const [showAlert, setShowAlert] = useState(false); // State to control alert visibility
   const navigation = useNavigation();
 
-  console.log(profile.phoneNumber);
-  console.log(profile.birthday);
-
   // Apollo Mutation
   const [validateUsernameAndPassword, { loading }] = useMutation(
     VALIDATE_USERNAME_AND_PASSWORD

@@ -1,6 +1,5 @@
 import { User, Collage } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils/auth.mjs";
-import { findCollageById } from "../../../../utils/auth.mjs";
+import { isUser, findCollageById } from "../../../../utils/auth.mjs";
 
 const unrepostCollage = async (_, { collageId }, { user }) => {
   try {
@@ -16,7 +15,6 @@ const unrepostCollage = async (_, { collageId }, { user }) => {
       { new: true }
     );
 
-    // Remove the user from the collage's reposts
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
       { $pull: { reposts: user } },
@@ -31,7 +29,7 @@ const unrepostCollage = async (_, { collageId }, { user }) => {
     return {
       success: true,
       message: "Collage successfully unreposted.",
-      action: "UNREPOST",
+      collageId,
     };
   } catch (error) {
     console.error(`Unrepost Collage Error: ${error.message}`);

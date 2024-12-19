@@ -146,6 +146,11 @@ export const DevelopingRollProvider = ({ children }) => {
     }
   }, [developingShots]);
 
+  const resetDevelopingRollState = () => {
+    setDevelopingShots([]);
+    setIsDevelopingRollCacheInitialized(false);
+  };
+
   const contextValue = {
     developingShots,
     addShotToDevelopingRoll,
@@ -154,6 +159,7 @@ export const DevelopingRollProvider = ({ children }) => {
     initializeDevelopingRollCache,
     isDevelopingRollCacheInitialized,
     recalculateDevelopedStatus,
+    resetDevelopingRollState,
   };
 
   return (

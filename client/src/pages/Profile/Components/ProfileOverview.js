@@ -3,63 +3,57 @@ import { Image, Pressable, StyleSheet, Text, View, Alert } from "react-native";
 import ButtonSkinny from "../../../components/Buttons/ButtonSkinny";
 import { useNavigation } from "@react-navigation/native";
 import { layoutStyles } from "../../../styles";
-import { useProfileCache } from "../../../contexts/ProfileCacheContext";
-import {
-  FOLLOW_USER,
-  UNFOLLOW_USER,
-  SEND_FOLLOW_REQUEST,
-  UNSEND_FOLLOW_REQUEST,
-} from "../../../utils/mutations/userRelationsMutations";
-import { useMutation } from "@apollo/client";
+import { useProfile } from "../../../contexts/ProfileContext";
+import { useAdminProfile } from "../../../contexts/AdminProfileContext";
 
 export default function ProfileOverview({
   profile,
   userId,
   followerData,
   isAdminView,
-  isAdminScreen,
 }) {
   const navigation = useNavigation();
-  const { followUser, unfollowUser, sendFollowRequest, unsendFollowRequest } =
-    useProfileCache();
 
-  const [buttonState, setButtonState] = useState("Follow");
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [isPendingRequest, setIsPendingRequest] = useState(false);
+  // Select the relevant context
+  const {
+    followUser,
+    unfollowUser,
+    sendFollowRequest,
+    unsendFollowRequest,
+    incrementFollowing,
+    decrementFollowing,
+  } = useProfile();
+
+  const { incrementFollowers, decrementFollowers } = useAdminProfile();
+
+  const [buttonState, setButtonState] = useState("");
 
   useEffect(() => {
-    // Determine the button state based on following and pending status
-    const hasPendingRequest =
-      profile?.followRequests?.some((req) => req._id === userId) || false;
-
-    setIsPendingRequest(hasPendingRequest);
-
+    // Determine button state based on relationship flags
     if (isAdminView) {
       setButtonState("Edit Profile");
-    } else if (isFollowing) {
+    } else if (profile.isFollowing) {
       setButtonState("Following");
-    } else if (hasPendingRequest) {
+    } else if (profile.isFollowRequested) {
       setButtonState("Pending Request");
     } else {
       setButtonState("Follow");
     }
-  }, [isFollowing, isAdminView, profile?.followRequests, userId]);
+  }, [isAdminView, profile]);
 
+  // === Handlers ===
   const handleFollow = async () => {
     try {
-      if (profile?.isProfilePrivate) {
-        const response = await sendFollowRequest(userId);
-        Alert.alert(
-          "Request Sent",
-          response?.message || "Follow request sent."
-        );
-        setIsPendingRequest(true);
+      if (profile.isProfilePrivate) {
+        await sendFollowRequest(userId);
         setButtonState("Pending Request");
+        Alert.alert("Request Sent", "Follow request sent.");
       } else {
-        const response = await followUser(userId);
-        Alert.alert("Follow", response?.message || "You are now following.");
-        setIsFollowing(true);
+        await followUser(userId);
         setButtonState("Following");
+        incrementFollowers(userId); // Update follower count
+        if (isAdminView) incrementFollowing(currentUser);
+        Alert.alert("Followed", "You are now following this user.");
       }
     } catch (error) {
       Alert.alert("Error", error.message);
@@ -68,10 +62,11 @@ export default function ProfileOverview({
 
   const handleUnfollow = async () => {
     try {
-      const response = await unfollowUser(userId);
-      Alert.alert("Unfollow", response?.message || "Unfollowed successfully.");
-      setIsFollowing(false);
+      await unfollowUser(userId);
       setButtonState("Follow");
+      decrementFollowers(userId); // Update follower count
+      if (isAdminView) decrementFollowing(currentUser);
+      Alert.alert("Unfollowed", "You have unfollowed this user.");
     } catch (error) {
       Alert.alert("Error", error.message);
     }
@@ -79,13 +74,9 @@ export default function ProfileOverview({
 
   const handleUnsendRequest = async () => {
     try {
-      const response = await unsendFollowRequest(userId);
-      Alert.alert(
-        "Request Withdrawn",
-        response?.message || "Request withdrawn."
-      );
-      setIsPendingRequest(false);
+      await unsendFollowRequest(userId);
       setButtonState("Follow");
+      Alert.alert("Request Withdrawn", "Follow request has been withdrawn.");
     } catch (error) {
       Alert.alert("Error", error.message);
     }
@@ -99,6 +90,7 @@ export default function ProfileOverview({
         { marginBottom: 0 },
       ]}
     >
+      {/* Profile Header */}
       <View style={[layoutStyles.flex, { height: 100 }]}>
         <Image
           source={{ uri: profile?.profilePicture }}
@@ -108,6 +100,7 @@ export default function ProfileOverview({
           <View
             style={[layoutStyles.flexSpaceBetween, layoutStyles.marginHorMd]}
           >
+            {/* Collages, Followers, Following */}
             <View style={styles.col}>
               <Text style={{ fontWeight: "700", color: "#fff" }}>
                 {followerData?.collagesCount || 0}
@@ -143,6 +136,8 @@ export default function ProfileOverview({
               <Text style={{ fontSize: 12, color: "#fff" }}>Following</Text>
             </Pressable>
           </View>
+
+          {/* Buttons */}
           {isAdminView ? (
             <ButtonSkinny
               onPress={() => navigation.push("EditProfile")}
@@ -158,13 +153,6 @@ export default function ProfileOverview({
                 backgroundColor="#222"
                 textColor="#6AB952"
                 style={{ flex: 1, marginRight: 4 }}
-              />
-              <ButtonSkinny
-                onPress={() => navigation.push("Message", { user: profile })}
-                text="Message"
-                backgroundColor="#222"
-                textColor="#fff"
-                style={{ flex: 1, marginLeft: 4 }}
               />
             </View>
           ) : buttonState === "Pending Request" ? (
@@ -184,6 +172,8 @@ export default function ProfileOverview({
           )}
         </View>
       </View>
+
+      {/* Bio Section */}
       <View style={[layoutStyles.marginTopXs, { marginTop: 6 }]}>
         <Text style={{ fontWeight: "bold", color: "#fff" }}>
           @{profile?.username}

@@ -6,4 +6,5 @@ export * from "./lifeListQueries";
 export * from "./privacyGroupQueries";
 export * from "./userQueries";
 export * from "./mainFeedQueries";
-export * from "./uploadFilesQueries";
+export * from "./exploreQueries";
+export * from "./momentQueries";

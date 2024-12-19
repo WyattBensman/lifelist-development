@@ -12,7 +12,7 @@ import Conversation from "./inbox/conversation.mjs";
 import Message from "./inbox/message.mjs";
 import InvitedFriend from "./user/invitedFriend.mjs";
 import AccessCode from "./accessCode/accessCode.mjs";
-import Story from "./collage/story.mjs";
+import Moment from "./collage/moment.mjs";
 
 export {
   User,
@@ -29,5 +29,5 @@ export {
   PrivacyGroup,
   InvitedFriend,
   AccessCode,
-  Story,
+  Moment,
 };

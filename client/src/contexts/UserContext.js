@@ -15,8 +15,12 @@ export const UserProvider = ({ children }) => {
     loadUser();
   }, []);
 
+  const resetUserState = () => {
+    setUser(null);
+  };
+
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, resetUserState }}>
       {children}
     </UserContext.Provider>
   );

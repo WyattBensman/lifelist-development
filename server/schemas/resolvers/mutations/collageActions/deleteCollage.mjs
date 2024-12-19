@@ -95,7 +95,7 @@ const deleteCollage = async (_, { collageId }, { user }) => {
     return {
       success: true,
       message: "Collage successfully deleted. Unused images removed from S3.",
-      action: "DELETE_COLLAGE",
+      collageId: collageId,
     };
   } catch (error) {
     console.error(`[deleteCollage] Error: ${error.message}`);

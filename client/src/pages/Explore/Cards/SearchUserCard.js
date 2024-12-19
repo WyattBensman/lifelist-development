@@ -1,28 +1,16 @@
 import React, { useState } from "react";
 import { Image, Text, View, StyleSheet, Pressable } from "react-native";
-import ButtonSmall from "../../../components/Buttons/ButtonSmall";
-import { BASE_URL } from "../../../utils/config";
 import { useNavigation } from "@react-navigation/native";
-import { useAuth } from "../../../contexts/AuthContext";
 
-export default function SearchUserCard({ user, initialAction, onActionPress }) {
-  const { currentUser } = useAuth();
-  const [action, setAction] = useState(initialAction);
-  const profilePictureUrl = `${BASE_URL}${user.profilePicture}`;
+export default function SearchUserCard({ user }) {
+  const profilePictureUrl = user.profilePicture;
   const navigation = useNavigation();
 
   const handleProfilePress = () => {
-    navigation.push("Profile", { userId: user._id });
-  };
-
-  const handleActionPress = async () => {
-    console.log("Action Button Pressed!");
-    const newAction = await onActionPress(
-      user._id,
-      action,
-      user.isProfilePrivate
-    );
-    setAction(newAction);
+    navigation.navigate("ProfileStack", {
+      screen: "Profile",
+      params: { userId: user._id },
+    });
   };
 
   return (
@@ -39,11 +27,6 @@ export default function SearchUserCard({ user, initialAction, onActionPress }) {
             @{user.username}
           </Text>
         </Pressable>
-        {currentUser._id !== user._id && (
-          <View style={styles.actionButtonContainer}>
-            <Text>User</Text>
-          </View>
-        )}
       </View>
     </View>
   );
@@ -51,9 +34,6 @@ export default function SearchUserCard({ user, initialAction, onActionPress }) {
 
 const styles = StyleSheet.create({
   listItemContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
     padding: 8,
     marginTop: 8,
     marginLeft: 8,
@@ -68,8 +48,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   imageMd: {
-    height: 50,
-    width: 50,
+    height: 44,
+    width: 44,
     borderRadius: 4,
   },
   textContainer: {

@@ -1,6 +1,5 @@
 import { User, Collage } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils/auth.mjs";
-import { findCollageById } from "../../../../utils/auth.mjs";
+import { isUser, findCollageById } from "../../../../utils/auth.mjs";
 import createNotification from "../notifications/createNotification.mjs";
 
 const repostCollage = async (_, { collageId }, { user }) => {
@@ -17,7 +16,6 @@ const repostCollage = async (_, { collageId }, { user }) => {
       { new: true }
     );
 
-    // Add the user to the collage's reposts
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
       { $addToSet: { reposts: user } },
@@ -41,7 +39,11 @@ const repostCollage = async (_, { collageId }, { user }) => {
     return {
       success: true,
       message: "Collage successfully reposted.",
-      action: "REPOST",
+      collage: {
+        _id: updatedCollage._id,
+        coverImage: updatedCollage.coverImage,
+        createdAt: updatedCollage.createdAt,
+      },
     };
   } catch (error) {
     console.error(`Repost Collage Error: ${error.message}`);

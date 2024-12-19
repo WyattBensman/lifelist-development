@@ -1,32 +1,71 @@
-import { User } from "../../../../models/index.mjs";
+import { Moment, User } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
-export const getUserProfileById = async (_, { userId }) => {
+export const getUserProfileById = async (
+  _,
+  { userId, collagesCursor, repostsCursor, limit = 15 },
+  { user }
+) => {
   try {
+    // Fetch user and relationships
     const foundUser = await User.findById(userId)
       .populate({
         path: "collages",
-        match: { archived: false },
+        match: {
+          archived: false,
+          ...(collagesCursor && { _id: { $gt: collagesCursor } }),
+        },
+        options: { sort: { _id: 1 }, limit: limit + 1 },
         select: "_id coverImage",
       })
       .populate({
         path: "repostedCollages",
-        match: { archived: false },
+        match: {
+          archived: false,
+          ...(repostsCursor && { _id: { $gt: repostsCursor } }),
+        },
+        options: { sort: { _id: 1 }, limit: limit + 1 },
         select: "_id coverImage",
       })
-      .select("_id fullName username bio profilePicture")
+      .select(
+        "_id fullName username bio profilePicture followers following followRequests"
+      )
       .exec();
 
     if (!foundUser) {
       throw new Error("User not found.");
     }
 
-    const [followersCount, followingCount] = await Promise.all([
-      User.countDocuments({ following: userId }),
-      User.countDocuments({ followers: userId }),
-    ]);
+    // Determine pagination for collages
+    const collages = foundUser.collages || [];
+    const collagesHasNextPage = collages.length > limit;
+    if (collagesHasNextPage) collages.pop(); // Remove extra item for pagination
 
-    const collagesCount = foundUser.collages.length;
+    // Determine pagination for reposted collages
+    const repostedCollages = foundUser.repostedCollages || [];
+    const repostsHasNextPage = repostedCollages.length > limit;
+    if (repostsHasNextPage) repostedCollages.pop();
+
+    // Compute relationship states
+    const isFollowing = foundUser.followers.some((followerId) =>
+      followerId.equals(user)
+    );
+    const isFollowedBy = foundUser.following.some((followingId) =>
+      followingId.equals(user)
+    );
+    const isFollowRequested = foundUser.followRequests.some((requestId) =>
+      requestId.equals(user)
+    );
+
+    // Count followers, following, and active moments
+    const followersCount = foundUser.followers.length;
+    const followingCount = foundUser.following.length;
+    const collagesCount = collages.length;
+
+    const hasActiveMoments = await Moment.exists({
+      author: userId,
+      expiresAt: { $gt: new Date() },
+    });
 
     return {
       _id: foundUser._id,
@@ -34,14 +73,31 @@ export const getUserProfileById = async (_, { userId }) => {
       username: foundUser.username,
       bio: foundUser.bio,
       profilePicture: foundUser.profilePicture,
-      collages: foundUser.collages,
-      repostedCollages: foundUser.repostedCollages,
+      collages: {
+        items: collages,
+        nextCursor: collagesHasNextPage
+          ? collages[collages.length - 1]._id
+          : null,
+        hasNextPage: collagesHasNextPage,
+      },
+      repostedCollages: {
+        items: repostedCollages,
+        nextCursor: repostsHasNextPage
+          ? repostedCollages[repostedCollages.length - 1]._id
+          : null,
+        hasNextPage: repostsHasNextPage,
+      },
       followersCount,
       followingCount,
       collagesCount,
+      isFollowing,
+      isFollowedBy,
+      isFollowRequested,
+      hasActiveMoments: Boolean(hasActiveMoments),
     };
   } catch (error) {
-    throw new Error("Database error: " + error.message);
+    console.error("Error fetching user profile:", error.message);
+    throw new Error("Failed to fetch user profile.");
   }
 };
 
@@ -77,12 +133,12 @@ export const getUserCounts = async (_, { userId }) => {
   }
 };
 
-export const getCollagesAndReposts = async (
+export const getCollagesRepostsMoments = async (
   _,
   { userId, collagesCursor, repostsCursor, limit = 15 }
 ) => {
   try {
-    // Fetch the user and populate both collages and reposted collages
+    // Fetch the user and populate collages, reposted collages, and moments
     const foundUser = await User.findById(userId)
       .populate({
         path: "collages",
@@ -90,54 +146,66 @@ export const getCollagesAndReposts = async (
           archived: false,
           ...(collagesCursor && { _id: { $gt: collagesCursor } }), // Pagination filter
         },
-        options: { sort: { _id: 1 }, limit: limit + 1 }, // Fetch extra for pagination
+        options: { sort: { _id: 1 }, limit: limit + 1 },
         select: "_id coverImage",
       })
       .populate({
         path: "repostedCollages",
         match: {
           archived: false,
-          ...(repostsCursor && { _id: { $gt: repostsCursor } }), // Pagination filter
+          ...(repostsCursor && { _id: { $gt: repostsCursor } }),
         },
-        options: { sort: { _id: 1 }, limit: limit + 1 }, // Fetch extra for pagination
+        options: { sort: { _id: 1 }, limit: limit + 1 },
         select: "_id coverImage",
+      })
+      .populate({
+        path: "moments",
+        match: { expiresAt: { $gte: new Date() } }, // Only include active moments
+        options: { sort: { createdAt: -1 } }, // Most recent moments first
+        select: "_id expiresAt createdAt", // Return the fields needed
       })
       .exec();
 
-    if (!foundUser) throw new Error("User not found."); // Handle invalid user
+    if (!foundUser) throw new Error("User not found.");
 
     // Extract collages and reposted collages
     const collages = foundUser.collages || [];
     const repostedCollages = foundUser.repostedCollages || [];
+    const moments = foundUser.moments || [];
 
-    // Determine if there's another page of collages
+    // Pagination for collages
     const collagesHasNextPage = collages.length > limit;
-    if (collagesHasNextPage) collages.pop(); // Remove extra item for clean response
+    if (collagesHasNextPage) collages.pop();
 
-    // Determine if there's another page of reposted collages
+    // Pagination for reposted collages
     const repostsHasNextPage = repostedCollages.length > limit;
-    if (repostsHasNextPage) repostedCollages.pop(); // Remove extra item for clean response
+    if (repostsHasNextPage) repostedCollages.pop();
 
-    // Return the paginated response
+    // Response
     return {
       collages: {
         items: collages,
         nextCursor: collagesHasNextPage
           ? collages[collages.length - 1]._id
-          : null, // Set cursor to the last item's ID or null
+          : null,
         hasNextPage: collagesHasNextPage,
       },
       repostedCollages: {
         items: repostedCollages,
         nextCursor: repostsHasNextPage
           ? repostedCollages[repostedCollages.length - 1]._id
-          : null, // Set cursor to the last item's ID or null
+          : null,
         hasNextPage: repostsHasNextPage,
       },
+      moments: moments.map((moment) => ({
+        _id: moment._id,
+        expiresAt: moment.expiresAt,
+        createdAt: moment.createdAt,
+      })),
     };
   } catch (error) {
-    console.error("Error fetching collages and reposts:", error);
-    throw new Error("Database error: " + error.message); // Return a generic database error
+    console.error("Error fetching profile data:", error);
+    throw new Error("Database error: " + error.message);
   }
 };
 
@@ -274,8 +342,6 @@ export const getFollowing = async (
     };
   });
 
-  console.log("Processed Following List:", followingWithStatus);
-
   const hasNextPage = followingWithStatus.length > limit;
   if (hasNextPage) followingWithStatus.pop();
 
@@ -286,33 +352,6 @@ export const getFollowing = async (
       : null,
     hasNextPage,
   };
-};
-
-export const getUserCollages = async (_, { userId }) => {
-  const foundUser = await User.findById(userId)
-    .populate({
-      path: "collages",
-      match: { archived: false },
-      select: "_id coverImage",
-    })
-    .exec();
-
-  if (!foundUser) throw new Error("User not found for the provided ID.");
-  return foundUser.collages;
-};
-
-export const getRepostedCollages = async (_, { userId }, { user }) => {
-  isUser(user);
-  const foundUser = await User.findById(userId)
-    .populate({
-      path: "repostedCollages",
-      match: { archived: false },
-      select: "_id coverImage",
-    })
-    .exec();
-
-  if (!foundUser) throw new Error("User not found for the provided ID.");
-  return foundUser.repostedCollages;
 };
 
 export const getTaggedCollages = async (
@@ -433,30 +472,6 @@ export const getBlockedUsers = async (_, __, { user }) => {
   return foundUser.blocked;
 };
 
-export const getUserProfileInformation = async (_, __, { user }) => {
-  isUser(user);
-  return User.findById(
-    user,
-    "profilePicture fullName username bio birthday gender"
-  ).exec();
-};
-
-export const getUserContactInformation = async (_, __, { user }) => {
-  isUser(user);
-  return User.findById(user, "email phoneNumber").exec();
-};
-
-export const getUserIdentityInformation = async (_, __, { user }) => {
-  isUser(user);
-  return User.findById(user, "birthday gender").exec();
-};
-
-export const getUserSettingsInformation = async (_, __, { user }) => {
-  isUser(user);
-  const userData = await User.findById(user).exec();
-  return userData.settings;
-};
-
 export const getUserData = async (_, __, { user }) => {
   isUser(user);
 
@@ -485,14 +500,65 @@ export const getUserData = async (_, __, { user }) => {
   };
 };
 
-export const getAllUsers = async (_, { limit, offset }) => {
+export const getAllUsers = async (
+  _,
+  { limit = 12, cursor, searchQuery },
+  { user: currentUser }
+) => {
   try {
-    const users = await User.find({})
-      .skip(offset)
-      .limit(limit)
-      .select("_id fullName email phoneNumber username profilePicture")
+    if (!currentUser) throw new Error("Unauthorized.");
+
+    // Cursor-based pagination and search query
+    const query = {
+      ...(cursor ? { _id: { $gt: cursor } } : {}),
+      ...(searchQuery
+        ? {
+            username: { $regex: searchQuery, $options: "i" }, // Case-insensitive search
+          }
+        : {}),
+    };
+
+    const users = await User.find(query)
+      .sort({ _id: 1 }) // Ensure consistent ordering for pagination
+      .limit(limit + 1) // Fetch one extra user to check for next page
+      .select(
+        "_id fullName email phoneNumber username profilePicture settings followRequests"
+      )
+      .populate("settings") // Populate settings for privacy info
       .exec();
-    return users;
+
+    // Map users to include relationship status
+    const usersWithStatus = users.map((user) => {
+      const isFollowing = currentUser.following?.includes(user._id) || false;
+      const hasSentRequest = Array.isArray(user.followRequests)
+        ? user.followRequests.some(
+            (req) => req.toString() === currentUser._id.toString()
+          )
+        : false;
+
+      return {
+        user,
+        relationshipStatus: isFollowing
+          ? "Following"
+          : hasSentRequest
+          ? "Requested"
+          : "Follow",
+        isPrivate: user.settings?.isProfilePrivate || false,
+        hasSentFollowRequest: hasSentRequest,
+      };
+    });
+
+    // Check for next page
+    const hasNextPage = usersWithStatus.length > limit;
+    if (hasNextPage) usersWithStatus.pop(); // Remove extra user
+
+    return {
+      users: usersWithStatus,
+      nextCursor: hasNextPage
+        ? usersWithStatus[usersWithStatus.length - 1].user._id
+        : null,
+      hasNextPage,
+    };
   } catch (error) {
     throw new Error("Failed to fetch users");
   }

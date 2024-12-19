@@ -27,17 +27,9 @@ export const GET_AND_TRANSFER_CAMERA_SHOT = gql`
       cameraShot {
         _id
         image
+        imageThumbnail
+        capturedAt
       }
-    }
-  }
-`;
-
-// Edit a camera shot
-export const EDIT_CAMERA_SHOT = gql`
-  mutation EditCameraShot($shotId: ID!, $image: String!) {
-    editCameraShot(shotId: $shotId, image: $image) {
-      success
-      message
     }
   }
 `;
@@ -75,19 +67,10 @@ export const CREATE_CAMERA_ALBUM = gql`
 
 // Edit a camera album
 export const EDIT_CAMERA_ALBUM = gql`
-  mutation EditCameraAlbum(
-    $albumId: ID!
-    $title: String
-    $description: String
-  ) {
-    editCameraAlbum(
-      albumId: $albumId
-      title: $title
-      description: $description
-    ) {
+  mutation EditCameraAlbum($albumId: ID!, $title: String) {
+    editCameraAlbum(albumId: $albumId, title: $title) {
       _id
       title
-      description
       shots {
         _id
         image
@@ -100,46 +83,6 @@ export const EDIT_CAMERA_ALBUM = gql`
 export const DELETE_CAMERA_ALBUM = gql`
   mutation DeleteCameraAlbum($albumId: ID!) {
     deleteCameraAlbum(albumId: $albumId) {
-      success
-      message
-    }
-  }
-`;
-
-// Add shots to a camera album
-export const ADD_SHOT_TO_ALBUM = gql`
-  mutation AddShotToAlbum($albumId: ID!, $shotId: ID!) {
-    addShotToAlbum(albumId: $albumId, shotId: $shotId) {
-      success
-      message
-    }
-  }
-`;
-
-// Remove shots from a camera album
-export const REMOVE_SHOT_FROM_ALBUM = gql`
-  mutation RemoveShotFromAlbum($albumId: ID!, $shotId: ID!) {
-    removeShotFromAlbum(albumId: $albumId, shotId: $shotId) {
-      success
-      message
-    }
-  }
-`;
-
-// Add shot to an experience
-export const ADD_SHOT_TO_EXPERIENCE = gql`
-  mutation AddShotToExperience($experienceId: ID!, $shotId: ID!) {
-    addShotToExperience(experienceId: $experienceId, shotId: $shotId) {
-      success
-      message
-    }
-  }
-`;
-
-// Remove shot from an experience
-export const REMOVE_SHOT_FROM_EXPERIENCE = gql`
-  mutation RemoveShotFromExperience($experienceId: ID!, $shotId: ID!) {
-    removeShotFromExperience(experienceId: $experienceId, shotId: $shotId) {
       success
       message
     }

@@ -19,15 +19,17 @@ import Icon from "../../../components/Icons/Icon";
 import { CREATE_COLLAGE } from "../../../utils/mutations/collageCreationMutations";
 import { GET_USER_PROFILE } from "../../../utils/queries";
 import { useCreateCollageContext } from "../../../contexts/CreateCollageContext";
+import { useAdminProfile } from "../../../contexts/AdminProfileContext";
 
 const { width } = Dimensions.get("window");
 
 export default function CollagePreview() {
   const { currentUser } = useAuth(); // Access currentUser ID from AuthContext
+  const { addCollage } = useAdminProfile();
+
   const navigation = useNavigation();
   const { collage } = useCreateCollageContext(); // Access collage data from context
   const { images, caption, taggedUsers, coverImage } = collage; // Destructure collage data
-  console.log(images);
 
   const [showParticipants, setShowParticipants] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -64,33 +66,46 @@ export default function CollagePreview() {
     setCurrentIndex(index);
   };
 
-  const handlePostCollage = () => {
-    // Ensure images array is valid
+  const handlePostCollage = async () => {
     if (!images || images.length === 0) {
       alert("Please select at least one image to create a collage.");
       return;
     }
 
-    // Extract the image paths
-    const imagePaths = images.map((item) => item.image);
-    console.log(imagePaths);
+    try {
+      // Extract the image paths and tagged user IDs
+      const imagePaths = images.map((item) => item.image);
+      const taggedUserIds = taggedUsers.map((user) => user._id);
 
-    // Post the collage
-    createCollage({
-      variables: {
-        caption: caption || "", // Use empty string if no caption
-        images: imagePaths, // Pass only the extracted image paths
-        taggedUsers: taggedUsers.map((user) => user._id), // Extract IDs for tagged users
-        coverImage: coverImage,
-      },
-    })
-      .then(() => {
-        console.log("Collage created successfully!");
-        navigation.navigate("MainFeedHome", { refresh: true });
-      })
-      .catch((error) => {
-        console.error("Error creating collage:", error.message);
+      // Execute the CREATE_COLLAGE mutation
+      const { data } = await createCollage({
+        variables: {
+          caption: caption || "", // Fallback to empty string if no caption
+          images: imagePaths,
+          taggedUsers: taggedUserIds,
+          coverImage,
+        },
       });
+
+      // Handle success response
+      if (data?.createCollage?.success) {
+        console.log(data.createCollage.message);
+
+        // Add the newly created collage to AdminProfileContext
+        const newCollage = data.createCollage.collage;
+        await addCollage(newCollage);
+
+        // Navigate to the main feed
+        navigation.navigate("MainFeedHome", { refresh: true });
+      } else {
+        throw new Error(
+          data?.createCollage?.message || "Failed to create collage."
+        );
+      }
+    } catch (error) {
+      console.error("Error creating collage:", error.message);
+      alert("An error occurred while creating the collage. Please try again.");
+    }
   };
 
   // Extract user profile data

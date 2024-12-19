@@ -2,8 +2,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import AddExperiencesSearch from "../pages/LifeList/Screens/AddExperiencesSearch";
 import AddExperiencesOverview from "../pages/LifeList/Screens/AddExperiencesOverview";
 import ManageShots from "../pages/LifeList/Screens/ManageShots";
-import ManageCollages from "../pages/LifeList/Screens/ManageCollages";
-import UpdateShots from "../pages/LifeList/Screens/UpdateShots";
 import AdminLifeList from "../pages/LifeList/Screens/AdminLifeList";
 import LifeListStack from "./LifeListStack";
 import ManageTempShots from "../pages/LifeList/Screens/ManageTempShots";
@@ -41,16 +39,6 @@ export default function AdminLifeListStack() {
       <Stack.Screen
         name="ManageShots"
         component={ManageShots}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ManageCollages"
-        component={ManageCollages}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="UpdateShots"
-        component={UpdateShots}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

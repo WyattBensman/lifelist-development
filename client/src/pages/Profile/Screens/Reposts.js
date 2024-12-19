@@ -9,8 +9,6 @@ const getCollageId = (collage) => collage.id || collage._id;
 export default function Reposts({ data: collages, fetchMore }) {
   const [loadingMore, setLoadingMore] = useState(false);
 
-  console.log(`REPOSTS FUCKING DATA: ${collages}`);
-
   const filteredCollages = collages || [];
 
   const renderCollageItem = ({ item, index }) => (
@@ -57,6 +55,6 @@ export default function Reposts({ data: collages, fetchMore }) {
 
 const styles = StyleSheet.create({
   columnWrapper: {
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
   },
 });

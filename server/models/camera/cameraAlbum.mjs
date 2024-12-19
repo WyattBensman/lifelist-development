@@ -15,10 +15,6 @@ const cameraAlbumSchema = new Schema({
     required: true,
     maxlength: 40,
   },
-  description: {
-    type: String,
-    maxlength: 75,
-  },
   shots: [
     {
       type: Schema.Types.ObjectId,

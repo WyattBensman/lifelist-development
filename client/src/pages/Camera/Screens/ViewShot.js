@@ -3,7 +3,6 @@ import {
   View,
   FlatList,
   StyleSheet,
-  Pressable,
   ActivityIndicator,
   Dimensions,
   Text,
@@ -16,8 +15,10 @@ import ViewShotHeader from "../../../components/Headers/ViewShotHeader";
 import ViewShotCard from "../Cards/ViewShotCard";
 import * as Sharing from "expo-sharing";
 import DangerAlert from "../../../components/Alerts/DangerAlert";
-import { POST_STORY } from "../../../utils/mutations/storyMutations";
+import { POST_MOMENT } from "../../../utils/mutations/momentMutations";
 import { useMutation } from "@apollo/client";
+import IconButtonWithLabel from "../../../components/Icons/IconButtonWithLabel";
+import { useAdminProfile } from "../../../contexts/AdminProfileContext";
 
 const { width } = Dimensions.get("window");
 const aspectRatio = 3 / 2;
@@ -28,6 +29,8 @@ export default function ViewShot() {
   const route = useRoute();
   const { shotId, fromAlbum } = route.params;
 
+  const { addMoment } = useAdminProfile();
+
   const {
     shots,
     fetchFullResolutionImage,
@@ -37,7 +40,7 @@ export default function ViewShot() {
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentShot, setCurrentShot] = useState(null);
-  const [isPostingToStory, setIsPostingToStory] = useState(false);
+  const [isPostingToMoment, setIsPostingToMoment] = useState(false);
   const [isAdditionalOptionsVisible, setIsAdditionalOptionsVisible] =
     useState(false);
   const [isDeleteAlertVisible, setIsDeleteAlertVisible] = useState(false);
@@ -69,35 +72,34 @@ export default function ViewShot() {
     [shots, fetchFullResolutionImage, preloadFullResolutionImages]
   );
 
-  const [postStory, { loading: posting, error: postError }] =
-    useMutation(POST_STORY);
+  const [postMoment, { loading: posting, error: postError }] =
+    useMutation(POST_MOMENT);
 
   // ACTIONS
-  const handlePostToStoryPress = () => {
-    setIsPostingToStory(true); // Enable confirmation workflow
+  const handlePostToMomentPress = () => {
+    setIsPostingToMoment(true); // Enable confirmation workflow
   };
 
-  const handleConfirmPostToStory = async () => {
+  const handleConfirmPostToMoment = async () => {
     try {
       if (!currentShot?._id) return;
 
-      // Run the mutation
-      await postStory({ variables: { cameraShotId: currentShot._id } });
+      // Call addMoment from the AdminProfileContext
+      await addMoment({ cameraShotId: currentShot._id });
 
       // Success feedback
-      setFeedbackMessage("Story successfully posted!");
+      setFeedbackMessage("Moment successfully posted!");
     } catch (err) {
-      console.error("Error posting story:", err);
-      setFeedbackMessage("Failed to post story.");
+      console.error("Error posting moment:", err);
+      setFeedbackMessage("Failed to post moment.");
     } finally {
-      // Always reset the state
-      setTimeout(() => setFeedbackMessage(""), 2000); // Clear feedback after 2 seconds
-      setIsPostingToStory(false);
+      resetToMainButtons();
+      setTimeout(() => setFeedbackMessage(""), 2000);
     }
   };
 
-  const handleCancelPostToStory = () => {
-    setIsPostingToStory(false);
+  const handleCancelPostToMoment = () => {
+    setIsPostingToMoment(false);
   };
 
   const handleSharePress = async () => {
@@ -123,7 +125,7 @@ export default function ViewShot() {
 
   const resetToMainButtons = () => {
     setIsAdditionalOptionsVisible(false);
-    setIsPostingToStory(false);
+    setIsPostingToMoment(false);
   };
 
   const confirmDelete = async () => {
@@ -200,7 +202,6 @@ export default function ViewShot() {
               <ViewShotCard
                 imageUrl={item.image}
                 shotId={item._id}
-                fullResolution={currentShot?.image || item.imageThumbnail}
                 isVisible={index === currentIndex}
               />
             </View>
@@ -231,161 +232,57 @@ export default function ViewShot() {
       ) : (
         // Bottom Container
         <View style={styles.bottomContainer}>
-          {!isPostingToStory ? (
+          {!isPostingToMoment ? (
             !isAdditionalOptionsVisible ? (
               <>
-                <Pressable
-                  style={styles.iconWithLabel}
+                <IconButtonWithLabel
+                  iconName="paperplane"
+                  label="Share"
                   onPress={handleSharePress}
-                >
-                  <Pressable
-                    style={styles.iconButton}
-                    onPress={handleSharePress}
-                  >
-                    <Icon
-                      name="paperplane"
-                      style={styles.icon}
-                      weight="bold"
-                      onPress={handleSharePress}
-                    />
-                  </Pressable>
-                  <Text style={styles.labelText}>Share</Text>
-                </Pressable>
-
-                <Pressable
-                  style={styles.iconWithLabel}
-                  onPress={handlePostToStoryPress}
-                >
-                  <Pressable
-                    style={styles.iconButton}
-                    onPress={handlePostToStoryPress}
-                  >
-                    <Icon
-                      name="rectangle.portrait.on.rectangle.portrait.angled"
-                      style={styles.icon}
-                      weight="bold"
-                      onPress={handlePostToStoryPress}
-                    />
-                  </Pressable>
-                  <Text style={styles.labelText}>Post to Story</Text>
-                </Pressable>
-
-                <Pressable
-                  style={styles.iconWithLabel}
+                />
+                <IconButtonWithLabel
+                  iconName="rectangle.portrait.on.rectangle.portrait.angled"
+                  label="Post Moment"
+                  onPress={handlePostToMomentPress}
+                />
+                <IconButtonWithLabel
+                  iconName="folder"
+                  label="Add To"
                   onPress={handleAddToPress}
-                >
-                  <Pressable
-                    style={styles.iconButton}
-                    onPress={handleAddToPress}
-                  >
-                    <Icon
-                      name="folder"
-                      style={styles.icon}
-                      weight="bold"
-                      onPress={handleAddToPress}
-                    />
-                  </Pressable>
-                  <Text style={styles.labelText}>Add To</Text>
-                </Pressable>
+                />
               </>
             ) : (
               <>
-                <Pressable
-                  style={styles.iconWithLabel}
+                <IconButtonWithLabel
+                  iconName="folder"
+                  label="Album"
                   onPress={handleAlbumPress}
-                >
-                  <Pressable
-                    style={styles.iconButton}
-                    onPress={handleAlbumPress}
-                  >
-                    <Icon
-                      name="folder"
-                      style={styles.icon}
-                      weight="bold"
-                      onPress={handleAlbumPress}
-                    />
-                  </Pressable>
-                  <Text style={styles.labelText}>Album</Text>
-                </Pressable>
-
-                <Pressable
-                  style={styles.iconWithLabel}
+                />
+                <IconButtonWithLabel
+                  iconName="star"
+                  label="Experience"
                   onPress={handleExperiencePress}
-                >
-                  <Pressable
-                    style={styles.iconButton}
-                    onPress={handleExperiencePress}
-                  >
-                    <Icon
-                      name="star"
-                      style={styles.icon}
-                      weight="bold"
-                      onPress={handleExperiencePress}
-                    />
-                  </Pressable>
-                  <Text style={styles.labelText}>Experience</Text>
-                </Pressable>
-
-                <Pressable
-                  style={styles.iconWithLabel}
+                />
+                <IconButtonWithLabel
+                  iconName="arrow.left"
+                  label="Back"
                   onPress={resetToMainButtons}
-                >
-                  <Pressable
-                    style={styles.iconButton}
-                    onPress={resetToMainButtons}
-                  >
-                    <Icon
-                      name="arrow.left"
-                      style={styles.icon}
-                      weight="bold"
-                      onPress={resetToMainButtons}
-                    />
-                  </Pressable>
-                  <Text style={styles.labelText}>Back</Text>
-                </Pressable>
+                />
               </>
             )
           ) : (
             <>
-              <Pressable
-                style={styles.iconWithLabel}
-                onPress={handleConfirmPostToStory}
+              <IconButtonWithLabel
+                iconName="checkmark"
+                label={posting ? "Posting..." : "Confirm Moment"}
+                onPress={handleConfirmPostToMoment}
                 disabled={posting}
-              >
-                <Pressable
-                  style={[styles.iconButton, posting && styles.disabledButton]}
-                  onPress={handleConfirmPostToStory}
-                  disabled={posting}
-                >
-                  <Icon
-                    name="checkmark"
-                    style={styles.icon}
-                    weight="bold"
-                    onPress={handleConfirmPostToStory}
-                  />
-                </Pressable>
-                <Text style={styles.labelText}>
-                  {posting ? "Posting..." : "Confirm Story"}
-                </Text>
-              </Pressable>
-
-              <Pressable
-                style={styles.iconWithLabel}
-                onPress={handleCancelPostToStory}
-              >
-                <Pressable
-                  style={styles.iconButton}
-                  onPress={handleCancelPostToStory}
-                >
-                  <Icon
-                    name="xmark"
-                    style={styles.icon}
-                    weight="bold"
-                    onPress={handleCancelPostToStory}
-                  />
-                </Pressable>
-                <Text style={styles.labelText}>Cancel</Text>
-              </Pressable>
+              />
+              <IconButtonWithLabel
+                iconName="xmark"
+                label="Cancel"
+                onPress={handleCancelPostToMoment}
+              />
             </>
           )}
         </View>

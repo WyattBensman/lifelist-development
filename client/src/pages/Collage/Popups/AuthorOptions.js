@@ -8,6 +8,13 @@ import {
 import IconStatic from "../../../components/Icons/IconStatic";
 import BottomPopup from "../../Profile/Popups/BottomPopup";
 import { useNavigation } from "@react-navigation/native";
+import {
+  ARCHIVE_COLLAGE,
+  DELETE_COLLAGE,
+  UNARCHIVE_COLLAGE,
+} from "../../../utils/mutations";
+import { useAdminProfile } from "../../../contexts/AdminProfileContext";
+import { useMutation } from "@apollo/client";
 
 export default function AuthorOptions({
   visible,
@@ -18,6 +25,64 @@ export default function AuthorOptions({
   handleArchivePress,
 }) {
   const navigation = useNavigation();
+  const { addCollage, removeCollage } = useAdminProfile();
+
+  // Initialize mutations
+  const [archiveCollage] = useMutation(ARCHIVE_COLLAGE);
+  const [unarchiveCollage] = useMutation(UNARCHIVE_COLLAGE);
+  const [deleteCollage] = useMutation(DELETE_COLLAGE);
+
+  // Handle archive action
+  const handleArchive = async () => {
+    try {
+      if (isArchived) {
+        // Unarchive the collage
+        const { data } = await unarchiveCollage({ variables: { collageId } });
+        if (data?.unarchiveCollage?.success) {
+          console.log(data.unarchiveCollage.message);
+
+          // Add the unarchived collage back to the state
+          addCollage({
+            _id: collageId,
+            coverImage: collageData.coverImage,
+            createdAt: collageData.createdAt,
+          });
+        }
+      } else {
+        // Archive the collage
+        const { data } = await archiveCollage({ variables: { collageId } });
+        if (data?.archiveCollage?.success) {
+          console.log(data.archiveCollage.message);
+
+          // Remove the archived collage from the state
+          removeCollage(collageId);
+        }
+      }
+
+      // Close the popup
+      onRequestClose();
+    } catch (error) {
+      console.error("Error archiving/unarchiving collage:", error.message);
+    }
+  };
+
+  // Handle delete action
+  const handleDelete = async () => {
+    try {
+      const { data } = await deleteCollage({ variables: { collageId } });
+      if (data?.deleteCollage?.success) {
+        console.log(data.deleteCollage.message);
+
+        // Remove the deleted collage from the state
+        removeCollage(collageId);
+      }
+
+      // Close the popup
+      onRequestClose();
+    } catch (error) {
+      console.error("Error deleting collage:", error.message);
+    }
+  };
 
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={484}>
@@ -52,9 +117,11 @@ export default function AuthorOptions({
             tintColor={"#6AB952"}
           />
         </Pressable>
+
+        {/* Archive/Unarchive Option */}
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
-          onPress={handleArchivePress}
+          onPress={handleArchive}
         >
           <View style={layoutStyles.flexRow}>
             <IconStatic
@@ -67,9 +134,13 @@ export default function AuthorOptions({
             </Text>
           </View>
         </Pressable>
-        <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
+
+        {/* Delete Option */}
+        <Pressable
+          style={[popupStyles.cardContainer, layoutStyles.flex]}
+          onPress={handleDelete}
+        >
           <View style={layoutStyles.flexRow}>
-            {/* Placeholder for alignment */}
             <IconStatic
               name={"trash"}
               style={iconStyles.popupIcon}
@@ -77,7 +148,8 @@ export default function AuthorOptions({
             />
             <Text style={[popupStyles.spacer, styles.redText]}>Delete</Text>
           </View>
-        </View>
+        </Pressable>
+
         <Text
           style={[headerStyles.headerMedium, styles.text, { marginTop: 8 }]}
         >

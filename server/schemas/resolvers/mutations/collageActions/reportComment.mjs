@@ -22,7 +22,6 @@ const reportComment = async (_, { commentId, reason }, { user }) => {
     return {
       success: true,
       message: "Comment successfully reported.",
-      action: "REPORT_COMMENT",
     };
   } catch (error) {
     console.error(`Report Comment Error: ${error.message}`);

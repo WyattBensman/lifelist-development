@@ -76,7 +76,7 @@ export default function Footer({
           style={styles.rowIcon}
           disabled={disabled}
         >
-          <FlipCameraIcon />
+          <FlipCameraIcon onPress={toggleCameraFacing} />
         </Pressable>
       </View>
       <View style={styles.container}>

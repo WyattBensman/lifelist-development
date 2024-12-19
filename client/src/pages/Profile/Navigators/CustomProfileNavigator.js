@@ -10,12 +10,6 @@ import Animated, {
 
 const { width } = Dimensions.get("window");
 
-const tabs = [
-  { name: "Collages", component: Collages },
-  { name: "Reposts", component: Reposts },
-  { name: "Stories", component: null },
-];
-
 export default function CustomProfileNavigator({
   userId,
   collages,
@@ -23,9 +17,17 @@ export default function CustomProfileNavigator({
   fetchMoreCollages,
   fetchMoreReposts,
   navigation,
+  hasActiveMoments,
 }) {
   const [activeTab, setActiveTab] = useState("Collages");
   const translateX = useSharedValue(0);
+
+  // Dynamically set the tabs based on hasActiveMoments
+  const tabs = [
+    { name: "Collages", component: Collages },
+    { name: "Reposts", component: Reposts },
+    ...(hasActiveMoments ? [{ name: "Moments", component: null }] : []), // Add "Moments" only if hasActiveMoments is true
+  ];
 
   useEffect(() => {
     translateX.value = activeTab === "Collages" ? 0 : -width;
@@ -36,10 +38,10 @@ export default function CustomProfileNavigator({
   );
 
   const handleTabPress = (tabName) => {
-    if (tabName === "Stories") {
-      navigation.navigate("Stories", { userId }); // Navigate to Stories screen
+    if (tabName === "Moments") {
+      navigation.navigate("Moments", { userId }); // Navigate to Moments screen
       setActiveTab("Collages"); // Immediately reset activeTab to Collages
-      return; // Prevent further execution for Stories tab
+      return; // Prevent further execution for Moments tab
     }
     setActiveTab(tabName); // Set activeTab for other tabs
   };
@@ -64,6 +66,7 @@ export default function CustomProfileNavigator({
               style={[
                 styles.navigatorText,
                 activeTab === tab.name && styles.activeNavigatorText,
+                tab.name === "Moments" && { color: "#5FC4ED" },
               ]}
             >
               {tab.name}

@@ -8,3 +8,4 @@ export * from "./privacyGroupsMutations";
 export * from "./userActionsMutations";
 export * from "./userAuthenticationMutations";
 export * from "./userRelationsMutations";
+export * from "./momentMutations";

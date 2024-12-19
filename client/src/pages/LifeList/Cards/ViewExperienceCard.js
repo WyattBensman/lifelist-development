@@ -7,16 +7,19 @@ const shotHeight = (shotWidth * 3) / 2;
 
 export default function ViewExperienceCard({
   shot,
+  associatedShots,
   navigation,
   index,
   fromAlbum,
 }) {
+  console.log("Shot", shot);
+
   return (
     <Pressable
       onPress={() =>
         navigation.navigate("ViewExperienceShot", {
-          shotId: shot._id,
-          fromAlbum, // Pass the 'fromAlbum' parameter
+          shot,
+          associatedShots,
         })
       }
       style={[

@@ -158,9 +158,11 @@ export default function CameraHome() {
   }
 
   const toggleCameraFacing = () => {
-    const newFacing = facing === "back" ? "front" : "back";
-    setFacing(newFacing);
-    saveMetaDataToCache("cameraFacing", newFacing, 0);
+    setFacing((prevFacing) => {
+      const newFacing = prevFacing === "front" ? "back" : "front";
+      saveMetaDataToCache("cameraFacing", newFacing, 0);
+      return newFacing;
+    });
   };
 
   const toggleFlash = () => {
@@ -341,6 +343,7 @@ export default function CameraHome() {
         <CameraView
           ref={cameraRef}
           style={{ height: cameraHeight, width: screenWidth }}
+          facing={facing}
         />
         <Footer
           cameraRef={cameraRef}

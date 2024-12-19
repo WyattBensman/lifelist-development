@@ -248,6 +248,12 @@ export const CameraAlbumProvider = ({ children }) => {
     }
   };
 
+  const resetCameraAlbumState = () => {
+    setAlbums([]);
+    setAlbumShotsCache({});
+    setIsAlbumCacheInitialized(false);
+  };
+
   const contextValue = {
     albums,
     albumShotsCache,
@@ -258,6 +264,7 @@ export const CameraAlbumProvider = ({ children }) => {
     fetchPaginatedAlbumShots,
     initializeAlbumCache,
     isAlbumCacheInitialized,
+    resetCameraAlbumState,
   };
 
   return (

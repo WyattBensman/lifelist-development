@@ -65,6 +65,13 @@ export const CameraRollProvider = ({ children }) => {
         const newCursor = data.getAllCameraShots.nextCursor;
         const newHasNextPage = data.getAllCameraShots.hasNextPage;
 
+        console.log("[CameraRollProvider] New shots fetched:", newShots.length);
+        console.log("[CameraRollProvider] New cursor:", newCursor);
+        console.log(
+          "[CameraRollProvider] More pages available:",
+          newHasNextPage
+        );
+
         const mergedShots = [...shots, ...newShots];
         setShots(mergedShots);
         setNextCursor(newCursor);
@@ -206,8 +213,16 @@ export const CameraRollProvider = ({ children }) => {
     }
   };
 
+  const resetCameraRollState = () => {
+    setShots([]);
+    setNextCursor(null);
+    setHasNextPage(true);
+    setIsCameraRollCacheInitialized(false);
+  };
+
   const contextValue = {
     shots,
+    hasNextPage,
     loadNextPage,
     fetchFullResolutionImage,
     preloadFullResolutionImages,
@@ -216,6 +231,7 @@ export const CameraRollProvider = ({ children }) => {
     updateShotMetadata,
     initializeCameraRollCache,
     isCameraRollCacheInitialized,
+    resetCameraRollState,
   };
 
   return (

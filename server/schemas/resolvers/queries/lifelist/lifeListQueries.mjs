@@ -1,31 +1,10 @@
 import { LifeList, LifeListExperience } from "../../../../models/index.mjs";
-import { isUser } from "../../../../utils/auth.mjs";
-
-export const getCurrentUserLifeList = async (_, __, { user }) => {
-  isUser(user);
-
-  const lifeList = await LifeList.findOne({
-    author: user,
-  })
-    .populate({
-      path: "experiences",
-      populate: {
-        path: "experience",
-        select: "_id title image category subCategory",
-      },
-    })
-    .exec();
-  if (!lifeList) throw new Error("LifeList not found for the current user.");
-  return lifeList;
-};
 
 export const getUserLifeList = async (
   _,
   { userId, cursor, limit = 12 },
   { user }
 ) => {
-  isUser(user); // Ensure the user is authenticated
-
   // Fetch LifeList for the user
   const lifeList = await LifeList.findOne({ author: userId })
     .populate({
@@ -42,7 +21,7 @@ export const getUserLifeList = async (
         },
         {
           path: "associatedShots", // Directly populate associatedShots as CameraShot objects
-          select: "_id imageThumbnail", // Only fetch the required metadata
+          select: "_id capturedAt image imageThumbnail", // Only fetch the required metadata
         },
       ],
     })
@@ -64,6 +43,8 @@ export const getUserLifeList = async (
     hasAssociatedShots: experience.associatedShots.length > 0,
     associatedShots: experience.associatedShots.map((shot) => ({
       _id: shot._id,
+      capturedAt: shot.capturedAt,
+      image: shot.image,
       imageThumbnail: shot.imageThumbnail, // Include lightweight metadata
     })),
   }));
@@ -84,38 +65,6 @@ export const getUserLifeList = async (
   };
 };
 
-export const getExperiencedList = async (_, { lifeListId }) => {
-  const lifeList = await LifeList.findById(lifeListId).exec();
-  if (!lifeList) throw new Error("LifeList not found.");
-
-  const experiencedList = await LifeListExperience.find({
-    lifeList: lifeList._id,
-    list: "EXPERIENCED",
-  })
-    .populate({
-      path: "experience",
-      select: "_id image title category subCategory",
-    })
-    .exec();
-  return experiencedList;
-};
-
-export const getWishListedList = async (_, { lifeListId }) => {
-  const lifeList = await LifeList.findById(lifeListId).exec();
-  if (!lifeList) throw new Error("LifeList not found.");
-
-  const wishListedList = await LifeListExperience.find({
-    lifeList: lifeList._id,
-    list: "WISHLISTED",
-  })
-    .populate({
-      path: "experience",
-      select: "_id image title category subCategory",
-    })
-    .exec();
-  return wishListedList;
-};
-
 export const getLifeListExperience = async (
   _,
   { experienceId, cursor, limit = 12 }
@@ -131,7 +80,7 @@ export const getLifeListExperience = async (
         sort: { _id: 1 }, // Sort by _id in ascending order
         limit: limit + 1, // Fetch one extra record to check for the next page
       },
-      select: "_id imageThumbnail", // Fetch only required fields
+      select: "_id capturedAt image imageThumbnail", // Fetch only required fields
     })
     .populate({
       path: "experience",
@@ -160,32 +109,4 @@ export const getLifeListExperience = async (
       : null,
     hasNextPage,
   };
-};
-
-export const getLifeListExperiencesByExperienceIds = async (
-  _,
-  { lifeListId, experienceIds }
-) => {
-  try {
-    const lifeListExperiences = await LifeListExperience.find({
-      lifeList: lifeListId,
-      experience: { $in: experienceIds },
-    })
-      .populate({
-        path: "experience",
-        select: "_id title image category subCategory",
-      })
-      .populate({
-        path: "associatedShots.shot",
-        select: "_id image capturedAt",
-      })
-      .populate({
-        path: "associatedCollages",
-        select: "_id coverImage createdAt",
-      });
-
-    return lifeListExperiences;
-  } catch (error) {
-    throw new Error("Error fetching LifeListExperiences: " + error.message);
-  }
 };

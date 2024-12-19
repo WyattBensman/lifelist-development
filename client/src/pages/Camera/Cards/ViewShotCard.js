@@ -2,13 +2,13 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Image, StyleSheet, View, ActivityIndicator } from "react-native";
 import { useCameraRoll } from "../../../contexts/CameraRollContext";
 
-export default function ViewShotCard({ shotId, isVisible }) {
-  const [imageUri, setImageUri] = useState(null);
+export default function ViewShotCard({ shotId, imageUrl }) {
+  const [imageUri, setImageUri] = useState(imageUrl || null);
   const [isFetching, setIsFetching] = useState(false);
   const { fetchFullResolutionImage } = useCameraRoll();
 
   const fetchImage = useCallback(async () => {
-    if (!isFetching && isVisible && !imageUri) {
+    if (!isFetching && !imageUri) {
       // Only fetch if visible
       setIsFetching(true);
       try {
@@ -23,7 +23,7 @@ export default function ViewShotCard({ shotId, isVisible }) {
         setIsFetching(false);
       }
     }
-  }, [fetchFullResolutionImage, shotId, isVisible, imageUri, isFetching]);
+  }, [fetchFullResolutionImage, shotId, imageUri, isFetching]);
 
   useEffect(() => {
     fetchImage();
@@ -51,11 +51,10 @@ const styles = StyleSheet.create({
     aspectRatio: 2 / 3,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#121212", // Fallback background color while loading
   },
   image: {
-    width: "98%",
-    height: "98%",
+    width: "97.5%",
+    height: "97.5%",
     resizeMode: "cover",
     borderRadius: 4,
   },

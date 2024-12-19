@@ -1,40 +1,41 @@
 import { User, Collage } from "../../../../models/index.mjs";
-import { isUser, findCollageById } from "../../../../utils/auth.mjs";
+import { isUser } from "../../../../utils/auth.mjs";
 
 const unarchiveCollage = async (_, { collageId }, { user }) => {
   try {
+    // Verify user authentication
     isUser(user);
 
-    // Verify the collage exists
-    await findCollageById(collageId);
-
-    // Remove the collage from user's archived list
+    // Update the user's archived collages array
     const updatedUser = await User.findByIdAndUpdate(
       user,
       { $pull: { archivedCollages: collageId } },
       { new: true }
     );
 
-    // Mark the collage as not archived
+    // Update the collage's archived status
     const updatedCollage = await Collage.findByIdAndUpdate(
       collageId,
       { $set: { archived: false } },
-      { new: true }
+      { new: true } // Return the updated collage
     );
 
-    // Ensure both updates were successful
     if (!updatedUser || !updatedCollage) {
-      throw new Error("Failed to unarchive collage. Please try again.");
+      throw new Error("Failed to unarchive collage.");
     }
 
     return {
       success: true,
       message: "Collage successfully unarchived.",
-      action: "UNARCHIVE",
+      collage: {
+        _id: updatedCollage._id,
+        coverImage: updatedCollage.coverImage,
+        createdAt: updatedCollage.createdAt,
+      },
     };
   } catch (error) {
-    console.error(`Unarchive Collage Error: ${error.message}`);
-    throw new Error("An error occurred during unarchiving the collage.");
+    console.error("Error unarchiving collage:", error.message);
+    throw new Error("An error occurred while unarchiving the collage.");
   }
 };
 

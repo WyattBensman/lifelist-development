@@ -144,9 +144,9 @@ export default function MainFeed({ route }) {
           }
           icon2={
             <Icon
-              name="bell"
-              style={iconStyles.bell}
-              weight="medium"
+              name="rectangle.portrait.on.rectangle.portrait.angled"
+              style={{ width: 17.5 }}
+              weight="bold"
               onPress={() => navigation.navigate("Inbox")}
             />
           }
