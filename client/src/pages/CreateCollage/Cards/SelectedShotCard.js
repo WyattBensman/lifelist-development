@@ -1,6 +1,6 @@
 import React from "react";
-import { Pressable, Image, StyleSheet, View } from "react-native";
-import { BASE_URL } from "../../../utils/config";
+import { Pressable, StyleSheet, View } from "react-native";
+import { Image } from "expo-image";
 import { SymbolView } from "expo-symbols";
 
 export default function SelectedShotCard({ item, handleImagePress, drag }) {

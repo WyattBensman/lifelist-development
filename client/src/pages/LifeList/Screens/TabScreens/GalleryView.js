@@ -1,5 +1,6 @@
 import React from "react";
-import { View, FlatList, StyleSheet, Image, Dimensions } from "react-native";
+import { View, FlatList, StyleSheet, Dimensions } from "react-native";
+import { Image } from "expo-image";
 import { BASE_URL } from "../../../../utils/config";
 
 const { width } = Dimensions.get("window");

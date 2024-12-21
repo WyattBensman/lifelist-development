@@ -4,10 +4,10 @@ import {
   View,
   StyleSheet,
   Pressable,
-  Image,
   FlatList,
   Dimensions,
 } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { useMutation, useQuery } from "@apollo/client";
 import { iconStyles, layoutStyles } from "../../../styles";

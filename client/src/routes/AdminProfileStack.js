@@ -17,6 +17,9 @@ import Tagged from "../pages/Profile/Screens/Tagged";
 import CollageStack from "./CollageStack";
 import Moments from "../pages/Profile/Screens/Moments";
 import Report from "../pages/Report/Report";
+import Notifications from "../pages/Inbox/Screens/Notifications";
+import FriendRequest from "../pages/Inbox/Screens/FriendRequest";
+import UserRelations from "../pages/Profile/Screens/UserRelations";
 
 const Stack = createNativeStackNavigator();
 
@@ -112,6 +115,16 @@ export default function AdminProfileStack() {
       <Stack.Screen
         name="Moments"
         component={Moments}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Notifications"
+        component={Notifications}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="FriendRequest"
+        component={FriendRequest}
         options={{ headerShown: false }}
       />
       <Stack.Screen

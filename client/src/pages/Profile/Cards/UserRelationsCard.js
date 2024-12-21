@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import {
-  Image,
   Text,
   View,
   StyleSheet,
   Pressable,
   ActivityIndicator,
 } from "react-native";
+import { Image } from "expo-image";
 import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../../contexts/AuthContext";

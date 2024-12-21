@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Image, Text, View, Pressable } from "react-native";
+import { Text, View, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native"; // Import navigation hook
 import { truncateText, capitalizeText } from "../../../utils/utils";
 import IconStatic from "../../../components/Icons/IconStatic";

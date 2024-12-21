@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  Dimensions,
-  Pressable,
-} from "react-native";
+import { StyleSheet, Text, View, Dimensions, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { capitalizeText, truncateText } from "../../../utils/utils";
 import { SymbolView } from "expo-symbols";
 import { getImageFromFileSystem } from "../../../utils/newCacheHelper";

@@ -5,10 +5,10 @@ import {
   ActivityIndicator,
   Dimensions,
   Text,
-  Image,
   TouchableOpacity,
   Animated,
 } from "react-native";
+import { Image } from "expo-image";
 import {
   useFocusEffect,
   useNavigation,

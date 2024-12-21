@@ -1,4 +1,5 @@
-import { Image, Text, View, Pressable, StyleSheet } from "react-native";
+import { Text, View, Pressable, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { BASE_URL } from "../../../utils/config";
 
 export default function SearchUserCard({ user, onPress }) {

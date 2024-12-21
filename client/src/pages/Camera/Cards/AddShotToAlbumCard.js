@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Image, Text, View, Pressable, StyleSheet } from "react-native";
+import { Text, View, Pressable, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { useCameraAlbums } from "../../../contexts/CameraAlbumContext";
 import { cardStyles } from "../../../styles";
 import { truncateText } from "../../../utils/utils";

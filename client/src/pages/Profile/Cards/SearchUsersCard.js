@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Image, Text, View, Pressable, StyleSheet } from "react-native";
+import { Text, View, Pressable, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import CheckBox from "expo-checkbox";
 import { BASE_URL } from "../../../utils/config";
 

@@ -103,6 +103,8 @@ export const getUnreadMessagesCount = async (_, __, { user }) => {
 /* NOTIFICATION QUERIES */
 export const getUserNotifications = async (_, __, { user }) => {
   isUser(user);
+
+  // Fetch the user with notifications and follow requests
   const foundUser = await User.findById(user)
     .populate({
       path: "notifications",
@@ -112,9 +114,22 @@ export const getUserNotifications = async (_, __, { user }) => {
         select: "_id username fullName profilePicture",
       },
     })
+    .select("notifications followRequests settings")
     .exec();
+
   if (!foundUser) throw new Error("User not found.");
-  return foundUser.notifications || [];
+
+  // Get the count of follow requests
+  const followRequestsCount = foundUser.followRequests.length;
+
+  // Check if the user is private
+  const isProfilePrivate = foundUser.settings?.isProfilePrivate || false;
+
+  return {
+    notifications: foundUser.notifications || [],
+    followRequestsCount,
+    isProfilePrivate,
+  };
 };
 
 export const getFollowRequests = async (_, __, { user }) => {

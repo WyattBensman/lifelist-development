@@ -1,8 +1,9 @@
 import React from "react";
-import { Image, StyleSheet, Text, View, Pressable } from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { Swipeable } from "react-native-gesture-handler";
 import { truncateText } from "../../../utils/utils";
-import { layoutStyles, iconStyles } from "../../../styles";
+import { iconStyles } from "../../../styles";
 import { BASE_URL } from "../../../utils/config";
 import { formatDate } from "../../../utils/utils";
 import { useNavigation } from "@react-navigation/native";

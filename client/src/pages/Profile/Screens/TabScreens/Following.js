@@ -1,44 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, Alert, Text, View, ActivityIndicator } from "react-native";
+import { FlatList, Alert, Text, ActivityIndicator } from "react-native";
 import UserRelationsCard from "../../Cards/UserRelationsCard";
 import { layoutStyles } from "../../../../styles";
-import { useMutation, useQuery } from "@apollo/client";
-import { useAuth } from "../../../../contexts/AuthContext";
+import { useQuery } from "@apollo/client";
 import { GET_FOLLOWING } from "../../../../utils/queries/userQueries";
 import {
-  FOLLOW_USER,
-  UNFOLLOW_USER,
-  SEND_FOLLOW_REQUEST,
-  UNSEND_FOLLOW_REQUEST,
-} from "../../../../utils/mutations/userRelationsMutations";
-import {
-  getMetaDataFromCache,
-  saveMetaDataToCache,
-  getImageFromCache,
-  saveImageToCache,
-} from "../../../../utils/cacheHelper";
+  getMetadataFromCache,
+  saveMetadataToCache,
+  getImageFromFileSystem,
+  saveImageToFileSystem,
+} from "../../../../utils/newCacheHelper";
+import { useProfile } from "../../../../contexts/ProfileContext";
 
 const PAGE_SIZE = 20;
 
 export default function Following({ userId, searchQuery }) {
-  const { currentUser } = useAuth();
   const [followingList, setFollowingList] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [hasMore, setHasMore] = useState(true);
+  const [loadingCache, setLoadingCache] = useState(true);
 
-  // Load cached following metadata on mount
+  const { followUser, unfollowUser, sendFollowRequest, unsendFollowRequest } =
+    useProfile();
+
+  // Load cached metadata on mount
   useEffect(() => {
     const loadCachedData = async () => {
-      console.log("Loading cached following data...");
-      const cachedData = await getMetaDataFromCache(`following_${userId}`);
+      const cachedData = await getMetadataFromCache(`following_${userId}`);
       if (cachedData) {
-        console.log("Cached following data found.");
         setFollowingList(cachedData.users);
         setCursor(cachedData.nextCursor);
         setHasMore(cachedData.hasNextPage);
-      } else {
-        console.log("No cached following data found.");
       }
+      setLoadingCache(false);
     };
     loadCachedData();
   }, [userId]);
@@ -47,32 +41,23 @@ export default function Following({ userId, searchQuery }) {
     variables: { userId, cursor, limit: PAGE_SIZE },
     fetchPolicy: "cache-and-network",
     onCompleted: async (fetchedData) => {
-      console.log("Following data fetched from network:", fetchedData);
-
       const { users, nextCursor, hasNextPage } = fetchedData.getFollowing;
 
-      // Save following metadata to cache
-      console.log("Saving following metadata to cache...");
-      await saveMetaDataToCache(`following_${userId}`, {
+      // Save metadata to cache
+      await saveMetadataToCache(`following_${userId}`, {
         users,
         nextCursor,
         hasNextPage,
       });
 
       // Cache profile pictures
-      for (const item of users) {
-        const user = item.user; // Access the nested user object
+      for (const { user } of users) {
         const imageKey = `profile_picture_${user._id}`;
-        console.log(`PROFILE PICTURE FOLLOWERS: ${user.profilePicture}`);
-
-        const cachedImageUri = await getImageFromCache(
-          imageKey,
-          user.profilePicture
-        );
+        const cachedImageUri = await getImageFromFileSystem(imageKey);
 
         if (!cachedImageUri) {
           console.log(`Caching profile picture for user: ${user._id}`);
-          await saveImageToCache(imageKey, user.profilePicture);
+          await saveImageToFileSystem(imageKey, user.profilePicture);
         } else {
           console.log(`Profile picture already cached for user: ${user._id}`);
         }
@@ -91,38 +76,25 @@ export default function Following({ userId, searchQuery }) {
     },
   });
 
-  const [followUser] = useMutation(FOLLOW_USER);
-  const [unfollowUser] = useMutation(UNFOLLOW_USER);
-  const [sendFollowRequest] = useMutation(SEND_FOLLOW_REQUEST);
-  const [unsendFollowRequest] = useMutation(UNSEND_FOLLOW_REQUEST);
-
   const handleActionPress = async (targetUserId, action, isPrivate) => {
     try {
       if (action === "Follow") {
         if (isPrivate) {
-          const { data } = await sendFollowRequest({
-            variables: { userIdToFollow: targetUserId },
-          });
-          Alert.alert("Request Sent", data.sendFollowRequest.message);
+          await sendFollowRequest(targetUserId);
+          Alert.alert("Request Sent", "Follow request has been sent.");
           return "Requested";
         } else {
-          const { data } = await followUser({
-            variables: { userIdToFollow: targetUserId },
-          });
-          Alert.alert("Follow", data.followUser.message);
+          await followUser(targetUserId);
+          Alert.alert("Follow", "You are now following this user.");
           return "Following";
         }
       } else if (action === "Following") {
-        const { data } = await unfollowUser({
-          variables: { userIdToUnfollow: targetUserId },
-        });
-        Alert.alert("Unfollow", data.unfollowUser.message);
+        await unfollowUser(targetUserId);
+        Alert.alert("Unfollow", "You have unfollowed this user.");
         return "Follow";
       } else if (action === "Requested") {
-        const { data } = await unsendFollowRequest({
-          variables: { userIdToUnfollow: targetUserId },
-        });
-        Alert.alert("Request Withdrawn", data.unsendFollowRequest.message);
+        await unsendFollowRequest(targetUserId);
+        Alert.alert("Request Withdrawn", "Follow request has been withdrawn.");
         return "Follow";
       }
     } catch (error) {
@@ -133,22 +105,8 @@ export default function Following({ userId, searchQuery }) {
 
   const loadMore = async () => {
     if (hasMore && !loading) {
-      console.log("Loading more following data...");
       await fetchMore({
         variables: { userId, cursor, limit: PAGE_SIZE },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev;
-          console.log("Fetched additional following from network.");
-          return {
-            getFollowing: {
-              ...fetchMoreResult.getFollowing,
-              users: [
-                ...prev.getFollowing.users,
-                ...fetchMoreResult.getFollowing.users,
-              ],
-            },
-          };
-        },
       });
     }
   };
@@ -166,10 +124,12 @@ export default function Following({ userId, searchQuery }) {
     />
   );
 
-  if (loading && !followingList.length)
+  if (loadingCache || (loading && !followingList.length)) {
     return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
   if (error) {
-    console.log("Error loading following:", error.message);
+    console.error("Error loading following:", error.message);
     return <Text>Error loading following: {error.message}</Text>;
   }
 

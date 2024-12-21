@@ -3,11 +3,11 @@ import {
   View,
   Text,
   StyleSheet,
-  Image,
   TextInput,
   Animated,
   Alert,
 } from "react-native";
+import { Image } from "expo-image";
 import { layoutStyles } from "../../../styles";
 import LockIcon from "../Icons/LockIcon"; // Ensure this icon can accept a color prop
 import AsyncStorage from "@react-native-async-storage/async-storage";

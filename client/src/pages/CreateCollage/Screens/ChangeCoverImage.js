@@ -4,10 +4,10 @@ import {
   FlatList,
   StyleSheet,
   Pressable,
-  Image,
   Text,
   Dimensions,
 } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { layoutStyles, iconStyles } from "../../../styles";
 import HeaderStack from "../../../components/Headers/HeaderStack";

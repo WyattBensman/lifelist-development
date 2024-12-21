@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
   Text,
   View,
-  Image,
   TextInput,
   Pressable,
   Alert,
   StyleSheet,
 } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import { layoutStyles } from "../../../styles";

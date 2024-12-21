@@ -5,6 +5,7 @@ import {
   View,
   FlatList,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import ProfileOverview from "../Components/ProfileOverview";
@@ -22,8 +23,8 @@ export default function Profile() {
   const { currentUser } = useAuth();
   const {
     profiles,
-    isProfileCacheInitialized,
     initializeProfileCache,
+    refreshProfile,
     fetchMoreCollages,
     fetchMoreReposts,
   } = useProfile();
@@ -36,9 +37,10 @@ export default function Profile() {
 
   const [collagesCursor, setCollagesCursor] = useState(null);
   const [repostsCursor, setRepostsCursor] = useState(null);
-  const [isLoadingCollages, setIsLoadingCollages] = useState(false);
-  const [isLoadingReposts, setIsLoadingReposts] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Track overall loading state
+  const [isLoadingCollages, setIsLoadingCollages] = useState(false); // Loading state for collages
+  const [isLoadingReposts, setIsLoadingReposts] = useState(false); // Loading state for reposts
+  const [refreshing, setRefreshing] = useState(false); // Track pull-to-refresh state
   const [error, setError] = useState(null);
 
   const [optionsPopupVisible, setOptionsPopupVisible] = useState(false);
@@ -58,12 +60,12 @@ export default function Profile() {
 
   const toggleOptionsPopup = () => setOptionsPopupVisible(!optionsPopupVisible);
 
-  // Initialize Profile Cache
+  // Initial Profile Cache Setup
   useEffect(() => {
     const loadProfile = async () => {
       try {
         setIsLoading(true);
-        await initializeProfileCache(userId);
+        await initializeProfileCache(userId); // Use initializeProfileCache for first load
       } catch (err) {
         console.error("Error initializing profile cache:", err);
         setError(err.message || "Failed to load profile.");
@@ -88,16 +90,37 @@ export default function Profile() {
   const handleFetchMoreCollages = async () => {
     if (collagesCursor && !isLoadingCollages) {
       setIsLoadingCollages(true);
-      await fetchMoreCollages(userId, collagesCursor);
-      setIsLoadingCollages(false);
+      try {
+        await fetchMoreCollages(userId, collagesCursor);
+      } catch (err) {
+        console.error("Error fetching more collages:", err);
+      } finally {
+        setIsLoadingCollages(false);
+      }
     }
   };
 
   const handleFetchMoreReposts = async () => {
     if (repostsCursor && !isLoadingReposts) {
       setIsLoadingReposts(true);
-      await fetchMoreReposts(userId, repostsCursor);
-      setIsLoadingReposts(false);
+      try {
+        await fetchMoreReposts(userId, repostsCursor);
+      } catch (err) {
+        console.error("Error fetching more reposts:", err);
+      } finally {
+        setIsLoadingReposts(false);
+      }
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await refreshProfile(userId); // Use refreshProfile for pull-to-refresh
+    } catch (err) {
+      console.error("Error refreshing profile during pull-to-refresh:", err);
+    } finally {
+      setRefreshing(false);
     }
   };
 
@@ -124,6 +147,9 @@ export default function Profile() {
       </View>
     );
   }
+
+  const isRestricted =
+    profile?.isBlocked || (profile?.isProfilePrivate && !profile?.isFollowing);
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -160,25 +186,57 @@ export default function Profile() {
               followerData={{
                 followersCount: profile?.followersCount || 0,
                 followingCount: profile?.followingCount || 0,
-                collagesCount: profile?.collagesCount || 0,
+                collagesCount:
+                  profile?.collages?.items?.length ||
+                  profile?.collagesCount ||
+                  0,
               }}
               isAdminView={isAdminView}
               isAdminScreen={false}
+              isRestricted={isRestricted}
             />
-            <CustomProfileNavigator
-              userId={userId}
-              isAdmin={isAdminView}
-              isAdminScreen={false}
-              navigation={navigation}
-              collages={profile?.collages?.items || []}
-              repostedCollages={profile?.repostedCollages?.items || []}
-              refreshProfile={() => initializeProfileCache(userId)}
-              hasActiveMoments={profile?.hcodyasActiveMoments}
-              fetchMoreCollages={handleFetchMoreCollages}
-              fetchMoreReposts={handleFetchMoreReposts}
-            />
+            {isRestricted ? (
+              <View
+                style={{
+                  justifyContent: "center",
+                  borderTopWidth: 1,
+                  borderColor: "#252525",
+                }}
+              >
+                <Text
+                  style={{ fontSize: 16, padding: 16, textAlign: "center" }}
+                >
+                  {profile?.isBlocked
+                    ? "You are blocked from viewing this profile."
+                    : "This profile is private. Follow the user to view their content."}
+                </Text>
+              </View>
+            ) : (
+              <CustomProfileNavigator
+                userId={userId}
+                isAdmin={isAdminView}
+                isAdminScreen={false}
+                navigation={navigation}
+                collages={profile?.collages?.items || []}
+                repostedCollages={profile?.repostedCollages?.items || []}
+                refreshProfile={handleRefresh}
+                hasActiveMoments={profile?.hasActiveMoments}
+                fetchMoreCollages={handleFetchMoreCollages}
+                fetchMoreReposts={handleFetchMoreReposts}
+                isLoadingCollages={isLoadingCollages}
+                isLoadingReposts={isLoadingReposts}
+              />
+            )}
           </>
         )}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor="#fff"
+            colors={["#fff"]}
+          />
+        }
         style={layoutStyles.wrapper}
       />
       {isAdminView ? (

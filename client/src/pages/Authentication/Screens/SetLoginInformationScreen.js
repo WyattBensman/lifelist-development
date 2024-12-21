@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Text, View, TextInput, Image, Alert, StyleSheet } from "react-native";
+import { Text, View, TextInput, Alert, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";
 import HeaderStack from "../../../components/Headers/HeaderStack";

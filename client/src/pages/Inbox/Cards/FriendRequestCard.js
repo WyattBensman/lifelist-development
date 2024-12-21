@@ -1,6 +1,6 @@
 import React from "react";
-import { Image, Text, View, StyleSheet } from "react-native";
-import { cardStyles, layoutStyles } from "../../../styles";
+import { Text, View, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 
 export default function FriendRequestCard({

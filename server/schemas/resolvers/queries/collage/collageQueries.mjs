@@ -2,11 +2,11 @@ import { Collage } from "../../../../models/index.mjs";
 import { isUser } from "../../../../utils/auth.mjs";
 
 export const getCollageById = async (_, { collageId }, { user }) => {
-  // Find the collage by ID, and populate necessary fields
+  // Find the collage by ID and populate necessary fields
   const collage = await Collage.findById(collageId)
     .populate({
       path: "author",
-      select: "_id username fullName profilePicture",
+      select: "_id username fullName profilePicture settings",
     })
     .populate({
       path: "likes reposts saves",

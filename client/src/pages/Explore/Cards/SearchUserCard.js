@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import { Image, Text, View, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 
-export default function SearchUserCard({ user }) {
+export default function SearchUserCard({ user, cacheVisitedProfile }) {
   const profilePictureUrl = user.profilePicture;
   const navigation = useNavigation();
 
   const handleProfilePress = () => {
+    cacheVisitedProfile(user); // Cache the visited profile
     navigation.navigate("ProfileStack", {
       screen: "Profile",
       params: { userId: user._id },
@@ -37,7 +38,6 @@ const styles = StyleSheet.create({
     padding: 8,
     marginTop: 8,
     marginLeft: 8,
-    marginRight: 8,
     backgroundColor: "#1C1C1C",
     borderRadius: 8,
   },

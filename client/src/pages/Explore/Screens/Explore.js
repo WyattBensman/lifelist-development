@@ -6,6 +6,8 @@ import {
   FlatList,
   ActivityIndicator,
   Dimensions,
+  ScrollView,
+  RefreshControl,
 } from "react-native";
 import { useLazyQuery } from "@apollo/client";
 import ExploreHeader from "../../../components/Headers/ExploreHeader";
@@ -19,30 +21,84 @@ import {
   GET_RECOMMENDED_COLLAGES,
   GET_ALL_USERS,
 } from "../../../utils/queries/index";
+import {
+  saveMetadataToCache,
+  getMetadataFromCache,
+} from "../../../utils/newCacheHelper";
 
 const screenWidth = Dimensions.get("window").width;
-const collageWidth = (screenWidth - 38) / 2; // Width for each collage
-const collageHeight = collageWidth * 1.5; // Height maintaining 3:2 ratio
+const collageWidth = (screenWidth - 38) / 2;
+const collageHeight = collageWidth * 1.5;
+
+const SEARCH_CACHE_KEY = "explore_search_cache";
+const RECENTLY_SEEN_PROFILES = "recently_seen_profiles";
+const RECENTLY_SEEN_COLLAGES = "recently_seen_collages";
+const MAX_CACHE_SIZE = 24;
+const MAX_RECENTLY_SEEN = 10;
 
 export default function Explore({ navigation }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [activeTab, setActiveTab] = useState("All");
 
+  // Refresh state
+  const [isRefreshing, setIsRefreshing] = useState(false); // Refresh state
+
   // Users search state
   const [users, setUsers] = useState([]);
   const [userCursor, setUserCursor] = useState(null);
   const [userHasNextPage, setUserHasNextPage] = useState(true);
+  const [cachedUsers, setCachedUsers] = useState([]);
 
   // Recommended Profiles State
   const [profiles, setProfiles] = useState([]);
   const [profileCursor, setProfileCursor] = useState(null);
   const [profileHasNextPage, setProfileHasNextPage] = useState(true);
+  const [recentlySeenProfiles, setRecentlySeenProfiles] = useState([]);
 
   // Recommended Collages State
   const [collages, setCollages] = useState([]);
   const [collageCursor, setCollageCursor] = useState(null);
   const [collageHasNextPage, setCollageHasNextPage] = useState(true);
+  const [recentlySeenCollages, setRecentlySeenCollages] = useState([]);
+
+  useEffect(() => {
+    const loadInitialData = async () => {
+      const cachedData = await getMetadataFromCache(SEARCH_CACHE_KEY);
+      const recentlySeen = await getMetadataFromCache(RECENTLY_SEEN_PROFILES);
+
+      if (cachedData) setCachedUsers(cachedData);
+      if (recentlySeen) setRecentlySeenProfiles(recentlySeen);
+    };
+
+    loadInitialData();
+  }, []);
+
+  const cacheVisitedProfile = async (profile) => {
+    const updatedCache = [
+      profile,
+      ...cachedUsers.filter((u) => u._id !== profile._id),
+    ];
+    const limitedCache = updatedCache.slice(0, MAX_CACHE_SIZE);
+
+    setCachedUsers(limitedCache);
+    await saveMetadataToCache(SEARCH_CACHE_KEY, limitedCache);
+  };
+
+  const handleProfileView = async (profile) => {
+    navigation.navigate("ProfileStack", {
+      screen: "Profile",
+      params: { userId: profile._id },
+    });
+
+    const updatedRecentlySeen = [
+      profile._id,
+      ...recentlySeenProfiles.filter((id) => id !== profile._id),
+    ].slice(0, MAX_RECENTLY_SEEN);
+
+    setRecentlySeenProfiles(updatedRecentlySeen);
+    await saveMetadataToCache(RECENTLY_SEEN_PROFILES, updatedRecentlySeen);
+  };
 
   const [loadUsers, { loading: userLoading }] = useLazyQuery(GET_ALL_USERS, {
     fetchPolicy: "network-only",
@@ -81,7 +137,7 @@ export default function Explore({ navigation }) {
           setProfiles((prevProfiles) => {
             const profileMap = new Map();
             [...prevProfiles, ...newProfiles].forEach((profile) =>
-              profileMap.set(profile.user._id, profile)
+              profileMap.set(profile._id, profile)
             );
             return Array.from(profileMap.values());
           });
@@ -99,9 +155,7 @@ export default function Explore({ navigation }) {
     GET_RECOMMENDED_COLLAGES,
     {
       fetchPolicy: "network-only",
-      onCompleted: (data) => {
-        console.log("HEY");
-
+      onCompleted: async (data) => {
         if (data?.getRecommendedCollages) {
           const {
             collages: newCollages,
@@ -116,6 +170,18 @@ export default function Explore({ navigation }) {
             );
             return Array.from(collageMap.values());
           });
+
+          // Reset recentlySeenCollages before updating with new collages
+          setRecentlySeenCollages([]);
+          await saveMetadataToCache(RECENTLY_SEEN_COLLAGES, []);
+
+          // Add collages to recently seen and cache
+          const newCollageIds = newCollages.map((collage) =>
+            collage._id.toString()
+          );
+          setRecentlySeenCollages(newCollageIds);
+          await saveMetadataToCache(RECENTLY_SEEN_COLLAGES, newCollageIds);
+
           setCollageHasNextPage(hasNextPage);
           setCollageCursor(nextCursor);
         }
@@ -136,7 +202,6 @@ export default function Explore({ navigation }) {
       }
     }, 300); // 300ms debounce delay
 
-    // Cleanup function
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery]);
 
@@ -148,13 +213,21 @@ export default function Explore({ navigation }) {
 
   const fetchMoreProfiles = () => {
     if (profileHasNextPage && !profileLoading) {
-      loadProfiles({ variables: { cursor: profileCursor, limit: 10 } });
+      loadProfiles({
+        variables: { cursor: profileCursor, limit: 10, recentlySeenProfiles },
+      });
     }
   };
 
   const fetchMoreCollages = () => {
     if (collageHasNextPage && !collageLoading) {
-      loadCollages({ variables: { cursor: collageCursor, limit: 10 } });
+      loadCollages({
+        variables: {
+          cursor: collageCursor,
+          limit: 10,
+          recentlySeen: recentlySeenCollages,
+        },
+      });
     }
   };
 
@@ -167,9 +240,57 @@ export default function Explore({ navigation }) {
   };
 
   useEffect(() => {
-    loadProfiles({ variables: { cursor: null, limit: 10 } });
-    loadCollages({ variables: { cursor: null, limit: 10 } });
+    loadProfiles({
+      variables: {
+        cursor: null,
+        limit: 10,
+        recentlySeen: recentlySeenProfiles,
+      },
+    });
+    loadCollages({
+      variables: {
+        cursor: null,
+        limit: 10,
+        recentlySeen: recentlySeenCollages,
+      },
+    });
   }, []);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+
+    try {
+      // Clear old profiles and collages before refreshing
+      setProfiles([]);
+      setCollages([]);
+      setProfileCursor(null);
+      setCollageCursor(null);
+
+      // Re-fetch recommended profiles
+      await loadProfiles({
+        variables: {
+          cursor: null,
+          limit: 10,
+          recentlySeen: recentlySeenProfiles, // Pass recentlySeen to exclude last seen profiles
+        },
+      });
+
+      // Re-fetch recommended collages
+      await loadCollages({
+        variables: {
+          cursor: null,
+          limit: 10,
+          recentlySeen: recentlySeenCollages, // Pass recentlySeen to exclude last seen collages
+        },
+      });
+
+      // Clear recentlySeenCollages after the query to reset for the next refresh
+      setRecentlySeenCollages([]);
+      await saveMetadataToCache(RECENTLY_SEEN_COLLAGES, []);
+    } finally {
+      setIsRefreshing(false); // Reset refreshing state
+    }
+  };
 
   return (
     <View style={layoutStyles.wrapper}>
@@ -189,14 +310,31 @@ export default function Explore({ navigation }) {
           <ExploreNavigator activeTab={activeTab} setActiveTab={setActiveTab} />
           {activeTab === "All" || activeTab === "Users" ? (
             <View style={styles.searchResultsContainer}>
-              {userLoading && users.length === 0 ? (
+              {searchQuery.trim() === "" && cachedUsers.length > 0 ? (
+                <FlatList
+                  data={cachedUsers}
+                  keyExtractor={(item) => item._id.toString()}
+                  renderItem={({ item }) => (
+                    <SearchUserCard
+                      user={item}
+                      navigation={navigation}
+                      cacheVisitedProfile={cacheVisitedProfile}
+                    />
+                  )}
+                  showsVerticalScrollIndicator={false}
+                />
+              ) : userLoading && users.length === 0 ? (
                 <ActivityIndicator size="large" color="#fff" />
               ) : (
                 <FlatList
                   data={users}
-                  keyExtractor={(item) => item.user._id.toString()}
+                  keyExtractor={(item) => item._id.toString()}
                   renderItem={({ item }) => (
-                    <SearchUserCard user={item.user} initialAction={null} />
+                    <SearchUserCard
+                      user={item}
+                      navigation={navigation}
+                      cacheVisitedProfile={cacheVisitedProfile}
+                    />
                   )}
                   onEndReached={fetchMoreUsers}
                   onEndReachedThreshold={0.8}
@@ -205,7 +343,7 @@ export default function Explore({ navigation }) {
                       <ActivityIndicator size="small" color="#fff" />
                     )
                   }
-                  showsHorizontalScrollIndicator={false}
+                  showsVerticalScrollIndicator={false}
                 />
               )}
             </View>
@@ -216,7 +354,16 @@ export default function Explore({ navigation }) {
           )}
         </>
       ) : (
-        <View style={styles.content}>
+        <ScrollView
+          style={styles.content}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+            />
+          }
+        >
           <Text style={styles.sectionTitle}>Recommended Profiles</Text>
           {profileLoading && profiles.length === 0 ? (
             <ActivityIndicator size="large" color="#fff" />
@@ -224,11 +371,11 @@ export default function Explore({ navigation }) {
             <FlatList
               data={profiles}
               horizontal
-              keyExtractor={(item) => item.user._id.toString()}
+              keyExtractor={(item) => item._id.toString()}
               renderItem={({ item }) => (
                 <RecommendedProfileCard
-                  user={item.user}
-                  navigation={navigation}
+                  user={item}
+                  onPress={() => handleProfileView(item)}
                 />
               )}
               onEndReached={fetchMoreProfiles}
@@ -260,7 +407,7 @@ export default function Explore({ navigation }) {
               onEndReachedThreshold={0.8}
             />
           )}
-        </View>
+        </ScrollView>
       )}
     </View>
   );
@@ -279,7 +426,6 @@ const styles = StyleSheet.create({
   },
   searchResultsContainer: {
     flex: 1,
-    paddingHorizontal: 16,
   },
   noResultsText: {
     marginTop: 16,
@@ -287,7 +433,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   rowWrapper: {
-    justifyContent: "space-between", // Spreads cards to opposite sides
-    marginBottom: 16, // Adds spacing between rows
+    justifyContent: "space-between",
+    marginBottom: 16,
   },
 });

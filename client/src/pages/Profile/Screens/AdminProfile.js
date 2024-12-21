@@ -59,7 +59,7 @@ export default function AdminProfile() {
         titleComponent={
           <Text style={headerStyles.headerHeavy}>{adminProfile?.fullName}</Text>
         }
-        icon1={
+        icon2={
           <Animated.View style={{ transform: [{ rotate: rotation }] }}>
             <Icon
               name="ellipsis"
@@ -68,6 +68,14 @@ export default function AdminProfile() {
               onPress={toggleOptionsPopup}
             />
           </Animated.View>
+        }
+        icon1={
+          <Icon
+            name="bell"
+            style={iconStyles.ellipsis}
+            weight="bold"
+            onPress={() => navigation.navigate("Notifications")}
+          />
         }
       />
 
@@ -96,7 +104,7 @@ export default function AdminProfile() {
               followingCount: counts.followingCount,
               collagesCount: counts.collagesCount,
             }}
-            userId={adminProfile._id}
+            userId={currentUser}
             isAdminView
             isAdminScreen
           />

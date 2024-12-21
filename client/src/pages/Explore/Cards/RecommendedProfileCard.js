@@ -1,16 +1,9 @@
-import React from "react";
-import { Image, Text, View, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
+import { Image } from "expo-image";
 
-export default function RecommendedProfileCard({ user, navigation }) {
-  const handleProfilePress = () => {
-    navigation.navigate("ProfileStack", {
-      screen: "Profile",
-      params: { userId: user._id },
-    });
-  };
-
+export default function RecommendedProfileCard({ user, onPress }) {
   return (
-    <Pressable style={styles.cardContainer} onPress={handleProfilePress}>
+    <Pressable style={styles.cardContainer} onPress={onPress}>
       <Image source={{ uri: user.profilePicture }} style={styles.imageMd} />
       <View style={styles.textContainer}>
         <Text style={styles.primaryText}>{user.fullName}</Text>

@@ -22,8 +22,6 @@ export default function UserRelations() {
     return () => setIsTabBarVisible(true);
   }, [setIsTabBarVisible]);
 
-  console.log(`UserId: ${userId}`);
-
   return (
     <View style={layoutStyles.wrapper}>
       <HeaderStack

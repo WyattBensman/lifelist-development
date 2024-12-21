@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Image, StyleSheet, View, ActivityIndicator } from "react-native";
+import { StyleSheet, View, ActivityIndicator } from "react-native";
+import { Image } from "expo-image";
 import { useCameraRoll } from "../../../contexts/CameraRollContext";
 
 export default function ViewShotCard({ shotId, imageUrl }) {

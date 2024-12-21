@@ -1,4 +1,5 @@
-import { Dimensions, Image, StyleSheet, View, Pressable } from "react-native";
+import { Dimensions, StyleSheet, View, Pressable } from "react-native";
+import { Image } from "expo-image";
 import Checkbox from "expo-checkbox";
 
 const screenWidth = Dimensions.get("window").width;

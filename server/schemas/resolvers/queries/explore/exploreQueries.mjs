@@ -3,12 +3,10 @@ import mongoose from "mongoose";
 
 export const getRecommendedProfiles = async (
   _,
-  { cursor, limit = 10 },
+  { cursor, limit = 10, recentlySeen = [] },
   { user }
 ) => {
   try {
-    console.log("userId", user);
-
     // Step 1: Fetch current user's data
     const currentUser = await User.findById(user)
       .populate({ path: "followers", select: "_id" })
@@ -29,16 +27,17 @@ export const getRecommendedProfiles = async (
       blockedUser._id.toString()
     );
 
-    // Step 2: Exclude users the current user follows, is followed by, or has blocked
+    // Step 2: Exclude users the current user follows, is followed by, has blocked, or recently seen
     const excludedIds = new Set([
       ...userFollowerIds,
       ...userFollowingIds,
       ...blockedUserIds,
-      user,
+      ...recentlySeen,
+      user.toString(),
     ]);
 
-    // Step 3: Fetch potential candidates with pagination
-    const candidates = await User.aggregate([
+    // Step 3: Filter candidates while excluding specific IDs
+    const pipeline = [
       // Filter out excluded users
       {
         $match: {
@@ -70,17 +69,6 @@ export const getRecommendedProfiles = async (
           followerCount: { $size: "$followers" },
         },
       },
-      // Sorting criteria (relevance: overlapScore, follower count)
-      {
-        $sort: {
-          overlapScore: -1,
-          followerCount: -1,
-        },
-      },
-      // Limit the results to the requested batch size
-      {
-        $limit: limit + 1, // Fetch one extra to determine if there's a next page
-      },
       // Return the relevant user fields
       {
         $project: {
@@ -88,27 +76,27 @@ export const getRecommendedProfiles = async (
           username: 1,
           fullName: 1,
           profilePicture: 1,
-          overlapScore: 1,
-          followerCount: 1,
         },
       },
-    ]);
+    ];
 
-    // Step 4: Check if there's a next page
-    const hasNextPage = candidates.length > limit;
-    const profiles = candidates.slice(0, limit); // Return only the first `limit` profiles
-    const nextCursor = hasNextPage ? candidates[limit - 1]._id : null; // Cursor is the last profile's ID
+    // Step 4: Fetch candidates and shuffle them in Node.js
+    const candidates = await User.aggregate(pipeline).exec();
+    const shuffledCandidates = candidates.sort(() => Math.random() - 0.5);
+
+    // Step 5: Paginate the results
+    const hasNextPage = shuffledCandidates.length > limit;
+    const profiles = shuffledCandidates.slice(0, limit);
+    const nextCursor = hasNextPage
+      ? shuffledCandidates[limit - 1]._id.toString()
+      : null;
 
     return {
       profiles: profiles.map((candidate) => ({
-        user: {
-          _id: candidate._id,
-          username: candidate.username,
-          fullName: candidate.fullName,
-          profilePicture: candidate.profilePicture,
-        },
-        overlapScore: candidate.overlapScore,
-        followerCount: candidate.followerCount,
+        _id: candidate._id,
+        username: candidate.username,
+        fullName: candidate.fullName,
+        profilePicture: candidate.profilePicture,
       })),
       nextCursor,
       hasNextPage,
@@ -121,7 +109,7 @@ export const getRecommendedProfiles = async (
 
 export const getRecommendedCollages = async (
   _,
-  { cursor, limit = 10 },
+  { cursor, limit = 10, recentlySeen = [] },
   { user }
 ) => {
   try {
@@ -145,27 +133,28 @@ export const getRecommendedCollages = async (
       blockedUser._id.toString()
     );
 
-    // Step 2: Define excluded collages for the currentUser
-    const excludedCollages = new Set();
-
-    // Add collages from the current user and their interactions
-    const excludedAuthors = [...userFollowingIds, ...blockedUserIds, user];
+    // Step 2: Define excluded collages for the current user
     const interactedCollages = await Collage.find({
       $or: [
         { likes: user },
         { reposts: user },
         { saves: user },
-        { author: user }, // Exclude collages authored by the current user
+        { author: user },
       ],
-    }).select("_id");
+    })
+      .select("_id")
+      .lean();
 
-    interactedCollages.forEach((collage) =>
-      excludedCollages.add(collage._id.toString())
-    );
+    const excludedCollages = new Set([
+      ...recentlySeen,
+      ...interactedCollages.map((collage) => collage._id.toString()),
+    ]);
 
-    // Step 3: Fetch potential collages with pagination
+    const excludedAuthors = [...userFollowingIds, ...blockedUserIds, user];
+
+    // Step 3: Fetch potential collages with aggregation pipeline
     const collages = await Collage.aggregate([
-      // Match public collages that are not archived or from excluded authors
+      // Match public collages excluding specific authors and IDs
       {
         $match: {
           privacy: "PUBLIC",
@@ -177,23 +166,11 @@ export const getRecommendedCollages = async (
             $nin: Array.from(excludedCollages).map(
               (id) => new mongoose.Types.ObjectId(id)
             ),
-            ...(cursor && { $gt: new mongoose.Types.ObjectId(cursor) }), // Handle cursor-based pagination
+            ...(cursor && { $gt: new mongoose.Types.ObjectId(cursor) }),
           },
         },
       },
-      // Compute popularity score (likes, reposts, saves)
-      {
-        $addFields: {
-          popularityScore: {
-            $add: [
-              { $size: "$likes" },
-              { $size: "$reposts" },
-              { $size: "$saves" },
-            ],
-          },
-        },
-      },
-      // Compute overlap score (mutual followers with the collage author)
+      // Compute overlap score
       {
         $lookup: {
           from: "users",
@@ -204,6 +181,11 @@ export const getRecommendedCollages = async (
       },
       {
         $unwind: "$authorData",
+      },
+      {
+        $match: {
+          "authorData.settings.isProfilePrivate": { $ne: true },
+        },
       },
       {
         $addFields: {
@@ -217,17 +199,14 @@ export const getRecommendedCollages = async (
           },
         },
       },
-      // Sorting criteria: overlapScore, popularityScore, and creation time
+      // Sorting criteria: overlapScore and creation time
       {
         $sort: {
           overlapScore: -1,
-          popularityScore: -1,
           createdAt: -1,
         },
       },
-      // Limit the results to limit + 1 to determine if there's a next page
-      { $limit: limit + 1 },
-      // Project the necessary fields
+      // Project only the fields you want to return
       {
         $project: {
           _id: 1,
@@ -239,19 +218,19 @@ export const getRecommendedCollages = async (
           },
           coverImage: 1,
           createdAt: 1,
-          likesCount: { $size: "$likes" },
-          repostsCount: { $size: "$reposts" },
-          savesCount: { $size: "$saves" },
-          overlapScore: 1,
-          popularityScore: 1,
         },
       },
     ]);
 
-    // Step 4: Check if there's a next page
-    const hasNextPage = collages.length > limit;
-    const paginatedCollages = collages.slice(0, limit); // Return only the first `limit` collages
-    const nextCursor = hasNextPage ? collages[limit - 1]._id : null; // Cursor is the last collage in this batch
+    // Step 4: Shuffle the results
+    const shuffledCollages = collages.sort(() => Math.random() - 0.5);
+
+    // Step 5: Paginate the results
+    const hasNextPage = shuffledCollages.length > limit;
+    const paginatedCollages = shuffledCollages.slice(0, limit);
+    const nextCursor = hasNextPage
+      ? shuffledCollages[limit - 1]._id.toString()
+      : null;
 
     return {
       collages: paginatedCollages,

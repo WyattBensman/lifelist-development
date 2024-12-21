@@ -42,6 +42,8 @@ export const GET_USER_PROFILE = gql`
       isFollowedBy
       isFollowRequested
       hasActiveMoments
+      isProfilePrivate
+      isBlocked
     }
   }
 `;

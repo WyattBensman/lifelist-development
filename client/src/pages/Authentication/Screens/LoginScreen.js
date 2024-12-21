@@ -3,11 +3,11 @@ import {
   Text,
   View,
   StyleSheet,
-  Image,
   TextInput,
   Pressable,
   Alert,
 } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation, useFocusEffect } from "@react-navigation/native"; // Import navigation hook and useFocusEffect
 import { useMutation } from "@apollo/client";
 import { LOGIN } from "../../../utils/mutations/userAuthenticationMutations";

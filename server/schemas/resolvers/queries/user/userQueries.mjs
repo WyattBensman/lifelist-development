@@ -28,7 +28,7 @@ export const getUserProfileById = async (
         select: "_id coverImage",
       })
       .select(
-        "_id fullName username bio profilePicture followers following followRequests"
+        "_id fullName username bio profilePicture followers following followRequests settings blocked"
       )
       .exec();
 
@@ -36,15 +36,10 @@ export const getUserProfileById = async (
       throw new Error("User not found.");
     }
 
-    // Determine pagination for collages
-    const collages = foundUser.collages || [];
-    const collagesHasNextPage = collages.length > limit;
-    if (collagesHasNextPage) collages.pop(); // Remove extra item for pagination
-
-    // Determine pagination for reposted collages
-    const repostedCollages = foundUser.repostedCollages || [];
-    const repostsHasNextPage = repostedCollages.length > limit;
-    if (repostsHasNextPage) repostedCollages.pop();
+    // Determine privacy and block status
+    const { settings, blocked } = foundUser;
+    const isProfilePrivate = settings?.isProfilePrivate || false;
+    const isBlocked = blocked.some((blockedUser) => blockedUser.equals(user));
 
     // Compute relationship states
     const isFollowing = foundUser.followers.some((followerId) =>
@@ -56,6 +51,54 @@ export const getUserProfileById = async (
     const isFollowRequested = foundUser.followRequests.some((requestId) =>
       requestId.equals(user)
     );
+
+    // If the user is blocked, restrict access
+    if (isBlocked) {
+      return {
+        _id: foundUser._id,
+        fullName: foundUser.fullName,
+        username: foundUser.username,
+        bio: null,
+        profilePicture: null,
+        followersCount: null,
+        followingCount: null,
+        collagesCount: null,
+        isFollowing,
+        isFollowedBy,
+        isFollowRequested,
+        isProfilePrivate,
+        isBlocked: true,
+      };
+    }
+
+    // If the profile is private and the user is not allowed to view it
+    if (isProfilePrivate && !isFollowing && foundUser._id.toString() !== user) {
+      return {
+        _id: foundUser._id,
+        fullName: foundUser.fullName,
+        username: foundUser.username,
+        bio: null,
+        profilePicture: null,
+        followersCount: foundUser.followers.length,
+        followingCount: foundUser.following.length,
+        collagesCount: foundUser.collages.length,
+        isFollowing,
+        isFollowedBy,
+        isFollowRequested,
+        isProfilePrivate: true,
+        isBlocked: false,
+      };
+    }
+
+    // Determine pagination for collages
+    const collages = foundUser.collages || [];
+    const collagesHasNextPage = collages.length > limit;
+    if (collagesHasNextPage) collages.pop(); // Remove extra item for pagination
+
+    // Determine pagination for reposted collages
+    const repostedCollages = foundUser.repostedCollages || [];
+    const repostsHasNextPage = repostedCollages.length > limit;
+    if (repostsHasNextPage) repostedCollages.pop();
 
     // Count followers, following, and active moments
     const followersCount = foundUser.followers.length;
@@ -94,6 +137,8 @@ export const getUserProfileById = async (
       isFollowedBy,
       isFollowRequested,
       hasActiveMoments: Boolean(hasActiveMoments),
+      isProfilePrivate,
+      isBlocked: false,
     };
   } catch (error) {
     console.error("Error fetching user profile:", error.message);

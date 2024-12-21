@@ -1,12 +1,6 @@
 import React, { useState } from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Image,
-  FlatList,
-  Dimensions,
-} from "react-native";
+import { Text, View, StyleSheet, FlatList, Dimensions } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "../../../icons/Icon";
 import { iconStyles } from "../../../styles";

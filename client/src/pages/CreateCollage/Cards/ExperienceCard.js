@@ -1,4 +1,5 @@
-import { Image, Text, View } from "react-native";
+import { Text, View } from "react-native";
+import { Image } from "expo-image";
 import { cardStyles, layoutStyles } from "../../../styles";
 import { truncateText } from "../../../utils/utils";
 import PinIcon from "../../Explore/Icons/PinIcon";

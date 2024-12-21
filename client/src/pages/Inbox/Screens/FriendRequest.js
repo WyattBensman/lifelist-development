@@ -1,14 +1,7 @@
 import React from "react";
-import {
-  FlatList,
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import { FlatList, View, Text, ActivityIndicator } from "react-native";
 import { useQuery } from "@apollo/client";
 import { iconStyles, layoutStyles } from "../../../styles";
-import BackArrowIcon from "../../../icons/Universal/BackArrowIcon";
 import FriendRequestCard from "../Cards/FriendRequestCard";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { GET_FOLLOW_REQUESTS } from "../../../utils/queries";

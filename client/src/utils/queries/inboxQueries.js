@@ -63,17 +63,21 @@ export const GET_UNREAD_MESSAGES_COUNT = gql`
 export const GET_USER_NOTIFICATIONS = gql`
   query GetUserNotifications {
     getUserNotifications {
-      _id
-      type
-      message
-      createdAt
-      read
-      sender {
+      notifications {
         _id
-        username
-        fullName
-        profilePicture
+        type
+        message
+        createdAt
+        read
+        sender {
+          _id
+          username
+          fullName
+          profilePicture
+        }
       }
+      followRequestsCount
+      isProfilePrivate
     }
   }
 `;

@@ -1,4 +1,5 @@
-import { Dimensions, Image, StyleSheet, View, Pressable } from "react-native";
+import { Dimensions, StyleSheet, View, Pressable } from "react-native";
+import { Image } from "expo-image";
 
 const { width } = Dimensions.get("window");
 const spacing = 1.5;

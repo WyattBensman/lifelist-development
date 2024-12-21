@@ -1,45 +1,44 @@
 import { gql } from "@apollo/client";
 
 export const GET_RECOMMENDED_PROFILES = gql`
-  query GetRecommendedProfiles($cursor: ID, $limit: Int) {
-    getRecommendedProfiles(cursor: $cursor, limit: $limit) {
+  query GetRecommendedProfiles($cursor: ID, $limit: Int, $recentlySeen: [ID]) {
+    getRecommendedProfiles(
+      cursor: $cursor
+      limit: $limit
+      recentlySeen: $recentlySeen
+    ) {
       hasNextPage
       nextCursor
       profiles {
-        followerCount
-        overlapScore
-        user {
-          _id
-          fullName
-          username
-          profilePicture
-        }
+        _id
+        fullName
+        username
+        profilePicture
       }
     }
   }
 `;
 
 export const GET_RECOMMENDED_COLLAGES = gql`
-  query GetRecommendedCollages($cursor: ID, $limit: Int) {
-    getRecommendedCollages(cursor: $cursor, limit: $limit) {
-      nextCursor
-      hasNextPage
+  query GetRecommendedCollages($cursor: ID, $limit: Int, $recentlySeen: [ID]) {
+    getRecommendedCollages(
+      cursor: $cursor
+      limit: $limit
+      recentlySeen: $recentlySeen
+    ) {
       collages {
         _id
+        coverImage
+        createdAt
         author {
           _id
           username
           fullName
           profilePicture
         }
-        coverImage
-        createdAt
-        likesCount
-        overlapScore
-        popularityScore
-        repostsCount
-        savesCount
       }
+      nextCursor
+      hasNextPage
     }
   }
 `;

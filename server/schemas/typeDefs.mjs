@@ -392,7 +392,7 @@ type Score {
     getUnreadMessagesCount: Int
   
     # Notification Queries
-    getUserNotifications: [Notification]
+    getUserNotifications: UserNotificationsResponse
     getFollowRequests: [User]
   
     # Experience Queries
@@ -403,8 +403,8 @@ type Score {
     getMainFeed(userId: ID!, page: Int!): FeedResult
 
     # Explore Queries
-    getRecommendedProfiles(cursor: ID, limit: Int): RecommendedProfilePagination
-    getRecommendedCollages(cursor: ID, limit: Int): RecommendedCollagePagination
+    getRecommendedProfiles(cursor: ID, limit: Int, recentlySeen: [ID]): RecommendedProfilePagination
+    getRecommendedCollages(cursor: ID, limit: Int, recentlySeen: [ID]): RecommendedCollagePagination
   }
 
   # Query Responses
@@ -417,6 +417,12 @@ type Score {
     collages: CollageRepostPagination
     repostedCollages: CollageRepostPagination
     moments: [Moment]
+  }
+
+  type UserNotificationsResponse {
+    notifications: [Notification]
+    followRequestsCount: Int
+    isProfilePrivate: Boolean
   }
 
   type CollagePagination {
@@ -432,13 +438,14 @@ type Score {
   }
 
   type RecommendedProfile {
-    user: User
-    overlapScore: Int
-    followerCount: Int
+    _id: ID!
+    username: String!
+    fullName: String
+    profilePicture: String
   }
 
   type RecommendedCollagePagination {
-    collages: [RecommendedCollage]
+    collages: [Collage]
     nextCursor: ID
     hasNextPage: Boolean
   }
@@ -543,13 +550,15 @@ type ExperienceDetails {
     profilePicture: String
     collages: CollageRepostPagination
     repostedCollages: CollageRepostPagination
-    followersCount: Int!
-    followingCount: Int!
-    collagesCount: Int!
-    isFollowing: Boolean!
-    isFollowedBy: Boolean!
-    isFollowRequested: Boolean!
-    hasActiveMoments: Boolean!
+    followersCount: Int
+    followingCount: Int
+    collagesCount: Int
+    isFollowing: Boolean
+    isFollowedBy: Boolean
+    isFollowRequested: Boolean
+    hasActiveMoments: Boolean
+    isProfilePrivate: Boolean
+    isBlocked: Boolean
   }
 
   type UserCountsResponse {

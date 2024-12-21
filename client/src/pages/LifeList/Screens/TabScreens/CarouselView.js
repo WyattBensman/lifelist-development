@@ -5,8 +5,8 @@ import {
   StyleSheet,
   Dimensions,
   Pressable,
-  Image,
 } from "react-native";
+import { Image } from "expo-image";
 import { BASE_URL } from "../../../../utils/config";
 import { iconStyles, layoutStyles } from "../../../../styles";
 import Icon from "../../../../components/Icons/Icon";

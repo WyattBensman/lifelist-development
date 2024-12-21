@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import {
-  Image,
   Pressable,
   Text,
   View,
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import { Image } from "expo-image";
 import ButtonSmall from "../../../components/Buttons/ButtonSmall";
 import UnblockUserModal from "../Popups/UnblockUserModal";
 import {

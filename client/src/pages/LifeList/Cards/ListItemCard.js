@@ -1,12 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Image,
-  Text,
-  View,
-  Pressable,
-  Animated,
-  StyleSheet,
-} from "react-native";
+import { Text, View, Pressable, Animated, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { cardStyles, iconStyles } from "../../../styles";
 import { truncateText, capitalizeText } from "../../../utils/utils";
 import { useNavigation } from "@react-navigation/native";

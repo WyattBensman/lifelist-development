@@ -14,6 +14,9 @@ export const GET_COLLAGE_BY_ID = gql`
           username
           fullName
           profilePicture
+          settings {
+            isProfilePrivate
+          }
         }
         createdAt
         archived

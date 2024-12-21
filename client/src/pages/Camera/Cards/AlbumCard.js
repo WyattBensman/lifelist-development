@@ -1,5 +1,6 @@
 import React from "react";
-import { Image, Pressable, StyleSheet, Text } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
+import { Image } from "expo-image";
 import { truncateText } from "../../../utils/utils";
 
 export default function AlbumCard({ album, navigation }) {

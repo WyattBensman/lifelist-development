@@ -4,12 +4,12 @@ import {
   View,
   StyleSheet,
   Pressable,
-  Image,
   ActivityIndicator,
   FlatList,
   Dimensions,
   Animated,
 } from "react-native";
+import { Image } from "expo-image";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import { GET_COLLAGE_BY_ID } from "../../../utils/queries";
@@ -253,16 +253,23 @@ export default function Collage({ collageId }) {
               onPress={handleLikePress}
             />
           </Pressable>
-          <Pressable onPress={handleRepostPress} style={styles.iconSpacer}>
-            <IconCollage
-              name="arrow.2.squarepath"
-              style={iconStyles.repost}
-              weight={"medium"}
-              tintColor={isReposted ? "#6AB952" : "#ffffff"}
-              backgroundColor={"rgba(38, 40, 40, 0.25)"}
-              onPress={handleRepostPress}
-            />
-          </Pressable>
+
+          {/* Conditionally render the repost button */}
+          {!(
+            currentUser === author._id || author.settings.isProfilePrivate
+          ) && (
+            <Pressable onPress={handleRepostPress} style={styles.iconSpacer}>
+              <IconCollage
+                name="arrow.2.squarepath"
+                style={iconStyles.repost}
+                weight={"medium"}
+                tintColor={isReposted ? "#6AB952" : "#ffffff"}
+                backgroundColor={"rgba(38, 40, 40, 0.25)"}
+                onPress={handleRepostPress}
+              />
+            </Pressable>
+          )}
+
           <Pressable
             onPress={() => setShowComments(true)}
             style={styles.iconSpacer}

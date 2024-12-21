@@ -1,5 +1,4 @@
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
-import { Text } from "react-native";
 import Media from "../Screens/Media";
 import Summary from "../Screens/Summary";
 

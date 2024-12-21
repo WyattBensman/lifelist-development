@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Image, Text, View, StyleSheet, Pressable } from "react-native";
+import { Text, View, StyleSheet, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { Swipeable } from "react-native-gesture-handler";
 import { useMutation } from "@apollo/client";
 import { LIKE_COMMENT, UNLIKE_COMMENT } from "../../../utils/mutations/index"; // Ensure correct import path

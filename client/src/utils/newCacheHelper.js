@@ -22,14 +22,20 @@ const getFilePaths = (key) => ({
 export const saveMetadataToCache = async (
   key,
   metadata,
-  isPersistent = true
+  isPersistent = true,
+  ttl = null // TTL in milliseconds (optional)
 ) => {
   try {
-    const metadataString = JSON.stringify(metadata);
+    const metadataString = JSON.stringify({
+      data: metadata,
+      timestamp: ttl ? Date.now() : null, // Save timestamp if TTL is provided
+      ttl,
+    });
+
     if (isPersistent) {
       await AsyncStorage.setItem(key, metadataString);
     } else {
-      cacheStore[key] = metadata; // Save to in-memory cache
+      cacheStore[key] = metadataString; // Save to in-memory cache
     }
   } catch (error) {
     logError(`Saving metadata (${key}) to cache`, error);
@@ -38,28 +44,26 @@ export const saveMetadataToCache = async (
 
 export const getMetadataFromCache = async (key, isPersistent = true) => {
   try {
-    if (isPersistent) {
-      const metadataString = await AsyncStorage.getItem(key);
-      return metadataString ? JSON.parse(metadataString) : null;
-    } else {
-      return cacheStore[key] || null;
-    }
-  } catch (error) {
-    console.error(`[cacheHelper] Error fetching metadata (${key}):`, error);
+    const metadataString = isPersistent
+      ? await AsyncStorage.getItem(key)
+      : cacheStore[key];
 
-    // Fallback from in-memory to persistent storage
-    if (!isPersistent) {
-      try {
-        const metadataString = await AsyncStorage.getItem(key);
-        return metadataString ? JSON.parse(metadataString) : null;
-      } catch (fallbackError) {
-        console.error(
-          `[cacheHelper] Fallback metadata fetch failed (${key}):`,
-          fallbackError
-        );
+    if (!metadataString) return null;
+
+    const { data, timestamp, ttl } = JSON.parse(metadataString);
+
+    if (ttl && timestamp) {
+      const isExpired = Date.now() > timestamp + ttl;
+      if (isExpired) {
+        console.log(`[cacheHelper] Metadata (${key}) expired`);
+        clearMetadataCache(key, isPersistent); // Auto-clear expired metadata
+        return null;
       }
     }
 
+    return data;
+  } catch (error) {
+    console.error(`[cacheHelper] Error fetching metadata (${key}):`, error);
     return null;
   }
 };
@@ -81,30 +85,38 @@ export const clearMetadataCache = async (key, isPersistent = true) => {
 export const saveImageToFileSystem = async (
   key,
   imagePath,
-  isPersistent = false
+  isPersistent = false,
+  ttl = null // TTL in milliseconds (optional)
 ) => {
   try {
-    // Determine the full image URL
     const fullImageUrl = imagePath.startsWith("http")
       ? imagePath
       : `${BASE_URL}${imagePath}`;
-
-    // Extract the file extension
     const fileExtension = imagePath.split(".").pop() || "jpg";
 
-    // Determine the save directory
     const fileUri = `${
       isPersistent ? DOCUMENT_DIR : CACHE_DIR
     }${key}.${fileExtension}`;
 
-    // Check if the file already exists
     const fileInfo = await FileSystem.getInfoAsync(fileUri);
     if (fileInfo.exists) {
-      console.log("Image already exists in file system:", fileUri);
-      return fileUri;
+      // Check TTL if provided
+      if (ttl && fileInfo.modificationTime) {
+        const isExpired =
+          Date.now() > new Date(fileInfo.modificationTime).getTime() + ttl;
+        if (isExpired) {
+          await FileSystem.deleteAsync(fileUri);
+          console.log(`[cacheHelper] Image (${key}) expired and deleted.`);
+        } else {
+          console.log("Image already exists and is valid:", fileUri);
+          return fileUri;
+        }
+      } else {
+        console.log("Image already exists:", fileUri);
+        return fileUri;
+      }
     }
 
-    // Download and save the image
     const downloadedImage = await FileSystem.downloadAsync(
       fullImageUrl,
       fileUri
@@ -120,13 +132,25 @@ export const saveImageToFileSystem = async (
   }
 };
 
-export const getImageFromFileSystem = async (key) => {
+export const getImageFromFileSystem = async (key, ttl = null) => {
   try {
     const { documentPath, cachePath } = getFilePaths(key);
 
     for (const path of [documentPath, cachePath]) {
       const fileInfo = await FileSystem.getInfoAsync(path);
-      if (fileInfo.exists) return path;
+      if (fileInfo.exists) {
+        // Check TTL if provided
+        if (ttl && fileInfo.modificationTime) {
+          const isExpired =
+            Date.now() > new Date(fileInfo.modificationTime).getTime() + ttl;
+          if (isExpired) {
+            await FileSystem.deleteAsync(path);
+            console.log(`[cacheHelper] Image (${key}) expired and deleted.`);
+            return null;
+          }
+        }
+        return path;
+      }
     }
 
     return null; // Image not found

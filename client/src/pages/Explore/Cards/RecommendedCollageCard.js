@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Image, StyleSheet, Text, View, Pressable } from "react-native";
+import { StyleSheet, Text, View, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { truncateText } from "../../../utils/utils";
 
 export default function RecommendedCollageCard({

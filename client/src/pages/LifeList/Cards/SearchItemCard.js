@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Image, Text, View, Pressable, StyleSheet } from "react-native";
+import { Text, View, Pressable, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { cardStyles } from "../../../styles";
 import { truncateText, capitalizeText } from "../../../utils/utils";
 import { BASE_URL } from "../../../utils/config";

@@ -1,12 +1,6 @@
 import React, { useEffect } from "react";
-import {
-  Text,
-  View,
-  TextInput,
-  Image,
-  StyleSheet,
-  Pressable,
-} from "react-native";
+import { Text, View, TextInput, StyleSheet, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { layoutStyles, formStyles, iconStyles } from "../../../styles";
 import { useNavigation } from "@react-navigation/native";
 import HeaderStack from "../../../components/Headers/HeaderStack";

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { cardStyles, formStyles, layoutStyles } from "../../../styles";
 import { useState } from "react";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";

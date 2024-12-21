@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Text, View, StyleSheet, Image, Pressable, Alert } from "react-native";
+import { Text, View, StyleSheet, Pressable, Alert } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";

@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   FlatList,
   StyleSheet,
   ActivityIndicator,
   Dimensions,
-  Animated,
 } from "react-native";
 import {
   useFocusEffect,

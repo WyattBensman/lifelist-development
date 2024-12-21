@@ -3,11 +3,11 @@ import {
   View,
   StyleSheet,
   Pressable,
-  Image,
   ActivityIndicator,
 } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
-import { useQuery, gql } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { layoutStyles } from "../../styles";
 import Icon from "../../icons/Icon";
 import { iconStyles } from "../../styles/iconStyles";

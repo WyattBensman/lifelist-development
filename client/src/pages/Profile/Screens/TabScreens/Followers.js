@@ -1,44 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { FlatList, Alert, Text, View, ActivityIndicator } from "react-native";
+import { FlatList, Text, ActivityIndicator, Alert } from "react-native";
 import UserRelationsCard from "../../Cards/UserRelationsCard";
 import { layoutStyles } from "../../../../styles";
-import { useMutation, useQuery } from "@apollo/client";
-import { useAuth } from "../../../../contexts/AuthContext";
+import { useQuery } from "@apollo/client";
 import { GET_FOLLOWERS } from "../../../../utils/queries/userQueries";
 import {
-  FOLLOW_USER,
-  SEND_FOLLOW_REQUEST,
-  UNFOLLOW_USER,
-  UNSEND_FOLLOW_REQUEST,
-} from "../../../../utils/mutations/userRelationsMutations";
-import {
-  getMetaDataFromCache,
-  saveMetaDataToCache,
-  getImageFromCache,
-  saveImageToCache,
-} from "../../../../utils/cacheHelper";
+  getMetadataFromCache,
+  saveMetadataToCache,
+  getImageFromFileSystem,
+  saveImageToFileSystem,
+} from "../../../../utils/newCacheHelper";
+import { useProfile } from "../../../../contexts/ProfileContext";
 
 const PAGE_SIZE = 20;
 
 export default function Followers({ userId, searchQuery }) {
-  const { currentUser } = useAuth();
   const [followers, setFollowers] = useState([]);
   const [cursor, setCursor] = useState(null);
   const [hasMore, setHasMore] = useState(true);
+  const [loadingCache, setLoadingCache] = useState(true);
 
-  // Load cached followers metadata on mount
+  const { followUser, unfollowUser, sendFollowRequest, unsendFollowRequest } =
+    useProfile();
+
+  // Load cached metadata on mount
   useEffect(() => {
     const loadCachedData = async () => {
-      console.log("Loading cached followers...");
-      const cachedData = await getMetaDataFromCache(`followers_${userId}`);
+      const cachedData = await getMetadataFromCache(`followers_${userId}`);
       if (cachedData) {
-        console.log("Cached followers data found.");
         setFollowers(cachedData.users);
         setCursor(cachedData.nextCursor);
         setHasMore(cachedData.hasNextPage);
-      } else {
-        console.log("No cached followers data found.");
       }
+      setLoadingCache(false);
     };
     loadCachedData();
   }, [userId]);
@@ -47,33 +41,23 @@ export default function Followers({ userId, searchQuery }) {
     variables: { userId, cursor, limit: PAGE_SIZE },
     fetchPolicy: "cache-and-network",
     onCompleted: async (fetchedData) => {
-      console.log("Followers data fetched from network:", fetchedData);
-
       const { users, nextCursor, hasNextPage } = fetchedData.getFollowers;
-      console.log(`USERS: ${users}`);
 
-      // Save followers metadata to cache
-      console.log("Saving followers metadata to cache...");
-      await saveMetaDataToCache(`followers_${userId}`, {
+      // Save metadata to cache
+      await saveMetadataToCache(`followers_${userId}`, {
         users,
         nextCursor,
         hasNextPage,
       });
 
       // Cache profile pictures
-      for (const item of users) {
-        const user = item.user; // Access the nested user object
+      for (const { user } of users) {
         const imageKey = `profile_picture_${user._id}`;
-        console.log(`PROFILE PICTURE FOLLOWERS: ${user.profilePicture}`);
-
-        const cachedImageUri = await getImageFromCache(
-          imageKey,
-          user.profilePicture
-        );
+        const cachedImageUri = await getImageFromFileSystem(imageKey);
 
         if (!cachedImageUri) {
           console.log(`Caching profile picture for user: ${user._id}`);
-          await saveImageToCache(imageKey, user.profilePicture);
+          await saveImageToFileSystem(imageKey, user.profilePicture);
         } else {
           console.log(`Profile picture already cached for user: ${user._id}`);
         }
@@ -92,38 +76,25 @@ export default function Followers({ userId, searchQuery }) {
     },
   });
 
-  const [followUser] = useMutation(FOLLOW_USER);
-  const [unfollowUser] = useMutation(UNFOLLOW_USER);
-  const [sendFollowRequest] = useMutation(SEND_FOLLOW_REQUEST);
-  const [unsendFollowRequest] = useMutation(UNSEND_FOLLOW_REQUEST);
-
-  const handleActionPress = async (userId, action, isPrivate) => {
+  const handleActionPress = async (targetUserId, action, isPrivate) => {
     try {
       if (action === "Follow") {
         if (isPrivate) {
-          const { data } = await sendFollowRequest({
-            variables: { userIdToFollow: userId },
-          });
-          Alert.alert("Request Sent", data.sendFollowRequest.message);
+          await sendFollowRequest(targetUserId);
+          Alert.alert("Request Sent", "Follow request has been sent.");
           return "Requested";
         } else {
-          const { data } = await followUser({
-            variables: { userIdToFollow: userId },
-          });
-          Alert.alert("Follow", data.followUser.message);
+          await followUser(targetUserId);
+          Alert.alert("Follow", "You are now following this user.");
           return "Following";
         }
       } else if (action === "Following") {
-        const { data } = await unfollowUser({
-          variables: { userIdToUnfollow: userId },
-        });
-        Alert.alert("Unfollow", data.unfollowUser.message);
+        await unfollowUser(targetUserId);
+        Alert.alert("Unfollow", "You have unfollowed this user.");
         return "Follow";
       } else if (action === "Requested") {
-        const { data } = await unsendFollowRequest({
-          variables: { userIdToUnfollow: userId },
-        });
-        Alert.alert("Request Withdrawn", data.unsendFollowRequest.message);
+        await unsendFollowRequest(targetUserId);
+        Alert.alert("Request Withdrawn", "Follow request has been withdrawn.");
         return "Follow";
       }
     } catch (error) {
@@ -134,22 +105,8 @@ export default function Followers({ userId, searchQuery }) {
 
   const loadMore = async () => {
     if (hasMore && !loading) {
-      console.log("Loading more followers...");
       await fetchMore({
         variables: { userId, cursor, limit: PAGE_SIZE },
-        updateQuery: (prev, { fetchMoreResult }) => {
-          if (!fetchMoreResult) return prev;
-          console.log("Fetched additional followers from network.");
-          return {
-            getFollowers: {
-              ...fetchMoreResult.getFollowers,
-              users: [
-                ...prev.getFollowers.users,
-                ...fetchMoreResult.getFollowers.users,
-              ],
-            },
-          };
-        },
       });
     }
   };
@@ -158,21 +115,21 @@ export default function Followers({ userId, searchQuery }) {
     follower.user.fullName.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const renderFollowerItem = ({ item }) => {
-    return (
-      <UserRelationsCard
-        user={item.user}
-        initialAction={item.relationshipStatus}
-        onActionPress={handleActionPress}
-        isPrivate={item.isPrivate}
-      />
-    );
-  };
+  const renderFollowerItem = ({ item }) => (
+    <UserRelationsCard
+      user={item.user}
+      initialAction={item.relationshipStatus}
+      onActionPress={handleActionPress}
+      isPrivate={item.isPrivate}
+    />
+  );
 
-  if (loading && !followers.length)
+  if (loadingCache || (loading && !followers.length)) {
     return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
   if (error) {
-    console.log("Error loading followers:", error.message);
+    console.error("Error loading followers:", error.message);
     return <Text>Error loading followers: {error.message}</Text>;
   }
 

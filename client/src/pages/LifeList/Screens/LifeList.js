@@ -1,6 +1,6 @@
-import React, { useEffect, useCallback } from "react";
-import { View, Text } from "react-native";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import React, { useEffect } from "react";
+import { View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { layoutStyles } from "../../../styles";
 import { useAuth } from "../../../contexts/AuthContext";
 import HeaderStack from "../../../components/Headers/HeaderStack";

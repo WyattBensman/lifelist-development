@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {
-  Image,
   StyleSheet,
   Dimensions,
   Pressable,
   ActivityIndicator,
 } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import {
   getImageFromFileSystem,
@@ -64,7 +64,7 @@ export default function CollageCard({
           <Image
             source={{ uri: imageUri }}
             style={styles.image}
-            resizeMode="cover"
+            contentFit="cover"
           />
         )
       )}

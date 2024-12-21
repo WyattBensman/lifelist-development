@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Animated,
   Dimensions,
-  Pressable,
   Text,
   PanResponder,
   ActivityIndicator,

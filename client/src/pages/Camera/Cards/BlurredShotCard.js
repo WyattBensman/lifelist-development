@@ -1,12 +1,6 @@
 import React, { useState, useEffect } from "react";
-import {
-  Dimensions,
-  Image,
-  StyleSheet,
-  View,
-  Text,
-  Pressable,
-} from "react-native";
+import { Dimensions, StyleSheet, View, Text, Pressable } from "react-native";
+import { Image } from "expo-image";
 import { BlurView } from "expo-blur";
 import { fetchCachedImageUri } from "../../../utils/cacheHelper";
 import moment from "moment";

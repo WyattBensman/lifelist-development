@@ -3,7 +3,7 @@ import { useNavigation } from "@react-navigation/native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import IconStatic from "../../../components/Icons/IconStatic";
 
-export default function FriendRequestCount() {
+export default function FriendRequestCount({ followRequestsCount }) {
   const navigation = useNavigation();
 
   return (
@@ -11,7 +11,9 @@ export default function FriendRequestCount() {
       onPress={() => navigation.navigate("FriendRequest")}
       style={[layoutStyles.flexRowSpace, styling.cardContent]}
     >
-      <Text style={styling.cardText}>Friend Request: 6</Text>
+      <Text style={styling.cardText}>
+        Friend Requests: {followRequestsCount}
+      </Text>
       <IconStatic
         name="chevron.forward"
         style={iconStyles.forwardArrow}

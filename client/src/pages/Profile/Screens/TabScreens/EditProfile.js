@@ -1,5 +1,4 @@
 import {
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -9,6 +8,7 @@ import {
   View,
   Pressable,
 } from "react-native";
+import { Image } from "expo-image";
 import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";

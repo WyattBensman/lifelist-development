@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Text, View, StyleSheet, Pressable, Image, Alert } from "react-native";
+import { Text, View, StyleSheet, Pressable, Alert } from "react-native";
+import { Image } from "expo-image";
 import { useNavigation } from "@react-navigation/native";
 import { useCameraPermissions } from "expo-camera";
 import ButtonSolid from "../../../components/Buttons/ButtonSolid";

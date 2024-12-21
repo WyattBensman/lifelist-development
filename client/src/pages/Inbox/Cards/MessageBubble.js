@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet } from "react-native";
+import { Image } from "expo-image";
 import { BASE_URL } from "../../../utils/config";
 
 export default function MessageBubble({ message, isCurrentUser }) {
