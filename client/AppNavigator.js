@@ -3,14 +3,13 @@ import { NavigationContainer } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NavigationTab from "./src/routes/NavigationTab";
 import AuthenticationStack from "./src/routes/AuthenticationStack";
-import { AuthProvider, useAuth } from "./src/contexts/AuthContext";
+import { useAuth } from "./src/contexts/AuthContext";
 import LoadingScreen from "./src/pages/Loading/LoadingScreen";
 import { DevelopingRollProvider } from "./src/contexts/DevelopingRollContext";
 import { CameraAlbumProvider } from "./src/contexts/CameraAlbumContext";
 import { CameraRollProvider } from "./src/contexts/CameraRollContext";
 import { LifeListProvider } from "./src/contexts/LifeListContext";
 import { AdminProfileProvider } from "./src/contexts/AdminProfileContext";
-import { ProfileCacheProvider } from "./src/contexts/ProfileCacheContext";
 
 export default function AppNavigator() {
   const [isEarlyAccessUnlocked, setIsEarlyAccessUnlocked] = useState(null);
@@ -43,7 +42,6 @@ export default function AppNavigator() {
         <AuthenticationStack initialRouteName="Login" />
       ) : (
         <AdminProfileProvider>
-          <ProfileCacheProvider>
             <LifeListProvider>
               <CameraAlbumProvider>
                 <CameraRollProvider>
@@ -53,7 +51,6 @@ export default function AppNavigator() {
                 </CameraRollProvider>
               </CameraAlbumProvider>
             </LifeListProvider>
-          </ProfileCacheProvider>
         </AdminProfileProvider>
       )}
     </NavigationContainer>

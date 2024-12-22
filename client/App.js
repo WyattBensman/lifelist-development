@@ -10,8 +10,8 @@ import { theme } from "./src/styles/theme.js";
 import { LifeListExperienceProvider } from "./src/contexts/LifeListExperienceContext.js";
 import { CreateProfileProvider } from "./src/contexts/CreateProfileContext.js";
 import { CreateCollageProvider } from "./src/contexts/CreateCollageContext.js";
-import "react-native-gesture-handler";
 import { ProfileProvider } from "./src/contexts/ProfileContext.js";
+import "react-native-gesture-handler";
 
 export default function App() {
   return (

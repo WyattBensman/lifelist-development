@@ -6,7 +6,6 @@ import {
   layoutStyles,
   popupStyles,
 } from "../../../styles";
-
 import IconStatic from "../../../components/Icons/IconStatic";
 import { useNavigation } from "@react-navigation/native";
 
