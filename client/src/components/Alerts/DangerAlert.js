@@ -28,40 +28,29 @@ const DangerAlert = ({
       onRequestClose={onRequestClose}
     >
       <Pressable style={styles.absolute} onPress={onRequestClose}>
-        <BlurView
-          style={styles.absolute}
-          blurType="dark"
-          blurAmount={10}
-          reducedTransparencyFallbackColor="black"
-        >
+        <BlurView style={styles.absolute} blurType="dark" blurAmount={10}>
           <View style={styles.centeredView}>
-            <KeyboardAvoidingView
-              style={styles.fullWidth}
-              behavior={Platform.OS === "ios" ? "padding" : "height"}
-              keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+            <Pressable
+              style={styles.modalView}
+              onPress={(e) => e.stopPropagation()}
             >
-              <Pressable
-                style={styles.modalView}
-                onPress={(e) => e.stopPropagation()}
-              >
-                {title && <Text style={styles.modalHeader}>{title}</Text>}
-                <Text style={styles.modalSubheader}>{message}</Text>
-                <View style={styles.actionButtons}>
-                  {/* Confirm Button */}
-                  <Pressable style={styles.confirmButton} onPress={onConfirm}>
-                    <Text style={styles.confirmButtonText}>
-                      {confirmButtonText}
-                    </Text>
-                  </Pressable>
-                  {/* Cancel Button */}
-                  <Pressable style={styles.cancelButton} onPress={onCancel}>
-                    <Text style={styles.cancelButtonText}>
-                      {cancelButtonText}
-                    </Text>
-                  </Pressable>
-                </View>
-              </Pressable>
-            </KeyboardAvoidingView>
+              {title && <Text style={styles.modalHeader}>{title}</Text>}
+              <Text style={styles.modalSubheader}>{message}</Text>
+              <View style={styles.actionButtons}>
+                {/* Confirm Button */}
+                <Pressable style={styles.confirmButton} onPress={onConfirm}>
+                  <Text style={styles.confirmButtonText}>
+                    {confirmButtonText}
+                  </Text>
+                </Pressable>
+                {/* Cancel Button */}
+                <Pressable style={styles.cancelButton} onPress={onCancel}>
+                  <Text style={styles.cancelButtonText}>
+                    {cancelButtonText}
+                  </Text>
+                </Pressable>
+              </View>
+            </Pressable>
           </View>
         </BlurView>
       </Pressable>

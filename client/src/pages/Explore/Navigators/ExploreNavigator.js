@@ -42,12 +42,14 @@ const styles = StyleSheet.create({
     borderBottomColor: "#1C1C1C",
   },
   navigatorButton: {
-    paddingVertical: 7,
-    paddingHorizontal: 10,
-    borderRadius: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 32,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12, // spacing between buttons
+    borderWidth: 1,
+    borderColor: "transparent",
   },
   activeNavigatorButton: {
     backgroundColor: "#6AB95230",

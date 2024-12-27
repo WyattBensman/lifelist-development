@@ -3,28 +3,10 @@ import { StyleSheet, View, Text, Animated } from "react-native";
 
 const IconFiller = () => <View style={{ width: 35, height: 35 }} />;
 
-export default function ViewShotHeader({
-  arrow,
-  date,
-  time,
-  ellipsis,
-  hasBorder = true,
-  dropdownVisible = false,
-  dropdownContent = null,
-}) {
-  const dropdownHeight = useRef(new Animated.Value(0)).current;
-
-  useEffect(() => {
-    Animated.timing(dropdownHeight, {
-      toValue: dropdownVisible ? 70 : 0,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-  }, [dropdownVisible]);
-
+export default function ViewShotHeader({ arrow, date, time, ellipsis }) {
   return (
     <View>
-      <View style={[styles.mainContainer, !hasBorder && styles.noBorder]}>
+      <View style={styles.mainContainer}>
         <View style={styles.contentContainer}>
           <View style={styles.sideContainer}>
             {arrow ? arrow : <IconFiller />}
@@ -50,11 +32,6 @@ export default function ViewShotHeader({
           </View>
         </View>
       </View>
-      <Animated.View
-        style={[styles.dropdownContainer, { height: dropdownHeight }]}
-      >
-        {dropdownVisible && dropdownContent}
-      </Animated.View>
     </View>
   );
 }
@@ -64,9 +41,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#121212",
     paddingTop: 60,
     paddingBottom: 24,
-  },
-  noBorder: {
-    borderBottomWidth: 0,
   },
   contentContainer: {
     marginHorizontal: 20,
@@ -103,9 +77,5 @@ const styles = StyleSheet.create({
   },
   iconSpacing: {
     alignItems: "flex-end",
-  },
-  dropdownContainer: {
-    overflow: "hidden",
-    backgroundColor: "#121212",
   },
 });

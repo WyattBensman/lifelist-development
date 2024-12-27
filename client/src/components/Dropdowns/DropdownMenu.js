@@ -29,7 +29,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-evenly",
     backgroundColor: "#121212",
-    padding: 10,
+    padding: 24,
   },
   dropdownItemContainer: {
     flexDirection: "column",

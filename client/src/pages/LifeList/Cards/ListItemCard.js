@@ -6,10 +6,11 @@ import { truncateText, capitalizeText } from "../../../utils/utils";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "../../../components/Icons/Icon";
 import IconStatic from "../../../components/Icons/IconStatic";
-import CustomAlert from "../../../components/Alerts/CustomAlert";
 import { SymbolView } from "expo-symbols";
 import { getImageFromFileSystem } from "../../../utils/newCacheHelper";
 import { useLifeList } from "../../../contexts/LifeListContext";
+import DangerAlert from "../../../components/Alerts/DangerAlert";
+import { symbolStyles } from "../../../../source/styles/components/symbolStyles";
 
 export default function ListItemCard({
   lifeListExperienceId,
@@ -127,7 +128,7 @@ export default function ListItemCard({
         style={[styles.listItemContainer, isSelected && styles.selected]}
       >
         <View style={styles.contentContainer}>
-          <Image source={{ uri: imageUri }} style={cardStyles.imageMd} />
+          <Image source={{ uri: imageUri }} style={styles.imageMd} />
           <View style={styles.textContainer}>
             <Text style={styles.title}>{truncatedTitle}</Text>
             <View style={styles.secondaryTextContainer}>
@@ -143,11 +144,13 @@ export default function ListItemCard({
             </View>
           </View>
           {!editMode && (
-            <Animated.View style={{ transform: [{ rotate: rotation }] }}>
+            <Animated.View
+              style={{ marginRight: 16, transform: [{ rotate: rotation }] }}
+            >
               <Icon
                 name="ellipsis"
                 tintColor={"#696969"}
-                style={iconStyles.ellipsis}
+                style={symbolStyles.ellipsis}
                 noFill={true}
                 onPress={toggleEditMode}
               />
@@ -158,7 +161,7 @@ export default function ListItemCard({
           <View style={styles.optionsContainer}>
             <IconStatic
               name="trash"
-              style={iconStyles.trashSm}
+              style={symbolStyles.trash}
               tintColor={"#696969"}
               onPress={() => onDelete(_id)}
             />
@@ -198,7 +201,7 @@ export default function ListItemCard({
           </View>
         )}
       </Pressable>
-      <CustomAlert
+      <DangerAlert
         visible={isAlertVisible}
         onRequestClose={() => setIsAlertVisible(false)}
         message="Are you sure you want to change the list? Your associated shots will be cleared."
@@ -228,19 +231,26 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+    marginLeft: 12,
+  },
+  imageMd: {
+    height: 48,
+    width: 48,
+    borderRadius: 4,
   },
   title: {
     fontWeight: "600",
+    fontSize: 14,
     color: "#fff",
   },
   secondaryTextContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 1.5,
   },
   secondaryText: {
     fontSize: 12,
     color: "#696969",
+    marginTop: 2,
   },
   photoIcon: {
     marginLeft: 6,
@@ -249,7 +259,7 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     flexDirection: "row",
-    marginTop: 8,
+    marginTop: 16,
     justifyContent: "space-between",
     width: "100%",
     alignItems: "center",
@@ -262,13 +272,13 @@ const styles = StyleSheet.create({
   optionsButton: {
     borderWidth: 1,
     borderColor: "#696969",
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 12,
+    paddingVertical: 7,
+    paddingHorizontal: 15,
+    borderRadius: 32,
   },
   optionsText: {
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: "600",
     color: "#fff",
   },
   spacer: {

@@ -164,7 +164,7 @@ export default function SetLoginInformationScreen() {
         {/* Container Bottom */}
         <View style={styles.bottomContainer}>
           <Image
-            source={require("../../../../public/branding/lifelist-icon.png")}
+            source={require("../../../../assets/branding/lifelist-icon.png")}
             style={styles.logo}
           />
         </View>
@@ -219,19 +219,17 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 16,
     marginBottom: 4,
-    textAlign: "left",
     width: "80%",
   },
   mainTitle: {
     color: "#fff",
     fontSize: 24,
     fontWeight: "700",
-    textAlign: "left",
     width: "80%",
     marginBottom: 8,
   },
   subtitle: {
-    color: "#c7c7c7",
+    color: "#696969",
     fontSize: 14,
     textAlign: "left",
     width: "80%",
@@ -240,7 +238,6 @@ const styles = StyleSheet.create({
   inputWrapper: {
     width: "80%",
     marginBottom: 16,
-    alignSelf: "center",
   },
   label: {
     color: "#fff",
@@ -257,16 +254,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#1c1c1c",
     width: "100%",
-  },
-  passwordWrapper: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  eyeIcon: {
-    color: "#6AB952",
-    fontSize: 16,
-    padding: 8,
   },
   bottomContainer: {
     alignItems: "center",

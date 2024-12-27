@@ -26,6 +26,13 @@ export default function UserRelationsCard({
   const [loadingImage, setLoadingImage] = useState(true); // Track loading state for images
   const navigation = useNavigation();
 
+  // Determine the text color based on the action
+  const getTextColor = () => {
+    if (action === "Following") return "#6AB952"; // Green for Following
+    if (action === "Pending") return "#5FC4ED"; // Blue for Pending
+    return "#FFFFFF"; // Default white
+  };
+
   useEffect(() => {
     const fetchAndCacheProfilePicture = async () => {
       try {
@@ -95,11 +102,10 @@ export default function UserRelationsCard({
           </Text>
         </Pressable>
         {currentUser._id !== user._id && (
-          <View style={styles.actionButtonContainer}>
+          <View style={styles.actionButtonSpacer}>
             <ButtonSmall
               text={action}
-              textColor={"#d4d4d4"}
-              backgroundColor={"#252525"}
+              textColor={getTextColor()}
               onPress={handleActionPress}
             />
           </View>
@@ -111,13 +117,10 @@ export default function UserRelationsCard({
 
 const styles = StyleSheet.create({
   listItemContainer: {
-    flexDirection: "column",
-    justifyContent: "space-between",
+    flexDirection: "row",
     alignItems: "center",
+    padding: 8,
     marginTop: 8,
-    marginLeft: 8,
-    marginRight: 16,
-    flex: 1,
     borderRadius: 8,
   },
   contentContainer: {
@@ -127,8 +130,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   imageMd: {
-    height: 50,
-    width: 50,
+    height: 48,
+    width: 48,
     borderRadius: 4,
   },
   textContainer: {
@@ -144,8 +147,7 @@ const styles = StyleSheet.create({
     color: "#d4d4d4",
     marginTop: 1.5,
   },
-  actionButtonContainer: {
-    borderRadius: 8,
-    alignSelf: "center",
+  actionButtonSpacer: {
+    marginRight: 8,
   },
 });

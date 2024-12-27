@@ -12,7 +12,9 @@ export default function AlbumCard({ album, navigation }) {
       onPress={() => navigation.navigate("ViewAlbum", { albumId: album._id })}
     >
       <Image source={{ uri: album.coverImage }} style={styles.albumImage} />
+      {/* CONVERT TO PRIMARY TX+TEXT */}
       <Text style={styles.albumTitle}>{truncatedTitle}</Text>
+      {/* CONVERT TO SECONDARY TX+TEXT */}
       <Text style={styles.albumCount}>{album.shotsCount} shots</Text>
     </Pressable>
   );
@@ -33,6 +35,6 @@ const styles = StyleSheet.create({
   albumCount: {
     marginTop: 2,
     fontSize: 12,
-    color: "#d4d4d4",
+    color: "#696969",
   },
 });

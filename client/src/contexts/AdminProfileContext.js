@@ -13,6 +13,7 @@ import {
   getMetadataFromCache,
 } from "../utils/newCacheHelper";
 import { useAuth } from "./AuthContext";
+import * as FileSystem from "expo-file-system";
 import { DELETE_MOMENT, POST_MOMENT } from "../utils/mutations/momentMutations";
 
 const AdminProfileContext = createContext();
@@ -35,8 +36,6 @@ export const AdminProfileProvider = ({ children }) => {
   const [repostsCursor, setRepostsCursor] = useState(null);
   const [hasNextCollagesPage, setHasNextCollagesPage] = useState(false);
   const [hasNextRepostsPage, setHasNextRepostsPage] = useState(false);
-
-  // Start for Counts
   const [counts, setCounts] = useState({
     followersCount: 0,
     followingCount: 0,
@@ -50,6 +49,7 @@ export const AdminProfileProvider = ({ children }) => {
   const MOMENTS_CACHE_KEY = `moments_cache_${currentUser}`;
   const PROFILE_PICTURE_KEY = `admin_profile_picture_${currentUser}`;
   const COUNTS_CACHE_KEY = `admin_profile_counts_${currentUser}`;
+  const COUNT_TTL = 3 * 60 * 1000; // 3 minutes TTL
 
   // === Utility: Check for Active Moments ===
   const checkActiveMoments = (moments) => {
@@ -60,6 +60,48 @@ export const AdminProfileProvider = ({ children }) => {
           : new Date(moment.expiresAt); // Handle Date or number
       return expiresAt > new Date();
     });
+  };
+
+  // === TTL-Based Count Fetching Logic ===
+  const shouldFetchCounts = async () => {
+    const lastFetched = await getMetadataFromCache(
+      `${COUNTS_CACHE_KEY}_lastFetched`
+    );
+    const now = Date.now();
+    return !lastFetched || now - lastFetched > COUNT_TTL;
+  };
+
+  const fetchAndCacheCounts = async () => {
+    try {
+      const { data } = await client.query({
+        query: GET_USER_COUNTS,
+        variables: { userId: currentUser },
+      });
+
+      if (data) {
+        const { followersCount, followingCount, collagesCount } =
+          data.getUserCounts;
+        setCounts({ followersCount, followingCount, collagesCount });
+
+        // Cache counts and timestamp
+        await saveMetadataToCache(COUNTS_CACHE_KEY, {
+          followersCount,
+          followingCount,
+          collagesCount,
+        });
+        await saveMetadataToCache(
+          `${COUNTS_CACHE_KEY}_lastFetched`,
+          Date.now()
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching and caching user counts:", error);
+    }
+  };
+
+  // === Manual Refresh Counts Method ===
+  const refreshUserCounts = async () => {
+    await fetchAndCacheCounts();
   };
 
   // === Load Cached Data ===
@@ -84,9 +126,6 @@ export const AdminProfileProvider = ({ children }) => {
       }
 
       if (cachedMoments) {
-        console.log("cachedMoments", cachedMoments);
-        console.log("hasActiveMoments", hasActiveMoments);
-
         const validMoments = cachedMoments.filter(
           (moment) => new Date(moment.expiresAt) > new Date()
         );
@@ -143,6 +182,10 @@ export const AdminProfileProvider = ({ children }) => {
         setReposts(repostedCollages.items || []);
         setMoments(moments || []);
         setHasActiveMoments(checkActiveMoments(moments));
+
+        //
+        await manageCollageThumbnails();
+        await manageRepostThumbnails();
 
         // Update cursors
         setCollagesCursor(collages.nextCursor);
@@ -259,6 +302,92 @@ export const AdminProfileProvider = ({ children }) => {
     }
   };
 
+  // === Thumbnail Caching Helpers ===
+  const getCachedThumbnailKeys = async (prefix) => {
+    try {
+      const keys = await FileSystem.readDirectoryAsync(
+        FileSystem.documentDirectory
+      );
+      return keys.filter((key) => key.startsWith(prefix));
+    } catch (error) {
+      console.error("Error retrieving cached thumbnail keys:", error);
+      return [];
+    }
+  };
+
+  const manageCollageThumbnails = async () => {
+    const MAX_THUMBNAILS = 15;
+
+    try {
+      // Extract the first 15 collages
+      const prioritizedCollages = collages.slice(0, MAX_THUMBNAILS);
+
+      // Save thumbnails for the first 15 collages
+      for (const collage of prioritizedCollages) {
+        const imageKey = `collage_thumbnail_${collage._id}`;
+        const existingThumbnail = await getImageFromFileSystem(imageKey);
+
+        if (!existingThumbnail) {
+          await saveImageToFileSystem(imageKey, collage.coverImage);
+        }
+      }
+
+      // Remove thumbnails not in the first 15
+      const cachedKeys = await getCachedThumbnailKeys("collage_thumbnail_");
+      const prioritizedKeys = prioritizedCollages.map(
+        (collage) => `collage_thumbnail_${collage._id}`
+      );
+
+      const keysToRemove = cachedKeys.filter(
+        (key) => !prioritizedKeys.includes(key)
+      );
+
+      for (const key of keysToRemove) {
+        const uri = await getImageFromFileSystem(key);
+        if (uri) {
+          await FileSystem.deleteAsync(uri);
+        }
+      }
+    } catch (error) {
+      console.error("Error managing collage thumbnails:", error);
+    }
+  };
+
+  const manageRepostThumbnails = async () => {
+    const MAX_THUMBNAILS = 15;
+
+    try {
+      const prioritizedReposts = reposts.slice(0, MAX_THUMBNAILS);
+
+      for (const repost of prioritizedReposts) {
+        const imageKey = `repost_thumbnail_${repost._id}`;
+        const existingThumbnail = await getImageFromFileSystem(imageKey);
+
+        if (!existingThumbnail) {
+          await saveImageToFileSystem(imageKey, repost.coverImage);
+        }
+      }
+
+      const cachedKeys = await getCachedThumbnailKeys("repost_thumbnail_");
+      const prioritizedKeys = prioritizedReposts.map(
+        (repost) => `repost_thumbnail_${repost._id}`
+      );
+
+      const keysToRemove = cachedKeys.filter(
+        (key) => !prioritizedKeys.includes(key)
+      );
+
+      for (const key of keysToRemove) {
+        const uri = await getImageFromFileSystem(key);
+        if (uri) {
+          await FileSystem.deleteAsync(uri);
+        }
+      }
+    } catch (error) {
+      console.error("Error managing repost thumbnails:", error);
+    }
+  };
+
   // === Mutations ===
   const [postMomentMutation] = useMutation(POST_MOMENT);
   const [deleteMomentMutation] = useMutation(DELETE_MOMENT);
@@ -277,6 +406,7 @@ export const AdminProfileProvider = ({ children }) => {
 
       // Save updated collages to cache
       await saveMetadataToCache(COLLAGES_CACHE_KEY, [...collages, collage]);
+      await manageCollageThumbnails();
 
       // Save updated counts to cache
       await saveMetadataToCache(COUNTS_CACHE_KEY, {
@@ -302,6 +432,7 @@ export const AdminProfileProvider = ({ children }) => {
 
       // Save updated collages to cache
       await saveMetadataToCache(COLLAGES_CACHE_KEY, updatedCollages);
+      await manageCollageThumbnails();
 
       // Save updated counts to cache
       await saveMetadataToCache(COUNTS_CACHE_KEY, {
@@ -317,12 +448,14 @@ export const AdminProfileProvider = ({ children }) => {
   const addRepost = async (repost) => {
     setReposts((prev) => [...prev, repost]);
     await saveMetadataToCache(REPOSTS_CACHE_KEY, [...reposts, repost]);
+    await manageRepostThumbnails();
   };
 
   const removeRepost = async (repostId) => {
     const updatedReposts = reposts.filter((r) => r._id !== repostId);
     setReposts(updatedReposts);
     await saveMetadataToCache(REPOSTS_CACHE_KEY, updatedReposts);
+    await manageRepostThumbnails();
   };
 
   // === Moment State Management ===

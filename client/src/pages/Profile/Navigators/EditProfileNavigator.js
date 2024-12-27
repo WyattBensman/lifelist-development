@@ -11,8 +11,8 @@ import Animated, {
   withTiming,
   useAnimatedStyle,
 } from "react-native-reanimated";
-import CustomAlert from "../../../components/Alerts/CustomAlert";
 import { useAdminProfile } from "../../../contexts/AdminProfileContext";
+import DangerAlert from "../../../components/Alerts/DangerAlert";
 
 const { width } = Dimensions.get("window");
 
@@ -109,8 +109,8 @@ export default function EditProfileNavigator() {
         {renderScreen()}
       </Animated.View>
 
-      {/* Custom Alert for unsaved changes */}
-      <CustomAlert
+      {/* Danger Alert */}
+      <DangerAlert
         visible={showAlert}
         onRequestClose={() => setShowAlert(false)}
         title="Unsaved Changes"
@@ -134,13 +134,15 @@ const styles = StyleSheet.create({
   },
   navigatorButton: {
     width: "26%",
-    paddingVertical: 7,
-    paddingHorizontal: 12,
-    borderRadius: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 32,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 6,
     backgroundColor: "#1C1C1C",
+    borderWidth: 1,
+    borderColor: "transparent",
   },
   activeNavigatorButton: {
     backgroundColor: "#6AB95230",

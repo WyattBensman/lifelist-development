@@ -62,6 +62,7 @@ export default function ListViewNavigator({
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.navigatorContainer}
+          style={{ marginLeft: 6 }}
         >
           {categories.map((category) => (
             <Pressable
@@ -94,7 +95,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   navigatorWrapper: {
-    flex: 0.085,
+    marginVertical: 12,
   },
   navigatorContainer: {
     flexDirection: "row",
@@ -102,17 +103,18 @@ const styles = StyleSheet.create({
   },
   navigatorButton: {
     backgroundColor: "#1C1C1C",
-    marginHorizontal: 6,
-    paddingVertical: 10,
+    marginRight: 12,
+    paddingVertical: 8,
     paddingHorizontal: 16,
-    borderRadius: 16,
+    borderRadius: 32,
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "transparent",
   },
   activeNavigatorButton: {
     backgroundColor: "#6AB95230",
     borderWidth: 1,
-    paddingVertical: 9,
     borderColor: "#6AB95250",
   },
   navigatorText: {

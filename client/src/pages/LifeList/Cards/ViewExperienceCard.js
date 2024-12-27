@@ -11,9 +11,7 @@ export default function ViewExperienceCard({
   associatedShots,
   navigation,
   index,
-  fromAlbum,
 }) {
-  console.log("Shot", shot);
 
   return (
     <Pressable

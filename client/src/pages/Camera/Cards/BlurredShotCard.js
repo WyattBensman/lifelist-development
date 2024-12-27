@@ -7,8 +7,8 @@ import moment from "moment";
 
 const { width } = Dimensions.get("window");
 const spacing = 1.5;
-const imageWidth = (width - spacing * 2) / 2;
-const imageHeight = (imageWidth * 3) / 2;
+const shotWidth = (width - spacing * 2) / 2;
+const shotHeight = (shotWidth * 3) / 2;
 
 export default function BlurredShotCard({ shot, onShotDeveloped, onPress }) {
   const [timeLeft, setTimeLeft] = useState(null);
@@ -88,10 +88,11 @@ export default function BlurredShotCard({ shot, onShotDeveloped, onPress }) {
 
 const styles = StyleSheet.create({
   container: {
-    width: imageWidth,
-    height: imageHeight,
+    width: shotWidth,
+    height: shotHeight,
     marginBottom: spacing,
-    marginRight: spacing,
+    position: "relative",
+    overflow: "hidden",
   },
   imageContainer: {
     width: "100%",
@@ -101,13 +102,11 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: "100%",
-    borderRadius: 10,
   },
   blurView: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10,
   },
   loadingText: {
     textAlign: "center",

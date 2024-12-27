@@ -292,6 +292,8 @@ export default function Explore({ navigation }) {
     }
   };
 
+  console.log(users);
+
   return (
     <View style={layoutStyles.wrapper}>
       <ExploreHeader
@@ -328,10 +330,10 @@ export default function Explore({ navigation }) {
               ) : (
                 <FlatList
                   data={users}
-                  keyExtractor={(item) => item._id.toString()}
+                  keyExtractor={(item) => item.user._id.toString()}
                   renderItem={({ item }) => (
                     <SearchUserCard
-                      user={item}
+                      user={item.user}
                       navigation={navigation}
                       cacheVisitedProfile={cacheVisitedProfile}
                     />

@@ -19,7 +19,7 @@ export default function ParticipantCard({ participant, onRequestClose }) {
   };
 
   return (
-    <View style={styles.listItemContainer}>
+    <View style={{ flex: 1 }}>
       <Pressable onPress={handleProfilePress} style={styles.contentContainer}>
         <Image source={{ uri: profilePictureUrl }} style={styles.imageMd} />
         <View style={styles.textContainer}>
@@ -41,12 +41,6 @@ export default function ParticipantCard({ participant, onRequestClose }) {
 }
 
 const styles = StyleSheet.create({
-  listItemContainer: {
-    flexDirection: "column",
-    justifyContent: "space-between",
-    alignItems: "center",
-    flex: 1,
-  },
   contentContainer: {
     flex: 1,
     flexDirection: "row",
@@ -54,28 +48,26 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   imageMd: {
-    height: 50,
-    width: 50,
+    height: 48,
+    width: 48,
     borderRadius: 4,
+    backgroundColor: "#252525", // Fallback background color
   },
   textContainer: {
     flex: 1,
     marginLeft: 12,
-    justifyContent: "center",
   },
   primaryText: {
     fontWeight: "600",
-    marginTop: 4,
-    color: "#fff",
+    fontSize: 14,
+    color: "#FFFFFF",
   },
   secondaryText: {
     fontSize: 12,
-    color: "#d4d4d4",
-    marginTop: 1.5,
+    color: "#696969",
+    marginTop: 2,
   },
   iconContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 10,
+    marginRight: 16,
   },
 });

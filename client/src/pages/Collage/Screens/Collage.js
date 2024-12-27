@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
     color: "#fff",
   },
   dateButton: {
-    backgroundColor: "#1C1C1C", // Dark background for Date button
+    backgroundColor: "#252525", // Dark background for Date button
     borderRadius: 20, // Rounded corners
     paddingVertical: 6,
     paddingHorizontal: 12,
@@ -466,7 +466,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   dateButtonText: {
-    color: "#696969", // Light grey text
+    color: "#fff", // Light grey text
     fontSize: 12,
     fontWeight: "500",
   },

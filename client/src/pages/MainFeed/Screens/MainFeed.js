@@ -131,9 +131,7 @@ export default function MainFeed({ route }) {
       {/* Top Header */}
       <View onLayout={onHeaderLayout}>
         <HeaderMain
-          titleComponent={
-            <Text style={[headerStyles.headerHeavy]}>LifeList</Text>
-          }
+          titleText={"LifeList"}
           icon1={
             <Icon
               name="plus"

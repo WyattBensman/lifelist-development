@@ -5,16 +5,14 @@ import { capitalizeText, truncateText } from "../../../utils/utils";
 import { SymbolView } from "expo-symbols";
 import { getImageFromFileSystem } from "../../../utils/newCacheHelper";
 
-const screenWidth = Dimensions.get("window").width;
-const cardWidth = screenWidth * 0.44;
-const imageHeight = cardWidth * 1.3375;
-const cardHeight = imageHeight + 44;
-
 export default function ExperienceCard({
   experience,
   lifeListExperienceId,
   hasAssociatedShots,
   navigation,
+  cardWidth,
+  imageHeight,
+  cardHeight,
 }) {
   const [imageUri, setImageUri] = useState(null);
 
@@ -40,14 +38,12 @@ export default function ExperienceCard({
   };
 
   return (
-    <Pressable onPress={handleNavigateToDetails} disabled={!hasAssociatedShots}>
-      <View
-        style={[
-          styles.cardContainer,
-          { width: cardWidth, height: cardHeight },
-          hasAssociatedShots && styles.cardShadow,
-        ]}
-      >
+    <Pressable
+      onPress={handleNavigateToDetails}
+      disabled={!hasAssociatedShots}
+      style={{ width: cardWidth }}
+    >
+      <View style={[styles.cardContainer, { height: cardHeight }]}>
         <Image
           source={{ uri: imageUri }}
           style={[styles.image, { height: imageHeight }]}
@@ -60,7 +56,6 @@ export default function ExperienceCard({
               <SymbolView
                 name="photo.on.rectangle"
                 style={styles.photoIcon}
-                type="monochrome"
                 tintColor="#696969"
               />
             )}
@@ -73,45 +68,33 @@ export default function ExperienceCard({
 
 const styles = StyleSheet.create({
   cardContainer: {
-    marginRight: 6,
-    // backgroundColor: "#1C1C1C",
+    marginRight: 8,
     borderRadius: 6,
   },
   image: {
-    width: "100%",
     borderRadius: 6,
   },
   title: {
     fontWeight: "600",
-    marginTop: 4,
-    color: "#fff",
+    fontSize: 14,
+    color: "#FFFFFF",
   },
   secondaryTextContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 1.5,
   },
   secondaryText: {
     fontSize: 12,
     color: "#696969",
+    marginTop: 2,
   },
   photoIcon: {
     marginLeft: 6,
     width: 15,
-    height: 12.04,
+    height: 12,
   },
   spacer: {
+    marginTop: 6,
     marginLeft: 8,
-  },
-  photoCircleIcon: {
-    position: "absolute",
-    top: 7,
-    right: 7,
-    width: 22.5,
-    height: 22.5,
-    borderRadius: 15,
-    backgroundColor: "rgba(38, 40, 40, 0.1)",
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

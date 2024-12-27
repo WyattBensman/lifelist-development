@@ -17,29 +17,6 @@ export const CreateProfileProvider = ({ children }) => {
     birthday: "",
   });
 
-  const [cameraAccessGranted, setCameraAccessGranted] = useState(false);
-  const [contactsAccessGranted, setContactsAccessGranted] = useState(false);
-
-  // Camera Permissions: Hook for requesting and checking
-  const [cameraPermissionStatus, requestCameraPermission] =
-    useCameraPermissions();
-
-  // Request camera access
-  const handleCameraPermission = async () => {
-    if (!cameraPermissionStatus?.granted) {
-      const { status } = await requestCameraPermission();
-      setCameraAccessGranted(status === "granted");
-    } else {
-      setCameraAccessGranted(true);
-    }
-  };
-
-  // Request contacts access
-  const handleContactsPermission = async () => {
-    const { status } = await Contacts.requestPermissionsAsync();
-    setContactsAccessGranted(status === "granted");
-  };
-
   // Update profile fields
   const updateProfile = (field, value) => {
     setProfile((prev) => ({ ...prev, [field]: value }));
@@ -68,10 +45,6 @@ export const CreateProfileProvider = ({ children }) => {
         profile,
         updateProfile,
         resetProfile,
-        cameraAccessGranted,
-        contactsAccessGranted,
-        handleCameraPermission,
-        handleContactsPermission,
       }}
     >
       {children}
@@ -81,3 +54,26 @@ export const CreateProfileProvider = ({ children }) => {
 
 // Custom hook to use the CreateProfileContext
 export const useCreateProfileContext = () => useContext(CreateProfileContext);
+
+const [cameraAccessGranted, setCameraAccessGranted] = useState(false);
+const [contactsAccessGranted, setContactsAccessGranted] = useState(false);
+
+// Camera Permissions: Hook for requesting and checking
+const [cameraPermissionStatus, requestCameraPermission] =
+  useCameraPermissions();
+
+// Request camera access
+const handleCameraPermission = async () => {
+  if (!cameraPermissionStatus?.granted) {
+    const { status } = await requestCameraPermission();
+    setCameraAccessGranted(status === "granted");
+  } else {
+    setCameraAccessGranted(true);
+  }
+};
+
+// Request contacts access
+const handleContactsPermission = async () => {
+  const { status } = await Contacts.requestPermissionsAsync();
+  setContactsAccessGranted(status === "granted");
+};

@@ -20,9 +20,7 @@ export default function RecommendedCollageCard({
         />
         <View style={styles.spacer}>
           <Text style={styles.title}>{fullName}</Text>
-          <View style={styles.secondaryTextContainer}>
-            <Text style={styles.secondaryText}>{username}</Text>
-          </View>
+          <Text style={styles.secondaryText}>@{username}</Text>
         </View>
       </View>
     </Pressable>
@@ -38,14 +36,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
     color: "#fff",
   },
-  secondaryTextContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 1.5,
-  },
   secondaryText: {
     fontSize: 12,
     color: "#696969",
+    marginTop: 2,
   },
   spacer: {
     marginLeft: 8,

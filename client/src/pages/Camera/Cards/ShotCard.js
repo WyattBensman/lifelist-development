@@ -4,7 +4,7 @@ import { Image } from "expo-image";
 import Checkbox from "expo-checkbox";
 
 const { width } = Dimensions.get("window");
-const spacing = 1.5;
+const spacing = 2;
 const shotWidth = (width - spacing * 2) / 3;
 const shotHeight = (shotWidth * 3) / 2;
 
@@ -51,6 +51,7 @@ const styles = StyleSheet.create({
     width: shotWidth,
     height: shotHeight,
     marginBottom: spacing,
+    position: "relative",
   },
   shotContainer: {
     width: "100%",

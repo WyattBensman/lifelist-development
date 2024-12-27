@@ -6,7 +6,7 @@ import {
   getMetadataFromCache,
   saveImageToFileSystem,
   deleteImageFromFileSystem,
-} from "../utils/newCacheHelper";
+} from "../utils/cacheHelper";
 
 const DevelopingRollContext = createContext();
 

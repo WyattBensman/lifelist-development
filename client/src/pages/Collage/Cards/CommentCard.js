@@ -4,7 +4,7 @@ import { Image } from "expo-image";
 import { Swipeable } from "react-native-gesture-handler";
 import { useMutation } from "@apollo/client";
 import { LIKE_COMMENT, UNLIKE_COMMENT } from "../../../utils/mutations/index"; // Ensure correct import path
-import { cardStyles, iconStyles, layoutStyles } from "../../../styles";
+import { iconStyles, layoutStyles } from "../../../styles";
 import { BASE_URL } from "../../../utils/config";
 import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "../../../contexts/AuthContext"; // Ensure correct import path
@@ -108,7 +108,7 @@ export default function CommentCard({
         <Pressable style={styles.reportButton} onPress={handleReportPress}>
           <IconStatic
             name="flag"
-            tintColor={"#FF3B30"}
+            tintColor={"#fff"}
             style={iconStyles.trashSm}
             onPress={handleReportPress}
           />
@@ -123,7 +123,7 @@ export default function CommentCard({
         <View style={layoutStyles.flexRow}>
           <Image
             source={{ uri: `${BASE_URL}${comment.author.profilePicture}` }}
-            style={[cardStyles.imageSm, styles.profilePicture]}
+            style={[styles.image, styles.profilePicture]}
           />
           <View style={[layoutStyles.wrapper, { backgroundColor: "#1c1c1c" }]}>
             <View
@@ -139,7 +139,7 @@ export default function CommentCard({
                   >
                     {comment.author.fullName}
                   </Text>
-                  <Text style={{ color: "#A1A1A1", fontSize: 12 }}>
+                  <Text style={{ color: "#696969", fontSize: 12 }}>
                     {formatDistanceToNow(new Date(comment.createdAt))} ago
                   </Text>
                 </View>
@@ -151,7 +151,7 @@ export default function CommentCard({
                     name={isLiked ? "heart.fill" : "heart"}
                     style={iconStyles.likeComment}
                     weight={"medium"}
-                    tintColor={isLiked ? "#ff0000" : "#A1A1A1"}
+                    tintColor={isLiked ? "#ff0000" : "#696969"}
                     onPress={handleLikePress}
                   />
                 </Pressable>
@@ -167,14 +167,14 @@ export default function CommentCard({
 
 const styles = StyleSheet.create({
   profilePicture: {
-    backgroundColor: "#d4d4d4",
+    backgroundColor: "#696969",
     marginLeft: 16,
   },
   actionsContainer: {
     flexDirection: "row",
   },
   reportButton: {
-    backgroundColor: "#696969", // grey background color
+    backgroundColor: "#FF3B30", // grey background color
     justifyContent: "center",
     alignItems: "center",
     width: 85,
@@ -184,6 +184,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: 85,
+  },
+  image: {
+    height: 40,
+    width: 40,
+    borderRadius: 4,
+    marginRight: 6,
   },
   buttonText: {
     color: "#ffffff",
@@ -195,7 +201,7 @@ const styles = StyleSheet.create({
     marginRight: 16,
   },
   likeCount: {
-    color: "#A1A1A1",
-    fontSize: 12,
+    color: "#696969",
+    fontSize: 14,
   },
 });

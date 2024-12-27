@@ -34,6 +34,9 @@ export default function AllExperiences({ lifeList, navigation }) {
       lifeListExperienceId={item._id}
       hasAssociatedShots={item.hasAssociatedShots}
       navigation={navigation}
+      cardWidth={cardWidth}
+      imageHeight={imageHeight}
+      cardHeight={cardHeight}
     />
   );
 

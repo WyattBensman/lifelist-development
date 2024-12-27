@@ -5,13 +5,16 @@ import React, {
   useState,
 } from "react";
 import { View, TextInput, StyleSheet } from "react-native";
-import Icon from "../Icons/Icon";
 import { iconStyles } from "../../styles/iconStyles";
+import Icon from "../../../source/icons/Icon";
 
 const SearchBarStandard = forwardRef(
   ({ searchQuery, setSearchQuery, handleSearch, onFocusChange }, ref) => {
     const inputRef = useRef(null); // Internal ref for TextInput
     const [isFocused, setIsFocused] = useState(false);
+
+    console.log("isFocused:", isFocused);
+    console.log("searchQuery:", searchQuery);
 
     // Expose the `blur` method to parent via the `ref`
     useImperativeHandle(ref, () => ({
@@ -27,7 +30,7 @@ const SearchBarStandard = forwardRef(
         {!isFocused && searchQuery === "" && (
           <Icon
             name="magnifyingglass"
-            tintColor={"#d4d4d4"}
+            tintColor={"#fff"}
             fill={false}
             style={iconStyles.magnifyingGlass}
             noFill={true}
@@ -37,7 +40,7 @@ const SearchBarStandard = forwardRef(
           ref={inputRef} // Attach the internal ref to TextInput
           style={styles.input}
           placeholder="Search..."
-          placeholderTextColor="#d4d4d4"
+          placeholderTextColor="#fff"
           value={searchQuery}
           onChangeText={setSearchQuery}
           onSubmitEditing={handleSearch}
@@ -58,17 +61,15 @@ const SearchBarStandard = forwardRef(
 const styles = StyleSheet.create({
   container: {
     width: "100%",
-    height: 35,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#252525",
-    borderRadius: 8,
-    paddingHorizontal: 8,
+    backgroundColor: "#1C1C1C",
+    borderRadius: 6,
+    padding: 12,
   },
   input: {
-    flex: 1,
     marginLeft: 4,
-    color: "#d4d4d4",
+    color: "#fff",
   },
 });
 

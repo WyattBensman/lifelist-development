@@ -5,8 +5,6 @@ import {
   TextInput,
   StyleSheet,
   FlatList,
-  ActivityIndicator,
-  Pressable,
   Dimensions,
   Keyboard,
 } from "react-native";
@@ -124,49 +122,25 @@ export default function Comments({
       }
     >
       <View style={styles.popupContainer}>
-        <View style={styles.separator} />
-        {loading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
-        ) : error ? (
-          <Text>Error: {error.message}</Text>
-        ) : (
-          <FlatList
-            data={data?.getComments || []}
-            renderItem={({ item }) => (
-              <View style={[layoutStyles.flex, styles.cardContainer]}>
-                <CommentCard
-                  comment={item}
-                  onDelete={handleDeleteComment}
-                  onUpdate={updateComment}
-                  collageAuthorId={collageAuthorId}
-                  onRequestClose={onRequestClose}
-                />
-              </View>
-            )}
-            keyExtractor={(item) => item._id}
-            ListEmptyComponent={
-              <Text style={styles.emptyText}>No comments yet.</Text>
-            }
-            contentContainerStyle={styles.flatListContent}
-          />
-        )}
-      </View>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Add a comment..."
-          placeholderTextColor="#aaa"
-          value={comment}
-          onChangeText={handleCommentChange}
-          editable={!mutationLoading} // Disable input during mutation
+        <FlatList
+          data={data?.getComments || []}
+          renderItem={({ item }) => (
+            <View style={[layoutStyles.flex, styles.cardContainer]}>
+              <CommentCard
+                comment={item}
+                onDelete={handleDeleteComment}
+                onUpdate={updateComment}
+                collageAuthorId={collageAuthorId}
+                onRequestClose={onRequestClose}
+              />
+            </View>
+          )}
+          keyExtractor={(item) => item._id}
+          ListEmptyComponent={
+            <Text style={styles.emptyText}>No comments yet.</Text>
+          }
+          contentContainerStyle={styles.flatListContent}
         />
-        {mutationLoading ? (
-          <ActivityIndicator size="small" color="#0000ff" />
-        ) : (
-          <Pressable style={styles.postButton} onPress={handleCommentSubmit}>
-            <Text style={styles.postButtonText}>Post</Text>
-          </Pressable>
-        )}
       </View>
     </BottomPopup>
   );
@@ -175,7 +149,6 @@ export default function Comments({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "space-between",
   },
   cardContainer: {
     paddingBottom: 12,
@@ -192,7 +165,29 @@ const styles = StyleSheet.create({
   popupContainer: {
     flex: 1,
   },
-  inputContainer: {
+});
+
+{
+  /* <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Add a comment..."
+          placeholderTextColor="#aaa"
+          value={comment}
+          onChangeText={handleCommentChange}
+          editable={!mutationLoading} // Disable input during mutation
+        />
+        {mutationLoading ? (
+          <ActivityIndicator size="small" color="#0000ff" />
+        ) : (
+          <Pressable style={styles.postButton} onPress={handleCommentSubmit}>
+            <Text style={styles.postButtonText}>Post</Text>
+          </Pressable>
+        )}
+      </View> */
+}
+
+/*   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
@@ -229,5 +224,4 @@ const styles = StyleSheet.create({
     color: "#696969",
     textAlign: "center",
     marginTop: 20,
-  },
-});
+  }, */

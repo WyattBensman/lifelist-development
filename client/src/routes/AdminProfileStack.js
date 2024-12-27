@@ -3,15 +3,11 @@ import EditProfile from "../pages/Profile/Screens/EditProfile";
 import Saved from "../pages/Profile/Screens/Saved";
 import Archived from "../pages/Profile/Screens/Archived";
 import BlockedUsers from "../pages/Profile/Screens/BlockedUsers";
-import PrivacyGroups from "../pages/Profile/Screens/PrivacyGroups";
-import PrivacyGroup from "../pages/Profile/Screens/PrivacyGroup";
 import AdminProfile from "../pages/Profile/Screens/AdminProfile";
 import ProfileStack from "./ProfileStack";
 import NavigationTab from "./NavigationTab";
 import ViewCollage from "../pages/Collage/Screens/ViewCollage";
 import CameraStack from "./CameraStack";
-import AddUsersToPrivacyGroup from "../pages/Profile/Screens/AddUsersToPrivacyGroup";
-import CreatePrivacyGroup from "../pages/Profile/Screens/CreatePrivacyGroup";
 import InviteFriends from "../pages/Profile/Screens/InviteFriends";
 import Tagged from "../pages/Profile/Screens/Tagged";
 import CollageStack from "./CollageStack";
@@ -19,7 +15,6 @@ import Moments from "../pages/Profile/Screens/Moments";
 import Report from "../pages/Report/Report";
 import Notifications from "../pages/Inbox/Screens/Notifications";
 import FriendRequest from "../pages/Inbox/Screens/FriendRequest";
-import UserRelations from "../pages/Profile/Screens/UserRelations";
 
 const Stack = createNativeStackNavigator();
 
@@ -60,26 +55,6 @@ export default function AdminProfileStack() {
       <Stack.Screen
         name="Archived"
         component={Archived}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="PrivacyGroups"
-        component={PrivacyGroups}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="PrivacyGroup"
-        component={PrivacyGroup}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="AddUsersToPrivacyGroup"
-        component={AddUsersToPrivacyGroup}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="CreatePrivacyGroup"
-        component={CreatePrivacyGroup}
         options={{ headerShown: false }}
       />
       <Stack.Screen

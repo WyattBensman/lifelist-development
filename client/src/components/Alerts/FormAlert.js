@@ -36,11 +36,7 @@ const FormAlert = ({ visible, onRequestClose, title, subheader, onSave }) => {
           reducedTransparencyFallbackColor="black"
         >
           <View style={styles.centeredView}>
-            <KeyboardAvoidingView
-              style={styles.fullWidth}
-              behavior={Platform.OS === "ios" ? "padding" : "height"}
-              keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
-            >
+            <View>
               <Pressable
                 style={styles.modalView}
                 onPress={(e) => e.stopPropagation()}
@@ -69,7 +65,7 @@ const FormAlert = ({ visible, onRequestClose, title, subheader, onSave }) => {
                   </Pressable>
                 </View>
               </Pressable>
-            </KeyboardAvoidingView>
+            </View>
           </View>
         </BlurView>
       </Pressable>
@@ -123,14 +119,13 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "100%",
-    padding: 9,
+    padding: 12,
     borderRadius: 8,
     backgroundColor: "#252525",
     color: "#fff",
     fontSize: 14,
     textAlign: "left",
-    marginTop: 16,
-    marginBottom: 20,
+    marginVertical: 16,
   },
   actionButtons: {
     flexDirection: "row",
@@ -139,7 +134,6 @@ const styles = StyleSheet.create({
   },
   saveButton: {
     width: "44%",
-    height: 33,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
@@ -154,7 +148,7 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     width: "44%",
-    height: 33,
+    paddingVertical: 8,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",

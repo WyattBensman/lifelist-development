@@ -79,7 +79,7 @@ export default function EditProfileTab() {
     }
   };
 
-  const profilePictureUrl = `${BASE_URL}${adminProfile?.profilePicture || ""}`;
+  const profilePictureUrl = adminProfile?.profilePicture;
 
   return (
     <KeyboardAvoidingView

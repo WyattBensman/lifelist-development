@@ -6,8 +6,8 @@ import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import HeaderStack from "../../../components/Headers/HeaderStack";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import Icon from "../../../components/Icons/Icon";
-import CustomAlert from "../../../components/Alerts/CustomAlert";
 import { useAdminProfile } from "../../../contexts/AdminProfileContext";
+import DangerAlert from "../../../components/Alerts/DangerAlert";
 
 export default function EditProfile() {
   const navigation = useNavigation();
@@ -49,8 +49,8 @@ export default function EditProfile() {
       />
       <EditProfileNavigator />
 
-      {/* Custom Alert for unsaved changes */}
-      <CustomAlert
+      {/* Danger Alert for unsaved changes */}
+      <DangerAlert
         visible={showAlert}
         title="Unsaved Changes"
         message="You have unsaved changes. Are you sure you want to discard them and leave?"

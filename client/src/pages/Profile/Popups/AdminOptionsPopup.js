@@ -120,22 +120,6 @@ export default function AdminOptionsPopup({
             weight={"semibold"}
           />
         </Pressable>
-        {/* <Pressable
-          style={[popupStyles.cardContainer, layoutStyles.flex]}
-          onPress={() => handleNavigate("PrivacyGroups")}
-        >
-          <View style={layoutStyles.flexRow}>
-            <IconStatic name="person.2.circle" style={iconStyles.popupIcon} />
-            <Text style={[popupStyles.spacer, styles.text]}>
-              Privacy Groups
-            </Text>
-          </View>
-          <IconStatic
-            name="chevron.forward"
-            style={iconStyles.forwardArrow}
-            weight={"semibold"}
-          />
-        </Pressable> */}
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={() =>

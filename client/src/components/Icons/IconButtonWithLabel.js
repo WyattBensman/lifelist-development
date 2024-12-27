@@ -31,13 +31,13 @@ const styles = StyleSheet.create({
   iconWithLabel: {
     justifyContent: "center",
     alignItems: "center",
-    marginHorizontal: 10,
+    marginHorizontal: 12,
     width: 70,
   },
   iconButton: {
     backgroundColor: "#252525",
     borderRadius: 50,
-    padding: 10,
+    padding: 12,
     justifyContent: "center",
     alignItems: "center",
   },

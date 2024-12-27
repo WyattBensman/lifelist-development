@@ -5,8 +5,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
-import SearchBarHeader from "../SearchBars/SearchBarHeader";
-import { useNavigation } from "@react-navigation/native";
+import SearchBarStandard from "../SearchBars/SearchBarStandard";
 
 export default function HeaderSearchBar({
   arrowIcon,
@@ -20,9 +19,6 @@ export default function HeaderSearchBar({
   onSearchFocusChange,
   hideIconsOnFocus = true,
 }) {
-  const showIcons = arrowIcon || icon1 || icon2;
-  const navigation = useNavigation();
-
   const dismissKeyboard = () => {
     Keyboard.dismiss();
     onSearchFocusChange(false);
@@ -30,46 +26,32 @@ export default function HeaderSearchBar({
 
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
-      <View
-        style={[
-          styles.headerContainer,
-          hasBorder && styles.border,
-          !icon1 && !icon2 && styles.paddingRight,
-        ]}
-      >
-        <View style={[styles.icon, arrowIcon ? styles.iconSpacing : {}]}>
-          {arrowIcon}
+      <View style={[styles.headerContainer, hasBorder && styles.border]}>
+        {/* Left Icon (e.g., Arrow Icon) */}
+        {arrowIcon && (
+          <View style={[styles.icon, styles.leftIcon]}>{arrowIcon}</View>
+        )}
+
+        {/* Search Bar */}
+        <View style={[styles.searchBarContainer]}>
+          <SearchBarStandard
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            handleSearch={handleSearch}
+            onFocusChange={onSearchFocusChange}
+          />
         </View>
-        <SearchBarHeader
-          style={[styles.searchBar]}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          handleSearch={handleSearch}
-          onFocusChange={onSearchFocusChange}
-        />
-        {isSearchFocused ? (
-          hideIconsOnFocus ? (
-            <View style={styles.rightIconsContainer}>
-              {/* Placeholder for spacing */}
-              <View style={[styles.icon, styles.iconSpacing]}></View>
-            </View>
-          ) : (
-            <View style={styles.rightIconsContainer}>
-              {icon1 && (
-                <View style={[styles.icon, styles.iconSpacing]}>{icon1}</View>
-              )}
-              {icon2 && <View style={styles.icon}>{icon2}</View>}
-            </View>
-          )
+
+        {/* Right Icons */}
+        {!isSearchFocused || !hideIconsOnFocus ? (
+          <View style={styles.rightIconsContainer}>
+            {icon1 && (
+              <View style={[styles.icon, styles.iconSpacing]}>{icon1}</View>
+            )}
+            {icon2 && <View style={styles.icon}>{icon2}</View>}
+          </View>
         ) : (
-          showIcons && (
-            <View style={styles.rightIconsContainer}>
-              {icon1 && (
-                <View style={[styles.icon, styles.iconSpacing]}>{icon1}</View>
-              )}
-              {icon2 && <View style={styles.icon}>{icon2}</View>}
-            </View>
-          )
+          <View style={styles.rightIconsContainer} />
         )}
       </View>
     </TouchableWithoutFeedback>
@@ -81,30 +63,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingTop: 60,
-    paddingBottom: 10,
+    paddingBottom: 12,
+    paddingHorizontal: 20,
+    backgroundColor: "#121212", // Example background for consistency
   },
   border: {
     borderBottomWidth: 1,
     borderBottomColor: "#1C1C1C",
   },
-  searchBar: {
-    flex: 1,
-    backgroundColor: "#252525",
-  },
-  fullWidth: {
-    flex: 1,
+  searchBarContainer: {
+    flex: 1, // Allow the search bar to take available width
+    marginHorizontal: 10, // Add spacing between icons and the search bar
   },
   rightIconsContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
   icon: {
-    marginLeft: 10,
-  },
-  iconSpacing: {
-    marginRight: 10,
-  },
-  paddingRight: {
-    paddingRight: 20,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });

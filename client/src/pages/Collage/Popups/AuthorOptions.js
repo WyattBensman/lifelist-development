@@ -22,7 +22,6 @@ export default function AuthorOptions({
   collageId,
   collageData,
   isArchived,
-  handleArchivePress,
 }) {
   const navigation = useNavigation();
   const { addCollage, removeCollage } = useAdminProfile();
@@ -87,7 +86,7 @@ export default function AuthorOptions({
   return (
     <BottomPopup visible={visible} onRequestClose={onRequestClose} height={484}>
       <View style={popupStyles.popupContainer}>
-        <Text style={[headerStyles.headerMedium, styles.text]}>Options</Text>
+        <Text style={[headerStyles.headerMedium]}>Options</Text>
         <Pressable
           style={[popupStyles.cardContainer, layoutStyles.flex]}
           onPress={() => {
@@ -150,11 +149,7 @@ export default function AuthorOptions({
           </View>
         </Pressable>
 
-        <Text
-          style={[headerStyles.headerMedium, styles.text, { marginTop: 8 }]}
-        >
-          Share
-        </Text>
+        <Text style={[headerStyles.headerMedium, { marginTop: 8 }]}>Share</Text>
         <View style={[popupStyles.cardContainer, layoutStyles.flex]}>
           <View style={layoutStyles.flexRow}>
             <IconStatic name="message.circle" style={iconStyles.popupIcon} />

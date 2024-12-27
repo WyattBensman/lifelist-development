@@ -98,15 +98,19 @@ const styles = StyleSheet.create({
   navigatorButton: {
     width: "40%",
     paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 16,
+    paddingHorizontal: 16,
+    borderRadius: 32,
     justifyContent: "center",
     alignItems: "center",
     marginHorizontal: 6,
     backgroundColor: "#1C1C1C",
+    borderWidth: 1,
+    borderColor: "transparent",
   },
   activeNavigatorButton: {
     backgroundColor: "#6AB95230",
+    borderWidth: 1,
+    borderColor: "#6AB95250",
   },
   navigatorText: {
     color: "#696969",

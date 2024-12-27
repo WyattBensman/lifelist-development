@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Dimensions, FlatList, View, Text } from "react-native";
 import { iconStyles, layoutStyles } from "../../../styles";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
@@ -8,15 +8,9 @@ import { GET_TAGGED_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
-import {
-  saveMetadataToCache,
-  getMetadataFromCache,
-  saveImageToFileSystem,
-  getImageFromFileSystem,
-} from "../../../utils/newCacheHelper";
 
 const { height: screenHeight } = Dimensions.get("window");
-const PAGE_SIZE = 16;
+const PAGE_SIZE = 24;
 
 export default function Tagged() {
   const navigation = useNavigation();
@@ -25,38 +19,14 @@ export default function Tagged() {
   const [cursor, setCursor] = useState(null);
   const [hasMore, setHasMore] = useState(true);
 
-  useEffect(() => {
-    const loadCachedData = async () => {
-      const cachedData = await getMetadataFromCache("taggedCollages");
-      if (cachedData) {
-        setTaggedCollages(cachedData.collages);
-        setCursor(cachedData.nextCursor);
-        setHasMore(cachedData.hasNextPage);
-      }
-    };
-    loadCachedData();
-  }, []);
-
   const { data, loading, error, fetchMore } = useQuery(GET_TAGGED_COLLAGES, {
     variables: { cursor, limit: PAGE_SIZE },
-    fetchPolicy: "cache-and-network",
-    onCompleted: async (fetchedData) => {
+    fetchPolicy: "network-only", // Always fetch fresh data from the server
+    onCompleted: (fetchedData) => {
       const { collages, nextCursor, hasNextPage } =
         fetchedData.getTaggedCollages;
 
-      await saveMetadataToCache("taggedCollages", {
-        collages,
-        nextCursor,
-        hasNextPage,
-      });
-
-      for (const collage of collages) {
-        const imageKey = `tagged_collage_${collage._id}`;
-        if (!(await getImageFromFileSystem(imageKey))) {
-          await saveImageToFileSystem(imageKey, collage.coverImage);
-        }
-      }
-
+      // Filter for unique collages to avoid duplicates
       const newUniqueCollages = collages.filter(
         (newCollage) =>
           !taggedCollages.some((tagged) => tagged._id === newCollage._id)
@@ -107,7 +77,6 @@ export default function Tagged() {
               path={item.coverImage}
               index={index}
               collages={taggedCollages}
-              cacheKeyPrefix="tagged_collage_"
             />
           </View>
         )}

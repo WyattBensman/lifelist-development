@@ -6,8 +6,8 @@ import ListViewNavigator from "../Navigation/ListViewNavigator";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
 import { useLifeList } from "../../../contexts/LifeListContext";
 import HeaderSearchBar from "../../../components/Headers/HeaderSeachBar";
-import CustomAlert from "../../../components/Alerts/CustomAlert";
 import Icon from "../../../components/Icons/Icon";
+import DangerAlert from "../../../components/Alerts/DangerAlert";
 
 export default function ListView({ navigation }) {
   const route = useRoute();
@@ -18,6 +18,8 @@ export default function ListView({ navigation }) {
   const [viewType, setViewType] = useState("EXPERIENCED");
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedExperienceId, setSelectedExperienceId] = useState(null);
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Determine user and LifeList details from route or context
   const userId = route.params?.userId || currentUser;
@@ -93,6 +95,10 @@ export default function ListView({ navigation }) {
           )
         }
         hasBorder={false}
+        isSearchFocused={isSearchFocused} // Pass the state
+        onSearchFocusChange={setIsSearchFocused} // Pass the setter
+        searchQuery={searchQuery} // Pass the search query state
+        setSearchQuery={setSearchQuery} // Pass the set state function
       />
       <View style={[layoutStyles.flex, styles.buttonContainer]}>
         <Pressable
@@ -137,7 +143,7 @@ export default function ListView({ navigation }) {
         onDelete={handleDeleteExperience}
         userId={userId}
       />
-      <CustomAlert
+      <DangerAlert
         visible={isModalVisible}
         onRequestClose={() => setModalVisible(false)}
         message="Are you sure you want to delete this experience?"

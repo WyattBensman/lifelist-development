@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { StyleSheet, Text, View, Animated } from "react-native";
 
-const IconFiller = () => <View style={{ width: 35, height: 35 }} />;
+const IconFiller = () => <View style={{ width: 32, height: 32 }} />;
 
 export default function HeaderStack({
   arrow,

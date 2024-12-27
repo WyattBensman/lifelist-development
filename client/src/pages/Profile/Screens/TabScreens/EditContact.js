@@ -3,8 +3,8 @@ import { Text, TextInput, View, StyleSheet } from "react-native";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { formStyles, headerStyles, layoutStyles } from "../../../../styles";
 import EditProfileBottomContainer from "../../Components/EditProfileBottomContainer";
-import CustomAlert from "../../../../components/Alerts/CustomAlert";
 import { useAdminProfile } from "../../../../contexts/AdminProfileContext"; // Updated context
+import DangerAlert from "../../../../components/Alerts/DangerAlert";
 
 export default function EditContact() {
   const navigation = useNavigation();
@@ -123,8 +123,8 @@ export default function EditContact() {
         )}
       </View>
 
-      {/* Custom Alert */}
-      <CustomAlert
+      {/* Danger Alert */}
+      <DangerAlert
         visible={showAlert}
         onRequestClose={() => setShowAlert(false)}
         title="Unsaved Changes"
@@ -149,15 +149,13 @@ const styles = StyleSheet.create({
   label: {
     width: 76,
     color: "#fff",
-    fontWeight: "500",
+    fontWeight: "600",
   },
   input: {
     flex: 1,
-    padding: 9,
+    color: "#fff",
+    padding: 12,
     borderRadius: 8,
     backgroundColor: "#252525",
-    color: "#fff",
-    fontSize: 14,
-    textAlign: "left",
   },
 });

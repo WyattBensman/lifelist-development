@@ -8,11 +8,11 @@ import {
 } from "react-native";
 import { Image } from "expo-image";
 import ButtonSmall from "../../../components/Buttons/ButtonSmall";
-import UnblockUserModal from "../Popups/UnblockUserModal";
 import {
   getImageFromCache,
   saveImageToCache,
 } from "../../../utils/cacheHelper";
+import DangerAlert from "../../../components/Alerts/DangerAlert";
 
 export default function BlockedUserCard({
   userId,
@@ -70,10 +70,18 @@ export default function BlockedUserCard({
           />
         </View>
       </View>
-      <UnblockUserModal
-        modalVisible={modalVisible}
-        onClose={toggleModal}
-        onUnblock={() => onUnblock(userId)}
+
+      {/* Danger Alert for confirming unblock */}
+      <DangerAlert
+        visible={modalVisible}
+        onRequestClose={toggleModal}
+        title="Unblock User"
+        message={`Are you sure you want to unblock ${fullName}?`}
+        onConfirm={() => {
+          onUnblock(userId); // Perform unblock action
+          toggleModal(); // Close the modal
+        }}
+        onCancel={toggleModal} // Close the modal without unblocking
       />
     </View>
   );

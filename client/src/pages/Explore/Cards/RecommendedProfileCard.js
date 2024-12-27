@@ -26,8 +26,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   imageMd: {
-    height: 40,
-    width: 40,
+    height: 48,
+    width: 48,
     borderRadius: 4,
   },
   textContainer: {
@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   },
   secondaryText: {
     fontSize: 12,
-    color: "#d4d4d4",
+    color: "#696969",
     marginTop: 2,
   },
 });

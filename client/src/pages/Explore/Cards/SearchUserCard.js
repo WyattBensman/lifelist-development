@@ -37,7 +37,6 @@ const styles = StyleSheet.create({
   listItemContainer: {
     padding: 8,
     marginTop: 8,
-    marginLeft: 8,
     backgroundColor: "#1C1C1C",
     borderRadius: 8,
   },
@@ -48,9 +47,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   imageMd: {
-    height: 44,
-    width: 44,
+    height: 48,
+    width: 48,
     borderRadius: 4,
+    backgroundColor: "#252525",
   },
   textContainer: {
     flex: 1,
@@ -58,11 +58,11 @@ const styles = StyleSheet.create({
   },
   primaryText: {
     fontWeight: "600",
-    color: "#FFFFFF",
+    color: "#fff",
   },
   secondaryText: {
     fontSize: 12,
-    color: "#d4d4d4",
+    color: "#696969",
     marginTop: 1.5,
   },
   actionButtonContainer: {

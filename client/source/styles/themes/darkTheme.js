@@ -1,0 +1,9 @@
+const darkTheme = {
+  NAVBARCOLOR: "#111111",
+  BACKGROUNDCOLOR: "#121212",
+  ONBACKGROUNDCOLOR: "#1C1C1C",
+  PRIMARYTEXTCOLOR: "#FFFFFF",
+  SECONDARYTEXTCOLOR: "#696969",
+};
+
+export default darkTheme;

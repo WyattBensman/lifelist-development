@@ -1,16 +1,8 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 
-export default function ButtonSmall({
-  text,
-  backgroundColor,
-  textColor,
-  onPress,
-}) {
+export default function ButtonSmall({ text, textColor, onPress }) {
   return (
-    <Pressable
-      onPress={onPress}
-      style={[styles.buttonContainer, { backgroundColor: backgroundColor }]}
-    >
+    <Pressable onPress={onPress} style={styles.buttonContainer}>
       <Text style={[styles.buttonText, { color: textColor }]}>{text}</Text>
     </Pressable>
   );
@@ -19,12 +11,12 @@ export default function ButtonSmall({
 const styles = StyleSheet.create({
   buttonContainer: {
     borderRadius: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    backgroundColor: "#ececec",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: "#1c1c1c",
   },
   buttonText: {
-    fontWeight: "500",
+    fontWeight: "600",
     fontSize: 12,
     color: "#FFFFFF",
   },

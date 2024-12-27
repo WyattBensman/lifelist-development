@@ -130,7 +130,7 @@ export default function EarlyAccessScreen() {
         {!accessGranted ? (
           <>
             <Image
-              source={require("../../../../public/branding/lifelist-icon.png")}
+              source={require("../../../../assets/branding/lifelist-icon.png")}
               style={styles.imageLogo}
             />
             <Text style={styles.header}>Early Access</Text>
@@ -170,7 +170,7 @@ export default function EarlyAccessScreen() {
             >
               <Text style={styles.welcomeText}>Welcome to</Text>
               <Image
-                source={require("../../../../public/branding/lifelist-text.png")}
+                source={require("../../../../assets/branding/lifelist-text.png")}
                 style={styles.imageText}
               />
             </Animated.View>

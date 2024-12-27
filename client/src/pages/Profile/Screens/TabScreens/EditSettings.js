@@ -5,13 +5,13 @@ import {
   iconStyles,
   layoutStyles,
 } from "../../../../styles";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import GlobalSwitch from "../../../../components/Switch";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import IconStatic from "../../../../components/Icons/IconStatic";
 import EditProfileBottomContainer from "../../Components/EditProfileBottomContainer";
-import CustomAlert from "../../../../components/Alerts/CustomAlert";
 import { useAdminProfile } from "../../../../contexts/AdminProfileContext"; // Updated context
+import DangerAlert from "../../../../components/Alerts/DangerAlert";
 
 export default function EditSettings() {
   const navigation = useNavigation();
@@ -148,8 +148,8 @@ export default function EditSettings() {
         />
       )}
 
-      {/* Custom Alert */}
-      <CustomAlert
+      {/* Danger Alert */}
+      <DangerAlert
         visible={showAlert}
         onRequestClose={() => setShowAlert(false)}
         title="Unsaved Changes"

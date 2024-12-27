@@ -100,7 +100,6 @@ export default function BlockedUsers() {
   });
 
   const handleUnblock = (userId) => {
-    console.log(`Unblocking user: ${userId}`);
     unblockUserMutation({ variables: { userIdToUnblock: userId } });
   };
 

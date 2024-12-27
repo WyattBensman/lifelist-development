@@ -41,7 +41,7 @@ export default function ExploreHeader({
       <View
         style={[
           styles.searchBarContainer,
-          isSearchFocused && { flex: 1, marginRight: 16, marginLeft: 16 },
+          isSearchFocused && { flex: 1, marginRight: 16, marginLeft: 10 },
         ]}
       >
         <SearchBarStandard

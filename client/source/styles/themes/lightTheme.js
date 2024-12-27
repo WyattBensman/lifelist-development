@@ -1,0 +1,9 @@
+const lightTheme = {
+  NAVBARCOLOR: "#F8F8F8",
+  BACKGROUNDCOLOR: "#FFFFFF",
+  ONBACKGROUNDCOLOR: "#F2F2F7",
+  PRIMARYTEXTCOLOR: "#000000",
+  SECONDARYTEXTCOLOR: "#3C3C43",
+};
+
+export default lightTheme;

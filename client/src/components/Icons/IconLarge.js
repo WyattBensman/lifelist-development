@@ -2,25 +2,18 @@ import React from "react";
 import { Pressable, StyleSheet } from "react-native";
 import { SymbolView } from "expo-symbols";
 
-export default function IconLarge({
+export default function DropdownIcon({
   name,
   style,
   weight,
   tintColor,
   onPress,
-  noFill,
-  backgroundColor,
   disabled,
 }) {
   return (
     <Pressable
       onPress={onPress}
-      style={[
-        styles.iconContainer,
-        { backgroundColor: backgroundColor || "#252525" },
-        noFill && styles.noBackground,
-        disabled && styles.disabled,
-      ]}
+      style={[styles.iconContainer, disabled && styles.disabled]}
       disabled={disabled}
     >
       <SymbolView
@@ -37,10 +30,11 @@ const styles = StyleSheet.create({
   iconContainer: {
     borderRadius: 50,
     padding: 10,
-    height: 37.5,
-    width: 37.5,
+    height: 42,
+    width: 42,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#252525",
   },
   noBackground: {
     backgroundColor: "transparent",

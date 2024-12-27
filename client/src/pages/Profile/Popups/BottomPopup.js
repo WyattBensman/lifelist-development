@@ -6,17 +6,14 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   PanResponder,
-  Dimensions,
 } from "react-native";
-
-const { height: screenHeight } = Dimensions.get("window");
 
 const BottomPopup = ({ visible, children, onRequestClose, height }) => {
   const [showModal, setShowModal] = useState(visible);
   const animatedHeight = useRef(new Animated.Value(height)).current;
   const lastGestureDy = useRef(0);
   const currentHeight = useRef(height);
-  const TOP_PADDING = 50; // Define a top padding
+  const TOP_PADDING = 57.5;
 
   useEffect(() => {
     toggleModal();

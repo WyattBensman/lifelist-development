@@ -13,7 +13,7 @@ import {
 } from "../../../utils/newCacheHelper"; //
 
 const screenWidth = Dimensions.get("window").width;
-const spacing = 1.5;
+const spacing = 2;
 const imageWidth = (screenWidth - spacing * 2) / 3;
 
 export default function CollageCard({

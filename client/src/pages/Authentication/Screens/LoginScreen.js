@@ -102,7 +102,7 @@ export default function LoginScreen() {
       <View style={styles.container}>
         {/* Logo */}
         <Image
-          source={require("../../../../public/branding/lifelist-icon.png")}
+          source={require("../../../../assets/branding/lifelist-icon.png")}
           style={styles.logo}
         />
         {/* Title */}
@@ -111,9 +111,7 @@ export default function LoginScreen() {
         <Text style={styles.subtitle}>We've missed you!</Text>
         {/* Single Input for Email, Phone, or Username */}
         <View style={styles.inputWrapper}>
-          <View style={styles.inputHeader}>
-            <Text style={styles.label}>Email, Phone, or Username</Text>
-          </View>
+          <Text style={styles.label}>Email, Phone, or Username</Text>
 
           <TextInput
             style={styles.input}
@@ -153,21 +151,21 @@ export default function LoginScreen() {
         <View style={styles.socialIconsContainer}>
           <Pressable style={styles.socialIcon}>
             <Image
-              source={require("../../../../public/branding/google-icon.webp")} // Replace with your Google icon
+              source={require("../../../../assets/logos/google-icon.webp")} // Replace with your Google icon
               style={styles.googleImage}
             />
           </Pressable>
 
           <Pressable style={styles.socialIcon}>
             <Image
-              source={require("../../../../public/branding/apple-icon.png")} // Replace with your Apple icon
+              source={require("../../../../assets/logos/apple-icon.png")} // Replace with your Apple icon
               style={styles.appleImage}
             />
           </Pressable>
 
           <Pressable style={styles.socialIcon}>
             <Image
-              source={require("../../../../public/branding/facebook-icon.webp")} // Replace with your Facebook icon
+              source={require("../../../../assets/logos/facebook-icon.webp")} // Replace with your Facebook icon
               style={styles.facebookImage}
             />
           </Pressable>
@@ -186,7 +184,7 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.95,
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -216,22 +214,21 @@ const styles = StyleSheet.create({
   inputHeader: {
     flexDirection: "row", // Align label and switch text horizontally
     justifyContent: "space-between",
-    marginBottom: 8,
   },
   label: {
-    fontWeight: "500",
+    fontWeight: "600",
     color: "#fff",
+    marginBottom: 8,
   },
   input: {
     width: "100%", // Full width of the parent wrapper (85%)
-    height: 40,
     color: "#fff", // White text
-    padding: 10,
+    padding: 12,
     borderRadius: 8,
     backgroundColor: "#252525", // Dark background for the input
   },
   orText: {
-    color: "#c7c7c7", // Gray for "or" text
+    color: "#696969", // Gray for "or" text
     marginVertical: 12,
   },
   socialIconsContainer: {
@@ -242,7 +239,7 @@ const styles = StyleSheet.create({
   socialIcon: {
     width: 48,
     height: 48,
-    borderRadius: 8,
+    borderRadius: 4,
     backgroundColor: "#252525",
     justifyContent: "center",
     alignItems: "center",

@@ -131,7 +131,7 @@ export default function CreateAccountScreen() {
       <View style={styles.container}>
         {/* Logo */}
         <Image
-          source={require("../../../../public/branding/lifelist-icon.png")}
+          source={require("../../../../assets/branding/lifelist-icon.png")}
           style={styles.logo}
         />
 
@@ -219,21 +219,21 @@ export default function CreateAccountScreen() {
         <View style={styles.socialIconsContainer}>
           <Pressable style={styles.socialIcon}>
             <Image
-              source={require("../../../../public/branding/google-icon.webp")}
+              source={require("../../../../assets/logos/google-icon.webp")}
               style={styles.googleImage}
             />
           </Pressable>
 
           <Pressable style={styles.socialIcon}>
             <Image
-              source={require("../../../../public/branding/apple-icon.png")}
+              source={require("../../../../assets/logos/apple-icon.png")}
               style={styles.appleImage}
             />
           </Pressable>
 
           <Pressable style={styles.socialIcon}>
             <Image
-              source={require("../../../../public/branding/facebook-icon.webp")}
+              source={require("../../../../assets/logos/facebook-icon.webp")}
               style={styles.facebookImage}
             />
           </Pressable>
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: "#c7c7c7", // Lighter gray for subtitle
+    color: "#696969", // Lighter gray for subtitle
     fontSize: 14,
     textAlign: "center",
     marginBottom: 32,
@@ -283,14 +283,14 @@ const styles = StyleSheet.create({
   inputHeader: {
     flexDirection: "row", // Align label and switch text horizontally
     justifyContent: "space-between",
-    marginBottom: 8,
   },
   label: {
-    fontWeight: "500",
+    fontWeight: "600",
     color: "#fff",
+    marginBottom: 8,
   },
   switchText: {
-    color: "#c7c7c7", // Gray text for the "sign in with"
+    color: "#696969", // Gray text for the "sign in with"
     fontSize: 12,
   },
   switchTypeText: {
@@ -299,11 +299,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   input: {
-    width: "100%", // Full width of the parent wrapper (85%)
-    height: 40,
+    width: "100%",
     color: "#fff", // White text
-    padding: 10,
-    borderRadius: 8,
+    padding: 12,
+    borderRadius: 6,
     backgroundColor: "#252525", // Dark background for the input
   },
   orText: {

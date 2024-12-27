@@ -8,15 +8,9 @@ import { GET_ARCHIVED_COLLAGES } from "../../../utils/queries/userQueries";
 import CollageCard from "../Cards/CollageCard";
 import Icon from "../../../components/Icons/Icon";
 import { useNavigationContext } from "../../../contexts/NavigationContext";
-import {
-  saveMetadataToCache,
-  getMetadataFromCache,
-  saveImageToFileSystem,
-  getImageFromFileSystem,
-} from "../../../utils/newCacheHelper";
 
 const { height: screenHeight } = Dimensions.get("window");
-const PAGE_SIZE = 16;
+const PAGE_SIZE = 24;
 
 export default function Archived() {
   const navigation = useNavigation();
@@ -25,37 +19,12 @@ export default function Archived() {
   const [cursor, setCursor] = useState(null);
   const [hasMore, setHasMore] = useState(true);
 
-  useEffect(() => {
-    const loadCachedData = async () => {
-      const cachedData = await getMetadataFromCache("archivedCollages");
-      if (cachedData) {
-        setArchivedCollages(cachedData.collages);
-        setCursor(cachedData.nextCursor);
-        setHasMore(cachedData.hasNextPage);
-      }
-    };
-    loadCachedData();
-  }, []);
-
   const { data, loading, error, fetchMore } = useQuery(GET_ARCHIVED_COLLAGES, {
     variables: { cursor, limit: PAGE_SIZE },
-    fetchPolicy: "cache-and-network",
-    onCompleted: async (fetchedData) => {
+    fetchPolicy: "network-only", // Always fetch fresh data from the server
+    onCompleted: (fetchedData) => {
       const { collages, nextCursor, hasNextPage } =
         fetchedData.getArchivedCollages;
-
-      await saveMetadataToCache("archivedCollages", {
-        collages,
-        nextCursor,
-        hasNextPage,
-      });
-
-      for (const collage of collages) {
-        const imageKey = `archived_collage_${collage._id}`;
-        if (!(await getImageFromFileSystem(imageKey))) {
-          await saveImageToFileSystem(imageKey, collage.coverImage);
-        }
-      }
 
       const newUniqueCollages = collages.filter(
         (newCollage) =>

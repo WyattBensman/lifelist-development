@@ -159,7 +159,7 @@ export default function SetProfileInformationScreen() {
         {/* Container Bottom */}
         <View style={styles.bottomContainer}>
           <Image
-            source={require("../../../../public/branding/lifelist-icon.png")}
+            source={require("../../../../assets/branding/lifelist-icon.png")}
             style={styles.logo}
           />
         </View>
